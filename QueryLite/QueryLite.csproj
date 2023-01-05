@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>Enable</Nullable>
+    <AssemblyVersion>0.9.0</AssemblyVersion>
+    <FileVersion>0.9.0</FileVersion>
+    <Version>0.9.0</Version>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <PackageId>QueryLite.net.net</PackageId>
+    <Title>Query Lite</Title>
+    <Authors>EndsOfTheEarth</Authors>
+    <Company />
+    <Product />
+    <Description>A typesafe database query library</Description>
+    <Copyright>EndOfTheEarth</Copyright>
+    <PackageProjectUrl>https://github.com/EndsOfTheEarth/QueryLite</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/EndsOfTheEarth/QueryLite.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Sql;Typesafe;SqlServer;PostgreSql;</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.4.59" />
+    <PackageReference Include="Npgsql" Version="7.0.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+  </ItemGroup>
+</Project>

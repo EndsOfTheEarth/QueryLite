@@ -1,0 +1,282 @@
+﻿using System;
+using System.Text;
+
+namespace QueryLite.Databases.SqlServer {
+
+    internal sealed class SqlServerSelectQueryGenerator : IQueryGenerator {
+
+        string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParameters? parameters) {
+            return GetSql(template, database, parameters);
+        }
+
+        internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParameters? parameters) {
+
+            //We need to start with the first query template
+            while(template.ParentUnion != null) {
+                template = template.ParentUnion;
+            }
+
+            StringBuilder sql = new StringBuilder(capacity: 256);
+
+            while(true) {
+
+                sql.Append("SELECT");
+
+                bool useAliases = template.Joins != null && template.Joins.Count > 0;
+
+                GenerateTopClause(sql, template);
+                GenerateSelectClause(sql, template, useAliases: useAliases, database, parameters);
+                GenerateFromClause(sql, template, useAliases: useAliases, database);
+
+                if(template.Joins != null) {
+                    GenerateJoins(sql, template, useAliases: useAliases, database, parameters);
+                }
+                GenerateWhereClause(sql, template, useAliases: useAliases, database, parameters);
+                GenerateGroupByClause(sql, template, useAliases: useAliases);
+                GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
+                GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
+
+                if(template.ChildUnion != null) {
+
+                    if(template.ChildUnionType == UnionType.Union) {
+                        sql.Append(" UNION ");
+                    }
+                    else if(template.ChildUnionType == UnionType.Union) {
+                        sql.Append(" UNION ALL ");
+                    }
+                    else {
+                        throw new Exception($"Unknown { nameof(template.ChildUnionType) } type. Value = '{ template.ChildUnionType }'");
+                    }
+                    template = template.ChildUnion;
+                }
+                else {
+                    break;
+                }
+            }
+            return sql.ToString();
+        }
+
+        private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+
+            sql.Append(' ');
+
+            bool setComma = false;
+
+            foreach(IField field in template.SelectFields) {
+
+                if(field is IColumn column) {
+
+                    if(setComma) {
+                        sql.Append(',');
+                    }
+                    else {
+                        setComma = true;
+                    }
+                    if(useAliases) {
+                        sql.Append(column.Table.Alias).Append('.');
+                    }
+                    SqlServerHelper.AppendColumnName(sql, column);
+                }
+                else if(field is IFunction function) {
+
+                    if(setComma) {
+                        sql.Append(',');
+                    }
+                    else {
+                        setComma = true;
+                    }
+                    sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                }
+                else {
+                    throw new Exception($"Unkown field type. Type = { field }");
+                }
+            }
+        }
+
+        private static void GenerateTopClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template) {
+
+            if(template.TopRows != null) {
+                sql.Append(" TOP ").Append(template.TopRows.Value);
+            }
+        }
+        private static void GenerateFromClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database) {
+
+            if(template.FromTable == null) {
+                throw new Exception($"From table is null. Please check query");
+            }
+            sql.Append(" FROM ");
+
+            string schemaName = database.SchemaMap(template.FromTable.SchemaName);
+
+            if(!string.IsNullOrWhiteSpace(schemaName)) {
+                SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                sql.Append('.');
+            }
+
+            SqlServerHelper.AppendEnclose(sql, template.FromTable.TableName, forceEnclose: template.FromTable.Enclose);
+
+            if(useAliases) {
+                sql.Append(" AS ").Append(template.FromTable.Alias);
+            }
+
+            if(template.Hints != null && template.Hints.Length > 0) {
+
+                sql.Append(" WITH(");
+
+                int hintCount = 0;
+
+                foreach(SqlServerHint hint in template.Hints) {
+
+                    if(hintCount > 0) {
+                        sql.Append(',');
+                    }
+                    sql.Append(hint.ToString());
+                    hintCount++;
+                }
+                sql.Append(')');
+            }
+        }
+
+        private static void GenerateJoins<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+
+            if(template.Joins == null) {
+                return;
+            }
+
+            foreach(IJoin join in template.Joins) {
+
+                sql.Append(join.JoinType switch
+                {
+                    JoinType.Join => " JOIN ",
+                    JoinType.LeftJoin => " LEFT JOIN ",
+                    _ => throw new Exception($"Unknown join type. Type = { join.JoinType }")
+                });
+
+                string schemaName = database.SchemaMap(join.Table.SchemaName);
+
+                if(!string.IsNullOrWhiteSpace(schemaName)) {
+                    SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                    sql.Append('.');
+                }
+                SqlServerHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
+
+                if(useAliases) {
+                    sql.Append(" AS ").Append(join.Table.Alias);
+                }
+                sql.Append(" ON ");
+                join.Condition.GetSql(sql, database, useAlias: useAliases, parameters);
+            }
+        }
+
+        private static void GenerateWhereClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+
+            if(template.WhereCondition != null) {
+                sql.Append(" WHERE ");
+                template.WhereCondition.GetSql(sql, database, useAlias: useAliases, parameters);
+            }
+        }
+
+        private static void GenerateGroupByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
+
+            if(template.GroupByFields != null && template.GroupByFields.Length > 0) {
+
+                sql.Append(" GROUP BY ");
+
+                bool setComma = false;
+
+                foreach(ISelectable field in template.GroupByFields) {
+
+                    if(field is IColumn column) {
+
+                        if(setComma) {
+                            sql.Append(',');
+                        }
+                        else {
+                            setComma = true;
+                        }
+                        if(useAliases) {
+                            sql.Append(column.Table.Alias).Append('.');
+                        }
+                        SqlServerHelper.AppendColumnName(sql, column);
+                    }
+                    else {
+                        throw new Exception($"Unkown field type. Type = { field }");
+                    }
+                }
+            }
+        }
+
+        private static void GenerateHavingClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+
+            if(template.HavingCondition != null) {
+                sql.Append(" HAVING ");
+                template.HavingCondition.GetSql(sql, database, useAlias: useAliases, parameters);
+            }
+        }
+        private static void GenerateOrderByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+
+            if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
+
+                sql.Append(" ORDER BY ");
+
+                bool setComma = false;
+
+                foreach(IOrderByColumn orderByColumn in template.OrderByFields) {
+
+                    IField field = orderByColumn.Field;
+
+                    if(setComma) {
+                        sql.Append(',');
+                    }
+                    else {
+                        setComma = true;
+                    }
+
+                    if(field is IColumn column) {
+
+                        if(useAliases) {
+                            sql.Append(column.Table.Alias).Append('.');
+                        }
+                        SqlServerHelper.AppendColumnName(sql, column);
+                    }
+                    else if(field is IFunction function) {
+                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    }
+                    else {
+                        throw new Exception($"Unkown field type. Type = { field }");
+                    }                    
+                    sql.Append(orderByColumn.OrderBy switch
+                    {
+                        OrderBy.ASC => " ASC",
+                        OrderBy.DESC => " DESC",
+                        OrderBy.Default => "",
+                        _ => throw new Exception($"Unknown { nameof(OrderBy) } type. Type: '{ field.OrderBy}'")
+                    });
+                }
+            }
+        }
+    }
+
+    public static class SqlServerHelper {
+
+        public static void AppendColumnName(StringBuilder sql, IColumn column) {
+
+            if(column.Enclose || column.ColumnName.Contains(' ')) {
+                sql.Append('[').Append(column.ColumnName).Append(']');
+            }
+            else {
+                sql.Append(column.ColumnName);
+            }
+        }
+
+        public static void AppendEnclose(StringBuilder sql, string value, bool forceEnclose) {
+
+            if(forceEnclose || value.Contains(' ')) {
+                sql.Append('[').Append(value).Append(']');
+            }
+            else {
+                sql.Append(value);
+            }
+        }
+    }
+}
