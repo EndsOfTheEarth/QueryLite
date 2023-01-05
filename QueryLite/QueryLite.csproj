@@ -7,7 +7,7 @@
     <FileVersion>0.9.0</FileVersion>
     <Version>0.9.0</Version>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <PackageId>QueryLite.net.net</PackageId>
+    <PackageId>QueryLite.net</PackageId>
     <Title>Query Lite</Title>
     <Authors>EndsOfTheEarth</Authors>
     <Company />
@@ -22,11 +22,16 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>NugetReadme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\NugetReadme.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
