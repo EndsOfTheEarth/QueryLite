@@ -14,6 +14,10 @@ It is designed to achieve three main goals:
 ## Documentation
 [Documentation is found here](Documentation.md)
 
+## Nuget Package
+
+[QueryLite.net Nuget Package](https://www.nuget.org/packages/QueryLite.net/)
+
 ## Example Select Query
 ``` C#
 using QueryLite;
