@@ -23,24 +23,29 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             foreach(DatabaseTable table in tables) {
                 TablePrefix prefix = new TablePrefix(table);
-                code.Append(Generate(table, prefix, settings).ToString());
+                code.Append(Generate(table, prefix, settings, includeUsings: false).ToString());
             }
             code.Append("}");
             return code;
         }
 
-        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
+        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
 
             CodeBuilder code = new CodeBuilder();
 
-            code.Append($"namespace {settings.Namespaces.TableNamespace} {{").EndLine().EndLine();
+            if(includeUsings) {
 
-            code.Indent(1).Append("using System;").EndLine();
-            code.Indent(1).Append("using QueryLite;").EndLine();
+                code.Append($"namespace {settings.Namespaces.TableNamespace} {{").EndLine().EndLine();
 
-            code.EndLine();
+                code.Indent(1).Append("using System;").EndLine();
+                code.Indent(1).Append("using QueryLite;").EndLine();
+
+                code.EndLine();
+            }
 
             string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+            code.EndLine();
 
             if(settings.IncludeDescriptions) {
                 code.Indent(1).Append("[Description(\"\")]").EndLine();
@@ -65,7 +70,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 string columnName = prefix.GetColumnName(column.ColumnName.Value);
 
-                if(count > 0 && (settings.IncludeDescriptions)) {
+                if(count > 0 && (settings.IncludeDescriptions || settings.IncludeKeyAttributes)) {
                     code.EndLine();
                 }
 
@@ -79,7 +84,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 if(column.IsForeignKey && settings.IncludeKeyAttributes) {
                     string pkTableTypeName = CodeHelper.GetTableName(column.ForeignKeyTable!, includePostFix: true);
-                    code.Indent(2).Append($"[ForeignKey(\"{column.ForeignKeyConstraintName}\", primaryKeyTable: typeof({pkTableTypeName}))]").EndLine();
+                    code.Indent(2).Append($"[ForeignKey<{pkTableTypeName}>(\"{column.ForeignKeyConstraintName}\")]").EndLine();
                 }
                 count++;
                 code.Indent(2).Append($"public {columnClass}<{columnTypeName}> {columnName} {{ get; }}").EndLine();
@@ -98,7 +103,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             code.EndLine();
 
-            string encloseTableName = SqlKeyWordLookup.IsKeyWord(table.TableName.Value) ? ", encloseName: true" : "";
+            string encloseTableName = SqlKeyWordLookup.IsKeyWord(table.TableName.Value) ? ", enclose: true" : "";
 
             code.Indent(2).Append($"private {tableClassName}() : base(tableName:\"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}) {{").EndLine().EndLine(); 
 
@@ -109,7 +114,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
             code.Indent(2).Append("}").EndLine();
             code.Indent(1).Append("}").EndLine();
 
-            code.Append("}");
+            if(includeUsings) {
+                code.Append("}");
+            }
             return code;
         }
     }

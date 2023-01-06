@@ -172,7 +172,7 @@ namespace QueryLite.CodeGeneratorUI {
                         Namespaces = namespaces
                     };
 
-                    CodeBuilder code = TableCodeGenerator.Generate(table, prefix, settings);
+                    CodeBuilder code = TableCodeGenerator.Generate(table, prefix, settings, includeUsings: true);
 
                     txtCode.Text = code.ToString();
 
