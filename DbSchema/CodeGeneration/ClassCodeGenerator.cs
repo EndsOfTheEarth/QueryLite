@@ -11,6 +11,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             classCode.Append($"namespace { settings.Namespaces.ClassNamespace } {{").EndLine().EndLine();
             classCode.Indent(1).Append("using System;").EndLine();
+            classCode.Indent(1).Append("using QueryLite;").EndLine();
 
             classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace };").EndLine();
 

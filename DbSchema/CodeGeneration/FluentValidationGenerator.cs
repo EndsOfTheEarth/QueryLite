@@ -95,7 +95,14 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                             addBeginAndEndLine = true;
 
-                            string valueType = dotNetType.IsValueType || isKeyColumn ? ".Value" : "";
+                            string valueType = string.Empty;
+
+                            if(dotNetType.IsValueType) {
+                                valueType = ".Value";
+                            }
+                            if(isKeyColumn) {
+                                valueType = ".Value.Value";
+                            }
                             rule.Append($"value!{valueType}.Length >= 0 && value{valueType}.Length <= {maxLength})");
                             rule.EndLine().Indent(4);
                             rule.Append($".When(_x => _x.{columnName} != null)");
