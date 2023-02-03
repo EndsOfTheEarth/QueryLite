@@ -617,27 +617,29 @@ foreach(var row in result.Rows) {
 
 ## Supported Data Types
 
-| C# Type                       | Sql Server             | PostgreSql                  |
-| ----------------------------- | ---------------------- | --------------------------- |
-| Column&lt;string>             | NVARCHAR               | VARCHAR                     |
-| Column&lt;StringKey&lt;TYPE>> | NVARCHAR               | VARCHAR                     |
-| Column&lt;Guid>               | UNIQUEIDENTIFIER       | UUID                        |
-| Column&lt;GuidKey&lt;TYPE>>   | UNIQUEIDENTIFIER       | UUID                        |
-| Columns&lt;short>             | SMALLINT               | SMALLINT                    |
-| Column&lt;ShortKey&lt;TYPE>>  | SMALLINT               | SMALLINT                    |
-| Column&lt;int>                | INTEGER                | INTEGER, SERIAL             |
-| Column&lt;IntKey&lt;TYPE>>    | INTEGER                | INTEGER, SERIAL             |
-| Column&lt;long>               | BIGINT                 | BIGINT                      |
-| Column&lt;LongKey&lt;TYPE>>   | BIGINT                 | BIGINT                      |
-| Columns&lt;bool>              | TINYINT                | BOOLEAN                     |
-| Column&lt;decimal>            | DECIMAL                | DECIMAL                     |
-| Column&lt;float>              | REAL                   | REAL                        |
-| Column&lt;double>             | FLOAT                  | DOUBLE PRECISION            |
-| Column&lt;byte[]>             | VARBINARY              | BYTEA                       |
-| Column&lt;DateTime>           | DATETIME               | TIMESTAMP WITHOUT TIME ZONE |
-| Column&lt;DateTimeOffset>     | DATETIMEOFFSET         | TIMESTAMP WITH TIME ZONE    |
-| Column&lt;Enum>               | TINYINT, SMALLINT, INT | SMALLINT, INT               |
-| Column&lt;BoolValue&lt;TYPE>> | TINYINT                | BOOLEAN                     |
+| C# Type                       | Sql Server             | PostgreSql                  | Notes  |
+| ----------------------------- | ---------------------- | --------------------------- | ------ |
+| Column&lt;string>             | NVARCHAR               | VARCHAR                     |        |
+| Column&lt;StringKey&lt;TYPE>> | NVARCHAR               | VARCHAR                     |        |
+| Column&lt;Guid>               | UNIQUEIDENTIFIER       | UUID                        |        |
+| Column&lt;GuidKey&lt;TYPE>>   | UNIQUEIDENTIFIER       | UUID                        |        |
+| Columns&lt;short>             | SMALLINT               | SMALLINT                    |        |
+| Column&lt;ShortKey&lt;TYPE>>  | SMALLINT               | SMALLINT                    |        |
+| Column&lt;int>                | INTEGER                | INTEGER, SERIAL             |        |
+| Column&lt;IntKey&lt;TYPE>>    | INTEGER                | INTEGER, SERIAL             |        |
+| Column&lt;long>               | BIGINT                 | BIGINT                      |        |
+| Column&lt;LongKey&lt;TYPE>>   | BIGINT                 | BIGINT                      |        |
+| Columns&lt;bool>              | TINYINT                | BOOLEAN                     |        |
+| Column&lt;decimal>            | DECIMAL                | DECIMAL                     |        |
+| Column&lt;float>              | REAL                   | REAL                        |        |
+| Column&lt;double>             | FLOAT                  | DOUBLE PRECISION            |        |
+| Column&lt;byte[]>             | VARBINARY              | BYTEA                       |        |
+| Column&lt;DateOnly>           | DATE                   | DATE                        |        |
+| Column&lt;TimeOnly>           | TIME                   | TIME WITHOUT TIME ZONE      | Precision is only up to microseconds. Nanosecond precision and timezone are not supported. |
+| Column&lt;DateTime>           | DATETIME               | TIMESTAMP WITHOUT TIME ZONE | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
+| Column&lt;DateTimeOffset>     | DATETIMEOFFSET         | TIMESTAMP WITH TIME ZONE    | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
+| Column&lt;Enum>               | TINYINT, SMALLINT, INT | SMALLINT, INT               |        |
+| Column&lt;BoolValue&lt;TYPE>> | TINYINT                | BOOLEAN                     |        |
 
 ## Key Columns
 

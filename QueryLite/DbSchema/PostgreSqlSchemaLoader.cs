@@ -263,7 +263,8 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("_regtype", null);
             _Lookup.Add("ARRAY", null);
             _Lookup.Add("bytea", typeof(byte[]));
-            _Lookup.Add("date", typeof(DateTime));
+            _Lookup.Add("date", typeof(DateOnly));
+            _Lookup.Add("time", typeof(TimeOnly));
             _Lookup.Add("timestamptz", typeof(DateTimeOffset));
             _Lookup.Add("integer", typeof(int));
             _Lookup.Add("int4", typeof(int));
@@ -285,6 +286,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("numeric", typeof(decimal));
             _Lookup.Add("boolean", typeof(bool));
             _Lookup.Add("smallint", typeof(short));
+            _Lookup.Add("time without time zone", typeof(TimeOnly));
             _Lookup.Add("timestamp with time zone", typeof(DateTimeOffset));
             _Lookup.Add("timestamp without time zone", typeof(DateTime));
             _Lookup.Add("real", typeof(float));

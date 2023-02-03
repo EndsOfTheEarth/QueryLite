@@ -283,6 +283,8 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("varbinary", typeof(byte[]));
             _Lookup.Add("datetime", typeof(DateTime));
             _Lookup.Add("datetimeoffset", typeof(DateTimeOffset));
+            _Lookup.Add("date", typeof(DateOnly));
+            _Lookup.Add("time", typeof(TimeOnly));
         }
         public static Type? GetDotNetType(string typeName) {
 

@@ -1,5 +1,6 @@
 ﻿using NpgsqlTypes;
 using System;
+using System.Data;
 
 namespace QueryLite.Databases.PostgreSql {
 
@@ -40,6 +41,20 @@ namespace QueryLite.Databases.PostgreSql {
             }
             if(type == typeof(DateTime?)) {
                 return NpgsqlDbType.Timestamp;
+            }
+
+            if(type == typeof(TimeOnly)) {
+                return NpgsqlDbType.Time;
+            }
+            if(type == typeof(TimeOnly?)) {
+                return NpgsqlDbType.Time;
+            }
+
+            if(type == typeof(DateOnly)) {
+                return NpgsqlDbType.Date;
+            }
+            if(type == typeof(DateOnly?)) {
+                return NpgsqlDbType.Date;
             }
 
             if(type == typeof(decimal)) {
@@ -121,6 +136,12 @@ namespace QueryLite.Databases.PostgreSql {
             if(value is Enum) {
                 return (int)value;
             }
+            if(value is DateOnly dateOnly) {
+                return dateOnly.ToDateTime(TimeOnly.MinValue);
+            }
+            if(value is TimeOnly timeOnly) {
+                return timeOnly.ToTimeSpan();
+            }
             return value;
         }
 
@@ -140,6 +161,12 @@ namespace QueryLite.Databases.PostgreSql {
             }
             if(value is DateTime dateTimeValue) {
                 return $"'{Helpers.EscapeForSql(dateTimeValue.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'";
+            }
+            if(value is TimeOnly timeOnly) {
+                return $"'{Helpers.EscapeForSql(timeOnly.ToString("HH:mm:ss.fffffff"))}'";
+            }
+            if(value is DateOnly dateOnly) {
+                return $"'{Helpers.EscapeForSql(dateOnly.ToString("yyyy-MM-dd"))}'";
             }
             if(value is decimal decimalValue) {
                 return $"{Helpers.EscapeForSql(decimalValue.ToString())}";

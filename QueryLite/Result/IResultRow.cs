@@ -33,8 +33,14 @@ namespace QueryLite {
         public double Get(Column<double> column);
         public double? Get(NullableColumn<double> column);
 
+        public TimeOnly Get(Column<TimeOnly> column);
+        public TimeOnly? Get(NullableColumn<TimeOnly> column);
+
         public DateTime Get(Column<DateTime> column);
         public DateTime? Get(NullableColumn<DateTime> column);
+
+        public DateOnly Get(Column<DateOnly> column);
+        public DateOnly? Get(NullableColumn<DateOnly> column);
 
         public DateTimeOffset Get(Column<DateTimeOffset> column);
         public DateTimeOffset? Get(NullableColumn<DateTimeOffset> column);

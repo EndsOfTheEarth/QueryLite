@@ -222,8 +222,8 @@ namespace QueryLite {
 
                     if(codeColumn.Type.IsEnum) {
 
-                        if(dbNetType != typeof(int)) {
-                            throw new Exception("An enum type must be mapped as an integer. This might be a bug");
+                        if(dbNetType != typeof(short) && dbNetType != typeof(int) && dbNetType != typeof(long)) {
+                            throw new Exception("An enum type must be mapped as a short, integer or long. This might be a bug");
                         }
                         if(codeAdoType != typeof(int) && codeAdoType != typeof(short) && codeAdoType != typeof(byte)) {
                             tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column");
@@ -271,7 +271,7 @@ namespace QueryLite {
                     }
                     else {
 
-                        if(codeColumn.Length != null) {
+                        if(codeColumn.Length != null && codeColumn.Length != int.MaxValue) {
                             tableValidation.Add($"{columnDetail}, database column length is null but code column length is not null");
                         }
                     }

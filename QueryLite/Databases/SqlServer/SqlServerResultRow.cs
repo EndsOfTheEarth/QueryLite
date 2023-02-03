@@ -1,15 +1,16 @@
 ﻿using System.Data.Common;
 using System;
+using System.Data.SqlClient;
 
 namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerResultRow : IResultRow {
 
-        private readonly DbDataReader _reader;
+        private readonly SqlDataReader _reader;
         private int _ordinal = -1;
 
         public SqlServerResultRow(DbDataReader reader) {
-            _reader = reader;
+            _reader = (SqlDataReader)reader;
         }
 
         void IResultRow.Reset() {
@@ -209,6 +210,48 @@ namespace QueryLite.Databases.SqlServer {
                 return null;
             }
             return _reader.GetDateTime(_ordinal);
+        }
+
+        public TimeOnly Get(Column<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return TimeOnly.MinValue;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
+        }
+        public TimeOnly? Get(NullableColumn<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
+        }
+
+        public DateOnly Get(Column<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return DateOnly.MinValue;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
+        public DateOnly? Get(NullableColumn<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
         }
 
         public DateTimeOffset Get(Column<DateTimeOffset> column) {
