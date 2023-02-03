@@ -27,6 +27,7 @@ namespace QueryLiteTest.Tables {
         public Column<DateTimeOffset> DateTimeOffset { get; }
         public Column<AllTypesEnum> Enum { get; }
         public Column<DateOnly> DateOnly { get; }
+        public Column<TimeOnly> TimeOnly { get; }
 
         private AllTypesTable() : base(tableName: "AllTypes", schemaName: "dbo") {
 
@@ -45,6 +46,7 @@ namespace QueryLiteTest.Tables {
             DateTimeOffset = new Column<DateTimeOffset>(this, columnName: "taDateTimeOffset");
             Enum = new Column<AllTypesEnum>(this, columnName: "taEnum");
             DateOnly = new Column<DateOnly>(this, columnName: "taDateOnly");
+            TimeOnly = new Column<TimeOnly>(this, columnName: "taTimeOnly");
         }
     }
 
@@ -68,6 +70,7 @@ namespace QueryLiteTest.Tables {
             DateTimeOffset = result.Get(table.DateTimeOffset);
             Enum = result.GetEnum(table.Enum);
             DateOnly = result.Get(table.DateOnly);
+            TimeOnly = result.Get(table.TimeOnly);
         }
 
         public IntKey<AllTypes> Id { get; set; }
@@ -85,5 +88,6 @@ namespace QueryLiteTest.Tables {
         public DateTimeOffset DateTimeOffset { get; set; }
         public AllTypesEnum Enum { get; set; }
         public DateOnly DateOnly { get; set; }
+        public TimeOnly TimeOnly { get; set; }
     }
 }

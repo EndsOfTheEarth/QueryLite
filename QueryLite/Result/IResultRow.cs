@@ -33,6 +33,9 @@ namespace QueryLite {
         public double Get(Column<double> column);
         public double? Get(NullableColumn<double> column);
 
+        public TimeOnly Get(Column<TimeOnly> column);
+        public TimeOnly? Get(NullableColumn<TimeOnly> column);
+
         public DateTime Get(Column<DateTime> column);
         public DateTime? Get(NullableColumn<DateTime> column);
 

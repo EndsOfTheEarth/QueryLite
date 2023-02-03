@@ -1,15 +1,16 @@
 ﻿using System.Data.Common;
 using System;
+using Npgsql;
 
 namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlResultRow : IResultRow {
 
-        private readonly DbDataReader _reader;
+        private readonly NpgsqlDataReader _reader;
         private int _ordinal = -1;
 
         public PostgreSqlResultRow(DbDataReader reader) {
-            _reader = reader;
+            _reader = (NpgsqlDataReader)reader;
         }
 
         void IResultRow.Reset() {
@@ -209,6 +210,27 @@ namespace QueryLite.Databases.PostgreSql {
                 return null;
             }
             return _reader.GetDateTime(_ordinal);
+        }
+
+        public TimeOnly Get(Column<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return TimeOnly.MinValue;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
+        }
+        public TimeOnly? Get(NullableColumn<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
         }
 
         public DateOnly Get(Column<DateOnly> column) {

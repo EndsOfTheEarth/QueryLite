@@ -42,6 +42,13 @@ namespace QueryLite.Databases.SqlServer {
                 return DbType.DateTime;
             }
 
+            if(type == typeof(TimeOnly)) {
+                return DbType.DateTime2;    //Note: DateTime2 is required to get the TIME to save to microseconds precision
+            }
+            if(type == typeof(TimeOnly?)) {
+                return DbType.DateTime2;    //Note: DateTime2 is required to get the TIME to save to microseconds precision
+            }
+
             if(type == typeof(DateOnly)) {
                 return DbType.Date;
             }
@@ -126,7 +133,10 @@ namespace QueryLite.Databases.SqlServer {
                 return (int)value;
             }
             if(value is DateOnly dateOnly) {
-                return  dateOnly.ToDateTime(TimeOnly.MinValue);
+                return dateOnly.ToDateTime(TimeOnly.MinValue);
+            }
+            if(value is TimeOnly timeOnly) {    //Note: Ado requires a datetime to be set as a parameter for the TIME data type
+                return new DateTime(year: 1900, month: 1, day: 1, hour: timeOnly.Hour, minute: timeOnly.Minute, second: timeOnly.Second, millisecond: timeOnly.Millisecond, microsecond: timeOnly.Microsecond);
             }
             return value;
         }
@@ -147,6 +157,9 @@ namespace QueryLite.Databases.SqlServer {
             }
             if(value is DateTime dateTimeValue) {
                 return $"'{Helpers.EscapeForSql(dateTimeValue.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'";
+            }
+            if(value is TimeOnly timeOnly) {
+                return $"'{Helpers.EscapeForSql(timeOnly.ToString("HH:mm:ss.fffffff"))}'";
             }
             if(value is DateOnly dateOnly) {
                 return $"'{Helpers.EscapeForSql(dateOnly.ToString("yyyy-MM-dd"))}'";

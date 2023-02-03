@@ -124,6 +124,16 @@ namespace QueryLite {
             return default;
         }
 
+        public TimeOnly Get(Column<TimeOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public TimeOnly? Get(NullableColumn<TimeOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+
         public DateOnly Get(Column<DateOnly> column) {
             Fields.Add(column);
             return default;

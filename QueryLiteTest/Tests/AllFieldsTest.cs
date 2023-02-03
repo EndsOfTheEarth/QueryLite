@@ -1,3 +1,4 @@
+using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
@@ -313,7 +314,8 @@ namespace QueryLiteTest.Tests {
                 dateTime: new DateTime(year: 2021, month: 12, day: 01, hour: 23, minute: 59, second: 59),
                 dateTimeOffset: new DateTimeOffset(year: 2022, month: 11, day: 02, hour: 20, minute: 55, second: 57, new TimeSpan(hours: 5, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.A,
-                dateOnly: new DateOnly(year: 2005, month: 11, day: 1)
+                dateOnly: new DateOnly(year: 2005, month: 11, day: 1),
+                timeOnly: new TimeOnly(hour: 9, minute: 59, second: 1, millisecond: 770, microsecond: 1)
             );
         }
 
@@ -429,6 +431,7 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(row.DateTimeOffset, allTypes.DateTimeOffset);
             Assert.AreEqual(row.Enum, allTypes.Enum);
             Assert.AreEqual(row.DateOnly, allTypes.DateOnly);
+            Assert.AreEqual(row.TimeOnly, allTypes.TimeOnly);
         }
 
         private void BasicInsertUpdateAndDeleteWithQueries() {
@@ -649,6 +652,7 @@ namespace QueryLiteTest.Tests {
                     .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
                     .Set(allTypesTable.Enum, allTypes.Enum)
                     .Set(allTypesTable.DateOnly, allTypes.DateOnly)
+                    .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
                     .Execute(
                         result => new AllTypesInfo(result, allTypesTable),
                         transaction,
@@ -743,6 +747,7 @@ namespace QueryLiteTest.Tests {
                     .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
                     .Set(allTypesTable.Enum, allTypes.Enum)
                     .Set(allTypesTable.DateOnly, allTypes.DateOnly)
+                    .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
                     .ExecuteAsync(
                         result => new AllTypesInfo(result, allTypesTable),
                         transaction,
@@ -783,7 +788,8 @@ namespace QueryLiteTest.Tests {
                 dateTime: new DateTime(year: 2023, month: 1, day: 2, hour: 3, minute: 4, second: 5),
                 dateTimeOffset: new DateTimeOffset(year: 2030, month: 12, day: 11, hour: 10, minute: 9, second: 8, new TimeSpan(hours: 0, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.B,
-                dateOnly: new DateOnly(year: 1990, month: 1, day: 31)
+                dateOnly: new DateOnly(year: 1990, month: 1, day: 31),
+                timeOnly: new TimeOnly(hour: 12, minute: 14, second: 55, millisecond: 130, microsecond: 999)
             );
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
@@ -806,6 +812,7 @@ namespace QueryLiteTest.Tests {
                     .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
                     .Set(allTypesTable.Enum, allTypes.Enum)
                     .Set(allTypesTable.DateOnly, allTypes.DateOnly)
+                    .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
                     .Where(allTypesTable.Id == allTypes.Id)
                     .Execute(
                         result => new AllTypesInfo(result, allTypesTable),
@@ -842,7 +849,8 @@ namespace QueryLiteTest.Tests {
                 dateTime: new DateTime(year: 2023, month: 1, day: 2, hour: 3, minute: 4, second: 5),
                 dateTimeOffset: new DateTimeOffset(year: 2030, month: 12, day: 11, hour: 10, minute: 9, second: 8, new TimeSpan(hours: 0, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.B,
-                dateOnly: new DateOnly(year: 1854, month: 05, day: 27)
+                dateOnly: new DateOnly(year: 1854, month: 05, day: 27),
+                timeOnly: new TimeOnly(hour: 1, minute: 4, second: 5, millisecond: 30, microsecond: 100)
             );
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
@@ -865,6 +873,7 @@ namespace QueryLiteTest.Tests {
                     .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
                     .Set(allTypesTable.Enum, allTypes.Enum)
                     .Set(allTypesTable.DateOnly, allTypes.DateOnly)
+                    .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
                     .Where(allTypesTable.Id == allTypes.Id)
                     .ExecuteAsync(
                         result => new AllTypesInfo(result, allTypesTable),
@@ -1216,6 +1225,7 @@ namespace QueryLiteTest.Tests {
                     .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
                     .Set(allTypesTable.Enum, allTypes.Enum)
                     .Set(allTypesTable.DateOnly, allTypes.DateOnly)
+                    .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
                     .Execute(
                         result => new {
                             AllTypesRow = new AllTypesInfo(result, allTypesTable)
@@ -1261,7 +1271,8 @@ namespace QueryLiteTest.Tests {
                 dateTime: new DateTime(year: 2019, month: 11, day: 12, hour: 13, minute: 14, second: 15),
                 dateTimeOffset: new DateTimeOffset(year: 2025, month: 11, day: 10, hour: 1, minute: 7, second: 5, new TimeSpan(hours: 3, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.C,
-                dateOnly: new DateOnly(year: 9999, month: 12, day: 31)
+                dateOnly: new DateOnly(year: 9999, month: 12, day: 31),
+                timeOnly: new TimeOnly(hour: 9, minute: 59, second: 1, millisecond: 770, microsecond: 11)
             );
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
@@ -1284,6 +1295,7 @@ namespace QueryLiteTest.Tests {
                     .Set(allTypesTable.DateTimeOffset, newAllTypes.DateTimeOffset)
                     .Set(allTypesTable.Enum, newAllTypes.Enum)
                     .Set(allTypesTable.DateOnly, newAllTypes.DateOnly)
+                    .Set(allTypesTable.TimeOnly, newAllTypes.TimeOnly)
                     .Where(allTypesTable.Id == newAllTypes.Id)
                     .Execute(
                         updated => new AllTypesInfo(updated, allTypesTable),

@@ -11,7 +11,7 @@ namespace QueryLiteTestLogic {
     }
     public sealed class AllTypes {
 
-        public AllTypes(IntKey<AllTypes> id, Guid guid, string @string, short smallInt, int @int, long bigInt, decimal @decimal, float @float, double @double, bool boolean, byte[] bytes, DateTime dateTime, DateTimeOffset dateTimeOffset, AllTypesEnum @enum, DateOnly dateOnly) {
+        public AllTypes(IntKey<AllTypes> id, Guid guid, string @string, short smallInt, int @int, long bigInt, decimal @decimal, float @float, double @double, bool boolean, byte[] bytes, DateTime dateTime, DateTimeOffset dateTimeOffset, AllTypesEnum @enum, DateOnly dateOnly, TimeOnly timeOnly) {
             Id = id;
             Guid = guid;
             String = @string;
@@ -27,9 +27,10 @@ namespace QueryLiteTestLogic {
             DateTimeOffset = dateTimeOffset;
             Enum = @enum;
             DateOnly = dateOnly;
+            TimeOnly = timeOnly;
         }
 
-        public void UpdateValues(Guid guid, string @string, short smallInt, int @int, long bigInt, decimal @decimal, float @float, double @double, bool boolean, byte[] bytes, DateTime dateTime, DateTimeOffset dateTimeOffset, AllTypesEnum @enum, DateOnly dateOnly) {
+        public void UpdateValues(Guid guid, string @string, short smallInt, int @int, long bigInt, decimal @decimal, float @float, double @double, bool boolean, byte[] bytes, DateTime dateTime, DateTimeOffset dateTimeOffset, AllTypesEnum @enum, DateOnly dateOnly, TimeOnly timeOnly) {
             Guid = guid;
             String = @string;
             SmallInt = smallInt;
@@ -44,6 +45,7 @@ namespace QueryLiteTestLogic {
             DateTimeOffset = dateTimeOffset;
             Enum = @enum;
             DateOnly = dateOnly;
+            TimeOnly = timeOnly;
         }
 
         public IntKey<AllTypes> Id { get; set; }
@@ -61,5 +63,6 @@ namespace QueryLiteTestLogic {
         public DateTimeOffset DateTimeOffset { get; set; }
         public AllTypesEnum Enum { get; set; }
         public DateOnly DateOnly { get; set; }
+        public TimeOnly TimeOnly { get; set; }
     }
 }

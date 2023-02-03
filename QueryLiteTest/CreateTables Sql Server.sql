@@ -16,6 +16,7 @@ CREATE TABLE AllTypes (
 	taDateTimeOffset DATETIMEOFFSET NOT NULL,
 	taEnum SMALLINT NOT NULL,
 	taDateOnly DATE NOT NULL,
+	taTimeOnly TIME NOT NULL,
 
 	CONSTRAINT pk_TableA PRIMARY KEY(taId)
 );
