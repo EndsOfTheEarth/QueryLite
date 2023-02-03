@@ -637,7 +637,7 @@ foreach(var row in result.Rows) {
 | Column&lt;DateOnly>           | DATE                   | DATE                        |        |
 | Column&lt;TimeOnly>           | TIME                   | TIME WITHOUT TIME ZONE      | Precision is only up to microseconds. Nanosecond precision and timezone are not supported. |
 | Column&lt;DateTime>           | DATETIME               | TIMESTAMP WITHOUT TIME ZONE | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
-| Column&lt;DateTimeOffset>     | DATETIMEOFFSET         | TIMESTAMP WITH TIME ZONE    |        |
+| Column&lt;DateTimeOffset>     | DATETIMEOFFSET         | TIMESTAMP WITH TIME ZONE    | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
 | Column&lt;Enum>               | TINYINT, SMALLINT, INT | SMALLINT, INT               |        |
 | Column&lt;BoolValue&lt;TYPE>> | TINYINT                | BOOLEAN                     |        |
 
