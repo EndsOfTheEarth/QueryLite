@@ -124,6 +124,16 @@ namespace QueryLite {
             return default;
         }
 
+        public DateOnly Get(Column<DateOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public DateOnly? Get(NullableColumn<DateOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+
         public DateTimeOffset Get(Column<DateTimeOffset> column) {
             Fields.Add(column);
             return default;

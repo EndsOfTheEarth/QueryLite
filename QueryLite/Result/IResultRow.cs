@@ -36,6 +36,9 @@ namespace QueryLite {
         public DateTime Get(Column<DateTime> column);
         public DateTime? Get(NullableColumn<DateTime> column);
 
+        public DateOnly Get(Column<DateOnly> column);
+        public DateOnly? Get(NullableColumn<DateOnly> column);
+
         public DateTimeOffset Get(Column<DateTimeOffset> column);
         public DateTimeOffset? Get(NullableColumn<DateTimeOffset> column);
 

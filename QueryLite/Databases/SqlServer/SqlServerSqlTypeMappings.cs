@@ -42,6 +42,13 @@ namespace QueryLite.Databases.SqlServer {
                 return DbType.DateTime;
             }
 
+            if(type == typeof(DateOnly)) {
+                return DbType.Date;
+            }
+            if(type == typeof(DateOnly?)) {
+                return DbType.Date;
+            }
+
             if(type == typeof(decimal)) {
                 return DbType.Decimal;
             }
@@ -118,6 +125,9 @@ namespace QueryLite.Databases.SqlServer {
             if(value is Enum) {
                 return (int)value;
             }
+            if(value is DateOnly dateOnly) {
+                return  dateOnly.ToDateTime(TimeOnly.MinValue);
+            }
             return value;
         }
 
@@ -137,6 +147,9 @@ namespace QueryLite.Databases.SqlServer {
             }
             if(value is DateTime dateTimeValue) {
                 return $"'{Helpers.EscapeForSql(dateTimeValue.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'";
+            }
+            if(value is DateOnly dateOnly) {
+                return $"'{Helpers.EscapeForSql(dateOnly.ToString("yyyy-MM-dd"))}'";
             }
             if(value is decimal decimalValue) {
                 return $"{Helpers.EscapeForSql(decimalValue.ToString())}";

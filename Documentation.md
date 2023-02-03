@@ -634,6 +634,7 @@ foreach(var row in result.Rows) {
 | Column&lt;float>              | REAL                   | REAL                        |
 | Column&lt;double>             | FLOAT                  | DOUBLE PRECISION            |
 | Column&lt;byte[]>             | VARBINARY              | BYTEA                       |
+| Column&lt;DateOnly>           | DATE                   | DATE                        |
 | Column&lt;DateTime>           | DATETIME               | TIMESTAMP WITHOUT TIME ZONE |
 | Column&lt;DateTimeOffset>     | DATETIMEOFFSET         | TIMESTAMP WITH TIME ZONE    |
 | Column&lt;Enum>               | TINYINT, SMALLINT, INT | SMALLINT, INT               |

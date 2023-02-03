@@ -211,6 +211,27 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetDateTime(_ordinal);
         }
 
+        public DateOnly Get(Column<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return DateOnly.MinValue;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
+        public DateOnly? Get(NullableColumn<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
+
         public DateTimeOffset Get(Column<DateTimeOffset> column) {
 
             _ordinal++;

@@ -81,6 +81,7 @@ namespace QueryLiteTest.Tests {
                         .Set(allTypesTable.DateTime, allTypes.DateTime)
                         .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
                         .Set(allTypesTable.Enum, allTypes.Enum)
+                        .Set(allTypesTable.DateOnly, allTypes.DateOnly)
                         .Execute(
                             result => new {
                                 Id = result.Get(allTypesTable.Id)
@@ -233,7 +234,8 @@ namespace QueryLiteTest.Tests {
                 bytes: BitConverter.GetBytes(index),
                 dateTime: new DateTime(year: 1800 + index, month: 12, day: 01, hour: 23, minute: 59, second: 59),
                 dateTimeOffset: new DateTimeOffset(year: 1800 + index, month: 11, day: 02, hour: 20, minute: 55, second: 57, new TimeSpan(hours: 5, minutes: 0, seconds: 0)),
-                @enum: AllTypesEnum.A
+                @enum: AllTypesEnum.A,
+                dateOnly: new DateOnly(year: 1925, month: 12, day: 21)
             );
         }
         private void AssertRow(AllTypesInfo row, AllTypes allTypes) {
@@ -256,6 +258,7 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(row.DateTime, allTypes.DateTime);
             Assert.AreEqual(row.DateTimeOffset, allTypes.DateTimeOffset);
             Assert.AreEqual(row.Enum, allTypes.Enum);
+            Assert.AreEqual(row.DateOnly, allTypes.DateOnly);
         }
     }
 }

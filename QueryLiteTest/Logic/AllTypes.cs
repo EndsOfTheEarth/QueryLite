@@ -11,7 +11,7 @@ namespace QueryLiteTestLogic {
     }
     public sealed class AllTypes {
 
-        public AllTypes(IntKey<AllTypes> id, Guid guid, string @string, short smallInt, int @int, long bigInt, decimal @decimal, float @float, double @double, bool boolean, byte[] bytes, DateTime dateTime, DateTimeOffset dateTimeOffset, AllTypesEnum @enum) {
+        public AllTypes(IntKey<AllTypes> id, Guid guid, string @string, short smallInt, int @int, long bigInt, decimal @decimal, float @float, double @double, bool boolean, byte[] bytes, DateTime dateTime, DateTimeOffset dateTimeOffset, AllTypesEnum @enum, DateOnly dateOnly) {
             Id = id;
             Guid = guid;
             String = @string;
@@ -26,9 +26,10 @@ namespace QueryLiteTestLogic {
             DateTime = dateTime;
             DateTimeOffset = dateTimeOffset;
             Enum = @enum;
+            DateOnly = dateOnly;
         }
 
-        public void UpdateValues(Guid guid, string @string, short smallInt, int @int, long bigInt, decimal @decimal, float @float, double @double, bool boolean, byte[] bytes, DateTime dateTime, DateTimeOffset dateTimeOffset, AllTypesEnum @enum) {
+        public void UpdateValues(Guid guid, string @string, short smallInt, int @int, long bigInt, decimal @decimal, float @float, double @double, bool boolean, byte[] bytes, DateTime dateTime, DateTimeOffset dateTimeOffset, AllTypesEnum @enum, DateOnly dateOnly) {
             Guid = guid;
             String = @string;
             SmallInt = smallInt;
@@ -42,6 +43,7 @@ namespace QueryLiteTestLogic {
             DateTime = dateTime;
             DateTimeOffset = dateTimeOffset;
             Enum = @enum;
+            DateOnly = dateOnly;
         }
 
         public IntKey<AllTypes> Id { get; set; }
@@ -58,5 +60,6 @@ namespace QueryLiteTestLogic {
         public DateTime DateTime { get; set; }
         public DateTimeOffset DateTimeOffset { get; set; }
         public AllTypesEnum Enum { get; set; }
+        public DateOnly DateOnly { get; set; }
     }
 }
