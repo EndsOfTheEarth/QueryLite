@@ -79,7 +79,7 @@ Query Lite solves this problem by having only one place where the column name ne
 
 ### 2) Changing a column data type
 Much like renaming a column, changing a column's data type is often an exercise in searching code for uses of that column. Bugs can be introduced if any of those uses are not updated correctly.
-Query Lite solves this problem by using type safe column types. The type of the column is defined once in the code. So after changing the column type in code, any incorrect use of that column will fail at compile time.
+Query Lite solves this problem by using type safe column types. The type of the column is defined once in the code. After changing the column type in code, any incorrect use of that column will fail at compile time.
 
 ### 3) Schema differences between the database version and code cause runtime errors
 
