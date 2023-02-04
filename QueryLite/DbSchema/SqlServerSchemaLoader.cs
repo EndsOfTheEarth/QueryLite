@@ -282,6 +282,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("bit", typeof(bool));
             _Lookup.Add("varbinary", typeof(byte[]));
             _Lookup.Add("datetime", typeof(DateTime));
+            _Lookup.Add("smalldatetime", typeof(DateTime));            
             _Lookup.Add("datetimeoffset", typeof(DateTimeOffset));
             _Lookup.Add("date", typeof(DateOnly));
             _Lookup.Add("time", typeof(TimeOnly));
