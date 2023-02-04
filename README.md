@@ -6,7 +6,7 @@ It is designed to achieve three main goals:
 
 1. Typesafe database queries and schema
     - Queries, joins, 'where' conditions, column types and column nullability are enforced by the compiler
-2. Runtime validation between C# code schema and database schema
+2. Runtime validation between code schema and database schema
     - Check for missing tables, missing columns, column type and nullablility differences
 3. Debuggable
     - Show detailed information about sql queries during and after execution
@@ -53,7 +53,7 @@ foreach(var row in result.Rows) {
 
 ## Core features
 
-* Typesafe queries in C# code
+* Typesafe queries in code
   - Designed to work with nullable reference types and .net 7.0
 * Sql Select, insert, update, delete and truncate queries
 * Supports sql syntax e.g. Join, Left Join, Where, Order By, Group By, Union and Nested Queries
@@ -68,26 +68,26 @@ foreach(var row in result.Rows) {
 
 ## What main problem(s) does Query Lite solve?
 
-Query Lite is suited to code bases that have larger database schemas. It increases the maintainability of larger code bases by providing query level type safety. It removes the need for sql strings in C# and error prone mapping between query results and entity object classes.
+Query Lite is suited to code bases that have larger database schemas. It increases the maintainability of larger code bases by providing query level type safety. It removes the need for sql strings in code and error prone mapping between query results and entity object classes.
 
 Here are a number of problems it addresses:
 
 ### 1) Renaming schema table columns
 
-Database libraries often embed sql as a string in C# code. So renaming a table column can be problematic, as it involves the programmer searching for each use of that column in the C# code base. Missing one of those column references will most likely cause a runtime error.
-Query Lite solves this problem by having only one place where the column name needs to be edited (In the C# table definition class).
+Database libraries often embed sql as a string in code. So renaming a table column can be problematic, as it involves the programmer searching for each use of that column in the code base. Missing one of those column references will most likely cause a runtime error.
+Query Lite solves this problem by having only one place where the column name needs to be edited (In the table definition class).
 
 ### 2) Changing a column data type
-Much like renaming a column, changing a column's data type is often an exercise in searching C# code for uses of that column. Bugs can be introduced if any of those uses are not updated correctly.
-Query Lite solves this problem by using type safe column types. The type of the column is defined once in the C# code. So after changing the column type in code, any incorrect use of that column will fail at compile time.
+Much like renaming a column, changing a column's data type is often an exercise in searching code for uses of that column. Bugs can be introduced if any of those uses are not updated correctly.
+Query Lite solves this problem by using type safe column types. The type of the column is defined once in the code. So after changing the column type in code, any incorrect use of that column will fail at compile time.
 
-### 3) Schema differences between the database version and C# code cause runtime errors
+### 3) Schema differences between the database version and code cause runtime errors
 
-Schema differences between the C# code and the database often cause runtime failures. These can be difficult and time consuming to identify. One use case is where someone creates a new testing environment but forgets to run an sql upgrade script or fails to notice the script failed halfway.
+Schema differences between the code and the database often cause runtime failures. These can be difficult and time consuming to identify. One use case is where someone creates a new testing environment but forgets to run an sql upgrade script or fails to notice the script failed halfway.
 
-Query Lite addresses this problem with a runtime schema validator. This compares the C# schema with the database and outputs any differences. These include missing columns, incorrect data types and nullability differences.
+Query Lite addresses this problem with a runtime schema validator. This compares the schema with the database and outputs any differences. These include missing columns, incorrect data types and nullability differences.
 
-The C# schema validation could be made available from a webservice endpoint. For example: `https://localhost/ValidateSchema`. Another option is to log the schema validation at startup.
+The schema validation could be made available from a webservice endpoint. For example: `https://localhost/ValidateSchema`. Another option is to log the schema validation at startup.
 
 ### 4) Difficult to view / debug underlying sql query
 
@@ -97,7 +97,7 @@ Also the query result classes has a property that stores the sql query.
 
 ### 5) Maintaining schema documentation is difficult
 
-Schema documentation is difficult to maintain. Query Lite is able to generate schema documentation using the C# table and column description attributes. This allows for the human readable descriptions to be stored and maintained in code.
+Schema documentation is difficult to maintain. Query Lite is able to generate schema documentation using the code table and column description attributes. This allows for the human readable descriptions to be stored and maintained in code.
 
 ## Example Insert Query
 ``` C#
@@ -185,7 +185,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
 ## Table Definitions
 
-A schema of table definitions must be defined in C# code. This can be defined either by hand or using the code generator tool.
+A schema of table definitions must be defined in code. This can be defined either by hand or using the code generator tool.
 
 Here is an example taken from the Northwind database:
 
