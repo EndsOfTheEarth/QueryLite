@@ -84,12 +84,13 @@ namespace QueryLite {
         /// <param name="schemaName">Schema table belongs to</param>
         /// <param name="enclose">Set to true if the table name is a sql keyword. This will stop the key word from causing invalid sql from being created</param>
         /// <exception cref="ArgumentException"></exception>
-        protected ATable(string tableName, string schemaName = "", bool enclose = false) {
+        protected ATable(string tableName, string schemaName, bool enclose = false) {
 
-            ArgumentException.ThrowIfNullOrEmpty(tableName, paramName: nameof(tableName));
+            ArgumentException.ThrowIfNullOrEmpty(tableName);
+            ArgumentException.ThrowIfNullOrEmpty(schemaName);
 
             SchemaName = schemaName;
-            TableName = !string.IsNullOrWhiteSpace(tableName) ? tableName : throw new ArgumentException($"{nameof(tableName)} cannot be whitespace or empty");
+            TableName = tableName;
             Enclose = enclose;
             Alias = "_" + AliasGenerator.GetAlias();
         }

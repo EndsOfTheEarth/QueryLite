@@ -218,14 +218,44 @@ namespace QueryLite {
             return tableValidation;
         }
 
+        private static List<DatabaseTable> FindMatchingSchemaTables(IDatabase database, ITable table, Schema dbSchema) {
+
+            List<DatabaseTable> foundTables = new List<DatabaseTable>();
+
+            string mappedSchemaName = !string.IsNullOrEmpty(table.SchemaName) ? database.SchemaMap(table.SchemaName) : table.SchemaName;
+
+            foreach(DatabaseTable schemaTable in dbSchema.Tables) {
+
+                if(string.Compare(schemaTable.TableName.Value, table.TableName, ignoreCase: true) == 0) {
+
+                    if(string.Compare(schemaTable.Schema.Value, mappedSchemaName, ignoreCase: true) == 0) {
+                        foundTables.Add(schemaTable);
+                    }
+                }
+            }
+            return foundTables;
+        }
+
         public static void Validate(IDatabase database, ITable table, Schema dbSchema, TableValidation tableValidation) {
 
-            DatabaseTable? dbTable = dbSchema.Tables.Find(dbTable => string.Compare(dbTable.TableName.Value, table.TableName, ignoreCase: true) == 0);
+            if(string.IsNullOrWhiteSpace(table.SchemaName)) {
+                tableValidation.Add($"Table schema name cannot be null or empty in code");
+            }
 
-            if(dbTable == null) {
+            List<DatabaseTable> dbTables = FindMatchingSchemaTables(database, table, dbSchema);
+
+            if(dbTables == null) {
                 tableValidation.Add($"Code table exists but not database table");
                 return;
             }
+
+            if(dbTables.Count > 1) {
+                string mappedSchemaName = !string.IsNullOrEmpty(table.SchemaName) ? database.SchemaMap(table.SchemaName) : table.SchemaName;
+                tableValidation.Add($"Unable to match table name to database table. {dbTables.Count} tables exist with the name '{mappedSchemaName}.{table.TableName}' in the database.");
+                return;
+            }
+
+            DatabaseTable dbTable = dbTables[0];
 
             List<IColumn> tableColumns = LoadTableColumns(table, tableValidation);
 
