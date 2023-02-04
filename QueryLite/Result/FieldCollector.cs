@@ -446,5 +446,15 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+
+        public BoolValue<TYPE> Get<TYPE>(Function<BoolValue<TYPE>> column) where TYPE : notnull {
+            Fields.Add(column);
+            return default;
+        }
+
+        public BoolValue<TYPE>? Get<TYPE>(NullableFunction<BoolValue<TYPE>> column) where TYPE : notnull {
+            Fields.Add(column);
+            return default;
+        }
     }
 }

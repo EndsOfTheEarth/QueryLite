@@ -877,5 +877,24 @@ namespace QueryLite.Databases.SqlServer {
             }
             return new LongKey<TYPE>(_reader.GetInt64(_ordinal));
         }
+
+        public BoolValue<TYPE> Get<TYPE>(Function<BoolValue<TYPE>> function) where TYPE : notnull {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return BoolValue<TYPE>.ValueOf(false);
+            }
+            return new BoolValue<TYPE>(_reader.GetBoolean(_ordinal));
+        }
+        public BoolValue<TYPE>? Get<TYPE>(NullableFunction<BoolValue<TYPE>> function) where TYPE : notnull {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return new BoolValue<TYPE>(_reader.GetBoolean(_ordinal));
+        }
     }
 }
