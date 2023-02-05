@@ -108,7 +108,9 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void RunSchemaValidator() {
 
-            TableValidation validation = SchemaValidator.ValidateTable(TestDatabase.Database, AllTypesTable.Instance);
+            SchemaValidationSettings settings = new SchemaValidationSettings() { ValidatePrimaryKeyAttributes = true };
+
+            TableValidation validation = SchemaValidator.ValidateTable(TestDatabase.Database, AllTypesTable.Instance, settings);
 
             List<string> messages = validation.ValidationMessages;
 
