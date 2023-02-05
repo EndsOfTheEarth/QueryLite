@@ -12,6 +12,7 @@ namespace QueryLiteTest.Tables {
         public static readonly AllTypesTable Instance3 = new AllTypesTable();
         public static readonly AllTypesTable Instance4 = new AllTypesTable();
 
+        //[PrimaryKey("pk_TableA")]
         public Column<IntKey<AllTypes>> Id { get; }
         public Column<Guid> Guid { get; }
         public Column<string> String { get; }
