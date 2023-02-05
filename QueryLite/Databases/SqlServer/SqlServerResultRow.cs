@@ -284,7 +284,7 @@ namespace QueryLite.Databases.SqlServer {
             if(_reader.IsDBNull(_ordinal)) {
                 return DateTimeOffset.MinValue;
             }
-            return (DateTimeOffset)_reader.GetValue(_ordinal);
+            return _reader.GetDateTimeOffset(_ordinal);
         }
         public DateTimeOffset? Get(NullableColumn<DateTimeOffset> column) {
 
@@ -293,7 +293,7 @@ namespace QueryLite.Databases.SqlServer {
             if(_reader.IsDBNull(_ordinal)) {
                 return null;
             }
-            return (DateTimeOffset)_reader.GetValue(_ordinal);
+            return _reader.GetDateTimeOffset(_ordinal);
         }
 
         public byte Get(Column<byte> column) {
@@ -681,7 +681,7 @@ namespace QueryLite.Databases.SqlServer {
             if(_reader.IsDBNull(_ordinal)) {
                 return DateTimeOffset.MinValue;
             }
-            return (DateTimeOffset)_reader.GetValue(_ordinal);
+            return _reader.GetDateTimeOffset(_ordinal);
         }
         public DateTimeOffset? Get(NullableFunction<DateTimeOffset> function) {
 
@@ -690,7 +690,7 @@ namespace QueryLite.Databases.SqlServer {
             if(_reader.IsDBNull(_ordinal)) {
                 return null;
             }
-            return (DateTimeOffset)_reader.GetValue(_ordinal);
+            return _reader.GetDateTimeOffset(_ordinal);
         }
 
         public byte Get(Function<byte> function) {
