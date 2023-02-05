@@ -49,9 +49,14 @@ namespace QueryLite {
         }
     }
 
+    public class SchemaValidationSettings {
+
+        public required bool ValidatePrimaryKeyAttributes { get; init; }
+    }
+
     public static class SchemaValidator {
 
-        public static List<TableValidation> ValidateTablesInCurrentDomain(IDatabase database) {
+        public static List<TableValidation> ValidateTablesInCurrentDomain(IDatabase database, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
@@ -88,12 +93,12 @@ namespace QueryLite {
 
             foreach(Type type in types) {
 
-                validation.Add(ValidateFromType(type, database, dbSchema));
+                validation.Add(ValidateFromType(type, database, dbSchema, validationSettings));
             }
             return validation;
         }
 
-        public static List<TableValidation> ValidateTablesInAssemblies(Assembly[] assemblies, IDatabase database) {
+        public static List<TableValidation> ValidateTablesInAssemblies(Assembly[] assemblies, IDatabase database, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
@@ -126,12 +131,12 @@ namespace QueryLite {
 
             foreach(Type type in types) {
 
-                validation.Add(ValidateFromType(type, database, dbSchema));
+                validation.Add(ValidateFromType(type, database, dbSchema, validationSettings));
             }
             return validation;
         }
 
-        public static List<TableValidation> ValidateTablesInAssembly(IDatabase database, Assembly assembly) {
+        public static List<TableValidation> ValidateTablesInAssembly(IDatabase database, Assembly assembly, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
@@ -146,12 +151,12 @@ namespace QueryLite {
             List<TableValidation> validation = new List<TableValidation>();
 
             foreach(Type type in types) {
-                validation.Add(ValidateFromType(type, database, dbSchema));
+                validation.Add(ValidateFromType(type, database, dbSchema, validationSettings));
             }
             return validation;
         }
 
-        public static TableValidation ValidateTable(IDatabase database, ITable table) {
+        public static TableValidation ValidateTable(IDatabase database, ITable table, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
@@ -159,7 +164,7 @@ namespace QueryLite {
 
             dbConnection.Close();
 
-            return ValidateFromType(table.GetType(), database, dbSchema);
+            return ValidateFromType(table.GetType(), database, dbSchema, validationSettings);
         }
 
         private static Schema LoadSchema(IDatabase database) {
@@ -179,7 +184,7 @@ namespace QueryLite {
             return new Schema(dbTables);
         }
 
-        private static TableValidation ValidateFromType(Type type, IDatabase database, Schema dbSchema) {
+        private static TableValidation ValidateFromType(Type type, IDatabase database, Schema dbSchema, SchemaValidationSettings validationSettings) {
 
             FieldInfo? instanceField1 = type.GetField("Instance1");
 
@@ -213,7 +218,7 @@ namespace QueryLite {
             }
             else {
                 tableValidation.Table = table;
-                Validate(database, table, dbSchema, tableValidation);
+                Validate(database, table, dbSchema, tableValidation, validationSettings);
             }
             return tableValidation;
         }
@@ -236,7 +241,7 @@ namespace QueryLite {
             return foundTables;
         }
 
-        public static void Validate(IDatabase database, ITable table, Schema dbSchema, TableValidation tableValidation) {
+        public static void Validate(IDatabase database, ITable table, Schema dbSchema, TableValidation tableValidation, SchemaValidationSettings validationSettings) {
 
             if(string.IsNullOrWhiteSpace(table.SchemaName)) {
                 tableValidation.Add($"Table schema name cannot be null or empty in code");
@@ -257,18 +262,20 @@ namespace QueryLite {
 
             DatabaseTable dbTable = dbTables[0];
 
-            List<IColumn> tableColumns = LoadTableColumns(table, tableValidation);
+            List<CodeColumnProperty> tableColumnProperties = LoadTableColumnsProperties(table, tableValidation);
 
             foreach(DatabaseColumn dbColumn in dbTable.Columns) {
 
                 string columnDetail = $"Table Column: '{dbColumn.ColumnName.Value}'";
 
-                IColumn? codeColumn = tableColumns.Find(c => string.Compare(c.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0);
+                CodeColumnProperty? codeColumnProperty = tableColumnProperties.Find(c => string.Compare(c.Column.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0);
 
-                if(codeColumn == null) {
+                if(codeColumnProperty == null) {
                     tableValidation.Add($"{columnDetail}: Column exists in database table but not in code table");
                 }
                 else {
+
+                    IColumn codeColumn = codeColumnProperty.Column;
 
                     Type dbNetType = dbColumn.DataType.DotNetType;
                     Type codeAdoType = ConvertToAdoType(codeColumn.Type);    //This is for the case with types like IntKey<> where the ado type is int
@@ -333,7 +340,9 @@ namespace QueryLite {
 
             Dictionary<string, int> duplicateColumnNameLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
-            foreach(IColumn codeColumn in tableColumns) {
+            foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
+
+                IColumn codeColumn = columnProperty.Column;
 
                 string columnDetail = $"Column: '{codeColumn.ColumnName}'";
 
@@ -393,8 +402,20 @@ namespace QueryLite {
                     if(propertyValue == null) {
                         tableValidation.Add($"{tablePropertyDetail} (Type: '{underlyingPropertyType}') is not populated. Value is null");
                     }
-                    else if(!tableColumns.Contains((IColumn)propertyValue)) {
-                        tableValidation.Add($"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') column has not been assigned to table");
+                    else {
+
+                        bool match = false;
+
+                        foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
+
+                            if(columnProperty.Column == ((IColumn)propertyValue)) {
+                                match = true;
+                                break;
+                            }
+                        }
+                        if(!match) {
+                            tableValidation.Add($"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') column has not been assigned to table");
+                        }
                     }
 
                     MethodInfo? getMethod = tableProperty.GetGetMethod();
@@ -413,15 +434,96 @@ namespace QueryLite {
                     }
                 }
             }
+            if(validationSettings.ValidatePrimaryKeyAttributes) {
+                ValidatePrimaryKeyForTable(database, table, tableColumnProperties, dbTable, tableValidation);
+            }
         }
 
-        private static List<IColumn> LoadTableColumns(ITable table, TableValidation tableValidation) {
+        private static void ValidatePrimaryKeyForTable(IDatabase database, ITable table, List<CodeColumnProperty> tableColumnProperties, DatabaseTable dbTable, TableValidation tableValidation) {
+
+            HashSet<CodeColumnProperty> hasValidationError = new HashSet<CodeColumnProperty>();
+
+            //Check primary key in database exists in the code table
+            foreach(DatabaseColumn dbColumn in dbTable.Columns) {
+
+                if(!string.IsNullOrEmpty(dbColumn.PrimaryKeyConstraintName)) {
+
+                    foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
+
+                        if(string.Compare(columnProperty.Column.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0) {
+
+                            if(columnProperty.PrimaryKeyAttributes.Length == 0) {
+                                tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', should have a '{nameof(PrimaryKeyAttribute)}' for the primary key constraint '{dbColumn.PrimaryKeyConstraintName}'");
+                                hasValidationError.Add(columnProperty);
+                            }
+                            else {
+
+                                foreach(PrimaryKeyAttribute attr in columnProperty.PrimaryKeyAttributes) { //Validate all primary key attributes even though only one is allowed. The next stage of validaiton will check that only one attribute exists
+
+                                    if(string.Compare(attr.Name, dbColumn.PrimaryKeyConstraintName, ignoreCase: true) != 0) {
+                                        tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', the attribute {nameof(PrimaryKeyAttribute)} name '{attr.Name}' does not match the primary key constraint name '{dbColumn.PrimaryKeyConstraintName}' in the database'");
+                                        hasValidationError.Add(columnProperty);
+                                    }
+                                    else if(!columnProperty.Column.IsPrimaryKey) {
+                                        tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', {nameof(columnProperty.Column.IsPrimaryKey)} property should be set to true");
+                                        hasValidationError.Add(columnProperty);
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //Check primary key in code exists in the database table
+            foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
+
+                if(hasValidationError.Contains(columnProperty)) {
+                    continue;
+                }
+
+                if(columnProperty.PrimaryKeyAttributes.Length == 0) {
+
+                    if(columnProperty.Column.IsPrimaryKey) {
+                        tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', {nameof(columnProperty.Column.IsPrimaryKey)} property is set to true but no '{nameof(PrimaryKeyAttribute)}' exists");
+                    }
+                    continue;
+                }
+
+                if(columnProperty.PrimaryKeyAttributes.Length > 1) {
+                    tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', should not have more than one '{nameof(PrimaryKeyAttribute)}' attibute");
+                    continue;
+                }
+
+                PrimaryKeyAttribute attr = columnProperty.PrimaryKeyAttributes[0];
+
+                foreach(DatabaseColumn dbColumn in dbTable.Columns) {
+
+                    if(string.Compare(columnProperty.Column.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0) {
+
+                        if(string.IsNullOrEmpty(dbColumn.PrimaryKeyConstraintName)) {
+                            tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', the attribute {nameof(PrimaryKeyAttribute)} name '{attr.Name}' does not exist for column in the database table'");
+                        }
+                        else if(string.Compare(attr.Name, dbColumn.PrimaryKeyConstraintName, ignoreCase: true) != 0) {
+                            tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', the attribute {nameof(PrimaryKeyAttribute)} name '{attr.Name}' does not match the primary key constraint name '{dbColumn.PrimaryKeyConstraintName}' in the database'");
+                        }
+                        else if(!columnProperty.Column.IsPrimaryKey) {
+                            tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', {nameof(columnProperty.Column.IsPrimaryKey)} property should be set to true");
+                        }
+                        break;
+                    }
+                }                
+            }
+        }
+
+        private static List<CodeColumnProperty> LoadTableColumnsProperties(ITable table, TableValidation tableValidation) {
 
             Type tableType = table.GetType();
 
             PropertyInfo[] properties = tableType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-            List<IColumn> columns = new List<IColumn>();
+            List<CodeColumnProperty> columns = new List<CodeColumnProperty>();
 
             foreach(PropertyInfo property in properties) {
 
@@ -435,11 +537,24 @@ namespace QueryLite {
                         tableValidation.Add($"Table: {table.TableName}, Column property '{property.Name}' is returning null. This property should have an IColumn assigned");
                     }
                     else {
-                        columns.Add((IColumn)column);
+                        PrimaryKeyAttribute[] primaryKeyAttributes = (PrimaryKeyAttribute[])property.GetCustomAttributes(typeof(PrimaryKeyAttribute), inherit: false);
+                        columns.Add(new CodeColumnProperty(property.Name, (IColumn)column, primaryKeyAttributes));
                     }
                 }
             }
             return columns;
+        }
+
+        private class CodeColumnProperty {
+
+            public CodeColumnProperty(string propertyName, IColumn column, PrimaryKeyAttribute[] primaryKeyAttributes) {
+                PropertyName = propertyName;
+                Column = column;
+                PrimaryKeyAttributes = primaryKeyAttributes;
+            }
+            public string PropertyName { get; }
+            public IColumn Column { get; }
+            public PrimaryKeyAttribute[] PrimaryKeyAttributes { get; }
         }
 
         private static Type ConvertToAdoType(Type type) {
