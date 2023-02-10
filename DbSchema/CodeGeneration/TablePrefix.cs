@@ -54,7 +54,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 foreach(DatabaseColumn column in table.Columns) {
 
-                    if(index >= column.ColumnName.Value.Length || (c != null && column.ColumnName.Value[index] != c)) {
+                    if(index >= (column.ColumnName.Value.Length - 1) || (c != null && column.ColumnName.Value[index] != c)) {
                         stop = true;
                         break;
                     }

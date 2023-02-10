@@ -46,13 +46,13 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             foreach(DatabaseTable table in tables) {
                 TablePrefix prefix = new TablePrefix(table);
-                code.Append(Generate(table, prefix, settings, includeUsings: false).ToString());
+                code.Append(Generate(table, prefix, settings, includeUsings: false, generateKeyInterface: false).ToString());
             }
             code.Append("}");
             return code;
         }
 
-        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
+        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings, bool generateKeyInterface) {
 
             CodeBuilder code = new CodeBuilder();
 
@@ -64,6 +64,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 code.Indent(1).Append("using QueryLite;").EndLine();
 
                 code.EndLine();
+            }
+
+            if(generateKeyInterface) {
+                string tableName = CodeHelper.GetTableName(table, includePostFix: false);
+                code.Indent(1).Append($"public interface I{tableName} {{}}").EndLine();
             }
 
             string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
@@ -106,8 +111,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 }
 
                 if(column.IsForeignKey && settings.IncludeKeyAttributes) {
-                    string pkTableTypeName = CodeHelper.GetTableName(column.ForeignKeyTable!, includePostFix: true);
-                    code.Indent(2).Append($"[ForeignKey<{pkTableTypeName}>(\"{column.ForeignKeyConstraintName}\")]").EndLine();
+
+                    foreach(ForeignKey foreignKey in column.ForeignKeys) {
+                        string pkTableTypeName = CodeHelper.GetTableName(foreignKey.ForeignKeyTable, includePostFix: true);
+                        code.Indent(2).Append($"[ForeignKey<{pkTableTypeName}>(\"{foreignKey.ConstraintName}\")]").EndLine();
+                    }
                 }
                 count++;
                 code.Indent(2).Append($"public {columnClass}<{columnTypeName}> {columnName} {{ get; }}").EndLine();
