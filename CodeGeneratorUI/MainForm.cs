@@ -195,7 +195,7 @@ namespace QueryLite.CodeGeneratorUI {
                         Namespaces = namespaces
                     };
 
-                    CodeBuilder code = TableCodeGenerator.Generate(table, prefix, settings, includeUsings: true);
+                    CodeBuilder code = TableCodeGenerator.Generate(table, prefix, settings, includeUsings: true, generateKeyInterface: true);
 
                     txtCode.Text = code.ToString();
 

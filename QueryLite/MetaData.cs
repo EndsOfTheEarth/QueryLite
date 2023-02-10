@@ -54,7 +54,7 @@ namespace QueryLite {
         Type PrimaryKeyTable { get; }
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public sealed class ForeignKeyAttribute<TABLE> : Attribute, IForeignKeyAttribute where TABLE : ITable {
 
         public string Name { get; }

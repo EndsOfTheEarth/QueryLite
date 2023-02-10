@@ -160,7 +160,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 isKeyColumn = true;
 
-                string keyName = $"I{GetTableName(column.ForeignKeyTable!, includePostFix: false)}";
+                string keyName = $"I{GetTableName(column.ForeignKeys[0].ForeignKeyTable, includePostFix: false)}";
 
                 if(dotNetType == typeof(string)) {
                     columnType = $"StringKey<{keyName}>";

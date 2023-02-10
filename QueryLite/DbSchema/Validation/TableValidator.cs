@@ -52,6 +52,7 @@ namespace QueryLite {
     public class SchemaValidationSettings {
 
         public required bool ValidatePrimaryKeyAttributes { get; init; }
+        public required bool ValidateForeignKeyAttributes { get; init; }
     }
 
     public static class SchemaValidator {
@@ -152,6 +153,22 @@ namespace QueryLite {
 
             foreach(Type type in types) {
                 validation.Add(ValidateFromType(type, database, dbSchema, validationSettings));
+            }
+            return validation;
+        }
+
+        public static List<TableValidation> ValidateTables(IDatabase database, List<ITable> tables, SchemaValidationSettings validationSettings) {
+
+            using DbConnection dbConnection = database.GetNewConnection();
+
+            Schema dbSchema = LoadSchema(database);
+
+            dbConnection.Close();
+
+            List<TableValidation> validation = new List<TableValidation>();
+
+            foreach(ITable table in tables) {
+                validation.Add(ValidateFromType(table.GetType(), database, dbSchema, validationSettings));
             }
             return validation;
         }
@@ -437,6 +454,10 @@ namespace QueryLite {
             if(validationSettings.ValidatePrimaryKeyAttributes) {
                 ValidatePrimaryKeyForTable(database, table, tableColumnProperties, dbTable, tableValidation);
             }
+
+            if(validationSettings.ValidateForeignKeyAttributes) {
+                ValidateForeignKeys(database, table, tableColumnProperties, dbTable, tableValidation);
+            }
         }
 
         private static void ValidatePrimaryKeyForTable(IDatabase database, ITable table, List<CodeColumnProperty> tableColumnProperties, DatabaseTable dbTable, TableValidation tableValidation) {
@@ -513,7 +534,77 @@ namespace QueryLite {
                         }
                         break;
                     }
-                }                
+                }
+            }
+        }
+
+        private static void ValidateForeignKeys(IDatabase database, ITable table, List<CodeColumnProperty> tableColumnProperties, DatabaseTable dbTable, TableValidation tableValidation) {
+
+            HashSet<CodeColumnProperty> hasValidationError = new HashSet<CodeColumnProperty>();
+
+            //Check that database foreign keys exists in the code table
+            foreach(DatabaseColumn dbColumn in dbTable.Columns) {
+
+                foreach(ForeignKey foreignKey in dbColumn.ForeignKeys) {
+
+                    foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
+
+                        if(string.Compare(columnProperty.Column.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0) {
+
+                            if(columnProperty.ForeignKeyAttributes.Length == 0) {
+                                tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', should have a '{nameof(ForeignKeyAttribute<ITable>)}' for the foreign key constraint '{foreignKey.ConstraintName}'");
+                                hasValidationError.Add(columnProperty);
+                            }
+                            else {
+
+                                bool foreignKeyExistsInCode = false;
+
+                                foreach(IForeignKeyAttribute attr in columnProperty.ForeignKeyAttributes) { //Validate all foreign key attributes in the code definition
+
+                                    if(string.Compare(attr.Name, foreignKey.ConstraintName, ignoreCase: true) == 0) {
+                                        foreignKeyExistsInCode = true;
+                                        break;
+                                    }
+                                }
+                                if(!foreignKeyExistsInCode) {
+                                    tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', the database foreign key '{foreignKey.ConstraintName}' is not defined against the code column property");
+                                    hasValidationError.Add(columnProperty);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //Check foreign key in code exists in the database table
+            foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
+
+                if(hasValidationError.Contains(columnProperty) || columnProperty.ForeignKeyAttributes.Length == 0) {
+                    continue;
+                }
+
+                foreach(DatabaseColumn dbColumn in dbTable.Columns) {
+
+                    if(string.Compare(columnProperty.Column.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0) {
+
+                        foreach(IForeignKeyAttribute attr in columnProperty.ForeignKeyAttributes) {
+
+                            bool foundForeignKeyInDatabase = false;
+
+                            foreach(ForeignKey dbForeignKey in dbColumn.ForeignKeys) {
+
+                                if(string.Compare(dbForeignKey.ConstraintName, attr.Name, ignoreCase: true) == 0) {
+                                    foundForeignKeyInDatabase = true;
+                                    break;
+                                }
+                            }
+                            if(!foundForeignKeyInDatabase) {
+                                tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', the foreign key attribute {nameof(ForeignKeyAttribute<ITable>)} name '{attr.Name}' does not exist in the database");
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -538,7 +629,18 @@ namespace QueryLite {
                     }
                     else {
                         PrimaryKeyAttribute[] primaryKeyAttributes = (PrimaryKeyAttribute[])property.GetCustomAttributes(typeof(PrimaryKeyAttribute), inherit: false);
-                        columns.Add(new CodeColumnProperty(property.Name, (IColumn)column, primaryKeyAttributes));
+
+                        IForeignKeyAttribute[] obj = (IForeignKeyAttribute[])property.GetCustomAttributes(typeof(IForeignKeyAttribute), inherit: false);
+
+                        List<IForeignKeyAttribute> foreignKeyAttributes = new List<IForeignKeyAttribute>();
+
+                        foreach(Attribute propAttr in property.GetCustomAttributes()) {
+
+                            if(propAttr is IForeignKeyAttribute foreignKeyAttr) {
+                                foreignKeyAttributes.Add(foreignKeyAttr);
+                            }
+                        }
+                        columns.Add(new CodeColumnProperty(property.Name, (IColumn)column, primaryKeyAttributes, foreignKeyAttributes.ToArray()));
                     }
                 }
             }
@@ -547,14 +649,16 @@ namespace QueryLite {
 
         private class CodeColumnProperty {
 
-            public CodeColumnProperty(string propertyName, IColumn column, PrimaryKeyAttribute[] primaryKeyAttributes) {
+            public CodeColumnProperty(string propertyName, IColumn column, PrimaryKeyAttribute[] primaryKeyAttributes, IForeignKeyAttribute[] foreignKeyAttributes) {
                 PropertyName = propertyName;
                 Column = column;
                 PrimaryKeyAttributes = primaryKeyAttributes;
+                ForeignKeyAttributes = foreignKeyAttributes;
             }
             public string PropertyName { get; }
             public IColumn Column { get; }
             public PrimaryKeyAttribute[] PrimaryKeyAttributes { get; }
+            public IForeignKeyAttribute[] ForeignKeyAttributes { get; }
         }
 
         private static Type ConvertToAdoType(Type type) {

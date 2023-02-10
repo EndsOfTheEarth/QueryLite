@@ -204,12 +204,13 @@ namespace QueryLite.DbSchema {
                 TableKey tableKey = new TableKey(row.Constraint_schema, row.ccuTable_name);
                 DatabaseTable foreignKeyTable = tableLookup[tableKey];
 
-                if(column.IsForeignKey != false || column.ForeignKeyTable != null) {
-                    throw new Exception($"{nameof(column)} already has a foreign key set. This might be a bug. Column Name {column}");
-                }
+                //if(column.IsForeignKey != false || column.ForeignKeyTable != null) {
+                //    throw new Exception($"{nameof(column)} already has a foreign key set. This might be a bug. Column Name {column}");
+                //}
                 column.IsForeignKey = true;
-                column.ForeignKeyConstraintName = row.Constraint_Name;
-                column.ForeignKeyTable = foreignKeyTable;
+
+                column.IsForeignKey = true;
+                column.ForeignKeys.Add(new ForeignKey(row.Constraint_Name, foreignKeyTable));
             }
         }
 

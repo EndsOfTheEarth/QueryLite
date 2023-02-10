@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -108,13 +109,25 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void RunSchemaValidator() {
 
-            SchemaValidationSettings settings = new SchemaValidationSettings() { ValidatePrimaryKeyAttributes = true };
+            SchemaValidationSettings settings = new SchemaValidationSettings() {
+                ValidatePrimaryKeyAttributes = true,
+                ValidateForeignKeyAttributes = true
+            };
 
-            TableValidation validation = SchemaValidator.ValidateTable(TestDatabase.Database, AllTypesTable.Instance, settings);
+            List<ITable> tables = new List<ITable>() {
+                AllTypesTable.Instance,
+                ParentTable.Instance,
+                ChildTable.Instance
+            };
 
-            List<string> messages = validation.ValidationMessages;
+            List<TableValidation> validation = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
-            Assert.AreEqual(messages.Count, 0);
+            Assert.AreEqual(validation.Count, 3);
+
+            foreach(TableValidation val in validation) {
+
+                Assert.AreEqual(val.ValidationMessages.Count, 0);
+            }
         }
 
         [TestMethod]

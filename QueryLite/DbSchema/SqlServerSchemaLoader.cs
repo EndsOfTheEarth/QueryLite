@@ -224,12 +224,11 @@ namespace QueryLite.DbSchema {
                 TableKey tableKey = new TableKey(row.CONSTRAINT_SCHEMA, row.kcuTABLE_NAME);
                 DatabaseTable foreignKeyTable = tableLookup[tableKey];
 
-                if(column.IsForeignKey != false || column.ForeignKeyTable != null) {
-                    throw new Exception($"{nameof(column)} already has a foreign key set. This might be a bug. Column Name {column}");
-                }
+                //if(column.IsForeignKey != false || column.ForeignKeyTable != null) {
+                //    throw new Exception($"{nameof(column)} already has a foreign key set. This might be a bug. Column Name {column}");
+                //}
                 column.IsForeignKey = true;
-                column.ForeignKeyConstraintName = row.CONSTRAINT_NAME;
-                column.ForeignKeyTable = foreignKeyTable;
+                column.ForeignKeys.Add(new ForeignKey(row.CONSTRAINT_NAME, foreignKeyTable));
             }
         }
 
