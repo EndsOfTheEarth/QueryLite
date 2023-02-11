@@ -22,6 +22,7 @@
  * SOFTWARE.
  **/
 using System;
+using System.Diagnostics;
 
 namespace QueryLite {
 
@@ -70,6 +71,7 @@ namespace QueryLite {
     /// <summary>
     /// Represents a database table
     /// </summary>
+    [DebuggerDisplay("Schema: {SchemaName}, Table Name: {TableName}, Alias: {Alias}")]
     public abstract class ATable : ITable {
 
         public string SchemaName { get; }
