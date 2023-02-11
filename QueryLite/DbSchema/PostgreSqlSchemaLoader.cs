@@ -60,10 +60,8 @@ namespace QueryLite.DbSchema {
 
                 var row = query.Rows[index];
 
-                string description = string.Empty;  //TODO: Populate
-
                 if(!tableLookup.TryGetValue(row.Table_name, out DatabaseTable? databaseTable)) {
-                    databaseTable = new DatabaseTable(schema: row.Table_schema, tableName: row.Table_name, isView: row.Table_type == "VIEW", description: description);
+                    databaseTable = new DatabaseTable(schema: row.Table_schema, tableName: row.Table_name, isView: row.Table_type == "VIEW");
                     tableList.Add(databaseTable);
                     tableLookup.Add(databaseTable.TableName, databaseTable);
                 }
