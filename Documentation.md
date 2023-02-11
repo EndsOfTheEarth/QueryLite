@@ -731,14 +731,20 @@ Table definitions can be validated against a database. The validation checks for
 Here is a code example of calling the schema validation.
 
 ```C#
-List<TableValidation> validation = SchemaValidator.ValidateTablesInCurrentDomain(database);
+SchemaValidationSettings settings = new SchemaValidationSettings() {
+    ValidatePrimaryKeyAttributes = true,
+    ValidateForeignKeyAttributes = true,
+    ValidateMissingCodeTables = true
+};
+
+ValidationResult result = SchemaValidator.ValidateTablesInCurrentDomain(database, settings);
 
 //There are other methods like validating table in an Assembly e.g.
-//List<TableValidation> validation = SchemaValidator.ValidateTablesInAssembly(database, Assembly.GetCallingAssembly());
+//List<TableValidation> validation = SchemaValidator.ValidateTablesInAssembly(database, Assembly.GetCallingAssembly(), settings);
 
 StringBuilder output = new StringBuilder();
 
-foreach(TableValidation tableValidation in validation) {
+foreach(TableValidation tableValidation in result.TableValidation) {
 
     if(tableValidation.HasErrors) {
 
@@ -748,7 +754,7 @@ foreach(TableValidation tableValidation in validation) {
 
         output.AppendLine("Errors:").Append(Environment.NewLine);
 
-        foreach(var message in tableValidation.ValidationMessages) {
+        foreach(string message in tableValidation.ValidationMessages) {
             output.AppendLine(message);
         }
         output.Append(Environment.NewLine);

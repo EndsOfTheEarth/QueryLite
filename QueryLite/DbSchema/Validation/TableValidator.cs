@@ -53,19 +53,30 @@ namespace QueryLite {
 
         public required bool ValidatePrimaryKeyAttributes { get; init; }
         public required bool ValidateForeignKeyAttributes { get; init; }
+        public required bool ValidateMissingCodeTables { get; init; }
     }
 
+
+    public class ValidationResult {
+
+        public List<TableValidation> TableValidation { get; } = new List<TableValidation>();
+        public DatabaseSchema Schema { get; set; }
+
+        public ValidationResult(DatabaseSchema schema) {
+            Schema = schema;
+        }
+    }
     public static class SchemaValidator {
 
-        public static List<TableValidation> ValidateTablesInCurrentDomain(IDatabase database, SchemaValidationSettings validationSettings) {
+        public static ValidationResult ValidateTablesInCurrentDomain(IDatabase database, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
-            Schema dbSchema = LoadSchema(database);
+            DatabaseSchema dbSchema = LoadSchema(database);
 
             dbConnection.Close();
 
-            List<TableValidation> validation = new List<TableValidation>();
+            ValidationResult result = new ValidationResult(dbSchema);
 
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
@@ -88,22 +99,32 @@ namespace QueryLite {
                     //Ignore as some types cannot be loaded
                     TableValidation tableValidation = new TableValidation(tableType: null);
                     tableValidation.Add($"Warning: Unable to load the a type from the assembly '{assembly.FullName}'.{Environment.NewLine}{ex}");
-                    validation.Add(tableValidation);
+                    result.TableValidation.Add(tableValidation);
                 }
             }
 
+            List<ITable> codeTables = new List<ITable>();
+
             foreach(Type type in types) {
 
-                validation.Add(ValidateFromType(type, database, dbSchema, validationSettings));
+                result.TableValidation.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
+
+                if(table != null) {
+                    codeTables.Add(table);
+                }
             }
-            return validation;
+
+            if(validationSettings.ValidateMissingCodeTables) {
+                ValidateMissingCodeTables(dbSchema, codeTables, result);
+            }
+            return result;
         }
 
-        public static List<TableValidation> ValidateTablesInAssemblies(Assembly[] assemblies, IDatabase database, SchemaValidationSettings validationSettings) {
+        public static ValidationResult ValidateTablesInAssemblies(Assembly[] assemblies, IDatabase database, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
-            Schema dbSchema = LoadSchema(database);
+            DatabaseSchema dbSchema = LoadSchema(database);
 
             dbConnection.Close();
 
@@ -128,20 +149,30 @@ namespace QueryLite {
                 }
             }
 
-            List<TableValidation> validation = new List<TableValidation>();
+            ValidationResult result = new ValidationResult(dbSchema);
+
+            List<ITable> codeTables = new List<ITable>();
 
             foreach(Type type in types) {
 
-                validation.Add(ValidateFromType(type, database, dbSchema, validationSettings));
+                result.TableValidation.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
+
+                if(table != null) {
+                    codeTables.Add(table);
+                }
             }
-            return validation;
+
+            if(validationSettings.ValidateMissingCodeTables) {
+                ValidateMissingCodeTables(dbSchema, codeTables, result);
+            }
+            return result;
         }
 
-        public static List<TableValidation> ValidateTablesInAssembly(IDatabase database, Assembly assembly, SchemaValidationSettings validationSettings) {
+        public static ValidationResult ValidateTablesInAssembly(IDatabase database, Assembly assembly, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
-            Schema dbSchema = LoadSchema(database);
+            DatabaseSchema dbSchema = LoadSchema(database);
 
             dbConnection.Close();
 
@@ -149,42 +180,57 @@ namespace QueryLite {
                 .Select(type => type)
                 .Where(type => typeof(ITable).IsAssignableFrom(type) && type != typeof(ITable) && type != typeof(ATable)).ToList();
 
-            List<TableValidation> validation = new List<TableValidation>();
+            ValidationResult result = new ValidationResult(dbSchema);
+
+            List<ITable> codeTables = new List<ITable>();
 
             foreach(Type type in types) {
-                validation.Add(ValidateFromType(type, database, dbSchema, validationSettings));
+
+                result.TableValidation.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
+
+                if(table != null) {
+                    codeTables.Add(table);
+                }
             }
-            return validation;
+
+            if(validationSettings.ValidateMissingCodeTables) {
+                ValidateMissingCodeTables(dbSchema, codeTables, result);
+            }
+            return result;
         }
 
-        public static List<TableValidation> ValidateTables(IDatabase database, List<ITable> tables, SchemaValidationSettings validationSettings) {
+        public static ValidationResult ValidateTables(IDatabase database, List<ITable> tables, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
-            Schema dbSchema = LoadSchema(database);
+            DatabaseSchema dbSchema = LoadSchema(database);
 
             dbConnection.Close();
 
-            List<TableValidation> validation = new List<TableValidation>();
+            ValidationResult result = new ValidationResult(dbSchema);
 
             foreach(ITable table in tables) {
-                validation.Add(ValidateFromType(table.GetType(), database, dbSchema, validationSettings));
+                result.TableValidation.Add(ValidateFromType(table.GetType(), database, dbSchema, validationSettings, table: out _));
             }
-            return validation;
+
+            if(validationSettings.ValidateMissingCodeTables) {
+                ValidateMissingCodeTables(dbSchema, tables, result);
+            }
+            return result;
         }
 
         public static TableValidation ValidateTable(IDatabase database, ITable table, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
-            Schema dbSchema = LoadSchema(database);
+            DatabaseSchema dbSchema = LoadSchema(database);
 
             dbConnection.Close();
 
-            return ValidateFromType(table.GetType(), database, dbSchema, validationSettings);
+            return ValidateFromType(table.GetType(), database, dbSchema, validationSettings, table: out _);
         }
 
-        private static Schema LoadSchema(IDatabase database) {
+        private static DatabaseSchema LoadSchema(IDatabase database) {
 
             List<DatabaseTable> dbTables;
 
@@ -197,11 +243,10 @@ namespace QueryLite {
             else {
                 throw new Exception($"Unknown {nameof(DatabaseType)} == {database.DatabaseType}");
             }
-
-            return new Schema(dbTables);
+            return new DatabaseSchema(dbTables);
         }
 
-        private static TableValidation ValidateFromType(Type type, IDatabase database, Schema dbSchema, SchemaValidationSettings validationSettings) {
+        private static TableValidation ValidateFromType(Type type, IDatabase database, DatabaseSchema dbSchema, SchemaValidationSettings validationSettings, out ITable? table) {
 
             FieldInfo? instanceField1 = type.GetField("Instance1");
 
@@ -221,7 +266,7 @@ namespace QueryLite {
                 tableValidation.Add($"Table does not have a static field or property called 'Instance' or 'Instance1' which returns an instance of the code table");
             }
 
-            ITable? table = null;
+            table = null;
 
             if(instanceField1 != null) {
                 table = (ITable?)instanceField1.GetValue(null);
@@ -240,7 +285,7 @@ namespace QueryLite {
             return tableValidation;
         }
 
-        private static List<DatabaseTable> FindMatchingSchemaTables(IDatabase database, ITable table, Schema dbSchema) {
+        private static List<DatabaseTable> FindMatchingSchemaTables(IDatabase database, ITable table, DatabaseSchema dbSchema) {
 
             List<DatabaseTable> foundTables = new List<DatabaseTable>();
 
@@ -258,7 +303,7 @@ namespace QueryLite {
             return foundTables;
         }
 
-        public static void Validate(IDatabase database, ITable table, Schema dbSchema, TableValidation tableValidation, SchemaValidationSettings validationSettings) {
+        public static void Validate(IDatabase database, ITable table, DatabaseSchema dbSchema, TableValidation tableValidation, SchemaValidationSettings validationSettings) {
 
             if(string.IsNullOrWhiteSpace(table.SchemaName)) {
                 tableValidation.Add($"Table schema name cannot be null or empty in code");
@@ -604,6 +649,33 @@ namespace QueryLite {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, List<ITable> tables, ValidationResult validationResult) {
+
+            Dictionary<string, ITable> codeTableLookup = new Dictionary<string, ITable>(StringComparer.OrdinalIgnoreCase);
+
+            foreach(ITable codeTable in tables) {
+
+                string key = $"{codeTable.SchemaName}~~{codeTable.TableName}";
+
+                if(!codeTableLookup.TryAdd(key, codeTable)) {
+                    throw new Exception($"Table schema name and table name are not unique. Table: {codeTable.SchemaName}.{codeTable.TableName}");
+                }
+            }
+            
+            foreach(DatabaseTable dbTable in dbSchema.Tables) {
+
+                string key = $"{dbTable.Schema}~~{dbTable.TableName}";
+
+                if(!codeTableLookup.ContainsKey(key)) {
+
+                    TableValidation validation = new TableValidation(tableType: null);
+
+                    validation.Add($"Code table definition is missing for the database table: '{dbTable.Schema}.{dbTable.TableName}'");
+                    validationResult.TableValidation.Add(validation);
                 }
             }
         }

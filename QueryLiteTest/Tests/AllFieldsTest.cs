@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.DbSchema;
+using QueryLite.DbSchema.Tables;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -111,7 +113,8 @@ namespace QueryLiteTest.Tests {
 
             SchemaValidationSettings settings = new SchemaValidationSettings() {
                 ValidatePrimaryKeyAttributes = true,
-                ValidateForeignKeyAttributes = true
+                ValidateForeignKeyAttributes = true,
+                ValidateMissingCodeTables = true
             };
 
             List<ITable> tables = new List<ITable>() {
@@ -120,11 +123,11 @@ namespace QueryLiteTest.Tests {
                 ChildTable.Instance
             };
 
-            List<TableValidation> validation = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
+            ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
-            Assert.AreEqual(validation.Count, 3);
+            Assert.AreEqual(result.TableValidation.Count, 3);
 
-            foreach(TableValidation val in validation) {
+            foreach(TableValidation val in result.TableValidation) {
 
                 Assert.AreEqual(val.ValidationMessages.Count, 0);
             }
