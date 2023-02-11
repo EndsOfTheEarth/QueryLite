@@ -23,6 +23,7 @@
  **/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace QueryLite {
 
@@ -83,6 +84,7 @@ namespace QueryLite {
         bool Enclose { get; }
     }
 
+    [DebuggerDisplay("Column Name: {ColumnName}, .net Type: {Type.FullName}, IsNullable: {IsNullable}, Length: {Length}, IsPrimaryKey: {IsPrimaryKey}")]
     public abstract class AColumn<TYPE> : IColumn where TYPE : notnull {
 
         /// <summary>
