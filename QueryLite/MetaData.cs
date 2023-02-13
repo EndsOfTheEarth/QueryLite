@@ -22,6 +22,9 @@
  * SOFTWARE.
  **/
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite {
 
@@ -38,14 +41,102 @@ namespace QueryLite {
         }
     }
 
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class PrimaryKeyAttribute : Attribute {
+    
 
-        public string Name { get; }
+    public sealed class PrimaryKey {
 
-        public PrimaryKeyAttribute(string name) {
-            Name = name;
+        public PrimaryKey(ITable table, string constraintName, params IColumn[] columns) {
+
+            ArgumentException.ThrowIfNullOrEmpty(constraintName);
+
+            if(columns.Length == 0) {
+                throw new ArgumentException($"{nameof(columns)} must contain at least one column");
+            }
+
+            foreach(IColumn column in columns) {
+
+                if(column.Table != table) {
+                    throw new Exception($"{nameof(column)} parent table must be the same table object as the {nameof(table)} parameter");
+                }
+            }
+            Table = table;
+            ConstraintName = constraintName;
+            Columns = columns;
         }
+        public ITable Table { get; }
+        public string ConstraintName { get; }
+        public IColumn[] Columns { get; }
+    }
+
+    public sealed class ForeignKey {
+
+        public ForeignKey(ITable table, string constraintName, params ForeignKeyReference[] columnReferences) {
+
+            ArgumentException.ThrowIfNullOrEmpty(constraintName);
+
+            if(columnReferences.Length == 0) {
+                throw new ArgumentException($"{nameof(columnReferences)} must contain at least one column reference");
+            }
+            Table = table;
+            ConstraintName = constraintName;
+        }
+        public ITable Table { get; }
+        public string ConstraintName { get; }
+        public List<ForeignKeyReference> ColumnReferences { get; } = new List<ForeignKeyReference>();
+
+        public ForeignKey References<TYPE>(AColumn<TYPE> foreignKeyColumn, AColumn<TYPE> primaryKeyColumn) where TYPE : notnull {
+            ColumnReferences.Add(new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn));
+            return this;
+        }
+    }
+
+
+    public sealed class UniqueConstraint {
+
+        public UniqueConstraint(ITable table, string constraintName, params IColumn[] columns) {
+
+            ArgumentException.ThrowIfNullOrEmpty(constraintName);
+
+            if(columns.Length == 0) {
+                throw new ArgumentException($"{nameof(columns)} must contain at least one column");
+            }
+
+            foreach(IColumn column in columns) {
+
+                if(column.Table != table) {
+                    throw new Exception($"{nameof(column)} parent table must be the same table object as the {nameof(table)} parameter");
+                }
+            }
+            Table = table;
+            ConstraintName = constraintName;
+            Columns = columns;
+        }
+        public ITable Table { get; }
+        public string ConstraintName { get; }
+        public IColumn[] Columns { get; }
+    }
+
+
+
+
+    //[AttributeUsage(AttributeTargets.Property)]
+    //public sealed class PrimaryKeyAttribute : Attribute {
+
+    //    public string Name { get; }
+
+    //    public PrimaryKeyAttribute(string name) {
+    //        Name = name;
+    //    }
+    //}
+
+    public class ForeignKeyReference {
+
+        public ForeignKeyReference(IColumn foreignKeyColumn, IColumn primaryKeyColumn) {
+            ForeignKeyColumn = foreignKeyColumn;
+            PrimaryKeyColumn = primaryKeyColumn;
+        }
+        public IColumn ForeignKeyColumn { get; }
+        public IColumn PrimaryKeyColumn { get; }
     }
 
     public interface IForeignKeyAttribute {

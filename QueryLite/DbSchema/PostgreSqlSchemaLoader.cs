@@ -108,6 +108,12 @@ namespace QueryLite.DbSchema {
 
         private static void SetPrimaryKeys(List<DatabaseTable> tableList, IDatabase database) {
 
+            Dictionary<TableKey, DatabaseTable> dbTableLookup = new Dictionary<TableKey, DatabaseTable>();
+
+            foreach(DatabaseTable table in tableList) {
+                dbTableLookup.Add(new TableKey(table.Schema, table.TableName), table);
+            }
+
             TableConstraintsTable tableConstraints = TableConstraintsTable.Instance;
             KeyColumnUsageTable keyColumnUsage = KeyColumnUsageTable.Instance;
 
@@ -127,28 +133,22 @@ namespace QueryLite.DbSchema {
                     tableConstraints.Constraint_name == keyColumnUsage.Constraint_name
                 )
                 .Where(tableConstraints.Constraint_type == "PRIMARY KEY" & keyColumnUsage.Ordinal_position.IsNotNull)
+                .OrderBy(keyColumnUsage.Ordinal_position)
                 .Execute(database, TimeoutLevel.ShortSelect);
 
-            Dictionary<TableColumnKey, string> isColumnAPrimaryKeyLookup = new Dictionary<TableColumnKey, string>();
+            foreach(var row in result.Rows) {
 
-            for(int index = 0; index < result.Rows.Count; index++) {
+                DatabaseTable table = dbTableLookup[new TableKey(row.Table_schema, row.Table_name)];
 
-                var row = result.Rows[index];
+                if(table.PrimaryKey == null) {
+                    table.PrimaryKey = new DatabasePrimaryKey(constraintName: row.Constraint_Name);
+                }
+                table.PrimaryKey.ColumnNames.Add(row.Column_name.Value);
 
-                TableColumnKey key = new TableColumnKey(row.Table_schema, row.Table_name, row.Column_name);
+                foreach(DatabaseColumn dbColumn in table.Columns) {
 
-                isColumnAPrimaryKeyLookup.Add(key, row.Constraint_Name);
-            }
-
-            foreach(DatabaseTable table in tableList) {
-
-                foreach(DatabaseColumn column in table.Columns) {
-
-                    TableColumnKey key = new TableColumnKey(table.Schema, table.TableName, column.ColumnName);
-
-                    if(isColumnAPrimaryKeyLookup.TryGetValue(key, out string? constraintName)) {
-                        column.IsPrimaryKey = true;
-                        column.PrimaryKeyConstraintName = constraintName;
+                    if(string.Compare(dbColumn.ColumnName.Value, row.Column_name.Value, ignoreCase: true) == 0) {
+                        dbColumn.IsPrimaryKey = true;
                     }
                 }
             }
@@ -208,7 +208,7 @@ namespace QueryLite.DbSchema {
                 column.IsForeignKey = true;
 
                 column.IsForeignKey = true;
-                column.ForeignKeys.Add(new ForeignKey(row.Constraint_Name, foreignKeyTable));
+                column.ForeignKeys.Add(new ForeignKey_(row.Constraint_Name, foreignKeyTable));
             }
         }
 

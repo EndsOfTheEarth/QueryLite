@@ -47,6 +47,12 @@ namespace QueryLite {
         /// Enclose table name in sql query. For example enclose table name with [] (square brackets) in sql server queries.
         /// </summary>
         bool Enclose { get; }
+
+        PrimaryKey? PrimaryKey { get; }
+
+        ForeignKey[] ForeignKeys { get; }
+
+        UniqueConstraint[] UniqueConstraints { get; }
     }
 
     /// <summary>
@@ -78,6 +84,10 @@ namespace QueryLite {
         public string TableName { get; }
         public bool Enclose { get; }
         public string Alias { get; }
+
+        public virtual PrimaryKey? PrimaryKey => null;
+        public virtual ForeignKey[] ForeignKeys => Array.Empty<ForeignKey>();
+        public virtual UniqueConstraint[] UniqueConstraints => Array.Empty<UniqueConstraint>();
 
         /// <summary>
         /// Abstract table
