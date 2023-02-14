@@ -212,14 +212,6 @@ namespace QueryLite.DbSchema {
                 .OrderBy(kcuTable.ORDINAL_POSITION)
                 .Execute(database);
 
-            /*
-            SELECT _A.table_schema,_A.table_name,_A.column_name,_9.constraint_schema,_B.CONSTRAINT_NAME,_9.table_name
-            FROM information_schema.constraint_column_usage AS _A
-            JOIN information_schema.REFERENTIAL_CONSTRAINTS AS _B ON ((_A.constraint_catalog = _B.CONSTRAINT_CATALOG AND _A.constraint_schema = _B.CONSTRAINT_SCHEMA) AND _A.constraint_name = _B.CONSTRAINT_NAME)
-            JOIN information_schema.key_column_usage AS _9 ON ((_B.CONSTRAINT_CATALOG = _9.constraint_catalog AND _B.CONSTRAINT_SCHEMA = _9.constraint_schema) AND _B.UNIQUE_CONSTRAINT_NAME = _9.constraint_name)
-            ORDER BY _9.ordinal_position
-            */
-
             Dictionary<ForeignK, DatabaseForeignKey> dbForeignKeyLookup = new Dictionary<ForeignK, DatabaseForeignKey>();
 
             for(int index = 0; index < result.Rows.Count; index++) {

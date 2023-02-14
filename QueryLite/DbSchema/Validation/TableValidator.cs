@@ -27,8 +27,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
-using static QueryLite.DbSchema.SqlServerSchemaLoader;
 
 namespace QueryLite {
 
@@ -57,7 +55,6 @@ namespace QueryLite {
         public required bool ValidateForeignKeyAttributes { get; init; }
         public required bool ValidateMissingCodeTables { get; init; }
     }
-
 
     public class ValidationResult {
 

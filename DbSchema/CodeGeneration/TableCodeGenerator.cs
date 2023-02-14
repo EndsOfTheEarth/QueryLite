@@ -23,7 +23,6 @@
  **/
 using System;
 using System.Collections.Generic;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
@@ -107,13 +106,6 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     code.Indent(2).Append("[Description(\"\")]").EndLine();
                 }
 
-                //if(column.IsForeignKey && settings.IncludeKeyAttributes) {
-
-                //    foreach(DatabaseForeignKey foreignKey in column.ForeignKeys) {
-                //        string pkTableTypeName = CodeHelper.GetTableName(foreignKey.ForeignKeyTable, includePostFix: true);
-                //        code.Indent(2).Append($"[ForeignKey<{pkTableTypeName}>(\"{foreignKey.ConstraintName}\")]").EndLine();
-                //    }
-                //}
                 count++;
                 code.Indent(2).Append($"public {columnClass}<{columnTypeName}> {columnName} {{ get; }}").EndLine();
 
