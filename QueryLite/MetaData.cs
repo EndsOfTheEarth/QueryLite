@@ -66,13 +66,9 @@ namespace QueryLite {
 
     public sealed class ForeignKey {
 
-        public ForeignKey(ITable table, string constraintName, params ForeignKeyReference[] columnReferences) {
+        public ForeignKey(ITable table, string constraintName) {
 
             ArgumentException.ThrowIfNullOrEmpty(constraintName);
-
-            if(columnReferences.Length == 0) {
-                throw new ArgumentException($"{nameof(columnReferences)} must contain at least one column reference");
-            }
             Table = table;
             ConstraintName = constraintName;
         }

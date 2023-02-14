@@ -81,19 +81,8 @@ namespace QueryLite.DbSchema {
                 List<ColumnAndDescription> columns = LoadTableColumns(table.TableClass, tableValidation, out List<ForeignKey> foreignKeys);
 
                 table.Columns.AddRange(columns);
-                table.ForeignKeys = foreignKeys;
 
                 tableLookup.Add(type, table);
-            }
-
-            foreach(Table table in tables) {
-
-                foreach(ForeignKey foreignKey in table.ForeignKeys) {
-
-                    if(tableLookup.TryGetValue(foreignKey.PrimaryKeyTableType, out Table? primaryKeyTable)) {
-                        foreignKey.PrimaryKeyTable = primaryKeyTable;
-                    }
-                }
             }
             tables.Sort((a, b) => a.TableClass.TableName.CompareTo(b.TableClass.TableName));
             return GenerateForTables(tables);
@@ -168,7 +157,7 @@ namespace QueryLite.DbSchema {
             html.Append($"<h2 id={id}>Table: ").Append(WebUtility.HtmlEncode(table.TableClass.TableName)).Append("</h2>");
             html.Append("<p>").Append(WebUtility.HtmlEncode(table.Description)).Append("</p>");
 
-            if(table.TableClass.PrimaryKey != null || table.ForeignKeys.Count > 0) {
+            if(table.TableClass.PrimaryKey != null || table.TableClass.ForeignKeys.Length > 0) {
 
                 int counter = 0;
 
@@ -193,47 +182,41 @@ namespace QueryLite.DbSchema {
                     html.Append("</td></table>");
                 }
 
-                html.Append($"<h3>Foreign Keys({table.ForeignKeys.Count})</h3><p>");
+                html.Append($"<h3>Foreign Keys({table.TableClass.ForeignKeys.Length})</h3><p>");
                 html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th><th style=\"text-align: center;\">References</th>");
 
-                foreach(ForeignKey foreignKey in table.ForeignKeys) {
+                foreach(ForeignKey foreignKey in table.TableClass.ForeignKeys) {
 
                     counter = 0;
 
-                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(foreignKey.Name)).Append("</td>");
+                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(foreignKey.ConstraintName)).Append("</td>");
                     html.Append("<td>");
 
-                    foreach(IColumn pkColumn in foreignKey.Columns) {
+                    foreach(ForeignKeyReference reference in foreignKey.ColumnReferences) {
 
                         if(counter > 0) {
                             html.Append(",&nbsp;");
                         }
-                        html.Append(WebUtility.HtmlEncode(pkColumn.ColumnName));
+                        html.Append(WebUtility.HtmlEncode(reference.ForeignKeyColumn.ColumnName));
                         counter++;
                     }
                     html.Append("</td>");
-
                     html.Append("<td>");
 
-                    if(foreignKey.PrimaryKeyTable != null) {
+                    counter = 0;
 
-                        html.Append(WebUtility.HtmlEncode(foreignKey.PrimaryKeyTable.TableClass.TableName));
+                    foreach(ForeignKeyReference reference in foreignKey.ColumnReferences) {
 
-                        html.Append('(');
-
-                        int pkCounter = 0;
-
-                        if(foreignKey.PrimaryKeyTable.TableClass.PrimaryKey != null) {
-
-                            foreach(IColumn pkColumn in foreignKey.PrimaryKeyTable.TableClass.PrimaryKey.Columns) {
-
-                                if(pkCounter > 0) {
-                                    html.Append(", ");
-                                }
-                                html.Append(pkColumn.ColumnName);
-                                pkCounter++;
-                            }
+                        if(counter == 0) {
+                            html.Append(WebUtility.HtmlEncode(reference.PrimaryKeyColumn.Table.TableName)).Append('(');
                         }
+                        if(counter > 0) {
+                            html.Append(",&nbsp;");
+                        }
+                        html.Append(WebUtility.HtmlEncode(reference.PrimaryKeyColumn.ColumnName));
+                        counter++;
+                    }
+                    if(foreignKey.ColumnReferences.Count > 0) {
                         html.Append(')');
                     }
                     html.Append("</td>");
@@ -314,7 +297,6 @@ namespace QueryLite.DbSchema {
             public ITable TableClass { get; }
             public string Description { get; set; } = string.Empty;
             public List<ColumnAndDescription> Columns { get; } = new List<ColumnAndDescription>();
-            public List<ForeignKey> ForeignKeys { get; set; } = new List<ForeignKey>();
 
             public Table(ITable table) {
                 TableClass = table;
@@ -332,18 +314,18 @@ namespace QueryLite.DbSchema {
             }
         }
 
-        private sealed class ForeignKey {
+        //private sealed class ForeignKey {
 
-            public string Name { get; }
-            public Type PrimaryKeyTableType { get; }
-            public List<IColumn> Columns { get; } = new List<IColumn>();
+        //    public string Name { get; }
+        //    public Type PrimaryKeyTableType { get; }
+        //    public List<IColumn> Columns { get; } = new List<IColumn>();
 
-            public Table? PrimaryKeyTable { get; set; }
+        //    public Table? PrimaryKeyTable { get; set; }
 
-            public ForeignKey(string name, Type primaryKeyTableType) {
-                Name = name;
-                PrimaryKeyTableType = primaryKeyTableType;
-            }
-        }
+        //    public ForeignKey(string name, Type primaryKeyTableType) {
+        //        Name = name;
+        //        PrimaryKeyTableType = primaryKeyTableType;
+        //    }
+        //}
     }
 }
