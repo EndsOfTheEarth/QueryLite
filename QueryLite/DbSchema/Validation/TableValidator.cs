@@ -51,8 +51,8 @@ namespace QueryLite {
 
     public class SchemaValidationSettings {
 
-        public required bool ValidatePrimaryKeyAttributes { get; init; }
-        public required bool ValidateForeignKeyAttributes { get; init; }
+        public required bool ValidatePrimaryKeys { get; init; }
+        public required bool ValidateForeignKeys { get; init; }
         public required bool ValidateMissingCodeTables { get; init; }
     }
 
@@ -492,11 +492,11 @@ namespace QueryLite {
                     }
                 }
             }
-            if(validationSettings.ValidatePrimaryKeyAttributes) {
+            if(validationSettings.ValidatePrimaryKeys) {
                 ValidatePrimaryKeyForTable(database, table, tableColumnProperties, dbTable, tableValidation);
             }
 
-            if(validationSettings.ValidateForeignKeyAttributes) {
+            if(validationSettings.ValidateForeignKeys) {
                 ValidateForeignKeys(database, table, tableColumnProperties, dbTable, tableValidation);
             }
         }
