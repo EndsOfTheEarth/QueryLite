@@ -191,7 +191,7 @@ namespace QueryLite.CodeGeneratorUI {
                         IncludeJsonAttributes = chkIncludeJsonAttributes.Checked,
                         UseIdentifiers = chkUseIdentifiers.Checked,
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
-                        IncludeKeyAttributes = chkIncludeKeyAttributes.Checked,
+                        IncludeConstraints = chkIncludeConstraints.Checked,
                         Namespaces = namespaces
                     };
 
@@ -253,7 +253,7 @@ namespace QueryLite.CodeGeneratorUI {
                         IncludeJsonAttributes = chkIncludeJsonAttributes.Checked,
                         UseIdentifiers = chkUseIdentifiers.Checked,
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
-                        IncludeKeyAttributes = chkIncludeKeyAttributes.Checked,
+                        IncludeConstraints = chkIncludeConstraints.Checked,
                         Namespaces = namespaces
                     };
 

@@ -23,8 +23,6 @@
  **/
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite {
 
@@ -40,8 +38,6 @@ namespace QueryLite {
             Description = description ?? string.Empty;
         }
     }
-
-    
 
     public sealed class PrimaryKey {
 
@@ -90,6 +86,15 @@ namespace QueryLite {
         }
     }
 
+    public sealed class ForeignKeyReference {
+
+        public ForeignKeyReference(IColumn foreignKeyColumn, IColumn primaryKeyColumn) {
+            ForeignKeyColumn = foreignKeyColumn;
+            PrimaryKeyColumn = primaryKeyColumn;
+        }
+        public IColumn ForeignKeyColumn { get; }
+        public IColumn PrimaryKeyColumn { get; }
+    }
 
     public sealed class UniqueConstraint {
 
@@ -114,45 +119,5 @@ namespace QueryLite {
         public ITable Table { get; }
         public string ConstraintName { get; }
         public IColumn[] Columns { get; }
-    }
-
-
-
-
-    //[AttributeUsage(AttributeTargets.Property)]
-    //public sealed class PrimaryKeyAttribute : Attribute {
-
-    //    public string Name { get; }
-
-    //    public PrimaryKeyAttribute(string name) {
-    //        Name = name;
-    //    }
-    //}
-
-    public class ForeignKeyReference {
-
-        public ForeignKeyReference(IColumn foreignKeyColumn, IColumn primaryKeyColumn) {
-            ForeignKeyColumn = foreignKeyColumn;
-            PrimaryKeyColumn = primaryKeyColumn;
-        }
-        public IColumn ForeignKeyColumn { get; }
-        public IColumn PrimaryKeyColumn { get; }
-    }
-
-    public interface IForeignKeyAttribute {
-
-        string Name { get; }
-        Type PrimaryKeyTable { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
-    public sealed class ForeignKeyAttribute<TABLE> : Attribute, IForeignKeyAttribute where TABLE : ITable {
-
-        public string Name { get; }
-        public Type PrimaryKeyTable { get; } = typeof(TABLE);
-
-        public ForeignKeyAttribute(string name) {
-            Name = name;
-        }
     }
 }

@@ -198,11 +198,12 @@ namespace QueryLite.DbSchema {
                 .Select(
                     result => new {
                         TABLE_SCHEMA = result.Get(ccuTable.TABLE_SCHEMA),
-                        ccuTABLE_NAME = result.Get(ccuTable.TABLE_NAME),
-                        COLUMN_NAME = result.Get(ccuTable.COLUMN_NAME),
+                        FOREIGN_KEY_TABLE_NAME = result.Get(ccuTable.TABLE_NAME),
+                        FOREIGN_KEY_COLUMN_NAME = result.Get(ccuTable.COLUMN_NAME),
                         CONSTRAINT_SCHEMA = result.Get(kcuTable.CONSTRAINT_SCHEMA),
                         CONSTRAINT_NAME = result.Get(rcuTable.CONSTRAINT_NAME),
-                        kcuTABLE_NAME = result.Get(kcuTable.TABLE_NAME)
+                        PRIMARY_KEY_TABLE_NAME = result.Get(kcuTable.TABLE_NAME),
+                        PRIMARY_KEY_COLUMN_NAME = result.Get(kcuTable.COLUMN_NAME)
                     }
                 )
                 .From(ccuTable)
@@ -211,22 +212,39 @@ namespace QueryLite.DbSchema {
                 .OrderBy(kcuTable.ORDINAL_POSITION)
                 .Execute(database);
 
+            /*
+            SELECT _A.table_schema,_A.table_name,_A.column_name,_9.constraint_schema,_B.CONSTRAINT_NAME,_9.table_name
+            FROM information_schema.constraint_column_usage AS _A
+            JOIN information_schema.REFERENTIAL_CONSTRAINTS AS _B ON ((_A.constraint_catalog = _B.CONSTRAINT_CATALOG AND _A.constraint_schema = _B.CONSTRAINT_SCHEMA) AND _A.constraint_name = _B.CONSTRAINT_NAME)
+            JOIN information_schema.key_column_usage AS _9 ON ((_B.CONSTRAINT_CATALOG = _9.constraint_catalog AND _B.CONSTRAINT_SCHEMA = _9.constraint_schema) AND _B.UNIQUE_CONSTRAINT_NAME = _9.constraint_name)
+            ORDER BY _9.ordinal_position
+            */
+
+            Dictionary<ForeignK, DatabaseForeignKey> dbForeignKeyLookup = new Dictionary<ForeignK, DatabaseForeignKey>();
+
             for(int index = 0; index < result.Rows.Count; index++) {
 
                 var row = result.Rows[index];
 
-                TableColumnKey columnKey = new TableColumnKey(row.TABLE_SCHEMA, row.ccuTABLE_NAME, row.COLUMN_NAME);
+                DatabaseTable foreignKeyTable = tableLookup[new TableKey(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME)];
 
-                DatabaseColumn column = columnLookup[columnKey];
+                ForeignK fk = new ForeignK(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.CONSTRAINT_NAME);
 
-                TableKey tableKey = new TableKey(row.CONSTRAINT_SCHEMA, row.kcuTABLE_NAME);
-                DatabaseTable foreignKeyTable = tableLookup[tableKey];
+                if(!dbForeignKeyLookup.TryGetValue(fk, out DatabaseForeignKey? foreignKey)) {
 
-                //if(column.IsForeignKey != false || column.ForeignKeyTable != null) {
-                //    throw new Exception($"{nameof(column)} already has a foreign key set. This might be a bug. Column Name {column}");
-                //}
-                column.IsForeignKey = true;
-                column.ForeignKeys.Add(new ForeignKey_(row.CONSTRAINT_NAME, foreignKeyTable));
+                    foreignKey = new DatabaseForeignKey(row.CONSTRAINT_NAME, foreignKeyTable);
+
+                    foreignKeyTable.ForeignKeys.Add(foreignKey);
+                    dbForeignKeyLookup.Add(fk, foreignKey);
+                }
+
+                TableColumnKey foreignKeyColumnKey = new TableColumnKey(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.FOREIGN_KEY_COLUMN_NAME);
+                DatabaseColumn foreignKeyColumn = columnLookup[foreignKeyColumnKey];
+
+                TableColumnKey referencedColumnKey = new TableColumnKey(row.TABLE_SCHEMA, row.PRIMARY_KEY_TABLE_NAME, row.PRIMARY_KEY_COLUMN_NAME);
+                DatabaseColumn primaryKeyColumn = columnLookup[referencedColumnKey];
+
+                foreignKey.References.Add(new DatabaseForeignKeyReference(foreignKeyColumn: foreignKeyColumn, primaryKeyColumn: primaryKeyColumn));
             }
         }
 
@@ -277,6 +295,32 @@ namespace QueryLite.DbSchema {
             }
             public override int GetHashCode() {
                 return (SchemaName.Value + "^" + TableName.Value + "^" + ColumnName.Value).GetHashCode();
+            }
+        }
+
+        private sealed class ForeignK {
+
+            private readonly StringKey<ISchemaName> SchemaName;
+            private readonly StringKey<ITableName> TableName;
+            private readonly string ConstraintName;
+
+            public ForeignK(StringKey<ISchemaName> schemaName, StringKey<ITableName> tableName, string constraintName) {
+                SchemaName = schemaName;
+                TableName = tableName;
+                ConstraintName = constraintName;
+            }
+
+            public override bool Equals(object? obj) {
+
+                if(obj is ForeignK key) {
+                    return SchemaName.Value == key.SchemaName.Value && TableName.Value == key.TableName.Value && key.ConstraintName == ConstraintName;
+                }
+                else {
+                    return false;
+                }
+            }
+            public override int GetHashCode() {
+                return (SchemaName.Value + "^" + TableName.Value).GetHashCode();
             }
         }
     }

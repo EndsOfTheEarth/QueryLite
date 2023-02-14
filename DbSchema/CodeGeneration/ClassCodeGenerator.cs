@@ -121,14 +121,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 classCode.Indent(2).Append($"public { columnTypeName }{ (column.IsNullable ? "?" : "") } { columnName } {{ get; set; }}");
 
-                if(!column.IsNullable && (!dotNetType.IsPrimitive || (column.IsPrimaryKey || column.IsForeignKey))) {
+                if(!column.IsNullable && (!dotNetType.IsPrimitive)) {
 
                     string? propSet = database.GetCSharpCodeSet(dotNetType);
 
-                    if(column.IsPrimaryKey || column.IsForeignKey) {
-                        //classCode.Append($" = ").Append(columnTypeName).Append(".NotSet;");
-                    }
-                    else if(propSet != null) {
+                    if(propSet != null) {
                         classCode.Append(" = ").Append(propSet).Append(";");
                     }
                 }

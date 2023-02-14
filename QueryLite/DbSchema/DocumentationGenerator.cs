@@ -303,28 +303,6 @@ namespace QueryLite.DbSchema {
                             description = descriptions[0].Description;
                         }
                         columns.Add(new ColumnAndDescription(column, description));
-
-                        object[] foreignKeyAttributes = property.GetCustomAttributes(typeof(ForeignKeyAttribute<>), inherit: false);
-
-                        if(foreignKeyAttributes.Length > 0) {
-
-                            ForeignKey? foreignKey = null;
-
-                            IForeignKeyAttribute foreignKeyAttribute = (IForeignKeyAttribute)foreignKeyAttributes[0];
-
-                            foreach(ForeignKey findKey in foreignKeys) {
-
-                                if(string.Compare(findKey.Name, foreignKeyAttribute.Name, ignoreCase: true) == 0) {
-                                    foreignKey = findKey;
-                                    break;
-                                }
-                            }
-                            if(foreignKey == null) {
-                                foreignKey = new ForeignKey(foreignKeyAttribute.Name, foreignKeyAttribute.PrimaryKeyTable);
-                                foreignKeys.Add(foreignKey);
-                            }
-                            foreignKey.Columns.Add(column);
-                        }
                     }
                 }
             }
