@@ -497,7 +497,7 @@ namespace QueryLite {
             }
 
             if(validationSettings.ValidateForeignKeys) {
-                ValidateForeignKeys(database, table, tableColumnProperties, dbTable, tableValidation);
+                ValidateForeignKeys( table, dbTable, tableValidation);
             }
         }
 
@@ -536,101 +536,62 @@ namespace QueryLite {
             }
         }
 
-        private static void ValidateForeignKeys(IDatabase database, ITable table, List<CodeColumnProperty> tableColumnProperties, DatabaseTable dbTable, TableValidation tableValidation) {
+        private static void ValidateForeignKeys(ITable table, DatabaseTable dbTable, TableValidation tableValidation) {
 
+            if(table.ForeignKeys.Length != dbTable.ForeignKeys.Count) {
+                tableValidation.Add($"The number of foreign keys defined in code is different from database. {table.ForeignKeys.Length} foreign keys are defined in code and {dbTable.ForeignKeys.Count} are defined in the database");
+            }
 
+            foreach(DatabaseForeignKey dbForeignKey in dbTable.ForeignKeys) {
 
-            throw new NotImplementedException();
+                ForeignKey? matchingForeignKey = null;
 
+                foreach(ForeignKey codeForeignKey in table.ForeignKeys) {
 
+                    if(string.Compare(dbForeignKey.ConstraintName, codeForeignKey.ConstraintName, ignoreCase: true) == 0) {
 
-            //dbTable.for
+                        if(matchingForeignKey != null) {
+                            tableValidation.Add($"The foreign key '{matchingForeignKey.ConstraintName}'is defined more than once in code");
+                            break;
+                        }
+                        matchingForeignKey = codeForeignKey;
+                    }   
+                }
+                if(matchingForeignKey == null) {
+                    tableValidation.Add($"The foreign key '{dbForeignKey.ConstraintName}' is not defined in code");
+                }
+                else {  //Compare referenced table and columns
 
+                    if(dbForeignKey.References.Count != matchingForeignKey.ColumnReferences.Count) {
+                        tableValidation.Add($"The foreign key constraint '{matchingForeignKey.ConstraintName}' has a different number of column references between the code and database");
+                    }
+                    else {
 
+                        for(int refIndex = 0; refIndex < dbForeignKey.References.Count; refIndex++) {
 
+                            DatabaseForeignKeyReference dbReference = dbForeignKey.References[refIndex];
 
+                            ForeignKeyReference codeReference = matchingForeignKey.ColumnReferences[refIndex];
 
+                            string dbFkColumnName = dbReference.ForeignKeyColumn.ColumnName.Value;
+                            string codeFkColumnName = codeReference.ForeignKeyColumn.ColumnName;
 
+                            if(string.Compare(dbFkColumnName, codeFkColumnName, ignoreCase: true) != 0) {
+                                tableValidation.Add($"The foreign key constraint '{matchingForeignKey.ConstraintName}' column references do not match. '{dbFkColumnName} != '{codeFkColumnName}'. (Note: Columns must be in the same order between the code and database)");
+                            }
+                            else {
 
+                                string dbPkTableName = dbReference.PrimaryKeyColumn.Table.TableName.Value;
+                                string codePkTableName = codeReference.PrimaryKeyColumn.Table.TableName;
 
-
-
-
-
-
-
-
-
-
-
-
-
-            //HashSet<CodeColumnProperty> hasValidationError = new HashSet<CodeColumnProperty>();
-
-            ////Check that database foreign keys exists in the code table
-            //foreach(DatabaseColumn dbColumn in dbTable.Columns) {
-
-            //    foreach(DatabaseForeignKey foreignKey in dbColumn.ForeignKeys) {
-
-            //        foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
-
-            //            if(string.Compare(columnProperty.Column.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0) {
-
-            //                if(columnProperty.ForeignKeyAttributes.Length == 0) {
-            //                    tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', should have a '{nameof(ForeignKeyAttribute<ITable>)}' for the foreign key constraint '{foreignKey.ConstraintName}'");
-            //                    hasValidationError.Add(columnProperty);
-            //                }
-            //                else {
-
-            //                    bool foreignKeyExistsInCode = false;
-
-            //                    foreach(IForeignKeyAttribute attr in columnProperty.ForeignKeyAttributes) { //Validate all foreign key attributes in the code definition
-
-            //                        if(string.Compare(attr.Name, foreignKey.ConstraintName, ignoreCase: true) == 0) {
-            //                            foreignKeyExistsInCode = true;
-            //                            break;
-            //                        }
-            //                    }
-            //                    if(!foreignKeyExistsInCode) {
-            //                        tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', the database foreign key '{foreignKey.ConstraintName}' is not defined against the code column property");
-            //                        hasValidationError.Add(columnProperty);
-            //                    }
-            //                }
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
-
-            ////Check foreign key in code exists in the database table
-            //foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
-
-            //    if(hasValidationError.Contains(columnProperty) || columnProperty.ForeignKeyAttributes.Length == 0) {
-            //        continue;
-            //    }
-
-            //    foreach(DatabaseColumn dbColumn in dbTable.Columns) {
-
-            //        if(string.Compare(columnProperty.Column.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0) {
-
-            //            foreach(IForeignKeyAttribute attr in columnProperty.ForeignKeyAttributes) {
-
-            //                bool foundForeignKeyInDatabase = false;
-
-            //                foreach(DatabaseForeignKey dbForeignKey in dbColumn.ForeignKeys) {
-
-            //                    if(string.Compare(dbForeignKey.ConstraintName, attr.Name, ignoreCase: true) == 0) {
-            //                        foundForeignKeyInDatabase = true;
-            //                        break;
-            //                    }
-            //                }
-            //                if(!foundForeignKeyInDatabase) {
-            //                    tableValidation.Add($"Table Column Property: '{columnProperty.PropertyName}', the foreign key attribute {nameof(ForeignKeyAttribute<ITable>)} name '{attr.Name}' does not exist in the database");
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+                                if(string.Compare(dbPkTableName, codePkTableName, ignoreCase: true) != 0) {
+                                    tableValidation.Add($"The foreign key constraint '{matchingForeignKey.ConstraintName}' column '{dbFkColumnName}' reference table is different between code and database. Table name: '{dbPkTableName}' != '{codePkTableName}'");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, List<ITable> tables, ValidationResult validationResult) {
