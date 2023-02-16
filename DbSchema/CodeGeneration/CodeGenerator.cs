@@ -28,14 +28,34 @@ using System.IO;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
-
     public class CodeGeneratorSettings {
 
+        /// <summary>
+        /// Include MessagePack attributes on class code properties
+        /// </summary>
         public required bool IncludeMessagePackAttributes { get; set; }
+
+        /// <summary>
+        /// Include Json attributes on class code properties
+        /// </summary>
         public required bool IncludeJsonAttributes { get; set; }
+
+        /// <summary>
+        /// Use key structs on primary key and foreign key columns e.g. GuidKey<>, IntKey<> etc.
+        /// </summary>
         public required bool UseIdentifiers { get; set; }
+
+        /// <summary>
+        /// Include table and column description attributes
+        /// </summary>
         public required bool IncludeDescriptions { get; set; }
-        public required bool IncludeKeyAttributes { get; set; }
+
+        /// <summary>
+        /// Include primary key, foreign key and unique constraints in table definition
+        /// </summary>
+        public required bool IncludeConstraints { get; set; }
+
+
         public required Namespaces Namespaces { get; set; }
     }
 
@@ -156,11 +176,28 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 defaultValue = "???";
             }
 
-            if(useIdentifiers && column.IsForeignKey) {
+            DatabaseTable? referencedTable = null;
 
-                isKeyColumn = true;
+            foreach(DatabaseForeignKey foreignKey in table.ForeignKeys) {
 
-                string keyName = $"I{GetTableName(column.ForeignKeys[0].ForeignKeyTable, includePostFix: false)}";
+                foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
+
+                    if(string.Compare(reference.ForeignKeyColumn.ColumnName.Value, column.ColumnName.Value, ignoreCase: true) == 0) {
+
+                        referencedTable = reference.PrimaryKeyColumn.Table;
+                        break;
+                    }
+                }
+                if(referencedTable != null) {
+                    break;
+                }
+            }
+
+            if(useIdentifiers && referencedTable != null) {
+
+                isKeyColumn = true;                
+
+                string keyName = $"I{GetTableName(referencedTable, includePostFix: false)}";
 
                 if(dotNetType == typeof(string)) {
                     columnType = $"StringKey<{keyName}>";

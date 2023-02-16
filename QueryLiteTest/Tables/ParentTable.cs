@@ -8,18 +8,16 @@
     public sealed class ParentTable : ATable {
 
         public static readonly ParentTable Instance = new ParentTable();
-        public static readonly ParentTable Instance2 = new ParentTable();
-        public static readonly ParentTable Instance3 = new ParentTable();
 
-        [PrimaryKey("pk_Parent")]
         public Column<GuidKey<IParent>> Id { get; }
+        public Column<GuidKey<IParent>> Id2 { get; }
 
-        public Column<Guid> Id2 { get; }
+        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Parent", Id);
 
         private ParentTable() : base(tableName: "Parent", schemaName: "dbo") {
 
-            Id = new Column<GuidKey<IParent>>(this, columnName: "Id", isPrimaryKey: true);
-            Id2 = new Column<Guid>(this, columnName: "Id2");
+            Id = new Column<GuidKey<IParent>>(this, columnName: "Id");
+            Id2 = new Column<GuidKey<IParent>>(this, columnName: "Id2");
         }
     }
 }

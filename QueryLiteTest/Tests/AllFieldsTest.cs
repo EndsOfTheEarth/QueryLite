@@ -112,8 +112,8 @@ namespace QueryLiteTest.Tests {
         public void RunSchemaValidator() {
 
             SchemaValidationSettings settings = new SchemaValidationSettings() {
-                ValidatePrimaryKeyAttributes = true,
-                ValidateForeignKeyAttributes = true,
+                ValidatePrimaryKeys = true,
+                ValidateForeignKeys = true,   //TODO set to true
                 ValidateMissingCodeTables = true
             };
 
