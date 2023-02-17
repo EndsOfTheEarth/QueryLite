@@ -121,7 +121,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 classCode.Indent(2).Append($"public { columnTypeName }{ (column.IsNullable ? "?" : "") } { columnName } {{ get; set; }}");
 
-                if(!column.IsNullable && (!dotNetType.IsPrimitive)) {
+                if(!column.IsNullable && (!dotNetType.IsPrimitive) && !isKeyColumn) {
 
                     string? propSet = database.GetCSharpCodeSet(dotNetType);
 

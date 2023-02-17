@@ -197,6 +197,7 @@ namespace QueryLite.CodeGeneratorUI {
             this.btnOutputAllToFile.TabIndex = 11;
             this.btnOutputAllToFile.Text = "Output All To File";
             this.btnOutputAllToFile.UseVisualStyleBackColor = true;
+            this.btnOutputAllToFile.Click += new System.EventHandler(this.BtnOutputAllToFile_Click);
             // 
             // txtNamespace
             // 
@@ -252,7 +253,7 @@ namespace QueryLite.CodeGeneratorUI {
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(1218, 863);
+            this.btnClose.Location = new System.Drawing.Point(1216, 863);
             this.btnClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(107, 38);
@@ -273,7 +274,7 @@ namespace QueryLite.CodeGeneratorUI {
             this.txtCode.Name = "txtCode";
             this.txtCode.ReadOnly = true;
             this.txtCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtCode.Size = new System.Drawing.Size(1319, 764);
+            this.txtCode.Size = new System.Drawing.Size(1317, 764);
             this.txtCode.TabIndex = 10;
             this.txtCode.WordWrap = false;
             // 
