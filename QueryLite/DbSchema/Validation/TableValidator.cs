@@ -438,7 +438,7 @@ namespace QueryLite {
 
             foreach(PropertyInfo tableProperty in tableProperties) {
 
-                if(tableProperty.Name == nameof(table.PrimaryKey) || tableProperty.Name == nameof(table.ForeignKeys) || tableProperty.Name == nameof(table.UniqueConstraints)) {
+                if(tableProperty.Name == nameof(table.PrimaryKey) || tableProperty.Name == nameof(table.ForeignKeys)) {
                     continue;
                 }
 

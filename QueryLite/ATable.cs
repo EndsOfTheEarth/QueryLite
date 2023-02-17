@@ -51,8 +51,6 @@ namespace QueryLite {
         PrimaryKey? PrimaryKey { get; }
 
         ForeignKey[] ForeignKeys { get; }
-
-        UniqueConstraint[] UniqueConstraints { get; }
     }
 
     /// <summary>
@@ -87,7 +85,6 @@ namespace QueryLite {
 
         public virtual PrimaryKey? PrimaryKey => null;
         public virtual ForeignKey[] ForeignKeys => Array.Empty<ForeignKey>();
-        public virtual UniqueConstraint[] UniqueConstraints => Array.Empty<UniqueConstraint>();
 
         /// <summary>
         /// Abstract table
