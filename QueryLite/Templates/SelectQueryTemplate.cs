@@ -53,7 +53,7 @@ namespace QueryLite {
         public IList<IField> SelectFields { get; private set; }
         public int? TopRows { get; private set; }
         public ITable? FromTable { get; private set; }
-        public SqlServerHint[]? Hints { get; private set; }
+        public SqlServerTableHint[]? Hints { get; private set; }
         public IList<IJoin>? Joins { get; private set; }
         public ICondition? WhereCondition { get; private set; }
         public ISelectable[]? GroupByFields { get; private set; }
@@ -63,6 +63,9 @@ namespace QueryLite {
         public ForType? ForType { get; private set; } = null;
         public ITable[]? OfTables { get; private set; } = null;
         public WaitType? WaitType { get; private set; } = null;
+
+        public string? OptionLabelName { get; private set; } = null;
+        public SqlServerQueryOption[]? Options { get; private set; } = null;
 
         public SelectQueryTemplate(Func<IResultRow, RESULT> selectFunction) {
             SelectFunction = selectFunction;
@@ -84,7 +87,7 @@ namespace QueryLite {
             return this;
         }
 
-        public IJoin<RESULT> With(params SqlServerHint[] hints) {
+        public IJoin<RESULT> With(params SqlServerTableHint[] hints) {
             Hints = hints;
             return this;
         }
@@ -129,10 +132,31 @@ namespace QueryLite {
             return this;
         }
 
-        public IExecute<RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
+        public IOption<RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
             ForType = forType;
             OfTables = ofTables;
             WaitType = waitType;
+            return this;
+        }
+
+        public IExecute<RESULT> Option(params SqlServerQueryOption[] options) {
+
+            if(options.Length == 0) {
+                throw new ArgumentException($"{nameof(options)} cannot be empty");
+            }
+            Options = options;
+            return this;
+        }
+
+        public IExecute<RESULT> Option(string labelName, params SqlServerQueryOption[] options) {
+
+            ArgumentException.ThrowIfNullOrEmpty(labelName);
+
+            if(options.Length == 0) {
+                throw new ArgumentException($"{nameof(options)} cannot be empty");
+            }
+            OptionLabelName = labelName;
+            Options = options;
             return this;
         }
 
@@ -287,7 +311,7 @@ namespace QueryLite {
             SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
             template.ParentUnion = this;
             ChildUnion = template;
-            ChildUnionType = QueryLite.UnionType.Union;
+            ChildUnionType = UnionType.Union;
             return template;
         }
 

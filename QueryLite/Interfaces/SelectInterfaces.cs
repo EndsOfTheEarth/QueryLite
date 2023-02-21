@@ -88,10 +88,10 @@ namespace QueryLite {
         /// </summary>
         /// <param name="hints"></param>
         /// <returns></returns>
-        public IJoin<RESULT> With(params SqlServerHint[] hints);
+        public IJoin<RESULT> With(params SqlServerTableHint[] hints);
     }
 
-    public enum SqlServerHint {
+    public enum SqlServerTableHint {
         KEEPIDENTITY,
         KEEPDEFAULTS,
         HOLDLOCK,
@@ -169,7 +169,7 @@ namespace QueryLite {
         IOrderBy<RESULT> Having(ICondition condition);
     }
 
-    public interface IOrderBy<RESULT> : IExecute<RESULT> {
+    public interface IOrderBy<RESULT> : IFor<RESULT> {
 
         /// <summary>
         /// Order by clause
@@ -193,7 +193,7 @@ namespace QueryLite {
         ITop<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc);
     }
 
-    public interface IFor<RESULT> : IExecute<RESULT> {
+    public interface IFor<RESULT> : IOption<RESULT> {
 
         /// <summary>
         /// FOR caluse. PostgreSql only
@@ -202,7 +202,24 @@ namespace QueryLite {
         /// <param name="ofTables"></param>
         /// <param name="waitType"></param>
         /// <returns></returns>
-        IExecute<RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType);
+        IOption<RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType);
+    }
+
+    public interface IOption<RESULT> : IExecute<RESULT> {
+
+        /// <summary>
+        /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will ignore these table hints and execute without them.
+        /// </summary>
+        /// <param name="hints"></param>
+        /// <returns></returns>
+        IExecute<RESULT> Option(params SqlServerQueryOption[] options);
+
+        /// <summary>
+        /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will ignore these table hints and execute without them.
+        /// </summary>
+        /// <param name="hints"></param>
+        /// <returns></returns>
+        IExecute<RESULT> Option(string labelName, params SqlServerQueryOption[] options);
     }
 
     public enum ForType {
@@ -220,6 +237,16 @@ namespace QueryLite {
         Union,
         UnionAll
     }
+
+    public enum SqlServerQueryOption {
+        HASH_JOIN,
+        LOOP_JOIN,
+        MERGE_JOIN,
+        FORCE_ORDER,
+        FORCE_EXTERNALPUSHDOWN,
+        DISABLE_EXTERNALPUSHDOWN
+    }
+
     public interface IExecute<RESULT> {
 
         /// <summary>
