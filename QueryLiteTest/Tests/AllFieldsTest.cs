@@ -1167,11 +1167,12 @@ namespace QueryLiteTest.Tests {
                     }
                 )
                 .From(allTypesTable1)
-                .With(SqlServerHint.UPDLOCK, SqlServerHint.SERIALIZABLE)
+                .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
                 .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id)
                 .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
                 .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new IntKey<AllTypes>(928756923))
                 .Where(allTypesTable1.Id == allTypes.Id)
+                .Option(labelName: "Label 1", SqlServerQueryOption.FORCE_ORDER)
                 .Execute(TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 1);

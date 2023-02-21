@@ -106,7 +106,7 @@ Note: There are some differences in behavour between the two databases behaviour
   - PostgreSqls type - TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time 
   - Sql Servers DATETIMEOFFSET returns in the timezone it was saved as
 * Some of the query syntax is database specific
-  - Table Hints eg. WITH(UPDLOCK) are specific to Sql Server 
+  - Table and query hints eg. WITH(UPDLOCK) and OPTION(...) are specific to Sql Server 
   - FOR(ForType forType, ITable[] ofTables, WaitType waitType) syntax is specific to PostgreSql
   - Delete Join syntax is only supported on Sql Server
 
@@ -613,6 +613,58 @@ foreach(var row in result.Rows) {
 
     string companyName = row.CompanyName;
     int stringLength = row.StringLength;
+}
+```
+
+## Sql Server Table And Query Hints
+
+Query Lite supports a subset of the Sql Server table and query hint syntax. Note: This syntax will be ignored if the database is not an instanace of Sql Server.
+
+
+```C#
+ShipperTable shipperTable = ShipperTable.Instance;
+
+var result = Query
+   .Select(
+       row => CompanyName = row.Get(shipperTable.CompanyName)
+   )
+   .From(shipperTable)
+   .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
+   .Option(labelName: "Lable 1", SqlServerQueryOption.FORCE_ORDER)
+   .Execute(_northwindDatabase);
+```
+
+These are the supported table and query hints:
+
+```C#
+public enum SqlServerTableHint {
+    KEEPIDENTITY,
+    KEEPDEFAULTS,
+    HOLDLOCK,
+    IGNORE_CONSTRAINTS,
+    IGNORE_TRIGGERS,
+    NOLOCK,
+    NOWAIT,
+    PAGLOCK,
+    READCOMMITTED,
+    READCOMMITTEDLOCK,
+    READPAST,
+    REPEATABLEREAD,
+    ROWLOCK,
+    SERIALIZABLE,
+    SNAPSHOT,
+    TABLOCK,
+    TABLOCKX,
+    UPDLOCK,
+    XLOCK
+}
+public enum SqlServerQueryOption {
+    HASH_JOIN,
+    LOOP_JOIN,
+    MERGE_JOIN,
+    FORCE_ORDER,
+    FORCE_EXTERNALPUSHDOWN,
+    DISABLE_EXTERNALPUSHDOWN
 }
 ```
 

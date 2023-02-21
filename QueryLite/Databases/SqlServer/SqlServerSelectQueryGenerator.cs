@@ -148,7 +148,7 @@ namespace QueryLite.Databases.SqlServer {
 
                 int hintCount = 0;
 
-                foreach(SqlServerHint hint in template.Hints) {
+                foreach(SqlServerTableHint hint in template.Hints) {
 
                     if(hintCount > 0) {
                         sql.Append(',');
@@ -276,6 +276,54 @@ namespace QueryLite.Databases.SqlServer {
                         _ => throw new Exception($"Unknown { nameof(OrderBy) } type. Type: '{ field.OrderBy}'")
                     });
                 }
+            }
+
+            if(template.Options != null && template.Options.Length > 0) {
+
+                sql.Append(" OPTION (");
+
+                bool setComma = false;
+
+                if(!string.IsNullOrEmpty(template.OptionLabelName)) {
+
+                    sql.Append("LABEL = '").Append(Helpers.EscapeForSql(template.OptionLabelName)).Append('\'');
+                    setComma = true;
+                }
+
+                foreach(SqlServerQueryOption option in template.Options) {
+
+                    if(setComma) {
+                        sql.Append(',');
+                    }
+                    else {
+                        setComma = true;
+                    }
+
+                    switch(option) {
+
+                        case SqlServerQueryOption.HASH_JOIN:
+                            sql.Append("HASH JOIN");
+                            break;
+                        case SqlServerQueryOption.LOOP_JOIN:
+                            sql.Append("LOOP JOIN");
+                            break;
+                        case SqlServerQueryOption.MERGE_JOIN:
+                            sql.Append("MERGE JOIN");
+                            break;
+                        case SqlServerQueryOption.FORCE_ORDER:
+                            sql.Append("FORCE ORDER");
+                            break;
+                        case SqlServerQueryOption.FORCE_EXTERNALPUSHDOWN:
+                            sql.Append("FORCE EXTERNALPUSHDOWN");
+                            break;
+                        case SqlServerQueryOption.DISABLE_EXTERNALPUSHDOWN:
+                            sql.Append("DISABLE EXTERNALPUSHDOWN");
+                            break;
+                        default:
+                            throw new Exception($"Unknown {nameof(SqlServerQueryOption)}. Value = '{option}'");
+                    }
+                }
+                sql.Append(')');
             }
         }
     }
