@@ -208,7 +208,7 @@ namespace QueryLite.DbSchema {
                 )
                 .From(ccuTable)
                 .Join(rcuTable).On(ccuTable.CONSTRAINT_CATALOG == rcuTable.CONSTRAINT_CATALOG & ccuTable.CONSTRAINT_SCHEMA == rcuTable.CONSTRAINT_SCHEMA & ccuTable.CONSTRAINT_NAME == rcuTable.CONSTRAINT_NAME)
-                .Join(kcuTable).On(rcuTable.CONSTRAINT_CATALOG == kcuTable.CONSTRAINT_CATALOG & rcuTable.CONSTRAINT_SCHEMA == kcuTable.CONSTRAINT_SCHEMA & rcuTable.UNIQUE_CONSTRAINT_NAME == kcuTable.CONSTRAINT_NAME)
+                .Join(kcuTable).On(rcuTable.CONSTRAINT_CATALOG == kcuTable.CONSTRAINT_CATALOG & rcuTable.CONSTRAINT_SCHEMA == kcuTable.CONSTRAINT_SCHEMA & rcuTable.UNIQUE_CONSTRAINT_NAME == kcuTable.CONSTRAINT_NAME & ccuTable.COLUMN_NAME == kcuTable.COLUMN_NAME)
                 .OrderBy(kcuTable.ORDINAL_POSITION)
                 .Execute(database);
 

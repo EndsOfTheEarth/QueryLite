@@ -80,6 +80,10 @@ namespace QueryLite {
             ColumnReferences.Add(new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn));
             return this;
         }
+        public ForeignKey ReferencesNonMatching<TYPE_A, TYPE_B>(AColumn<TYPE_A> foreignKeyColumn, AColumn<TYPE_B> primaryKeyColumn) where TYPE_A : notnull where TYPE_B : notnull {
+            ColumnReferences.Add(new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn));
+            return this;
+        }
     }
 
     public sealed class ForeignKeyReference {

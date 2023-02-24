@@ -187,7 +187,7 @@ namespace QueryLite.DbSchema {
                 )
                 .From(tcTable)
                 .Join(kcuTable).On(tcTable.Table_schema == kcuTable.Table_schema & tcTable.Table_name == kcuTable.Table_name & tcTable.Constraint_name == kcuTable.Constraint_name)
-                .Join(ccuTable).On(tcTable.Constraint_schema == ccuTable.Constraint_schema & tcTable.Constraint_name == ccuTable.Constraint_name)
+                .Join(ccuTable).On(tcTable.Constraint_schema == ccuTable.Constraint_schema & tcTable.Constraint_name == ccuTable.Constraint_name & ccuTable.Column_name == kcuTable.Column_name)
                 .Where(tcTable.Constraint_type == "FOREIGN KEY")
                 .OrderBy(kcuTable.Ordinal_position)
                 .Execute(database, TimeoutLevel.ShortSelect);
