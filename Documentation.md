@@ -33,6 +33,7 @@
 - [Breakpoint Debugging](#breakpoint-debugging)
 - [Schema Validation](#schema-validation)
 - [Database Constraints](#database-constraints)
+- [Table Code Generation](#table-code-generation)
 - [Documentation Generator](#documentation-generator)
 
 ## Introduction
@@ -918,6 +919,11 @@ namespace Tables {
 }
 ```
 
+## Table Code Generation
+
+Query Lite has a UI application (Windows only) for generating table definitions from existing database schemas. This application can be launched by running `CodeGenerator.exe`.
+
+The code generator works well for common data types and simple key constrains but it struggles with more complex scenarios. So sometimes the generated code may need to be manually corrected.
 
 ## Documentation Generator
 
