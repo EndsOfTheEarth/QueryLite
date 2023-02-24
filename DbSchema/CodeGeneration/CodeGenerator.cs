@@ -95,7 +95,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
     public static class CodeHelper {
 
         public static string GetTableName(DatabaseTable table, bool includePostFix) {
-            string name = table.TableName.Value.Replace(" ", string.Empty) + (includePostFix ? "Table" : string.Empty);
+
+            string postFix = !table.IsView ? "Table" : "View";
+            string name = table.TableName.Value.Replace(" ", string.Empty) + (includePostFix ? postFix : string.Empty);
+
             return $"{char.ToUpper(name[0])}{name.Substring(startIndex: 1)}";
         }
         public static void GetColumnName(DatabaseTable table, DatabaseColumn column, bool useIdentifiers, out Type dotNetType, out string columnTypeName, out bool isKeyColumn) {

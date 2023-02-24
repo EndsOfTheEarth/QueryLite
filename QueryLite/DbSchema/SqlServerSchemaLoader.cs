@@ -329,9 +329,12 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("uniqueidentifier", typeof(Guid));
             _Lookup.Add("nvarchar", typeof(string));
             _Lookup.Add("varchar", typeof(string));
+            _Lookup.Add("xml", typeof(string));
             _Lookup.Add("nchar", typeof(string));
             _Lookup.Add("decimal", typeof(decimal));
+            _Lookup.Add("numeric", typeof(decimal));
             _Lookup.Add("money", typeof(decimal));
+            _Lookup.Add("smallmoney", typeof(decimal));
             _Lookup.Add("real", typeof(float));
             _Lookup.Add("float", typeof(double));
             _Lookup.Add("tinyint", typeof(bool));

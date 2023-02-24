@@ -76,6 +76,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string name = columnName;
 
+            name = name.Replace('.', '_').Replace(' ', '_');
+
+            if(name.Length > 0 && Char.IsNumber(name[0])) {
+                name = "_" + name;
+            }
+
             if(Prefix.Length > 0 && columnName.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase)) {
                 name = columnName[Prefix.Length..];
             }
