@@ -190,50 +190,57 @@ namespace QueryLite.DbSchema {
                 }
             }
 
-            ConstraintColumnUsageTable ccuTable = ConstraintColumnUsageTable.Instance;
-            ReferentialConstraintsTable rcuTable = ReferentialConstraintsTable.Instance;
-            KeyColumnUsageTable kcuTable = KeyColumnUsageTable.Instance;
+            ReferentialConstraintsTable rcTable = ReferentialConstraintsTable.Instance;
+            KeyColumnUsageTable foreignKcuTable = KeyColumnUsageTable.Instance;
+            KeyColumnUsageTable uniqueKcuTable = KeyColumnUsageTable.Instance2;
 
             var result = Query
                 .Select(
-                    result => new {
-                        TABLE_SCHEMA = result.Get(ccuTable.TABLE_SCHEMA),
-                        FOREIGN_KEY_TABLE_NAME = result.Get(ccuTable.TABLE_NAME),
-                        FOREIGN_KEY_COLUMN_NAME = result.Get(ccuTable.COLUMN_NAME),
-                        CONSTRAINT_SCHEMA = result.Get(kcuTable.CONSTRAINT_SCHEMA),
-                        CONSTRAINT_NAME = result.Get(rcuTable.CONSTRAINT_NAME),
-                        PRIMARY_KEY_TABLE_NAME = result.Get(kcuTable.TABLE_NAME),
-                        PRIMARY_KEY_COLUMN_NAME = result.Get(kcuTable.COLUMN_NAME)
+                    row => new {
+                        FOREIGN_KEY_TABLE_SCHEMA = row.Get(foreignKcuTable.TABLE_SCHEMA),
+                        FOREIGN_KEY_TABLE_NAME = row.Get(foreignKcuTable.TABLE_NAME),
+                        FOREIGN_KEY_CONSTRAINT_NAME = row.Get(rcTable.CONSTRAINT_NAME),
+                        FOREIGN_KEY_COLUMN_NAME = row.Get(foreignKcuTable.COLUMN_NAME),
+                        UNIQUE_KEY_TABLE_SCHEMA = row.Get(uniqueKcuTable.TABLE_SCHEMA),
+                        UNIQUE_KEY_TABLE_NAME = row.Get(uniqueKcuTable.TABLE_NAME),
+                        UNIQUE_KEY_COLUMN_NAME = row.Get(uniqueKcuTable.COLUMN_NAME)
                     }
                 )
-                .From(ccuTable)
-                .Join(rcuTable).On(ccuTable.CONSTRAINT_CATALOG == rcuTable.CONSTRAINT_CATALOG & ccuTable.CONSTRAINT_SCHEMA == rcuTable.CONSTRAINT_SCHEMA & ccuTable.CONSTRAINT_NAME == rcuTable.CONSTRAINT_NAME)
-                .Join(kcuTable).On(rcuTable.CONSTRAINT_CATALOG == kcuTable.CONSTRAINT_CATALOG & rcuTable.CONSTRAINT_SCHEMA == kcuTable.CONSTRAINT_SCHEMA & rcuTable.UNIQUE_CONSTRAINT_NAME == kcuTable.CONSTRAINT_NAME & ccuTable.COLUMN_NAME == kcuTable.COLUMN_NAME)
-                .OrderBy(kcuTable.ORDINAL_POSITION)
+                .From(rcTable)
+                .Join(foreignKcuTable).On(
+                    rcTable.CONSTRAINT_CATALOG == foreignKcuTable.CONSTRAINT_CATALOG &
+                    rcTable.CONSTRAINT_SCHEMA == foreignKcuTable.CONSTRAINT_SCHEMA &
+                    rcTable.CONSTRAINT_NAME == foreignKcuTable.CONSTRAINT_NAME
+                )
+                .Join(uniqueKcuTable).On(
+                    rcTable.UNIQUE_CONSTRAINT_CATALOG == uniqueKcuTable.CONSTRAINT_CATALOG &
+                    rcTable.UNIQUE_CONSTRAINT_SCHEMA == uniqueKcuTable.CONSTRAINT_SCHEMA &
+                    rcTable.UNIQUE_CONSTRAINT_NAME == uniqueKcuTable.CONSTRAINT_NAME &
+                    foreignKcuTable.ORDINAL_POSITION == uniqueKcuTable.ORDINAL_POSITION
+                )
+                .OrderBy(rcTable.CONSTRAINT_NAME, foreignKcuTable.ORDINAL_POSITION)
                 .Execute(database);
 
             Dictionary<ForeignK, DatabaseForeignKey> dbForeignKeyLookup = new Dictionary<ForeignK, DatabaseForeignKey>();
 
-            for(int index = 0; index < result.Rows.Count; index++) {
+            foreach(var row in result.Rows) {
 
-                var row = result.Rows[index];
-
-                DatabaseTable foreignKeyTable = tableLookup[new TableKey(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME)];
-
-                ForeignK fk = new ForeignK(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.CONSTRAINT_NAME);
+                ForeignK fk = new ForeignK(row.FOREIGN_KEY_TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.FOREIGN_KEY_CONSTRAINT_NAME);
 
                 if(!dbForeignKeyLookup.TryGetValue(fk, out DatabaseForeignKey? foreignKey)) {
 
-                    foreignKey = new DatabaseForeignKey(row.CONSTRAINT_NAME, foreignKeyTable);
+                    DatabaseTable foreignKeyTable = tableLookup[new TableKey(row.FOREIGN_KEY_TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME)];
+
+                    foreignKey = new DatabaseForeignKey(row.FOREIGN_KEY_CONSTRAINT_NAME, foreignKeyTable);
 
                     foreignKeyTable.ForeignKeys.Add(foreignKey);
                     dbForeignKeyLookup.Add(fk, foreignKey);
                 }
 
-                TableColumnKey foreignKeyColumnKey = new TableColumnKey(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.FOREIGN_KEY_COLUMN_NAME);
+                TableColumnKey foreignKeyColumnKey = new TableColumnKey(row.FOREIGN_KEY_TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.FOREIGN_KEY_COLUMN_NAME);
                 DatabaseColumn foreignKeyColumn = columnLookup[foreignKeyColumnKey];
 
-                TableColumnKey referencedColumnKey = new TableColumnKey(row.TABLE_SCHEMA, row.PRIMARY_KEY_TABLE_NAME, row.PRIMARY_KEY_COLUMN_NAME);
+                TableColumnKey referencedColumnKey = new TableColumnKey(row.UNIQUE_KEY_TABLE_SCHEMA, row.UNIQUE_KEY_TABLE_NAME, row.UNIQUE_KEY_COLUMN_NAME);
                 DatabaseColumn primaryKeyColumn = columnLookup[referencedColumnKey];
 
                 foreignKey.References.Add(new DatabaseForeignKeyReference(foreignKeyColumn: foreignKeyColumn, primaryKeyColumn: primaryKeyColumn));

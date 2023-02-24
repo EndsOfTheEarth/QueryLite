@@ -26,6 +26,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
     public sealed class KeyColumnUsageTable : ATable {
 
         public static readonly KeyColumnUsageTable Instance = new KeyColumnUsageTable();
+        public static readonly KeyColumnUsageTable Instance2 = new KeyColumnUsageTable();
 
         public Column<string> CONSTRAINT_CATALOG { get; }
         public Column<StringKey<ISchemaName>> CONSTRAINT_SCHEMA { get; }
