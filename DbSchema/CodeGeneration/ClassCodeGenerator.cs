@@ -70,11 +70,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 CodeHelper.GetColumnName(table, column, useIdentifiers: settings.UseIdentifiers, dotNetType: out Type dotNetType, columnTypeName: out string columnTypeName, out bool isKeyColumn);
 
                 string nullable = column.IsNullable ? "?" : "";
-                string columnName = prefix.GetColumnName(column.ColumnName.Value);
+                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
 
                 string paramName = columnName.First().ToString().ToLower() + columnName.Substring(1);
 
-                if(columnName == paramName) {   //TODO: handle keywords
+                if(columnName == paramName || CodeHelper.IsCSharpKeyword(paramName)) {
                     paramName = "_" + paramName;
                 }
 
@@ -87,13 +87,18 @@ namespace QueryLite.DbSchema.CodeGeneration {
             classCode.Append(constructor.ToString());
             classCode.Indent(2).Append("}").EndLine();
             classCode.EndLine();
-            classCode.Indent(2).Append("public ").Append(className).Append("(").Append(className).Append("Table table, IResultRow result) {").EndLine();
+
+            string tableOrViewClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+            string tableOrViewParamName = table.IsView ? "view" : "table";
+
+            classCode.Indent(2).Append("public ").Append(className).Append("(").Append(tableOrViewClassName).Append(" ").Append(tableOrViewParamName).Append(", IResultRow result) {").EndLine();
 
             CodeBuilder constructor2 = new CodeBuilder();
 
             foreach(DatabaseColumn column in table.Columns) {
-                string columnName = prefix.GetColumnName(column.ColumnName.Value);
-                constructor2.Indent(3).Append($"{columnName} = result.Get(table.{columnName});").EndLine();
+                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
+                constructor2.Indent(3).Append($"{columnName} = result.Get({tableOrViewParamName}.{prefix.GetColumnName(column.ColumnName.Value, className: null)});").EndLine();
             }            
             classCode.Append(constructor2.ToString());
             classCode.Indent(2).Append("}").EndLine();
@@ -106,7 +111,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 CodeHelper.GetColumnName(table, column, useIdentifiers: settings.UseIdentifiers, dotNetType: out Type dotNetType, columnTypeName: out string columnTypeName, out bool isKeyColumn);
 
-                string columnName = prefix.GetColumnName(column.ColumnName.Value);
+                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
 
                 if(settings.IncludeMessagePackAttributes || settings.IncludeJsonAttributes) {
                     classCode.EndLine();

@@ -170,6 +170,14 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 columnType = "DateTimeOffset";
                 defaultValue = "";
             }
+            else if(dotNetType == typeof(DateOnly)) {
+                columnType = "DateOnly";
+                defaultValue = "";
+            }
+            else if(dotNetType == typeof(TimeOnly)) {
+                columnType = "TimeOnly";
+                defaultValue = "";
+            }
             else if(dotNetType == typeof(StringKey<IUnknownType>)) {
                 columnType = "__UnknownType__";
                 defaultValue = "__UnknownType__";
@@ -256,6 +264,90 @@ namespace QueryLite.DbSchema.CodeGeneration {
             else {
                 columnTypeName = columnType;
             }
+        }
+
+        private readonly static Dictionary<string, object?> _KeyWordLookup = new Dictionary<string, object?>() {
+            { "abstract", null },
+            { "as", null },
+            { "base", null },
+            { "bool", null },
+            { "break", null },
+            { "byte", null },
+            { "case", null },
+            { "catch", null },
+            { "char", null },
+            { "checked", null },
+            { "class", null },
+            { "const", null },
+            { "continue", null },
+            { "decimal", null },
+            { "default", null },
+            { "delegate", null },
+            { "do", null },
+            { "double", null },
+            { "else", null },
+            { "enum", null },
+            { "event", null },
+            { "explicit", null },
+            { "extern", null },
+            { "false", null },
+            { "finally", null },
+            { "fixed", null },
+            { "float", null },
+            { "for", null },
+            { "foreach", null },
+            { "goto", null },
+            { "if", null },
+            { "implicit", null },
+            { "in", null },
+            { "int", null },
+            { "interface", null },
+            { "internal", null },
+            { "is", null },
+            { "lock", null },
+            { "long", null },
+            { "namespace", null },
+            { "new", null },
+            { "null", null },
+            { "object", null },
+            { "operator", null },
+            { "out", null },
+            { "override", null },
+            { "params", null },
+            { "private", null },
+            { "protected", null },
+            { "public", null },
+            { "readonly", null },
+            { "ref", null },
+            { "return", null },
+            { "sbyte", null },
+            { "sealed", null },
+            { "short", null },
+            { "sizeof", null },
+            { "stackalloc", null },
+            { "static", null },
+            { "string", null },
+            { "struct", null },
+            { "switch", null },
+            { "this", null },
+            { "throw", null },
+            { "true", null },
+            { "try", null },
+            { "typeof", null },
+            { "uint", null },
+            { "ulong", null },
+            { "unchecked", null },
+            { "unsafe", null },
+            { "ushort", null },
+            { "using", null },
+            { "virtual", null },
+            { "void", null },
+            { "volatile", null },
+            { "while", null }
+        };
+
+        public static bool IsCSharpKeyword(string text) {
+            return _KeyWordLookup.ContainsKey(text.Trim());
         }
     }
 }

@@ -72,11 +72,15 @@ namespace QueryLite.DbSchema.CodeGeneration {
             Prefix = prefix.Length > 1 ? prefix.ToString() : string.Empty;
         }
 
-        public string GetColumnName(string columnName) {
+        public string GetColumnName(string columnName, string? className) {
 
             string name = columnName;
 
             name = name.Replace('.', '_').Replace(' ', '_');
+
+            if(className != null && (name == className || CodeHelper.IsCSharpKeyword(columnName))) {
+                name = name + "_";
+            }
 
             if(name.Length > 0 && Char.IsNumber(name[0])) {
                 name = "_" + name;

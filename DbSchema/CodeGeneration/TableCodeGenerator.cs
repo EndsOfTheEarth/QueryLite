@@ -96,7 +96,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 string columnClass = !column.IsNullable ? "Column" : "NullableColumn";
 
-                string columnName = prefix.GetColumnName(column.ColumnName.Value);
+                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
                 if(count > 0 && settings.IncludeDescriptions) {
                     code.EndLine();
@@ -131,8 +131,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     foreach(DatabaseColumn column in table.Columns) {
 
                         if(string.Compare(columnName, column.ColumnName.Value, ignoreCase: true) == 0) {
-
-                            code.Append(", ").Append(prefix.GetColumnName(column.ColumnName.Value));
+                            code.Append(", ").Append(prefix.GetColumnName(column.ColumnName.Value, className: tableClassName));
                             break;
                         }
                     }
@@ -157,12 +156,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                     foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
                         
-                        string foreignKeyColumnName = prefix.GetColumnName(reference.ForeignKeyColumn.ColumnName.Value);
+                        string foreignKeyColumnName = prefix.GetColumnName(reference.ForeignKeyColumn.ColumnName.Value, className: tableClassName);
 
                         TablePrefix primaryKeyTablePrefix = new TablePrefix(reference.PrimaryKeyColumn.Table);
 
                         string primaryKeyTable = CodeHelper.GetTableName(reference.PrimaryKeyColumn.Table, includePostFix: true);
-                        string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(reference.PrimaryKeyColumn.ColumnName.Value);
+                        string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(reference.PrimaryKeyColumn.ColumnName.Value, className: null);
 
                         code.Append($".References({foreignKeyColumnName}, {primaryKeyTable}.Instance.{primaryKeyColumnName})");
                     }
