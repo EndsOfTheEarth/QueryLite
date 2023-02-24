@@ -26,8 +26,8 @@
 - [Functions](#functions)
 - [Custom Functions](#custom-functions)
 - [Supported Data Types](#supported-data-types)
-- [Not Supported Data Types](#not-supported-data-types)
 - [Key Columns](#key-columns)
+- [Not Supported Data Types](#not-supported-data-types)
 - [Transaction Isolation Levels](#transaction-isolation-levels)
 - [Debugging](#debugging)
 - [Breakpoint Debugging](#breakpoint-debugging)
@@ -716,13 +716,6 @@ public enum SqlServerQueryOption {
 | Column&lt;Enum>               | TINYINT, SMALLINT, INT | SMALLINT, INT               |        |
 | Column&lt;BoolValue&lt;TYPE>> | TINYINT                | BOOLEAN                     |        |
 
-
-## Not Supported Data Types
-
-Most non-common or custom database types are not supported. If the type can be read in using a basic .net type (e.g. `int`, `string`, `decimal`) in `ado.net` (e.g. `reader.GetString(ordinal)`) then it should work.
-
-Sql server types like `hierarchyid` and `geography` are known to not work.
-
 ## Key Columns
 
 Key columns can be used for primary and foreign key columns. They help make joins, conditions and values type safe.
@@ -761,6 +754,13 @@ public sealed class ShipperTable : ATable {
     }
 }
 ```
+
+## Not Supported Data Types
+
+Most non-common or custom database types are not supported. If the type can be read in using a basic .net type (e.g. `int`, `string`, `decimal`) in `ado.net` (e.g. `reader.GetString(ordinal)`) then it should work.
+
+Sql server types like `hierarchyid` and `geography` are known to not work.
+
 
 ## Transaction Isolation Levels
 
