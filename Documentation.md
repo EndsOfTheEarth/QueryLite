@@ -21,10 +21,12 @@
 - [Delete Query](#delete-query)
 - [Delete Join Query (MSSQL Only)](#delete-join-query)
 - [Truncate Query](#truncate-query)
+- [Supported Operators](#supported-operators)
 - [String Like Condition](#string-like-condition)
 - [Functions](#functions)
 - [Custom Functions](#custom-functions)
 - [Supported Data Types](#supported-data-types)
+- [Not Supported Data Types](#not-supported-data-types)
 - [Key Columns](#key-columns)
 - [Transaction Isolation Levels](#transaction-isolation-levels)
 - [Debugging](#debugging)
@@ -533,7 +535,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 }
 ```
 
-## Condition Operators
+## Supported Operators
 
 | Description | Operator / Method | Example | Notes
 | -------- | ----------- | ------- | ---------|
@@ -549,7 +551,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 | `IN(...)` | `In(...)` | `.Where(productTable.Name.In("abc", "efg", "hijk"))` |
 | `NOT IN(...)` | `NotIn(...)` | `.Where(productTable.Name.NotIn("abc", "efg", "hijk"))` |
 | `LIKE` | `Like(ILike<TYPE> like)` | `.Where(productTable.Name.Like(new StringLike("%abc%"))` |
-| `NOT LIKE` | `NotLike(ILike<TYPE> like)` | `.Where(productTable.Name.Like(new StringLike("%abc%"))` |
+| `NOT LIKE` | `NotLike(ILike<TYPE> like)` | `.Where(productTable.Name.NotLike(new StringLike("%abc%"))` |
 
 
 
@@ -713,6 +715,13 @@ public enum SqlServerQueryOption {
 | Column&lt;DateTimeOffset>     | DATETIMEOFFSET         | TIMESTAMP WITH TIME ZONE    | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
 | Column&lt;Enum>               | TINYINT, SMALLINT, INT | SMALLINT, INT               |        |
 | Column&lt;BoolValue&lt;TYPE>> | TINYINT                | BOOLEAN                     |        |
+
+
+## Not Supported Data Types
+
+Most non-common or custom database types are not supported. If the type can be read in using a basic .net type (e.g. `int`, `string`, `decimal`) in `ado.net` (e.g. `reader.GetString(ordinal)`) then it should work.
+
+Sql server types like `hierarchyid` and `geography` are known to not work.
 
 ## Key Columns
 
