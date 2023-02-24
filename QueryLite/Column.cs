@@ -134,6 +134,20 @@ namespace QueryLite {
             return new GenericCondition(columnA, Operator.NOT_EQUALS, columnB);
         }
 
+        /// <summary>
+        /// Returns an equals condition for two columns that have different types in code.
+        /// </summary>
+        public ICondition SqlEquals_NonTypeSafe<TYPEB>(TYPEB columnB) where TYPEB : notnull {
+            return new GenericCondition(this, Operator.EQUALS, columnB);
+        }
+
+        /// <summary>
+        /// Returns a not equals condition for two columns that have different types in code.
+        /// </summary>
+        public ICondition SqlNotEquals_NonTypeSafe<TYPEB>(TYPEB columnB) where TYPEB : notnull {
+            return new GenericCondition(this, Operator.NOT_EQUALS, columnB);
+        }
+
         public static ICondition operator ==(AColumn<TYPE> columnA, TYPE value) {
             return new GenericCondition(columnA, Operator.EQUALS, value);
         }

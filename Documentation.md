@@ -533,13 +533,33 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 }
 ```
 
+## Condition Operators
+
+| Description | Operator / Method | Example | Notes
+| -------- | ----------- | ------- | ---------|
+| Equals operator |`==` AND `!=`    | `.Where(orderTable.ShipPostalCode == "abc")` | 
+| Equals operator |`==` AND `!=`     | `.LeftJoin(unitMeasureTable).On(productTable.SizeUnitMeasureCode == unitMeasureTable.UnitMeasureCode)` | Join two columns
+| Non Type Safe Equals   | Methods `SqlEquals_NonTypeSafe(...)` `SqlNotEquals_NonTypeSafe(...)` | `.Where(orderTable.CustomerID.SqlEquals_NonTypeSafe(10))` | NonTypeSafe methods can be used to work around compile errors caused by the database schema being too complex to be defined correctly in C# |
+| Math operators | `<` `<=` `>` `>=` | `.Where(productTable.ListPrice <= 10.0m)` |
+| `AND` | `&` | `.Where(productTable.Name == "abc" & productTable.ListPrice > 10.0m)` | |
+| `OR`  | `|` | `.Where(productTable.Name == "abc" | productTable.ListPrice > 10.0m)` | |
+| `AND` & `OR` | `&` `|` | `.Where((productTable.Name == "abc" | productTable.Name == "efg") & productTable.ListPrice > 10.0m)` | Note: Always surround mixed `AND` and `OR` C# operators with brackets to get the correct sql logic.|
+| `IS NULL` | `IsNull` | `.Where(productTable.Name.IsNull)`|
+| `IS NOT NULL` | `IsNotNull` | `.Where(productTable.Name.IsNotNull)` |
+| `IN(...)` | `In(...)` | `.Where(productTable.Name.In("abc", "efg", "hijk"))` |
+| `NOT IN(...)` | `NotIn(...)` | `.Where(productTable.Name.NotIn("abc", "efg", "hijk"))` |
+| `LIKE` | `Like(ILike<TYPE> like)` | `.Where(productTable.Name.Like(new StringLike("%abc%"))` |
+| `NOT LIKE` | `NotLike(ILike<TYPE> like)` | `.Where(productTable.Name.Like(new StringLike("%abc%"))` |
+
+
+
 ## String Like Condition
 
 ```C#
 OrdersTable orderTable = OrdersTable.Instance;
 
 var result = Query
-    .Select(row => new { Id = row.Get(orderTable.OrderID) })
+    .Select(row => row.Get(orderTable.OrderID)
     .From(orderTable)
     .Where(orderTable.ShipPostalCode.Like(new StringLike("%abc%")))
     .Execute(DB.Northwind);
