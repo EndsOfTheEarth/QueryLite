@@ -338,6 +338,10 @@ namespace QueryLite {
 
                     IColumn codeColumn = codeColumnProperty.Column;
 
+                    if(!codeColumn.Enclose && IsSqlKeyWord(database, codeColumn)) {
+                        tableValidation.Add($"{columnDetail}, column name '{codeColumn.ColumnName}' is an SQL keyword so the {nameof(codeColumn.Enclose)} property should be set to true on the column");
+                    }
+
                     Type dbNetType = dbColumn.DataType.DotNetType;
                     Type codeAdoType = ConvertToAdoType(codeColumn.Type);    //This is for the case with types like IntKey<> where the ado type is int
 
@@ -687,6 +691,17 @@ namespace QueryLite {
                 type = typeof(int);
             }
             return type;
+        }
+
+        private static bool IsSqlKeyWord(IDatabase database, IColumn column) {
+
+            if(database.DatabaseType == DatabaseType.SqlServer) {
+
+                if(string.Compare(column.ColumnName, "schema", ignoreCase: true) == 0) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
