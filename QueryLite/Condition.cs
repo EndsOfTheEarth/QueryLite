@@ -186,7 +186,7 @@ namespace QueryLite {
 
             sql.Append(Operator switch {
                 Operator.EQUALS => " = ",
-                Operator.NOT_EQUALS => " = ",
+                Operator.NOT_EQUALS => " != ",
                 Operator.GREATER_THAN => " > ",
                 Operator.GREATER_THAN_OR_EQUAL => " >= ",
                 Operator.LESS_THAN => " < ",

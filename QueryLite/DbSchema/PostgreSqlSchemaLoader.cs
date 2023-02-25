@@ -53,6 +53,7 @@ namespace QueryLite.DbSchema {
                 )
                 .From(tablesTable)
                 .Join(columnsTable).On(tablesTable.Table_schema == columnsTable.Table_schema & tablesTable.Table_name == columnsTable.Table_name)
+                .Where(tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") & tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema"))
                 .OrderBy(columnsTable.Ordinal_position)
                 .Execute(database);
 
@@ -132,10 +133,15 @@ namespace QueryLite.DbSchema {
                     tableConstraints.Table_name == keyColumnUsage.Table_name &
                     tableConstraints.Constraint_name == keyColumnUsage.Constraint_name
                 )
-                .Where(tableConstraints.Constraint_type == "PRIMARY KEY" & keyColumnUsage.Ordinal_position.IsNotNull)
+                .Where(
+                    tableConstraints.Constraint_type == "PRIMARY KEY" &
+                    keyColumnUsage.Ordinal_position.IsNotNull &
+                    tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
+                    tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                )
                 .OrderBy(keyColumnUsage.Ordinal_position)
                 .Execute(database, TimeoutLevel.ShortSelect);
-
+            
             foreach(var row in result.Rows) {
 
                 DatabaseTable table = dbTableLookup[new TableKey(row.Table_schema, row.Table_name)];
@@ -176,21 +182,26 @@ namespace QueryLite.DbSchema {
             var result = Query
                 .Select(
                     result => new {
-                        TABLE_SCHEMA = result.Get(kcuTable.Table_schema),
+                        FOREIGN_KEY_TABLE_SCHEMA = result.Get(kcuTable.Table_schema),
                         FOREIGN_KEY_TABLE_NAME = result.Get(kcuTable.Table_name),
                         FOREIGN_KEY_COLUMN_NAME = result.Get(kcuTable.Column_name),
                         CONSTRAINT_SCHEMA = result.Get(ccuTable.Constraint_schema),
                         CONSTRAINT_NAME = result.Get(kcuTable.Constraint_name),
-                        PRIMARY_KEY_TABLE_NAME = result.Get(ccuTable.Table_name),
-                        PRIMARY_KEY_COLUMN_NAME = result.Get(ccuTable.Column_name)
+                        UNIQUE_KEY_TABLE_SCHEMA = result.Get(ccuTable.Table_schema),
+                        UNIQUE_KEY_TABLE_NAME = result.Get(ccuTable.Table_name),
+                        UNIQUE_KEY_COLUMN_NAME = result.Get(ccuTable.Column_name)
                     }
                 )
                 .From(tcTable)
                 .Join(kcuTable).On(tcTable.Table_schema == kcuTable.Table_schema & tcTable.Table_name == kcuTable.Table_name & tcTable.Constraint_name == kcuTable.Constraint_name)
                 .Join(ccuTable).On(tcTable.Constraint_schema == ccuTable.Constraint_schema & tcTable.Constraint_name == ccuTable.Constraint_name & ccuTable.Column_name == kcuTable.Column_name)
-                .Where(tcTable.Constraint_type == "FOREIGN KEY")
+                .Where(
+                    tcTable.Constraint_type == "FOREIGN KEY" &
+                    tcTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
+                    tcTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                )
                 .OrderBy(kcuTable.Ordinal_position)
-                .Execute(database, TimeoutLevel.ShortSelect);
+                .Execute(database, TimeoutLevel.ShortSelect, Parameters.Off);
 
             Dictionary<ForeignK, DatabaseForeignKey> dbForeignKeyLookup = new Dictionary<ForeignK, DatabaseForeignKey>();
 
@@ -198,9 +209,9 @@ namespace QueryLite.DbSchema {
 
                 var row = result.Rows[index];
 
-                DatabaseTable foreignKeyTable = tableLookup[new TableKey(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME)];
+                DatabaseTable foreignKeyTable = tableLookup[new TableKey(row.FOREIGN_KEY_TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME)];
 
-                ForeignK fk = new ForeignK(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.CONSTRAINT_NAME);
+                ForeignK fk = new ForeignK(row.FOREIGN_KEY_TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.CONSTRAINT_NAME);
 
                 if(!dbForeignKeyLookup.TryGetValue(fk, out DatabaseForeignKey? foreignKey)) {
 
@@ -210,10 +221,10 @@ namespace QueryLite.DbSchema {
                     dbForeignKeyLookup.Add(fk, foreignKey);
                 }
 
-                TableColumnKey foreignKeyColumnKey = new TableColumnKey(row.TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.FOREIGN_KEY_COLUMN_NAME);
+                TableColumnKey foreignKeyColumnKey = new TableColumnKey(row.FOREIGN_KEY_TABLE_SCHEMA, row.FOREIGN_KEY_TABLE_NAME, row.FOREIGN_KEY_COLUMN_NAME);
                 DatabaseColumn foreignKeyColumn = columnLookup[foreignKeyColumnKey];
 
-                TableColumnKey referencedColumnKey = new TableColumnKey(row.TABLE_SCHEMA, row.PRIMARY_KEY_TABLE_NAME, row.PRIMARY_KEY_COLUMN_NAME);
+                TableColumnKey referencedColumnKey = new TableColumnKey(row.UNIQUE_KEY_TABLE_SCHEMA, row.UNIQUE_KEY_TABLE_NAME, row.UNIQUE_KEY_COLUMN_NAME);
                 DatabaseColumn primaryKeyColumn = columnLookup[referencedColumnKey];
 
                 foreignKey.References.Add(new DatabaseForeignKeyReference(foreignKeyColumn: foreignKeyColumn, primaryKeyColumn: primaryKeyColumn));
@@ -336,6 +347,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("_oid", typeof(uint));
             _Lookup.Add("oid", typeof(uint));
             _Lookup.Add("varchar", typeof(string));
+            _Lookup.Add("character", typeof(string));
             _Lookup.Add("bpchar", typeof(string));
             _Lookup.Add("text", typeof(string));
             _Lookup.Add("timestamp", typeof(DateTime));
@@ -349,6 +361,8 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("bigint", typeof(long));
             _Lookup.Add("double precision", typeof(double));
             _Lookup.Add("character varying", typeof(string));
+            _Lookup.Add("xml", typeof(string));
+            //_Lookup.Add("pg_lsn", typeof(long));
         }
         public static Type? GetDotNetType(string typeName) {
 
