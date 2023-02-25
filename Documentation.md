@@ -31,6 +31,7 @@
 - [Key Columns](#key-columns)
 - [Not Supported Data Types](#not-supported-data-types)
 - [Transaction Isolation Levels](#transaction-isolation-levels)
+- [Executing Custom SQL](#executing-custom-sql)
 - [Debugging](#debugging)
 - [Breakpoint Debugging](#breakpoint-debugging)
 - [Schema Validation](#schema-validation)
@@ -797,6 +798,27 @@ Isolation levels can be set on transactions. Please note that levels like 'Snaps
 ```C#
 using(Transaction transaction = new Transaction(DB.Northwind, IsolationLevel.ReadCommitted)) {
     ...
+    transaction.Commit();
+}
+```
+
+## Executing Custom SQL
+
+If you need to execute custom SQL / TSQL within an existing transaction, you can create an Ado `DbCommand` object `CreateCommand(...)` on the transaction. The command object will be returned with the tranaction and timeout setting populated.
+
+Note: Remember to correctly dispose of the command object.
+
+```C#
+using(Transaction transaction = new Transaction(database)) {
+
+    using DbCommand command = transaction.CreateCommand(timeout: TimeoutLevel.ShortSelect);
+
+    command.CommandText = $"SET IDENTITY_INSERT dbo.MyTable ON";
+    command.ExecuteNonQuery();
+
+    //
+    //  ....Other SQL etc....
+    //
     transaction.Commit();
 }
 ```

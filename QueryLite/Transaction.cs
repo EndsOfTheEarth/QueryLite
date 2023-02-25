@@ -82,6 +82,54 @@ namespace QueryLite {
         }
 
         /// <summary>
+        /// Opens or returns the existing underlying ado database connection associated with the transaction.
+        /// Note: The connection does not need to be explicitly closed or disposed as long as the transaction is committed, rolled back or disposed
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        //public DbConnection GetOrOpenUnderlyingConnection() {
+
+        //    DbTransaction? dbTransaction = GetTransaction(Database);
+
+        //    DbConnection dbConnection;
+
+        //    if(dbTransaction == null) {
+        //        dbConnection = Database.GetNewConnection();
+        //        dbConnection.Open();
+        //        SetTransaction(dbConnection, dbConnection.BeginTransaction(IsolationLevel));
+        //    }
+        //    else {
+        //        dbConnection = dbTransaction.Connection!;
+        //    }
+        //    return dbConnection;
+        //}
+
+        /// <summary>
+        /// Creates a new ado command from the transactions connection. Please note you will need to correctly dispose of this command object.
+        /// </summary>
+        /// <returns></returns>
+        public DbCommand CreateCommand(QueryTimeout timeout) {
+
+            DbTransaction? dbTransaction = GetTransaction(Database);
+
+            DbConnection dbConnection;
+
+            if(dbTransaction == null) {
+                dbConnection = Database.GetNewConnection();
+                dbConnection.Open();
+                SetTransaction(dbConnection, dbConnection.BeginTransaction(IsolationLevel));
+                dbTransaction = DbTransaction;
+            }
+            else {
+                dbConnection = dbTransaction.Connection!;
+            }
+            DbCommand command = dbConnection.CreateCommand();
+            command.Transaction = dbTransaction!;
+            command.CommandTimeout = timeout.Seconds;
+            return command;
+        }
+
+        /// <summary>
         /// Counter used to give each transaction a unique id mainly for debugging purposes
         /// </summary>
         private static ulong sCounter = 0;
