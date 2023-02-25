@@ -38,6 +38,9 @@ namespace QueryLite {
         public bool Get(Column<bool> column);
         public bool? Get(NullableColumn<bool> column);
 
+        public Bit Get(Column<Bit> column);
+        public Bit? Get(NullableColumn<Bit> column);
+
         public decimal Get(Column<decimal> column);
         public decimal? Get(NullableColumn<decimal> column);
 

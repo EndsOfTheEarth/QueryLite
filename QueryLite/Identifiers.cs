@@ -451,4 +451,19 @@ namespace QueryLite {
             return Value.ToString() ?? string.Empty;
         }
     }
+
+    public readonly struct Bit {
+
+        public readonly static Bit TRUE = new Bit(true);
+        public readonly static Bit FALSE = new Bit(false);
+
+        public bool Value { get; }
+
+        public Bit(bool value) {
+            Value = value;
+        }
+        public override string ToString() {
+            return Value ? "1" : "0";
+        }
+    }
 }

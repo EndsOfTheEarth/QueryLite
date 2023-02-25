@@ -23,6 +23,7 @@
  **/
 using System;
 using System.Collections.Generic;
+using System.Reflection.PortableExecutable;
 
 namespace QueryLite {
 
@@ -73,6 +74,16 @@ namespace QueryLite {
         }
 
         public bool? Get(NullableColumn<bool> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public Bit Get(Column<Bit> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public Bit? Get(NullableColumn<Bit> column) {
             Fields.Add(column);
             return default;
         }

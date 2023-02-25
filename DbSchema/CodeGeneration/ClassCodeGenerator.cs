@@ -92,13 +92,13 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string tableOrViewParamName = table.IsView ? "view" : "table";
 
-            classCode.Indent(2).Append("public ").Append(className).Append("(").Append(tableOrViewClassName).Append(" ").Append(tableOrViewParamName).Append(", IResultRow result) {").EndLine();
+            classCode.Indent(2).Append("public ").Append(className).Append("(").Append(tableOrViewClassName).Append(" ").Append(tableOrViewParamName).Append(", IResultRow row) {").EndLine();
 
             CodeBuilder constructor2 = new CodeBuilder();
 
             foreach(DatabaseColumn column in table.Columns) {
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
-                constructor2.Indent(3).Append($"{columnName} = result.Get({tableOrViewParamName}.{prefix.GetColumnName(column.ColumnName.Value, className: null)});").EndLine();
+                constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{prefix.GetColumnName(column.ColumnName.Value, className: null)});").EndLine();
             }            
             classCode.Append(constructor2.ToString());
             classCode.Indent(2).Append("}").EndLine();

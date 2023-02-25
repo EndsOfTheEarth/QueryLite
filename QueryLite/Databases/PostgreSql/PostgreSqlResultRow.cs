@@ -102,6 +102,25 @@ namespace QueryLite.Databases.PostgreSql {
             return _reader.GetByte(_ordinal) == 1;
         }
 
+        public Bit Get(Column<Bit> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return Bit.FALSE;
+            }
+            return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
+        }
+        public Bit? Get(NullableColumn<Bit> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
+        }
+
         public decimal Get(Column<decimal> column) {
 
             _ordinal++;

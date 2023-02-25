@@ -706,6 +706,7 @@ public enum SqlServerQueryOption {
 | Column&lt;long>               | BIGINT                 | BIGINT                      |        |
 | Column&lt;LongKey&lt;TYPE>>   | BIGINT                 | BIGINT                      |        |
 | Columns&lt;bool>              | TINYINT                | BOOLEAN                     |        |
+| Columns&lt;Bit>               | BIT                    |                             | Ado returns `BIT` as a `byte` rather than a `bool`. So sharing the `bool` type with both `BIT` and `SMALLINT` would add a conversion step that would reduce result loading preformance. |
 | Column&lt;decimal>            | DECIMAL                | DECIMAL                     |        |
 | Column&lt;float>              | REAL                   | REAL                        |        |
 | Column&lt;double>             | FLOAT                  | DOUBLE PRECISION            |        |
