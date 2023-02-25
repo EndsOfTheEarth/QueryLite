@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace QueryLite.DbSchema.CodeGeneration {
+namespace QueryLite.DbSchema {
 
     /// <summary>
     /// Stores a list of sql keywords for Sql Server and PostgreSql databases
