@@ -25,6 +25,8 @@ using QueryLite.DbSchema.Tables;
 using QueryLite.DbSchema.Tables.SqlServer;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite.DbSchema {
 
@@ -123,6 +125,8 @@ namespace QueryLite.DbSchema {
 
             SetPrimaryKeys(tableList, database);
             SetForeignKeys(tableList, database);
+
+            LoadCommentMetaData(tableList, database);
 
             return tableList;
         }
@@ -244,6 +248,65 @@ namespace QueryLite.DbSchema {
                 DatabaseColumn primaryKeyColumn = columnLookup[referencedColumnKey];
 
                 foreignKey.References.Add(new DatabaseForeignKeyReference(foreignKeyColumn: foreignKeyColumn, primaryKeyColumn: primaryKeyColumn));
+            }
+        }
+
+        private static void LoadCommentMetaData(List<DatabaseTable> tableList, IDatabase database) {
+
+            Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
+            Dictionary<TableColumnKey, DatabaseColumn> columnLookup = new Dictionary<TableColumnKey, DatabaseColumn>();
+
+            foreach(DatabaseTable table in tableList) {
+
+                tableLookup.Add(new TableKey(table.Schema, table.TableName), table);
+
+                foreach(DatabaseColumn column in table.Columns) {
+
+                    columnLookup.Add(new TableColumnKey(table.Schema, table.TableName, column.ColumnName), column);
+                }
+            }
+
+            ExtendedPropertiesView extPropView = ExtendedPropertiesView.Instance;
+            TablesView tablesView = TablesView.Instance;
+            ColumnsView columnsView = ColumnsView.Instance;
+            SchemasView schemasView = SchemasView.Instance;
+
+            var result = Query
+                .Select(
+                    rows => new {
+                        SchemaName = rows.Get(schemasView.Schema_Name),
+                        TableName = rows.Get(tablesView.Table_Name),
+                        ColumnName = rows.Get(columnsView.Column_Name),
+                        Value = rows.Get(extPropView.Value)
+                    }
+                )
+                .From(extPropView)
+                .Join(tablesView).On(extPropView.Major_Id == tablesView.Object_Id)
+                .LeftJoin(columnsView).On(extPropView.Major_Id == columnsView.Object_Id & extPropView.Minor_Id == columnsView.Column_Id)
+                .Join(schemasView).On(tablesView.Schema_Id == schemasView.Schema_Id)
+                .Where(extPropView.Class == 1 & extPropView.Name == "MS_Description")
+                .Execute(database);
+
+            foreach(var row in result.Rows) {
+
+                if(string.IsNullOrEmpty(row.ColumnName.Value)) {
+
+                    TableKey tableKey = new TableKey(row.SchemaName, row.TableName);
+
+                    if(tableLookup.TryGetValue(tableKey, out DatabaseTable? dbTable)) {
+
+                        dbTable.Description = row.Value ?? string.Empty;
+                    }
+                }
+                else {
+
+                    TableColumnKey columnKey = new TableColumnKey(row.SchemaName, row.TableName, row.ColumnName);
+
+                    if(columnLookup.TryGetValue(columnKey, out DatabaseColumn? dbColumn)) {
+
+                        dbColumn.Description = row.Value ?? string.Empty;
+                    }
+                }
             }
         }
 

@@ -76,7 +76,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
             code.EndLine();
 
             if(settings.IncludeDescriptions) {
-                code.Indent(1).Append("[Description(\"\")]").EndLine();
+                
+                code.Indent(1).Append("[Description(\"").Append(CodeHelper.ExcapeCSharpString(table.Description)).Append("\")]").EndLine();
             }
             code.Indent(1).Append($"public sealed class {tableClassName} : ATable {{").EndLine().EndLine();
 
@@ -102,8 +103,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     code.EndLine();
                 }
 
-                if(settings.IncludeDescriptions) {    
-                    code.Indent(2).Append("[Description(\"\")]").EndLine();
+                if(settings.IncludeDescriptions) {                    
+                    code.Indent(2).Append("[Description(\"").Append(CodeHelper.ExcapeCSharpString(column.Description)).Append("\")]").EndLine();
                 }
 
                 count++;

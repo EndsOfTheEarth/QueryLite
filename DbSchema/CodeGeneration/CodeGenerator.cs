@@ -94,6 +94,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public static class CodeHelper {
 
+        public static string ExcapeCSharpString(string text) {
+            return !string.IsNullOrEmpty(text) ? text.Replace("\"", "\\\"") : text;
+        }
+
         public static string GetTableName(DatabaseTable table, bool includePostFix) {
 
             string postFix = !table.IsView ? "Table" : "View";
@@ -101,6 +105,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             return $"{char.ToUpper(name[0])}{name.Substring(startIndex: 1)}";
         }
+
         public static void GetColumnName(DatabaseTable table, DatabaseColumn column, bool useIdentifiers, out Type dotNetType, out string columnTypeName, out bool isKeyColumn) {
 
             string columnType;
