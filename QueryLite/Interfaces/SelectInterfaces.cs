@@ -62,6 +62,11 @@ namespace QueryLite {
         }
     }
 
+    public interface IDistinct<RESULT> : ITop<RESULT> {
+
+        ITop<RESULT> Distinct { get; }
+    }
+
     public interface ITop<RESULT> : IFrom<RESULT> {
 
         /// <summary>

@@ -45,6 +45,10 @@ namespace QueryLite.Databases.SqlServer {
 
                 sql.Append("SELECT");
 
+                if(template.IsDistinct) {
+                    sql.Append(" DISTINCT");
+                }
+
                 bool useAliases = template.Joins != null && template.Joins.Count > 0;
 
                 GenerateTopClause(sql, template);

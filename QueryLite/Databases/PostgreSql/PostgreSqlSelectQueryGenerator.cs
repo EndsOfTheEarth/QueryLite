@@ -45,6 +45,10 @@ namespace QueryLite.Databases.PostgreSql {
 
                 sql.Append("SELECT");
 
+                if(template.IsDistinct) {
+                    sql.Append(" DISTINCT");
+                }
+
                 bool useAliases = template.Joins != null && template.Joins.Count > 0;
 
                 GenerateSelectClause(sql, template, useAliases: useAliases, database, parameters);

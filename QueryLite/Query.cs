@@ -31,14 +31,14 @@ namespace QueryLite {
         /// <summary>
         /// Nested query
         /// </summary>
-        public static ITop<FIELD> NestedSelect<FIELD>(FIELD field) where FIELD : IField {
+        public static IDistinct<FIELD> NestedSelect<FIELD>(FIELD field) where FIELD : IField {
             return new SelectQueryTemplate<FIELD>(new List<IField>(1) { field });
         }
 
         /// <summary>
         /// Sql select query
         /// </summary>
-        public static ITop<RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new SelectQueryTemplate<RESULT>(selectFunc);
+        public static IDistinct<RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new SelectQueryTemplate<RESULT>(selectFunc);
 
         /// <summary>
         /// Sql insert query

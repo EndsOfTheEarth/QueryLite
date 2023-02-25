@@ -14,6 +14,8 @@
 - [Left Joins](#left-joins)
 - [Query Timeout](#query-timeout)
 - [Select Union Query](#select-union-query)
+- [Select Distinct Query](#select-distinct-query)
+- [Select TOP Query](#select-top-query)
 - [Nested Query](#nested-query)
 - [Insert Query](#insert-query)
 - [Update Query](#update-query)
@@ -48,7 +50,7 @@ These are the main features:
 * Runtime database schema validation
 * Events that return the executing query details
 * Supports select, insert, update, delete and truncate queries
-  * Syntax - select, top, from join, left join, table hints, where, group by, order by, returning
+  * Syntax - select, distinct, top, from join, left join, table hints, where, group by, order by, returning
 
 ## Select Query
 
@@ -359,6 +361,30 @@ var result = Query
     .From(shipperTable)
     .Where(shipperTable.Phone.IsNull)
     .Execute(DB.Northwind);
+```
+
+## Select Distinct Query
+
+Select DISTINCT is supported.
+
+```C#
+var result = Query
+    .Select(row => row.Get(shipperTable.Id))
+    .Distinct
+    .From(shipperTable)
+    .Execute(DB.Northwind); 
+```
+
+## Select TOP Query
+
+Select TOP is supported. In SqlServer this generates the `TOP` syntax and in PostgreSql this generates the `LIMIT` syntax.
+
+```C#
+var result = Query
+    .Select(row => row.Get(shipperTable.Id))
+    .Top(100)
+    .From(shipperTable)
+    .Execute(DB.Northwind); 
 ```
 
 ## Nested Query

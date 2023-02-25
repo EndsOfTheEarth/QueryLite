@@ -44,13 +44,14 @@ namespace QueryLite {
         internal string GetSql(TruncateQueryTemplate template, IDatabase database, IParameters? parameters);
     }
 
-    internal sealed class SelectQueryTemplate<RESULT> : ITop<RESULT>, IFrom<RESULT>, IHint<RESULT>, IJoin<RESULT>, IWhere<RESULT>, IGroupBy<RESULT>, IHaving<RESULT>, IOrderBy<RESULT>, IFor<RESULT>, IExecute<RESULT> {
+    internal sealed class SelectQueryTemplate<RESULT> : IDistinct<RESULT>, ITop<RESULT>, IFrom<RESULT>, IHint<RESULT>, IJoin<RESULT>, IWhere<RESULT>, IGroupBy<RESULT>, IHaving<RESULT>, IOrderBy<RESULT>, IFor<RESULT>, IExecute<RESULT> {
 
         public Func<IResultRow, RESULT>? SelectFunction { get; }
         public SelectQueryTemplate<RESULT>? ParentUnion { get; private set; }
         public SelectQueryTemplate<RESULT>? ChildUnion { get; private set; }
         public UnionType? ChildUnionType { get; private set; }
         public IList<IField> SelectFields { get; private set; }
+        public bool IsDistinct { get; private set; }
         public int? TopRows { get; private set; }
         public ITable? FromTable { get; private set; }
         public SqlServerTableHint[]? Hints { get; private set; }
@@ -73,6 +74,12 @@ namespace QueryLite {
         }
         public SelectQueryTemplate(IList<IField> selectFields) {
             SelectFields = selectFields;
+        }
+        public ITop<RESULT> Distinct {
+            get {
+                IsDistinct = true;
+                return this;
+            }
         }
         public IFrom<RESULT> Top(int rows) {
 
