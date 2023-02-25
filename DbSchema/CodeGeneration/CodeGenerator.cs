@@ -55,6 +55,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
         /// </summary>
         public required bool IncludeConstraints { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public required int NumberOfInstanceProperties { get; set; }
 
         public required Namespaces Namespaces { get; set; }
     }

@@ -192,6 +192,7 @@ namespace QueryLite.CodeGeneratorUI {
                         UseIdentifiers = chkUseIdentifiers.Checked,
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
                         IncludeConstraints = chkIncludeConstraints.Checked,
+                        NumberOfInstanceProperties = (int)numNumberOfInstanceProperties.Value,
                         Namespaces = namespaces
                     };
 
@@ -254,6 +255,7 @@ namespace QueryLite.CodeGeneratorUI {
                         UseIdentifiers = chkUseIdentifiers.Checked,
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
                         IncludeConstraints = chkIncludeConstraints.Checked,
+                        NumberOfInstanceProperties = (int)numNumberOfInstanceProperties.Value,
                         Namespaces = namespaces
                     };
 

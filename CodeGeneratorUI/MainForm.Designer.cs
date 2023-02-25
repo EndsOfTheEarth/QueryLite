@@ -47,352 +47,369 @@ namespace QueryLite.CodeGeneratorUI {
         ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.tvwTables = new System.Windows.Forms.TreeView();
-            this.chkIncludeJsonAttributes = new System.Windows.Forms.CheckBox();
-            this.chkIncludeConstraints = new System.Windows.Forms.CheckBox();
-            this.chkIncludeDescriptions = new System.Windows.Forms.CheckBox();
-            this.chkUseIdentifiers = new System.Windows.Forms.CheckBox();
-            this.chkSingleFiles = new System.Windows.Forms.CheckBox();
-            this.btnOutputAllToFile = new System.Windows.Forms.Button();
-            this.txtNamespace = new System.Windows.Forms.TextBox();
-            this.lblNamespace = new System.Windows.Forms.Label();
-            this.chkIncludeMessagePackAttributes = new System.Windows.Forms.CheckBox();
-            this.txtPrefix = new System.Windows.Forms.TextBox();
-            this.lblPrefix = new System.Windows.Forms.Label();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.txtCode = new System.Windows.Forms.TextBox();
-            this.lblDatabaseType = new System.Windows.Forms.Label();
-            this.cboDatabaseType = new System.Windows.Forms.ComboBox();
-            this.lblConnectionString = new System.Windows.Forms.Label();
-            this.txtConnectionString = new System.Windows.Forms.TextBox();
-            this.btnConnect = new System.Windows.Forms.Button();
-            this.grpConnection = new System.Windows.Forms.GroupBox();
-            this.lblExample = new System.Windows.Forms.Label();
-            this.txtExampleConnectionString = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
-            this.splitContainer.Panel1.SuspendLayout();
-            this.splitContainer.Panel2.SuspendLayout();
-            this.splitContainer.SuspendLayout();
-            this.grpConnection.SuspendLayout();
-            this.SuspendLayout();
+            splitContainer = new System.Windows.Forms.SplitContainer();
+            tvwTables = new System.Windows.Forms.TreeView();
+            chkIncludeJsonAttributes = new System.Windows.Forms.CheckBox();
+            chkIncludeConstraints = new System.Windows.Forms.CheckBox();
+            chkIncludeDescriptions = new System.Windows.Forms.CheckBox();
+            chkUseIdentifiers = new System.Windows.Forms.CheckBox();
+            chkSingleFiles = new System.Windows.Forms.CheckBox();
+            btnOutputAllToFile = new System.Windows.Forms.Button();
+            txtNamespace = new System.Windows.Forms.TextBox();
+            lblNamespace = new System.Windows.Forms.Label();
+            chkIncludeMessagePackAttributes = new System.Windows.Forms.CheckBox();
+            txtPrefix = new System.Windows.Forms.TextBox();
+            lblPrefix = new System.Windows.Forms.Label();
+            btnClose = new System.Windows.Forms.Button();
+            txtCode = new System.Windows.Forms.TextBox();
+            lblDatabaseType = new System.Windows.Forms.Label();
+            cboDatabaseType = new System.Windows.Forms.ComboBox();
+            lblConnectionString = new System.Windows.Forms.Label();
+            txtConnectionString = new System.Windows.Forms.TextBox();
+            btnConnect = new System.Windows.Forms.Button();
+            grpConnection = new System.Windows.Forms.GroupBox();
+            lblExample = new System.Windows.Forms.Label();
+            txtExampleConnectionString = new System.Windows.Forms.TextBox();
+            lblNumberOfInstanceProperties = new System.Windows.Forms.Label();
+            numNumberOfInstanceProperties = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
+            splitContainer.Panel1.SuspendLayout();
+            splitContainer.Panel2.SuspendLayout();
+            splitContainer.SuspendLayout();
+            grpConnection.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numNumberOfInstanceProperties).BeginInit();
+            SuspendLayout();
             // 
             // splitContainer
             // 
-            this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer.Location = new System.Drawing.Point(0, 153);
-            this.splitContainer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.splitContainer.Name = "splitContainer";
+            splitContainer.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            splitContainer.Location = new System.Drawing.Point(0, 153);
+            splitContainer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
             // 
-            this.splitContainer.Panel1.Controls.Add(this.tvwTables);
+            splitContainer.Panel1.Controls.Add(tvwTables);
             // 
             // splitContainer.Panel2
             // 
-            this.splitContainer.Panel2.Controls.Add(this.chkIncludeJsonAttributes);
-            this.splitContainer.Panel2.Controls.Add(this.chkIncludeConstraints);
-            this.splitContainer.Panel2.Controls.Add(this.chkIncludeDescriptions);
-            this.splitContainer.Panel2.Controls.Add(this.chkUseIdentifiers);
-            this.splitContainer.Panel2.Controls.Add(this.chkSingleFiles);
-            this.splitContainer.Panel2.Controls.Add(this.btnOutputAllToFile);
-            this.splitContainer.Panel2.Controls.Add(this.txtNamespace);
-            this.splitContainer.Panel2.Controls.Add(this.lblNamespace);
-            this.splitContainer.Panel2.Controls.Add(this.chkIncludeMessagePackAttributes);
-            this.splitContainer.Panel2.Controls.Add(this.txtPrefix);
-            this.splitContainer.Panel2.Controls.Add(this.lblPrefix);
-            this.splitContainer.Panel2.Controls.Add(this.btnClose);
-            this.splitContainer.Panel2.Controls.Add(this.txtCode);
-            this.splitContainer.Size = new System.Drawing.Size(1677, 907);
-            this.splitContainer.SplitterDistance = 328;
-            this.splitContainer.SplitterWidth = 6;
-            this.splitContainer.TabIndex = 0;
+            splitContainer.Panel2.Controls.Add(numNumberOfInstanceProperties);
+            splitContainer.Panel2.Controls.Add(lblNumberOfInstanceProperties);
+            splitContainer.Panel2.Controls.Add(chkIncludeJsonAttributes);
+            splitContainer.Panel2.Controls.Add(chkIncludeConstraints);
+            splitContainer.Panel2.Controls.Add(chkIncludeDescriptions);
+            splitContainer.Panel2.Controls.Add(chkUseIdentifiers);
+            splitContainer.Panel2.Controls.Add(chkSingleFiles);
+            splitContainer.Panel2.Controls.Add(btnOutputAllToFile);
+            splitContainer.Panel2.Controls.Add(txtNamespace);
+            splitContainer.Panel2.Controls.Add(lblNamespace);
+            splitContainer.Panel2.Controls.Add(chkIncludeMessagePackAttributes);
+            splitContainer.Panel2.Controls.Add(txtPrefix);
+            splitContainer.Panel2.Controls.Add(lblPrefix);
+            splitContainer.Panel2.Controls.Add(btnClose);
+            splitContainer.Panel2.Controls.Add(txtCode);
+            splitContainer.Size = new System.Drawing.Size(1677, 907);
+            splitContainer.SplitterDistance = 328;
+            splitContainer.SplitterWidth = 6;
+            splitContainer.TabIndex = 1;
             // 
             // tvwTables
             // 
-            this.tvwTables.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tvwTables.HideSelection = false;
-            this.tvwTables.Location = new System.Drawing.Point(0, 0);
-            this.tvwTables.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tvwTables.Name = "tvwTables";
-            this.tvwTables.Size = new System.Drawing.Size(326, 857);
-            this.tvwTables.TabIndex = 0;
-            this.tvwTables.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TvwTables_AfterSelect);
+            tvwTables.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            tvwTables.HideSelection = false;
+            tvwTables.Location = new System.Drawing.Point(0, 0);
+            tvwTables.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tvwTables.Name = "tvwTables";
+            tvwTables.Size = new System.Drawing.Size(326, 857);
+            tvwTables.TabIndex = 0;
+            tvwTables.AfterSelect += TvwTables_AfterSelect;
             // 
             // chkIncludeJsonAttributes
             // 
-            this.chkIncludeJsonAttributes.AutoSize = true;
-            this.chkIncludeJsonAttributes.Location = new System.Drawing.Point(889, 53);
-            this.chkIncludeJsonAttributes.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.chkIncludeJsonAttributes.Name = "chkIncludeJsonAttributes";
-            this.chkIncludeJsonAttributes.Size = new System.Drawing.Size(218, 29);
-            this.chkIncludeJsonAttributes.TabIndex = 8;
-            this.chkIncludeJsonAttributes.Text = "Include Json Attributes";
-            this.chkIncludeJsonAttributes.UseVisualStyleBackColor = true;
-            this.chkIncludeJsonAttributes.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
+            chkIncludeJsonAttributes.AutoSize = true;
+            chkIncludeJsonAttributes.Location = new System.Drawing.Point(889, 53);
+            chkIncludeJsonAttributes.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            chkIncludeJsonAttributes.Name = "chkIncludeJsonAttributes";
+            chkIncludeJsonAttributes.Size = new System.Drawing.Size(218, 29);
+            chkIncludeJsonAttributes.TabIndex = 10;
+            chkIncludeJsonAttributes.Text = "Include Json Attributes";
+            chkIncludeJsonAttributes.UseVisualStyleBackColor = true;
+            chkIncludeJsonAttributes.CheckedChanged += CheckBoxes_CheckedChanged;
             // 
             // chkIncludeConstraints
             // 
-            this.chkIncludeConstraints.AutoSize = true;
-            this.chkIncludeConstraints.Checked = true;
-            this.chkIncludeConstraints.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkIncludeConstraints.Location = new System.Drawing.Point(379, 53);
-            this.chkIncludeConstraints.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.chkIncludeConstraints.Name = "chkIncludeConstraints";
-            this.chkIncludeConstraints.Size = new System.Drawing.Size(189, 29);
-            this.chkIncludeConstraints.TabIndex = 6;
-            this.chkIncludeConstraints.Text = "Include Constraints";
-            this.chkIncludeConstraints.UseVisualStyleBackColor = true;
-            this.chkIncludeConstraints.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
+            chkIncludeConstraints.AutoSize = true;
+            chkIncludeConstraints.Checked = true;
+            chkIncludeConstraints.CheckState = System.Windows.Forms.CheckState.Checked;
+            chkIncludeConstraints.Location = new System.Drawing.Point(379, 53);
+            chkIncludeConstraints.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            chkIncludeConstraints.Name = "chkIncludeConstraints";
+            chkIncludeConstraints.Size = new System.Drawing.Size(189, 29);
+            chkIncludeConstraints.TabIndex = 8;
+            chkIncludeConstraints.Text = "Include Constraints";
+            chkIncludeConstraints.UseVisualStyleBackColor = true;
+            chkIncludeConstraints.CheckedChanged += CheckBoxes_CheckedChanged;
             // 
             // chkIncludeDescriptions
             // 
-            this.chkIncludeDescriptions.AutoSize = true;
-            this.chkIncludeDescriptions.Location = new System.Drawing.Point(174, 53);
-            this.chkIncludeDescriptions.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.chkIncludeDescriptions.Name = "chkIncludeDescriptions";
-            this.chkIncludeDescriptions.Size = new System.Drawing.Size(198, 29);
-            this.chkIncludeDescriptions.TabIndex = 5;
-            this.chkIncludeDescriptions.Text = "Include Descriptions";
-            this.chkIncludeDescriptions.UseVisualStyleBackColor = true;
-            this.chkIncludeDescriptions.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
+            chkIncludeDescriptions.AutoSize = true;
+            chkIncludeDescriptions.Location = new System.Drawing.Point(174, 53);
+            chkIncludeDescriptions.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            chkIncludeDescriptions.Name = "chkIncludeDescriptions";
+            chkIncludeDescriptions.Size = new System.Drawing.Size(198, 29);
+            chkIncludeDescriptions.TabIndex = 7;
+            chkIncludeDescriptions.Text = "Include Descriptions";
+            chkIncludeDescriptions.UseVisualStyleBackColor = true;
+            chkIncludeDescriptions.CheckedChanged += CheckBoxes_CheckedChanged;
             // 
             // chkUseIdentifiers
             // 
-            this.chkUseIdentifiers.AutoSize = true;
-            this.chkUseIdentifiers.Checked = true;
-            this.chkUseIdentifiers.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkUseIdentifiers.Location = new System.Drawing.Point(6, 53);
-            this.chkUseIdentifiers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.chkUseIdentifiers.Name = "chkUseIdentifiers";
-            this.chkUseIdentifiers.Size = new System.Drawing.Size(150, 29);
-            this.chkUseIdentifiers.TabIndex = 4;
-            this.chkUseIdentifiers.Text = "Use Identifiers";
-            this.chkUseIdentifiers.UseVisualStyleBackColor = true;
-            this.chkUseIdentifiers.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
+            chkUseIdentifiers.AutoSize = true;
+            chkUseIdentifiers.Checked = true;
+            chkUseIdentifiers.CheckState = System.Windows.Forms.CheckState.Checked;
+            chkUseIdentifiers.Location = new System.Drawing.Point(6, 53);
+            chkUseIdentifiers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            chkUseIdentifiers.Name = "chkUseIdentifiers";
+            chkUseIdentifiers.Size = new System.Drawing.Size(150, 29);
+            chkUseIdentifiers.TabIndex = 6;
+            chkUseIdentifiers.Text = "Use Identifiers";
+            chkUseIdentifiers.UseVisualStyleBackColor = true;
+            chkUseIdentifiers.CheckedChanged += CheckBoxes_CheckedChanged;
             // 
             // chkSingleFiles
             // 
-            this.chkSingleFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.chkSingleFiles.AutoSize = true;
-            this.chkSingleFiles.Location = new System.Drawing.Point(190, 867);
-            this.chkSingleFiles.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.chkSingleFiles.Name = "chkSingleFiles";
-            this.chkSingleFiles.Size = new System.Drawing.Size(125, 29);
-            this.chkSingleFiles.TabIndex = 12;
-            this.chkSingleFiles.Text = "Single Files";
-            this.chkSingleFiles.UseVisualStyleBackColor = true;
+            chkSingleFiles.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            chkSingleFiles.AutoSize = true;
+            chkSingleFiles.Location = new System.Drawing.Point(190, 867);
+            chkSingleFiles.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            chkSingleFiles.Name = "chkSingleFiles";
+            chkSingleFiles.Size = new System.Drawing.Size(125, 29);
+            chkSingleFiles.TabIndex = 13;
+            chkSingleFiles.Text = "Single Files";
+            chkSingleFiles.UseVisualStyleBackColor = true;
             // 
             // btnOutputAllToFile
             // 
-            this.btnOutputAllToFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnOutputAllToFile.Location = new System.Drawing.Point(4, 863);
-            this.btnOutputAllToFile.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnOutputAllToFile.Name = "btnOutputAllToFile";
-            this.btnOutputAllToFile.Size = new System.Drawing.Size(176, 38);
-            this.btnOutputAllToFile.TabIndex = 11;
-            this.btnOutputAllToFile.Text = "Output All To File";
-            this.btnOutputAllToFile.UseVisualStyleBackColor = true;
-            this.btnOutputAllToFile.Click += new System.EventHandler(this.BtnOutputAllToFile_Click);
+            btnOutputAllToFile.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnOutputAllToFile.Location = new System.Drawing.Point(4, 863);
+            btnOutputAllToFile.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btnOutputAllToFile.Name = "btnOutputAllToFile";
+            btnOutputAllToFile.Size = new System.Drawing.Size(176, 38);
+            btnOutputAllToFile.TabIndex = 12;
+            btnOutputAllToFile.Text = "Output All To File";
+            btnOutputAllToFile.UseVisualStyleBackColor = true;
+            btnOutputAllToFile.Click += BtnOutputAllToFile_Click;
             // 
             // txtNamespace
             // 
-            this.txtNamespace.Location = new System.Drawing.Point(111, 7);
-            this.txtNamespace.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txtNamespace.Name = "txtNamespace";
-            this.txtNamespace.Size = new System.Drawing.Size(248, 31);
-            this.txtNamespace.TabIndex = 1;
-            this.txtNamespace.Text = "MyProject";
-            this.txtNamespace.TextChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
+            txtNamespace.Location = new System.Drawing.Point(111, 7);
+            txtNamespace.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            txtNamespace.Name = "txtNamespace";
+            txtNamespace.Size = new System.Drawing.Size(248, 31);
+            txtNamespace.TabIndex = 1;
+            txtNamespace.Text = "MyProject";
+            txtNamespace.TextChanged += CheckBoxes_CheckedChanged;
             // 
             // lblNamespace
             // 
-            this.lblNamespace.AutoSize = true;
-            this.lblNamespace.Location = new System.Drawing.Point(4, 15);
-            this.lblNamespace.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblNamespace.Name = "lblNamespace";
-            this.lblNamespace.Size = new System.Drawing.Size(104, 25);
-            this.lblNamespace.TabIndex = 0;
-            this.lblNamespace.Text = "Namespace";
+            lblNamespace.AutoSize = true;
+            lblNamespace.Location = new System.Drawing.Point(4, 15);
+            lblNamespace.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblNamespace.Name = "lblNamespace";
+            lblNamespace.Size = new System.Drawing.Size(104, 25);
+            lblNamespace.TabIndex = 0;
+            lblNamespace.Text = "Namespace";
             // 
             // chkIncludeMessagePackAttributes
             // 
-            this.chkIncludeMessagePackAttributes.AutoSize = true;
-            this.chkIncludeMessagePackAttributes.Location = new System.Drawing.Point(586, 53);
-            this.chkIncludeMessagePackAttributes.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.chkIncludeMessagePackAttributes.Name = "chkIncludeMessagePackAttributes";
-            this.chkIncludeMessagePackAttributes.Size = new System.Drawing.Size(293, 29);
-            this.chkIncludeMessagePackAttributes.TabIndex = 7;
-            this.chkIncludeMessagePackAttributes.Text = "Include Message Pack Attributes";
-            this.chkIncludeMessagePackAttributes.UseVisualStyleBackColor = true;
-            this.chkIncludeMessagePackAttributes.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
+            chkIncludeMessagePackAttributes.AutoSize = true;
+            chkIncludeMessagePackAttributes.Location = new System.Drawing.Point(586, 53);
+            chkIncludeMessagePackAttributes.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            chkIncludeMessagePackAttributes.Name = "chkIncludeMessagePackAttributes";
+            chkIncludeMessagePackAttributes.Size = new System.Drawing.Size(293, 29);
+            chkIncludeMessagePackAttributes.TabIndex = 9;
+            chkIncludeMessagePackAttributes.Text = "Include Message Pack Attributes";
+            chkIncludeMessagePackAttributes.UseVisualStyleBackColor = true;
+            chkIncludeMessagePackAttributes.CheckedChanged += CheckBoxes_CheckedChanged;
             // 
             // txtPrefix
             // 
-            this.txtPrefix.Location = new System.Drawing.Point(431, 7);
-            this.txtPrefix.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txtPrefix.Name = "txtPrefix";
-            this.txtPrefix.Size = new System.Drawing.Size(73, 31);
-            this.txtPrefix.TabIndex = 3;
-            this.txtPrefix.TextChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
+            txtPrefix.Location = new System.Drawing.Point(431, 7);
+            txtPrefix.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            txtPrefix.Name = "txtPrefix";
+            txtPrefix.Size = new System.Drawing.Size(73, 31);
+            txtPrefix.TabIndex = 3;
+            txtPrefix.TextChanged += CheckBoxes_CheckedChanged;
             // 
             // lblPrefix
             // 
-            this.lblPrefix.AutoSize = true;
-            this.lblPrefix.Location = new System.Drawing.Point(370, 15);
-            this.lblPrefix.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblPrefix.Name = "lblPrefix";
-            this.lblPrefix.Size = new System.Drawing.Size(55, 25);
-            this.lblPrefix.TabIndex = 2;
-            this.lblPrefix.Text = "Prefix";
+            lblPrefix.AutoSize = true;
+            lblPrefix.Location = new System.Drawing.Point(370, 15);
+            lblPrefix.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblPrefix.Name = "lblPrefix";
+            lblPrefix.Size = new System.Drawing.Size(55, 25);
+            lblPrefix.TabIndex = 2;
+            lblPrefix.Text = "Prefix";
             // 
             // btnClose
             // 
-            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(1216, 863);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(107, 38);
-            this.btnClose.TabIndex = 13;
-            this.btnClose.Text = "&Close";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
+            btnClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnClose.Location = new System.Drawing.Point(1214, 863);
+            btnClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new System.Drawing.Size(107, 38);
+            btnClose.TabIndex = 14;
+            btnClose.Text = "&Close";
+            btnClose.UseVisualStyleBackColor = true;
+            btnClose.Click += BtnClose_Click;
             // 
             // txtCode
             // 
-            this.txtCode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtCode.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txtCode.Location = new System.Drawing.Point(4, 93);
-            this.txtCode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txtCode.Multiline = true;
-            this.txtCode.Name = "txtCode";
-            this.txtCode.ReadOnly = true;
-            this.txtCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtCode.Size = new System.Drawing.Size(1317, 764);
-            this.txtCode.TabIndex = 10;
-            this.txtCode.WordWrap = false;
+            txtCode.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            txtCode.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            txtCode.Location = new System.Drawing.Point(4, 93);
+            txtCode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            txtCode.Multiline = true;
+            txtCode.Name = "txtCode";
+            txtCode.ReadOnly = true;
+            txtCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            txtCode.Size = new System.Drawing.Size(1315, 764);
+            txtCode.TabIndex = 11;
+            txtCode.WordWrap = false;
             // 
             // lblDatabaseType
             // 
-            this.lblDatabaseType.AutoSize = true;
-            this.lblDatabaseType.Location = new System.Drawing.Point(6, 87);
-            this.lblDatabaseType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblDatabaseType.Name = "lblDatabaseType";
-            this.lblDatabaseType.Size = new System.Drawing.Size(128, 25);
-            this.lblDatabaseType.TabIndex = 2;
-            this.lblDatabaseType.Text = "Database Type";
+            lblDatabaseType.AutoSize = true;
+            lblDatabaseType.Location = new System.Drawing.Point(6, 87);
+            lblDatabaseType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblDatabaseType.Name = "lblDatabaseType";
+            lblDatabaseType.Size = new System.Drawing.Size(128, 25);
+            lblDatabaseType.TabIndex = 2;
+            lblDatabaseType.Text = "Database Type";
             // 
             // cboDatabaseType
             // 
-            this.cboDatabaseType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboDatabaseType.FormattingEnabled = true;
-            this.cboDatabaseType.Location = new System.Drawing.Point(160, 80);
-            this.cboDatabaseType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.cboDatabaseType.Name = "cboDatabaseType";
-            this.cboDatabaseType.Size = new System.Drawing.Size(135, 33);
-            this.cboDatabaseType.TabIndex = 3;
-            this.cboDatabaseType.SelectedIndexChanged += new System.EventHandler(this.CboDatabaseType_SelectedIndexChanged);
+            cboDatabaseType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cboDatabaseType.FormattingEnabled = true;
+            cboDatabaseType.Location = new System.Drawing.Point(160, 80);
+            cboDatabaseType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            cboDatabaseType.Name = "cboDatabaseType";
+            cboDatabaseType.Size = new System.Drawing.Size(135, 33);
+            cboDatabaseType.TabIndex = 3;
+            cboDatabaseType.SelectedIndexChanged += CboDatabaseType_SelectedIndexChanged;
             // 
             // lblConnectionString
             // 
-            this.lblConnectionString.AutoSize = true;
-            this.lblConnectionString.Location = new System.Drawing.Point(6, 40);
-            this.lblConnectionString.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblConnectionString.Name = "lblConnectionString";
-            this.lblConnectionString.Size = new System.Drawing.Size(153, 25);
-            this.lblConnectionString.TabIndex = 0;
-            this.lblConnectionString.Text = "Connection String";
+            lblConnectionString.AutoSize = true;
+            lblConnectionString.Location = new System.Drawing.Point(6, 40);
+            lblConnectionString.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblConnectionString.Name = "lblConnectionString";
+            lblConnectionString.Size = new System.Drawing.Size(153, 25);
+            lblConnectionString.TabIndex = 0;
+            lblConnectionString.Text = "Connection String";
             // 
             // txtConnectionString
             // 
-            this.txtConnectionString.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtConnectionString.Location = new System.Drawing.Point(160, 33);
-            this.txtConnectionString.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txtConnectionString.Name = "txtConnectionString";
-            this.txtConnectionString.Size = new System.Drawing.Size(1501, 31);
-            this.txtConnectionString.TabIndex = 1;
+            txtConnectionString.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            txtConnectionString.Location = new System.Drawing.Point(160, 33);
+            txtConnectionString.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            txtConnectionString.Name = "txtConnectionString";
+            txtConnectionString.Size = new System.Drawing.Size(1501, 31);
+            txtConnectionString.TabIndex = 1;
             // 
             // btnConnect
             // 
-            this.btnConnect.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnConnect.Location = new System.Drawing.Point(303, 73);
-            this.btnConnect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(137, 47);
-            this.btnConnect.TabIndex = 4;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.BtnConnect_Click);
+            btnConnect.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            btnConnect.Location = new System.Drawing.Point(303, 73);
+            btnConnect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btnConnect.Name = "btnConnect";
+            btnConnect.Size = new System.Drawing.Size(137, 47);
+            btnConnect.TabIndex = 4;
+            btnConnect.Text = "Connect";
+            btnConnect.UseVisualStyleBackColor = true;
+            btnConnect.Click += BtnConnect_Click;
             // 
             // grpConnection
             // 
-            this.grpConnection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpConnection.Controls.Add(this.lblExample);
-            this.grpConnection.Controls.Add(this.txtExampleConnectionString);
-            this.grpConnection.Controls.Add(this.lblConnectionString);
-            this.grpConnection.Controls.Add(this.btnConnect);
-            this.grpConnection.Controls.Add(this.lblDatabaseType);
-            this.grpConnection.Controls.Add(this.txtConnectionString);
-            this.grpConnection.Controls.Add(this.cboDatabaseType);
-            this.grpConnection.Location = new System.Drawing.Point(6, 13);
-            this.grpConnection.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.grpConnection.Name = "grpConnection";
-            this.grpConnection.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.grpConnection.Size = new System.Drawing.Size(1669, 133);
-            this.grpConnection.TabIndex = 0;
-            this.grpConnection.TabStop = false;
-            this.grpConnection.Text = "Database Connection";
+            grpConnection.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            grpConnection.Controls.Add(lblExample);
+            grpConnection.Controls.Add(txtExampleConnectionString);
+            grpConnection.Controls.Add(lblConnectionString);
+            grpConnection.Controls.Add(btnConnect);
+            grpConnection.Controls.Add(lblDatabaseType);
+            grpConnection.Controls.Add(txtConnectionString);
+            grpConnection.Controls.Add(cboDatabaseType);
+            grpConnection.Location = new System.Drawing.Point(6, 13);
+            grpConnection.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            grpConnection.Name = "grpConnection";
+            grpConnection.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            grpConnection.Size = new System.Drawing.Size(1669, 133);
+            grpConnection.TabIndex = 0;
+            grpConnection.TabStop = false;
+            grpConnection.Text = "Database Connection";
             // 
             // lblExample
             // 
-            this.lblExample.AutoSize = true;
-            this.lblExample.Location = new System.Drawing.Point(469, 87);
-            this.lblExample.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblExample.Name = "lblExample";
-            this.lblExample.Size = new System.Drawing.Size(78, 25);
-            this.lblExample.TabIndex = 5;
-            this.lblExample.Text = "Example";
+            lblExample.AutoSize = true;
+            lblExample.Location = new System.Drawing.Point(469, 87);
+            lblExample.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblExample.Name = "lblExample";
+            lblExample.Size = new System.Drawing.Size(78, 25);
+            lblExample.TabIndex = 5;
+            lblExample.Text = "Example";
             // 
             // txtExampleConnectionString
             // 
-            this.txtExampleConnectionString.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtExampleConnectionString.Location = new System.Drawing.Point(549, 80);
-            this.txtExampleConnectionString.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.txtExampleConnectionString.Name = "txtExampleConnectionString";
-            this.txtExampleConnectionString.ReadOnly = true;
-            this.txtExampleConnectionString.Size = new System.Drawing.Size(1103, 31);
-            this.txtExampleConnectionString.TabIndex = 6;
+            txtExampleConnectionString.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            txtExampleConnectionString.Location = new System.Drawing.Point(549, 80);
+            txtExampleConnectionString.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            txtExampleConnectionString.Name = "txtExampleConnectionString";
+            txtExampleConnectionString.ReadOnly = true;
+            txtExampleConnectionString.Size = new System.Drawing.Size(1103, 31);
+            txtExampleConnectionString.TabIndex = 6;
+            // 
+            // lblNumberOfInstanceProperties
+            // 
+            lblNumberOfInstanceProperties.AutoSize = true;
+            lblNumberOfInstanceProperties.Location = new System.Drawing.Point(527, 13);
+            lblNumberOfInstanceProperties.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblNumberOfInstanceProperties.Name = "lblNumberOfInstanceProperties";
+            lblNumberOfInstanceProperties.Size = new System.Drawing.Size(203, 25);
+            lblNumberOfInstanceProperties.TabIndex = 4;
+            lblNumberOfInstanceProperties.Text = "# Of Instance Properties";
+            // 
+            // numNumberOfInstanceProperties
+            // 
+            numNumberOfInstanceProperties.Location = new System.Drawing.Point(737, 9);
+            numNumberOfInstanceProperties.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            numNumberOfInstanceProperties.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numNumberOfInstanceProperties.Name = "numNumberOfInstanceProperties";
+            numNumberOfInstanceProperties.Size = new System.Drawing.Size(55, 31);
+            numNumberOfInstanceProperties.TabIndex = 5;
+            numNumberOfInstanceProperties.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            numNumberOfInstanceProperties.ValueChanged += CheckBoxes_CheckedChanged;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1677, 1062);
-            this.Controls.Add(this.grpConnection);
-            this.Controls.Add(this.splitContainer);
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "MainForm";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Text = "Query Lite Code Generator";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.splitContainer.Panel1.ResumeLayout(false);
-            this.splitContainer.Panel2.ResumeLayout(false);
-            this.splitContainer.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
-            this.splitContainer.ResumeLayout(false);
-            this.grpConnection.ResumeLayout(false);
-            this.grpConnection.PerformLayout();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1677, 1062);
+            Controls.Add(grpConnection);
+            Controls.Add(splitContainer);
+            Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            Name = "MainForm";
+            SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            Text = "Query Lite Code Generator";
+            Load += Form1_Load;
+            splitContainer.Panel1.ResumeLayout(false);
+            splitContainer.Panel2.ResumeLayout(false);
+            splitContainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
+            splitContainer.ResumeLayout(false);
+            grpConnection.ResumeLayout(false);
+            grpConnection.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numNumberOfInstanceProperties).EndInit();
+            ResumeLayout(false);
         }
         #endregion
 
@@ -419,5 +436,7 @@ namespace QueryLite.CodeGeneratorUI {
         private System.Windows.Forms.TextBox txtExampleConnectionString;
         private System.Windows.Forms.CheckBox chkIncludeConstraints;
         private System.Windows.Forms.CheckBox chkIncludeJsonAttributes;
+        private System.Windows.Forms.NumericUpDown numNumberOfInstanceProperties;
+        private System.Windows.Forms.Label lblNumberOfInstanceProperties;
     }
 }

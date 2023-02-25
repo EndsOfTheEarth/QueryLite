@@ -75,15 +75,16 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             code.EndLine();
 
-            if(settings.IncludeDescriptions) {
-                
+            if(settings.IncludeDescriptions) {                
                 code.Indent(1).Append("[Description(\"").Append(CodeHelper.ExcapeCSharpString(table.Description)).Append("\")]").EndLine();
             }
             code.Indent(1).Append($"public sealed class {tableClassName} : ATable {{").EndLine().EndLine();
 
             code.Indent(2).Append($"public static readonly {tableClassName} Instance = new {tableClassName}();").EndLine();
-            code.Indent(2).Append($"public static readonly {tableClassName} Instance2 = new {tableClassName}();").EndLine();
-            code.Indent(2).Append($"public static readonly {tableClassName} Instance3 = new {tableClassName}();").EndLine();
+
+            for(int index = 1; index < settings.NumberOfInstanceProperties; index++) {
+                code.Indent(2).Append($"public static readonly {tableClassName} Instance{index + 1} = new {tableClassName}();").EndLine();
+            }
 
             List<string> lines = new List<string>();
 
