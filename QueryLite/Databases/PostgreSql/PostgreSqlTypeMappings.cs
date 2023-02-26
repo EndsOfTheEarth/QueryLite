@@ -44,6 +44,13 @@ namespace QueryLite.Databases.PostgreSql {
                 return NpgsqlDbType.Boolean;
             }
 
+            if(type == typeof(Bit)) {
+                return NpgsqlDbType.Boolean;
+            }
+            if(type == typeof(Bit?)) {
+                return NpgsqlDbType.Boolean;
+            }
+
             if(type == typeof(byte[])) {
                 return NpgsqlDbType.Bytea;
             }
@@ -171,6 +178,9 @@ namespace QueryLite.Databases.PostgreSql {
 
             if(value is bool boolValue) {
                 return boolValue ? "true" : "false";
+            }
+            if(value is Bit bitValue) {
+                return bitValue.Value ? "true" : "false";
             }
             if(value is byte[] byteArray) {
                 return $"decode('{(BitConverter.ToString(byteArray)).Replace("-", string.Empty)}', 'hex')";

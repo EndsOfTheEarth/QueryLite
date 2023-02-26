@@ -43,6 +43,9 @@ namespace QueryLite.Databases.SqlServer {
                 if(value is IKeyValue keyValue) {
                     value = keyValue.GetValueAsObject();
                 }
+                else if(value is Bit bitValue) {
+                    value = bitValue.Value;
+                }
             }
             ParameterList.Add(
                 new Param(

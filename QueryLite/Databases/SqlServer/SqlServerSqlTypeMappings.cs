@@ -22,6 +22,7 @@
  * SOFTWARE.
  **/
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 
 namespace QueryLite.Databases.SqlServer {
@@ -41,6 +42,13 @@ namespace QueryLite.Databases.SqlServer {
                 return DbType.Boolean;
             }
             if(type == typeof(bool?)) {
+                return DbType.Boolean;
+            }
+
+            if(type == typeof(Bit)) {
+                return DbType.Boolean;
+            }
+            if(type == typeof(Bit?)) {
                 return DbType.Boolean;
             }
 
@@ -168,6 +176,9 @@ namespace QueryLite.Databases.SqlServer {
 
             if(value is bool boolValue) {
                 return boolValue ? "1" : "0";
+            }
+            if(value is Bit bitValue) {
+                return bitValue.Value ? "1" : "0";
             }
             if(value is byte[] byteArray) {
                 return "0x" + (BitConverter.ToString(byteArray)).Replace("-", string.Empty);
