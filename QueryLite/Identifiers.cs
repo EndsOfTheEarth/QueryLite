@@ -63,6 +63,10 @@ namespace QueryLite {
             return key?.Value;
         }
 
+        public static GuidKey<TYPE> Parse(string text) {
+            return new GuidKey<TYPE>(Guid.Parse(text));
+        }
+
         [IgnoreMember]
         [JsonIgnore]
         public Type DataType => typeof(TYPE);
@@ -200,6 +204,10 @@ namespace QueryLite {
             return key?.Value;
         }
 
+        public static ShortKey<TYPE> Parse(string text) {
+            return new ShortKey<TYPE>(short.Parse(text));
+        }
+
         [IgnoreMember]
         [JsonIgnore]
         public Type DataType => typeof(TYPE);
@@ -271,6 +279,10 @@ namespace QueryLite {
             return key?.Value;
         }
 
+        public static IntKey<TYPE> Parse(string text) {
+            return new IntKey<TYPE>(int.Parse(text));
+        }
+
         [IgnoreMember]
         [JsonIgnore]
         public Type DataType => typeof(TYPE);
@@ -339,6 +351,10 @@ namespace QueryLite {
         }
         public static long? ToLong(LongKey<TYPE>? key) {
             return key?.Value;
+        }
+
+        public static LongKey<TYPE> Parse(string text) {
+            return new LongKey<TYPE>(long.Parse(text));
         }
 
         [IgnoreMember]
