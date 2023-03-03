@@ -25,27 +25,36 @@ using System;
 
 namespace QueryLite.Databases.SqlServer.Functions {
 
-    public sealed class CountAll : Function<int> {
+    public sealed class COUNT_ALL : Function<int> {
 
-        public CountAll() : base("COUNT(*)") { }
+        public COUNT_ALL() : base("COUNT(*)") { }
 
         public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
             return "COUNT(*)";
         }
     }
 
-    public sealed class GetDate : Function<DateTime> {
+    public sealed class GETDATE : Function<DateTime> {
 
-        public GetDate() : base("GETDATE()") { }
+        public GETDATE() : base("GETDATE()") { }
 
         public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
             return "GETDATE()";
         }
     }
 
-    public sealed class GetDateTimeOffset : Function<DateTimeOffset> {
+    public sealed class NEWID : Function<Guid> {
 
-        public GetDateTimeOffset() : base("SYSDATETIMEOFFSET()") { }
+        public NEWID() : base("NEWID()") { }
+
+        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+            return "NEWID()";
+        }
+    }
+
+    public sealed class SYSDATETIMEOFFSET : Function<DateTimeOffset> {
+
+        public SYSDATETIMEOFFSET() : base("SYSDATETIMEOFFSET()") { }
 
         public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
             return "SYSDATETIMEOFFSET()";

@@ -22,7 +22,7 @@ namespace QueryLiteTest.Tests {
                     .NoWhereCondition()
                     .Execute(transation, TimeoutLevel.ShortDelete);
 
-                CountAll count = new CountAll();
+                COUNT_ALL count = new COUNT_ALL();
 
                 var result = Query
                     .Select(

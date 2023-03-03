@@ -404,7 +404,7 @@ var result = Query
             Query.NestedSelect(shipperTable2.CompanyName)
                 .From(shipperTable2)
                 .GroupBy(shipperTable2.CompanyName)
-                .Having(new CountAll() > 1)
+                .Having(new COUNT_ALL() > 1)
         )
     )
     .Execute(DB.Northwind);
@@ -597,12 +597,12 @@ var result = Query
 
 ## Functions
 
-Currently only a small set of sql functions are supported. For Sql Server these are `CountAll`, `GetDate` and `GetDateTimeOffset`. Please note that creating custom sql functions is documented below this section.
+Currently only a small set of sql functions are supported. For Sql Server these are `COUNT_ALL`, `GETDATE`, `NEWID` and `SYSDATETIMEOFFSET`. Please note that creating custom sql functions is documented below this section.
 
 ```C#
 ShipperTable shipperTable = ShipperTable.Instance;
 
-CountAll count = new CountAll();
+COUNT_ALL count = new COUNT_ALL();
 
 QueryResult<int> result = Query
     .Select(
