@@ -310,8 +310,8 @@ namespace QueryLite {
 
             List<DatabaseTable> dbTables = FindMatchingSchemaTables(database, table, dbSchema);
 
-            if(dbTables == null) {
-                tableValidation.Add($"Code table exists but not database table");
+            if(dbTables == null || dbTables.Count == 0) {
+                tableValidation.Add($"Code table definition exists but the database table does not. This can happen if the table does not exist in the database or the schema names do not match or the table names do not match.");
                 return;
             }
 
@@ -622,7 +622,7 @@ namespace QueryLite {
 
                     TableValidation validation = new TableValidation(tableType: null);
 
-                    validation.Add($"Code table definition is missing for the database table: '{dbTable.Schema}.{dbTable.TableName}'");
+                    validation.Add($"Code table definition is missing for the database table: '{dbTable.Schema}.{dbTable.TableName}'. This can happen if the table code definition does not exist or the schema names do not match or the table names do not match.");
                     validationResult.TableValidation.Add(validation);
                 }
             }
