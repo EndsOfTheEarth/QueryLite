@@ -522,7 +522,7 @@ namespace QueryLite {
             else if(dbPrimaryKey != null && codePrimaryKey != null) {
 
                 if(string.Compare(dbPrimaryKey!.ConstraintName, codePrimaryKey!.ConstraintName, ignoreCase: true) != 0) {
-                    tableValidation.Add($"Code and database primary key constrain names are different. '{dbPrimaryKey.ConstraintName}' != '{codePrimaryKey.ConstraintName}'");
+                    tableValidation.Add($"Code and database primary key constraint names are different. '{dbPrimaryKey.ConstraintName}' != '{codePrimaryKey.ConstraintName}'");
                 }
 
                 if(dbPrimaryKey.ColumnNames.Count != codePrimaryKey.Columns.Length) {
@@ -546,7 +546,7 @@ namespace QueryLite {
         private static void ValidateForeignKeys(ITable table, DatabaseTable dbTable, TableValidation tableValidation) {
 
             if(table.ForeignKeys.Length != dbTable.ForeignKeys.Count) {
-                tableValidation.Add($"The number of foreign keys defined in code is different from database. {table.ForeignKeys.Length} foreign keys are defined in code and {dbTable.ForeignKeys.Count} are defined in the database");
+                tableValidation.Add($"The number of foreign keys defined in code is different from database. {table.ForeignKeys.Length} foreign keys are defined in code and {dbTable.ForeignKeys.Count} {(dbTable.ForeignKeys.Count == 1 ? "is" : "are")} defined in the database");
             }
 
             foreach(DatabaseForeignKey dbForeignKey in dbTable.ForeignKeys) {
@@ -599,6 +599,26 @@ namespace QueryLite {
                     }
                 }
             }
+
+            foreach(ForeignKey codeForeignKey in table.ForeignKeys) {
+
+                bool matchFound = false;
+
+                foreach(DatabaseForeignKey dbForeignKey in dbTable.ForeignKeys) {
+
+                    if(string.Compare(dbForeignKey.ConstraintName, codeForeignKey.ConstraintName, ignoreCase: true) == 0) {
+
+                        if(matchFound) {
+                            tableValidation.Add($"The foreign key '{codeForeignKey.ConstraintName}' is defined more than once in table code definition");
+                        }
+                        matchFound = true;
+                    }
+                }
+
+                if(!matchFound) {
+                    tableValidation.Add($"The foreign key '{codeForeignKey.ConstraintName}' is defined in code but does not exist in the database");
+                }
+             }
         }
 
         private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, List<ITable> tables, ValidationResult validationResult) {
