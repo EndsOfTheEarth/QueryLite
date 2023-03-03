@@ -69,7 +69,7 @@ namespace QueryLite.Databases.PostgreSql {
                     if(template.ChildUnionType == UnionType.Union) {
                         sql.Append(" UNION ");
                     }
-                    else if(template.ChildUnionType == UnionType.Union) {
+                    else if(template.ChildUnionType == UnionType.UnionAll) {
                         sql.Append(" UNION ALL ");
                     }
                     else {
