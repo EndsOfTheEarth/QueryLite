@@ -345,17 +345,20 @@ namespace QueryLite {
                     Type dbNetType = dbColumn.DataType.DotNetType;
                     Type codeAdoType = ConvertToAdoType(codeColumn.Type);    //This is for the case with types like IntKey<> where the ado type is int
 
-                    if(codeColumn.Type.IsEnum) {
+                    if(!codeColumnProperty.SuppressColumnTypeValidation) {
 
-                        if(dbNetType != typeof(short) && dbNetType != typeof(int) && dbNetType != typeof(long)) {
-                            throw new Exception("An enum type must be mapped as a short, integer or long. This might be a bug");
+                        if(codeColumn.Type.IsEnum) {
+
+                            if(dbNetType != typeof(short) && dbNetType != typeof(int) && dbNetType != typeof(long)) {
+                                throw new Exception("An enum type must be mapped as a short, integer or long. This might be a bug");
+                            }
+                            if(codeAdoType != typeof(int) && codeAdoType != typeof(short) && codeAdoType != typeof(byte) && codeAdoType != typeof(long)) {
+                                tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column");
+                            }
                         }
-                        if(codeAdoType != typeof(int) && codeAdoType != typeof(short) && codeAdoType != typeof(byte)) {
+                        else if(codeAdoType != dbNetType) {
                             tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column");
                         }
-                    }
-                    else if(codeAdoType != dbNetType) {
-                        tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column");
                     }
 
                     if(dbColumn.IsNullable && !codeColumn.IsNullable) {
@@ -645,8 +648,8 @@ namespace QueryLite {
                         tableValidation.Add($"Table: {table.TableName}, Column property '{property.Name}' is returning null. This property should have an IColumn assigned");
                     }
                     else {
-
-                        columns.Add(new CodeColumnProperty(property.Name, (IColumn)column));
+                        SuppressColumnTypeValidationAttribute? suppressAttribute = property.GetCustomAttribute<SuppressColumnTypeValidationAttribute>();
+                        columns.Add(new CodeColumnProperty(property.Name, (IColumn)column, suppressColumnTypeValidation: suppressAttribute != null));
                     }
                 }
             }
@@ -655,12 +658,14 @@ namespace QueryLite {
 
         private class CodeColumnProperty {
 
-            public CodeColumnProperty(string propertyName, IColumn column) {
+            public CodeColumnProperty(string propertyName, IColumn column, bool suppressColumnTypeValidation) {
                 PropertyName = propertyName;
                 Column = column;
+                SuppressColumnTypeValidation = suppressColumnTypeValidation;
             }
             public string PropertyName { get; }
             public IColumn Column { get; }
+            public bool SuppressColumnTypeValidation { get; }
         }
 
         private static Type ConvertToAdoType(Type type) {

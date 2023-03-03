@@ -892,6 +892,28 @@ foreach(TableValidation tableValidation in result.TableValidation) {
 string text = output.ToString();
 ```
 
+### Suppressing Column Type Validation
+
+An attribute called `[SuppressColumnTypeValidation]` exists to surpress schema validation errors when a column type does not match the database schema.
+
+In this case `MyColumn` might map to an unsupported database type.
+
+```C#
+public sealed class MyTable : ATable {
+
+        public static readonly MyTable Instance = new MyTable();
+
+        //This attribute will suppress any validation errors when the 'object' type does not map to the database schema type
+        [SuppressColumnTypeValidation]
+        public NullableColumn<IUnsupportedType> MyColumn { get; }
+
+        private EmployeeTable() : base(tableName: "MyTable", schemaName: "dbo") {
+            MyColumn = new NullableColumn<IUnsupportedType>(this, columnName: "MyColumn");
+        }
+}
+
+```
+
 ## Database Constraints
 
 Primary and foreign keys can be defined on table definitions. These are useful for schema validation (i.e. Checking those constraints exist in the database) and for generating schema documentation.

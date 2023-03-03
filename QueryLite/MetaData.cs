@@ -39,6 +39,19 @@ namespace QueryLite {
         }
     }
 
+    /// <summary>
+    /// This attribute stops an error appearing in the schema validator when this column type does not map correctly to the database.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class SuppressColumnTypeValidationAttribute : Attribute {
+
+    }
+
+    /// <summary>
+    /// Interface that can be used for Columns that have an unsupported type. e.g. public Column<IUnsupportedType> ColumnName { get; }
+    /// </summary>
+    public interface IUnsupportedType { }
+
     public sealed class PrimaryKey {
 
         public PrimaryKey(ITable table, string constraintName, params IColumn[] columns) {
