@@ -509,14 +509,14 @@ namespace QueryLite {
 
             DatabasePrimaryKey? dbPrimaryKey = dbTable.PrimaryKey;
             PrimaryKey? codePrimaryKey = table.PrimaryKey;
-
+            
             if(dbPrimaryKey != null && codePrimaryKey == null) {
                 tableValidation.Add($"Code table is missing primary key definition");
             }
             else if(dbPrimaryKey == null && codePrimaryKey != null) {
                 tableValidation.Add($"Code table has a primary key definition but it does not exist in the database");
             }
-            else {
+            else if(dbPrimaryKey != null && codePrimaryKey != null) {
 
                 if(string.Compare(dbPrimaryKey!.ConstraintName, codePrimaryKey!.ConstraintName, ignoreCase: true) != 0) {
                     tableValidation.Add($"Code and database primary key constrain names are different. '{dbPrimaryKey.ConstraintName}' != '{codePrimaryKey.ConstraintName}'");
