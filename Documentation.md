@@ -911,7 +911,6 @@ public sealed class MyTable : ATable {
             MyColumn = new NullableColumn<IUnsupportedType>(this, columnName: "MyColumn");
         }
 }
-
 ```
 
 ## Database Constraints
