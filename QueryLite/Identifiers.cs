@@ -478,6 +478,9 @@ namespace QueryLite {
         public Bit(bool value) {
             Value = value;
         }
+        
+        public static Bit ValueOf(bool value) => value ? TRUE : FALSE;
+
         public override string ToString() {
             return Value ? "1" : "0";
         }
