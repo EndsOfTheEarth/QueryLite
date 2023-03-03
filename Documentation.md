@@ -869,10 +869,10 @@ SchemaValidationSettings settings = new SchemaValidationSettings() {
     ValidateMissingCodeTables = true
 };
 
-ValidationResult result = SchemaValidator.ValidateTablesInCurrentDomain(database, settings);
+ValidationResult result = SchemaValidator.ValidateTablesInAssembly(database, Assembly.GetExecutingAssembly(), settings);
 
 //There are other methods like validating table in an Assembly e.g.
-//List<TableValidation> validation = SchemaValidator.ValidateTablesInAssembly(database, Assembly.GetCallingAssembly(), settings);
+//ValidationResult result = SchemaValidator.ValidateTablesInCurrentDomain(database, settings);
 
 StringBuilder output = new StringBuilder();
 
@@ -880,18 +880,16 @@ foreach(TableValidation tableValidation in result.TableValidation) {
 
     if(tableValidation.HasErrors) {
 
+        string tableSchema = tableValidation.Table?.SchemaName ?? string.Empty;
         string tableName = tableValidation.Table?.TableName ?? string.Empty;
 
-        output.Append("Table Name: ").Append(tableName).Append(Environment.NewLine);
-
-        output.AppendLine("Errors:").Append(Environment.NewLine);
-
         foreach(string message in tableValidation.ValidationMessages) {
-            output.AppendLine(message);
+            output.AppendLine($"[{tableSchema}].[{tableName}] =>    {message}");
         }
         output.Append(Environment.NewLine);
     }
 }
+string text = output.ToString();
 ```
 
 ## Database Constraints
