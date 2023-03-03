@@ -35,13 +35,13 @@ namespace QueryLite {
             return conditionA != null ? new AndOrCondition(conditionA, isAnd: true, conditionB) : conditionB;
         }
         public static ICondition Or(ICondition? conditionA, ICondition conditionB) {
-            return conditionA != null ? new AndOrCondition(conditionA, isAnd: true, conditionB) : conditionB;
+            return conditionA != null ? new AndOrCondition(conditionA, isAnd: false, conditionB) : conditionB;
         }
         public static ICondition operator &(ICondition pConditionA, ICondition pConditionB) {
-            return new AndOrCondition(pConditionA, true, pConditionB);
+            return new AndOrCondition(pConditionA, isAnd: true, pConditionB);
         }
         public static ICondition operator |(ICondition pConditionA, ICondition pConditionB) {
-            return new AndOrCondition(pConditionA, false, pConditionB);
+            return new AndOrCondition(pConditionA, isAnd: false, pConditionB);
         }
     }
 
@@ -136,7 +136,6 @@ namespace QueryLite {
                 sql.Append(Left.Table.Alias).Append('.');
             }
             sql.Append(Left.ColumnName).Append(IsIn ? " IN(" : " NOT IN(");
-
             sql.Append(NestedQuery.GetSql(database, parameters));
             sql.Append(')');
         }
