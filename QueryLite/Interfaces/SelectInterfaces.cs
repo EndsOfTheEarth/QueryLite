@@ -269,7 +269,9 @@ namespace QueryLite {
         public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default);
     }
 
-    public sealed class QueryResult<RESULT> {
+    public interface IQueryResult { }
+
+    public sealed class QueryResult<RESULT> : IQueryResult {
 
         /// <summary>
         /// Returned rows
@@ -295,7 +297,7 @@ namespace QueryLite {
             return $"Rows: {Rows.Count}, Rows Effected: {RowsEffected}";
         }
     }
-    public sealed class NonQueryResult {
+    public sealed class NonQueryResult : IQueryResult {
 
         /// <summary>
         /// Sql of query

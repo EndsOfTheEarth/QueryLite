@@ -81,14 +81,14 @@ namespace QueryLite {
             catch { }
         }
 
-        public delegate void QueryPerformedDelegate(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId);
+        public delegate void QueryPerformedDelegate(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId);
 
         /// <summary>
         /// Event fired when a query completes execution or throws an exception
         /// </summary>
         public static event QueryPerformedDelegate? QueryPerformed;
 
-        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
+        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
             try {
 
 
@@ -98,6 +98,7 @@ namespace QueryLite {
                     rows: rows,
                     rowsEffected: rowsEffected,
                     queryType: queryType,
+                    result: result,
                     start: start,
                     end: end,
                     elapsedTime: elapsedTime,

@@ -838,7 +838,7 @@ QueryLite.Settings.QueryPerformed += Settings_QueryPerformed;
 void Settings_QueryExecuting(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
 
 }
-void Settings_QueryPerformed(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
+void Settings_QueryPerformed(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
 
 }
 ```

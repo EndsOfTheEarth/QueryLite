@@ -152,6 +152,7 @@ namespace QueryLite {
                         rows: result.Rows.Count,
                         rowsEffected: result.RowsEffected,
                         queryType: queryType,
+                        result: result,
                         start: start,
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -170,6 +171,7 @@ namespace QueryLite {
                     rows: 0,
                     rowsEffected: 0,
                     queryType: queryType,
+                    result: null,
                     start: start,
                     end: DateTimeOffset.Now,
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -271,6 +273,7 @@ namespace QueryLite {
                         rows: 0,
                         rowsEffected: result.RowsEffected,
                         queryType: queryType,
+                        result: result,
                         start: start,
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -289,6 +292,7 @@ namespace QueryLite {
                     rows: 0,
                     rowsEffected: 0,
                     queryType: queryType,
+                    result: null,
                     start: start,
                     end: DateTimeOffset.Now,
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -402,6 +406,8 @@ namespace QueryLite {
                 if(closeConnection) {
                     dbConnection.Close();
                 }
+                
+                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: 0);
 
                 if(hasEvents) {
 
@@ -411,6 +417,7 @@ namespace QueryLite {
                         rows: rowList.Count,
                         rowsEffected: 0,
                         queryType: queryType,
+                        result: result,
                         start: start,
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -419,7 +426,7 @@ namespace QueryLite {
                         transactionId: transaction?.TransactionId
                     );
                 }
-                return new QueryResult<RESULT>(rowList, sql, rowsEffected: 0);
+                return result;
             }
             catch(Exception ex) {
 
@@ -429,6 +436,7 @@ namespace QueryLite {
                     rows: 0,
                     rowsEffected: 0,
                     queryType: queryType,
+                    result: null,
                     start: start,
                     end: DateTimeOffset.Now,
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -557,6 +565,7 @@ namespace QueryLite {
                         rows: result.Rows.Count,
                         rowsEffected: result.RowsEffected,
                         queryType: queryType,
+                        result: result,
                         start: start,
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -575,6 +584,7 @@ namespace QueryLite {
                     rows: 0,
                     rowsEffected: 0,
                     queryType: queryType,
+                    result: null,
                     start: start,
                     end: DateTimeOffset.Now,
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -678,6 +688,7 @@ namespace QueryLite {
                         rows: 0,
                         rowsEffected: result.RowsEffected,
                         queryType: queryType,
+                        result: result,
                         start: start,
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
@@ -696,6 +707,7 @@ namespace QueryLite {
                     rows: 0,
                     rowsEffected: 0,
                     queryType: queryType,
+                    result: null,
                     start: start,
                     end: DateTimeOffset.Now,
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
