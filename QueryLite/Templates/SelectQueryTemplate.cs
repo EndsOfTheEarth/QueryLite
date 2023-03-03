@@ -313,7 +313,7 @@ namespace QueryLite {
             return result;
         }
 
-        public ITop<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
+        public IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
 
             SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
             template.ParentUnion = this;
@@ -322,7 +322,7 @@ namespace QueryLite {
             return template;
         }
 
-        public ITop<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
+        public IDistinct<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
 
             SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
             template.ParentUnion = this;

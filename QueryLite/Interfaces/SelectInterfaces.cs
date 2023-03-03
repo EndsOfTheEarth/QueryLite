@@ -188,14 +188,14 @@ namespace QueryLite {
         /// </summary>
         /// <param name="selectFunc"></param>
         /// <returns></returns>
-        ITop<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc);
+        IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc);
 
         /// <summary>
         /// Union all query
         /// </summary>
         /// <param name="selectFunc"></param>
         /// <returns></returns>
-        ITop<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc);
+        IDistinct<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc);
     }
 
     public interface IFor<RESULT> : IOption<RESULT> {
