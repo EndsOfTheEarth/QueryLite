@@ -52,7 +52,8 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             IList<IField> selectFields,
-            FieldCollector fieldCollector) {
+            FieldCollector fieldCollector,
+            string debugName) {
 
             DbConnection? dbConnection = null;
 
@@ -74,7 +75,8 @@ namespace QueryLite {
                         queryType: queryType,
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
 
@@ -158,7 +160,8 @@ namespace QueryLite {
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
                 return result;
@@ -177,7 +180,8 @@ namespace QueryLite {
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                     exception: ex,
                     isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
                 );
                 throw;
             }
@@ -194,7 +198,8 @@ namespace QueryLite {
             QueryTimeout timeout,
             IParameters? parameters,
             string sql,
-            QueryType queryType) {
+            QueryType queryType,
+            string debugName) {
 
             DbConnection? dbConnection = null;
 
@@ -216,7 +221,8 @@ namespace QueryLite {
                         queryType: queryType,
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
 
@@ -279,7 +285,8 @@ namespace QueryLite {
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
                 return result;
@@ -298,7 +305,8 @@ namespace QueryLite {
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                     exception: ex,
                     isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
                 );
                 throw;
             }
@@ -316,7 +324,8 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            FieldCollector fieldCollector) {
+            FieldCollector fieldCollector,
+            string debugName) {
 
             DbConnection? dbConnection = null;
 
@@ -338,7 +347,8 @@ namespace QueryLite {
                         queryType: queryType,
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
 
@@ -423,7 +433,8 @@ namespace QueryLite {
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
                 return result;
@@ -442,7 +453,8 @@ namespace QueryLite {
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                     exception: ex,
                     isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
                 );
                 throw;
             }
@@ -463,6 +475,7 @@ namespace QueryLite {
             QueryType queryType,
             IList<IField> selectFields,
             FieldCollector fieldCollector,
+            string debugName,
             CancellationToken cancellationToken) {
 
             DbConnection? dbConnection = null;
@@ -485,7 +498,8 @@ namespace QueryLite {
                         queryType: queryType,
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
 
@@ -571,7 +585,8 @@ namespace QueryLite {
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
                 return result;
@@ -590,7 +605,8 @@ namespace QueryLite {
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                     exception: ex,
                     isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
                 );
                 throw;
             }
@@ -608,6 +624,7 @@ namespace QueryLite {
             IParameters? parameters,
             string sql,
             QueryType queryType,
+            string debugName,
             CancellationToken cancellationToken) {
 
             DbConnection? dbConnection = null;
@@ -630,7 +647,8 @@ namespace QueryLite {
                         queryType: queryType,
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
 
@@ -694,7 +712,8 @@ namespace QueryLite {
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
                     );
                 }
                 return result;
@@ -713,7 +732,8 @@ namespace QueryLite {
                     elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                     exception: ex,
                     isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
                 );
                 throw;
             }

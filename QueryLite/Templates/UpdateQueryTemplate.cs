@@ -95,7 +95,7 @@ namespace QueryLite {
             return database.UpdateGenerator.GetSql(this, database, parameters);
         }
 
-        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default) {
+        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortUpdate;
@@ -113,12 +113,13 @@ namespace QueryLite {
                 timeout: timeout.Value,
                 parameters: parameters,
                 sql: sql,
-                queryType: QueryType.Update);
-
+                queryType: QueryType.Update,
+                debugName: debugName
+            );
             return result;
         }
 
-        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default) {
+        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortUpdate;
@@ -145,12 +146,14 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Update,
                 selectFields: fieldCollector.Fields,
-                fieldCollector: fieldCollector);
+                fieldCollector: fieldCollector,
+                debugName: debugName
+            );
 
             return result;
         }
 
-        public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default) {
+        public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortUpdate;
@@ -169,12 +172,13 @@ namespace QueryLite {
                 parameters: parameters,
                 sql: sql,
                 queryType: QueryType.Update,
+                debugName: debugName,
                 cancellationToken: cancellationToken ?? new CancellationToken()
             );
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default) {
+        public Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortUpdate;
@@ -202,6 +206,7 @@ namespace QueryLite {
                 queryType: QueryType.Update,
                 selectFields: fieldCollector.Fields,
                 fieldCollector: fieldCollector,
+                debugName: debugName,
                 cancellationToken: cancellationToken ?? new CancellationToken()
             );
             return result;

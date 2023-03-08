@@ -22,6 +22,8 @@
  * SOFTWARE.
  **/
 using System;
+using System.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QueryLite {
 
@@ -59,55 +61,194 @@ namespace QueryLite {
 
         internal static bool HasEvents => QueryExecuting != null || QueryPerformed != null;
 
-        public delegate void QueryExecutingDelegate(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, System.Data.IsolationLevel isolationLevel, ulong? transactionId);
+        public delegate void QueryExecutingDelegate(QueryExecutingDetail queryDetail);
 
         /// <summary>
         /// Event fired when a query begins execution
         /// </summary>
         public static event QueryExecutingDelegate? QueryExecuting;
 
-        internal static void FireQueryExecutingEvent(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
+        internal static void FireQueryExecutingEvent(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, System.Data.IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
             try {
 
                 QueryExecuting?.Invoke(
-                    database: database,
-                    sql: sql,
-                    queryType: queryType,
-                    start: start,
-                    isolationLevel: isolationLevel,
-                    transactionId: transactionId
+                    new QueryExecutingDetail(
+                        database: database,
+                        sql: sql,
+                        queryType: queryType,
+                        start: start,
+                        isolationLevel: isolationLevel,
+                        transactionId: transactionId,
+                        debugName: debugName
+                    )
                 );
             }
             catch { }
         }
 
-        public delegate void QueryPerformedDelegate(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId);
+        public delegate void QueryPerformedDelegate(QueryDetail queryDetail);
 
         /// <summary>
         /// Event fired when a query completes execution or throws an exception
         /// </summary>
         public static event QueryPerformedDelegate? QueryPerformed;
 
-        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
+        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
             try {
 
 
                 QueryPerformed?.Invoke(
-                    database: database,
-                    sql: sql,
-                    rows: rows,
-                    rowsEffected: rowsEffected,
-                    queryType: queryType,
-                    result: result,
-                    start: start,
-                    end: end,
-                    elapsedTime: elapsedTime,
-                    exception: exception,
-                    isolationLevel: isolationLevel,
-                    transactionId: transactionId
+                    new QueryDetail(                        
+                        database: database,
+                        sql: sql,
+                        rows: rows,
+                        rowsEffected: rowsEffected,
+                        queryType: queryType,
+                        result: result,
+                        start: start,
+                        end: end,
+                        elapsedTime: elapsedTime,
+                        exception: exception,
+                        isolationLevel: isolationLevel,
+                        transactionId: transactionId,
+                        debugName: debugName
+                    )
                 );
             }
             catch { }
         }
+    }
+
+    public class QueryExecutingDetail {
+
+        public QueryExecutingDetail(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
+            Database = database;
+            Sql = sql;
+            QueryType = queryType;
+            Start = start;
+            IsolationLevel = isolationLevel;
+            TransactionId = transactionId;
+            DebugName = debugName;
+        }
+
+        /// <summary>
+        /// Database the query is being executed against
+        /// </summary>
+        public IDatabase Database { get; }
+
+        /// <summary>
+        /// Sql query being executed
+        /// </summary>
+        public string Sql { get; }
+
+        /// <summary>
+        /// Type of sql query. e.g. Select, Insert, Update, Delete and Truncate
+        /// </summary>
+        public QueryType QueryType { get; }
+
+        /// <summary>
+        /// Date time query began executing
+        /// </summary>
+        public DateTimeOffset? Start { get; }
+
+        /// <summary>
+        /// Isolation level being used
+        /// </summary>
+        public System.Data.IsolationLevel IsolationLevel { get; }
+
+        /// <summary>
+        /// Transaction id
+        /// </summary>
+        public ulong? TransactionId { get; }
+
+        /// <summary>
+        /// Debugging name given to query. This is useful for identifying particular queries. This name is passed as a parameter in query execute methods.
+        /// </summary>
+        public string DebugName { get; }
+    }
+
+    public class QueryDetail {
+        
+        public QueryDetail(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
+            
+            Database = database;
+            Sql = sql;
+            Rows = rows;
+            RowsEffected = rowsEffected;
+            QueryType = queryType;
+            Result = result;
+            Start = start;
+            End = end;
+            ElapsedTime = elapsedTime;
+            Exception = exception;
+            IsolationLevel = isolationLevel;
+            TransactionId = transactionId;
+            DebugName = debugName;
+        }
+
+        /// <summary>
+        /// Database the query is being executed against
+        /// </summary>
+        public IDatabase Database { get; }
+
+        /// <summary>
+        /// Sql query being executed
+        /// </summary>
+        public string Sql { get; }
+
+        /// <summary>
+        /// Rows returned by query
+        /// </summary>
+        public int Rows { get; }
+
+        /// <summary>
+        /// Rows inserted, updated or deleted by query
+        /// </summary>
+        public int RowsEffected { get; }
+
+        /// <summary>
+        /// Type of sql query. e.g. Select, Insert, Update, Delete and Truncate
+        /// </summary>
+        public QueryType QueryType { get; }
+
+        /// <summary>
+        /// Query result
+        /// </summary>
+        public IQueryResult? Result { get; }
+
+        /// <summary>
+        /// Date time query began executing
+        /// </summary>
+        public DateTimeOffset? Start { get; }
+
+        /// <summary>
+        /// Date time query finished executing
+        /// </summary>
+        public DateTimeOffset? End { get; }
+
+        /// <summary>
+        /// Time taken for query to execute. Note: the elapsed time is more accurate than using start and end times to calculate the elapsed time.
+        /// </summary>
+        public TimeSpan? ElapsedTime { get; }
+
+        /// <summary>
+        /// Exception if the query failed to execute
+        /// </summary>
+        public Exception? Exception { get; }
+
+        /// <summary>
+        /// Isolation level being used
+        /// </summary>
+        public IsolationLevel IsolationLevel { get; }
+
+        /// <summary>
+        /// Transaction id
+        /// </summary>
+        public ulong? TransactionId { get; }
+
+        /// <summary>
+        /// Debugging name given to query. This is useful for identifying particular queries. This name is passed as a parameter in query execute methods.
+        /// </summary>
+        public string DebugName { get; }
     }
 }

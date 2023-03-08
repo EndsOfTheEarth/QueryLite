@@ -835,11 +835,32 @@ Please Note: The elapsedTime parameter is measured using the stopwatch class. So
 QueryLite.Settings.QueryExecuting += Settings_QueryExecuting;
 QueryLite.Settings.QueryPerformed += Settings_QueryPerformed;
 
-void Settings_QueryExecuting(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
+void Settings_QueryExecuting(QueryExecutingDetail queryDetail) {
 
+    IDatabase database = queryDetail.Database;
+    string sql = queryDetail.Sql;
+    QueryType queryType = queryDetail.QueryType;
+    DateTimeOffset? start = queryDetail.Start;
+    System.Data.IsolationLevel isolationLevel = queryDetail.IsolationLevel;
+    ulong? transactionId = queryDetail.TransactionId;
+    string debugName = queryDetail.DebugName;
 }
-void Settings_QueryPerformed(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
 
+void Settings_QueryPerformed(QueryDetail queryDetail) {
+
+    IDatabase database = queryDetail.Database;
+    string sql = queryDetail.Sql;
+    int rows = queryDetail.Rows;
+    int rowsEffected = queryDetail.RowsEffected;
+    QueryType queryType = queryDetail.QueryType;
+    IQueryResult? result = queryDetail.Result;
+    DateTimeOffset? start = queryDetail.Start;
+    DateTimeOffset? end = queryDetail.End;
+    TimeSpan? elapsedTime = queryDetail.ElapsedTime;
+    Exception? exception = queryDetail.Exception;
+    System.Data.IsolationLevel isolationLevel = queryDetail.IsolationLevel;
+    ulong? transactionId = queryDetail.TransactionId;
+    string debugName = queryDetail.DebugName;
 }
 ```
 

@@ -34,7 +34,7 @@ namespace QueryLite {
             Table = table;
         }
 
-        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null) {
+        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortDelete;
@@ -48,11 +48,12 @@ namespace QueryLite {
                 timeout: timeout.Value,
                 parameters: null,
                 sql: sql,
-                queryType: QueryType.Truncate
+                queryType: QueryType.Truncate,
+                debugName: debugName
             );
         }
 
-        public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null) {
+        public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortDelete;
@@ -67,6 +68,7 @@ namespace QueryLite {
                 parameters: null,
                 sql: sql,
                 queryType: QueryType.Truncate,
+                debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None
             );
         }
