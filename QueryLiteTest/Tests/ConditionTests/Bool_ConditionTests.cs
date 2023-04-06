@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace QueryLiteTest.Tests.ConditionTests {
 
     [TestClass]
-    public sealed class Guid_ConditionTests {
+    public sealed class Bool_ConditionTests {
 
         [TestInitialize]
         public void ClearTable() {
@@ -72,9 +72,10 @@ namespace QueryLiteTest.Tests.ConditionTests {
             AllTypes types2 = GetAllType();
             AllTypes types3 = GetAllType();
 
-            types1.Guid = new Guid("00000000-0000-0000-0000-000000000000");
-            types2.Guid = new Guid("10000000-0000-0000-0000-000000000000");
-            types3.Guid = new Guid("20000000-0000-0000-0000-000000000000");
+            //Set Booleans so they sort in a way that makes validation simplier
+            types1.Boolean = true;
+            types2.Boolean = false;
+            types3.Boolean = false;
 
             await AllFieldsTest.InsertWithQueryAsync(types1);
             await AllFieldsTest.InsertWithQueryAsync(types2);
@@ -88,7 +89,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.In(new List<Guid>() { types1.Guid, types2.Guid, types3.Guid }))
+                    .Where(table.Boolean.In(new List<bool>() { types1.Boolean, types2.Boolean, types3.Boolean }))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -105,14 +106,15 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.In(new List<Guid>() { types1.Guid, types2.Guid }))
+                    .Where(table.Boolean.In(new List<bool>() { true, false }))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(result.Rows.Count, 3);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
                 AllFieldsTest.AssertRow(result.Rows[1], types2);
+                AllFieldsTest.AssertRow(result.Rows[2], types3);
             }
 
             {
@@ -121,50 +123,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.In(new List<Guid>() { types2.Guid }))
-                    .OrderBy(table.Id.ASC)
-                    .ExecuteAsync(TestDatabase.Database);
-
-                Assert.AreEqual(result.Rows.Count, 1);
-
-                AllFieldsTest.AssertRow(result.Rows[0], types2);
-            }
-
-            {
-                QueryResult<AllTypesInfo> result = await Query
-                    .Select(
-                        row => new AllTypesInfo(row, table)
-                    )
-                    .From(table)
-                    .Where(table.Guid.NotIn(new List<Guid>() { types1.Guid, types2.Guid, types3.Guid }))
-                    .OrderBy(table.Id.ASC)
-                    .ExecuteAsync(TestDatabase.Database);
-
-                Assert.AreEqual(result.Rows.Count, 0);
-            }
-
-            {
-                QueryResult<AllTypesInfo> result = await Query
-                    .Select(
-                        row => new AllTypesInfo(row, table)
-                    )
-                    .From(table)
-                    .Where(table.Guid.NotIn(new List<Guid>() { types1.Guid, types2.Guid }))
-                    .OrderBy(table.Id.ASC)
-                    .ExecuteAsync(TestDatabase.Database);
-
-                Assert.AreEqual(result.Rows.Count, 1);
-
-                AllFieldsTest.AssertRow(result.Rows[0], types3);
-            }
-
-            {
-                QueryResult<AllTypesInfo> result = await Query
-                    .Select(
-                        row => new AllTypesInfo(row, table)
-                    )
-                    .From(table)
-                    .Where(table.Guid.NotIn(new List<Guid>() { types1.Guid }))
+                    .Where(table.Boolean.In(new List<bool>() { false }))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -174,16 +133,13 @@ namespace QueryLiteTest.Tests.ConditionTests {
                 AllFieldsTest.AssertRow(result.Rows[1], types3);
             }
 
-            //
-            //  Equals and not equals operator tests
-            //
             {
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid == Guid.NewGuid())
+                    .Where(table.Boolean.NotIn(new List<bool>() { true, false }))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -196,7 +152,55 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid == types1.Guid)
+                    .Where(table.Boolean.NotIn(new List<bool>() { true, false }))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 0);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.Boolean.NotIn(new List<bool>() { true }))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 2);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types2);
+                AllFieldsTest.AssertRow(result.Rows[1], types3);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.Boolean.NotIn(new List<bool>() { false }))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 1);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+            }
+
+            //
+            //  Equals and not equals operator tests
+            //
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.Boolean == types1.Boolean)
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -211,7 +215,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid != types1.Guid)
+                    .Where(table.Boolean != types1.Boolean)
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -230,20 +234,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.SqlEquals_NonTypeSafe(Guid.NewGuid()))
-                    .OrderBy(table.Id.ASC)
-                    .ExecuteAsync(TestDatabase.Database);
-
-                Assert.AreEqual(result.Rows.Count, 0);
-            }
-
-            {
-                QueryResult<AllTypesInfo> result = await Query
-                    .Select(
-                        row => new AllTypesInfo(row, table)
-                    )
-                    .From(table)
-                    .Where(table.Guid.SqlEquals_NonTypeSafe(types1.Guid))
+                    .Where(table.Boolean.SqlEquals_NonTypeSafe(true))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -258,7 +249,22 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.SqlNotEquals_NonTypeSafe(types1.Guid))
+                    .Where(table.Boolean.SqlEquals_NonTypeSafe(types1.Boolean))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 1);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.Boolean.SqlNotEquals_NonTypeSafe(types1.Boolean))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -277,7 +283,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.IsNull)
+                    .Where(table.Boolean.IsNull)
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -290,7 +296,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.IsNotNull)
+                    .Where(table.Boolean.IsNotNull)
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -313,10 +319,10 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     )
                     .From(table)
                     .Where(
-                        table.Guid.In(
-                            Query.NestedSelect(table2.Guid)
+                        table.Boolean.In(
+                            Query.NestedSelect(table2.Boolean)
                                 .From(table2)
-                                .Where(table2.Guid == types1.Guid)
+                                .Where(table2.Boolean == types1.Boolean)
                         )
                     )
                     .OrderBy(table.Id.ASC)
@@ -334,10 +340,10 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     )
                     .From(table)
                     .Where(
-                        table.Guid.In(
-                            Query.NestedSelect(table2.Guid)
+                        table.Boolean.In(
+                            Query.NestedSelect(table2.Boolean)
                                 .From(table2)
-                                .Where(table2.Guid.In(new List<Guid>() { types2.Guid, types3.Guid }))
+                                .Where(table2.Boolean.In(new List<bool>() { types2.Boolean, types3.Boolean }))
                         )
                     )
                     .OrderBy(table.Id.ASC)
@@ -356,8 +362,8 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     )
                     .From(table)
                     .Where(
-                        table.Guid.NotIn(
-                            Query.NestedSelect(table2.Guid)
+                        table.Boolean.NotIn(
+                            Query.NestedSelect(table2.Boolean)
                                 .From(table2)
                         )
                     )
@@ -374,10 +380,10 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     )
                     .From(table)
                     .Where(
-                        table.Guid.NotIn(
-                            Query.NestedSelect(table2.Guid)
+                        table.Boolean.NotIn(
+                            Query.NestedSelect(table2.Boolean)
                                 .From(table2)
-                                .Where(table2.Guid == types1.Guid)
+                                .Where(table2.Boolean == types1.Boolean)
                         )
                     )
                     .OrderBy(table.Id.ASC)
