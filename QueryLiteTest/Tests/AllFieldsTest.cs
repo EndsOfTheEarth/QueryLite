@@ -356,7 +356,7 @@ namespace QueryLiteTest.Tests {
             AssertRow(result.Rows[0].AllTypesRow, allTypes);
         }
 
-        private async Task AssertRowExistsAsync(AllTypes allTypes) {
+        private static async Task AssertRowExistsAsync(AllTypes allTypes) {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
@@ -428,7 +428,7 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(result.Rows.Count, 0);
         }
 
-        private void AssertRow(AllTypesInfo row, AllTypes allTypes) {
+        public static void AssertRow(AllTypesInfo row, AllTypes allTypes) {
 
             Assert.AreEqual(row.Id, allTypes.Id);
             Assert.AreEqual(row.Guid, allTypes.Guid);
@@ -742,7 +742,7 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(result.Rows.First().Count, 0);
         }
 
-        private async Task InsertWithQueryAsync(AllTypes allTypes) {
+        public static async Task InsertWithQueryAsync(AllTypes allTypes) {
 
             Assert.IsTrue(!allTypes.Id.IsValid);
 
