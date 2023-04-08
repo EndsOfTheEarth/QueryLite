@@ -104,6 +104,23 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
+                    .Where(table.Int.In(types1.Int, types2.Int, types3.Int))
+                    .OrderBy(table.Int.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 3);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+                AllFieldsTest.AssertRow(result.Rows[1], types2);
+                AllFieldsTest.AssertRow(result.Rows[2], types3);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
                     .Where(table.Int.In(new List<int>() { types1.Int, types2.Int }))
                     .OrderBy(table.Int.ASC)
                     .ExecuteAsync(TestDatabase.Database);
@@ -136,6 +153,19 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     )
                     .From(table)
                     .Where(table.Int.NotIn(new List<int>() { types1.Int, types2.Int, types3.Int }))
+                    .OrderBy(table.Int.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 0);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.Int.NotIn(types1.Int, types2.Int, types3.Int))
                     .OrderBy(table.Int.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 

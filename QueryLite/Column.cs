@@ -162,6 +162,13 @@ namespace QueryLite {
             return new InNotInCondition<TYPE>(this, isIn: false, list: list);
         }
 
+        public ICondition In(params TYPE[] list) {
+            return new InNotInCondition<TYPE>(this, isIn: true, list: list);
+        }
+        public ICondition NotIn(params TYPE[] list) {
+            return new InNotInCondition<TYPE>(this, isIn: false, list: list);
+        }
+
         public ICondition In<RESULT>(IExecute<RESULT> query) {
             return new InNotInNestedQueryCondition<TYPE, RESULT>(this, isIn: true, nestedQuery: query);
         }
