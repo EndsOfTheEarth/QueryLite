@@ -114,7 +114,7 @@ namespace QueryLite {
             }
 
             if(validationSettings.ValidateMissingCodeTables) {
-                ValidateMissingCodeTables(dbSchema, codeTables, result);
+                ValidateMissingCodeTables(dbSchema, database, codeTables, result);
             }
             return result;
         }
@@ -162,7 +162,7 @@ namespace QueryLite {
             }
 
             if(validationSettings.ValidateMissingCodeTables) {
-                ValidateMissingCodeTables(dbSchema, codeTables, result);
+                ValidateMissingCodeTables(dbSchema, database, codeTables, result);
             }
             return result;
         }
@@ -193,7 +193,7 @@ namespace QueryLite {
             }
 
             if(validationSettings.ValidateMissingCodeTables) {
-                ValidateMissingCodeTables(dbSchema, codeTables, result);
+                ValidateMissingCodeTables(dbSchema, database, codeTables, result);
             }
             return result;
         }
@@ -213,7 +213,7 @@ namespace QueryLite {
             }
 
             if(validationSettings.ValidateMissingCodeTables) {
-                ValidateMissingCodeTables(dbSchema, tables, result);
+                ValidateMissingCodeTables(dbSchema, database, tables, result);
             }
             return result;
         }
@@ -621,13 +621,13 @@ namespace QueryLite {
              }
         }
 
-        private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, List<ITable> tables, ValidationResult validationResult) {
+        private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, IDatabase database, List<ITable> tables, ValidationResult validationResult) {
 
             Dictionary<string, ITable> codeTableLookup = new Dictionary<string, ITable>(StringComparer.OrdinalIgnoreCase);
 
             foreach(ITable codeTable in tables) {
 
-                string key = $"{codeTable.SchemaName}~~{codeTable.TableName}";
+                string key = $"{database.SchemaMap(codeTable.SchemaName)}~~{codeTable.TableName}";
 
                 if(!codeTableLookup.TryAdd(key, codeTable)) {
                     throw new Exception($"Table schema name and table name are not unique. Table: {codeTable.SchemaName}.{codeTable.TableName}");

@@ -26,9 +26,10 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
     public sealed class KeyColumnUsageTable : ATable {
 
         public static readonly KeyColumnUsageTable Instance = new KeyColumnUsageTable();
+        public static readonly KeyColumnUsageTable Instance2 = new KeyColumnUsageTable();
 
         public Column<string> Constraint_catalog { get; }
-        public Column<string> Constraint_schema { get; }
+        public Column<StringKey<ISchemaName>> Constraint_schema { get; }
         public Column<string> Constraint_name { get; }
         public Column<string> Table_catalog { get; }
         public Column<StringKey<ISchemaName>> Table_schema { get; }
@@ -40,7 +41,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public KeyColumnUsageTable() : base(tableName: "key_column_usage", schemaName: "information_schema") {
 
             Constraint_catalog = new Column<string>(table: this, columnName: "constraint_catalog");
-            Constraint_schema = new Column<string>(table: this, columnName: "constraint_schema");
+            Constraint_schema = new Column<StringKey<ISchemaName>>(table: this, columnName: "constraint_schema");
             Constraint_name = new Column<string>(table: this, columnName: "constraint_name");
             Table_catalog = new Column<string>(table: this, columnName: "table_catalog");
             Table_schema = new Column<StringKey<ISchemaName>>(table: this, columnName: "table_schema");
