@@ -104,6 +104,23 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
+                    .Where(table.Bytes.In(types1.Bytes, types2.Bytes, types3.Bytes))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 3);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+                AllFieldsTest.AssertRow(result.Rows[1], types2);
+                AllFieldsTest.AssertRow(result.Rows[2], types3);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
                     .Where(table.Bytes.In(new List<byte[]>() { types1.Bytes, types2.Bytes }))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
@@ -136,6 +153,19 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     )
                     .From(table)
                     .Where(table.Bytes.NotIn(new List<byte[]>() { types1.Bytes, types2.Bytes, types3.Bytes }))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 0);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.Bytes.NotIn(types1.Bytes, types2.Bytes, types3.Bytes))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
