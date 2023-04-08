@@ -134,6 +134,13 @@ namespace QueryLite {
             return new GenericCondition(columnA, Operator.NOT_EQUALS, columnB);
         }
 
+        public static ICondition operator ==(AColumn<TYPE> columnA, AFunction<TYPE> columnB) {
+            return new GenericCondition(columnA, Operator.EQUALS, columnB);
+        }
+        public static ICondition operator !=(AColumn<TYPE> columnA, AFunction<TYPE> columnB) {
+            return new GenericCondition(columnA, Operator.NOT_EQUALS, columnB);
+        }
+
         /// <summary>
         /// Returns an equals condition for two columns that have different types in code.
         /// </summary>
