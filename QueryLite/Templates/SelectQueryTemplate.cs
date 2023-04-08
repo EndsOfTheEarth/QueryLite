@@ -69,10 +69,16 @@ namespace QueryLite {
         public SqlServerQueryOption[]? Options { get; private set; } = null;
 
         public SelectQueryTemplate(Func<IResultRow, RESULT> selectFunction) {
+
+            ArgumentNullException.ThrowIfNull(selectFunction);
+
             SelectFunction = selectFunction;
             SelectFields = new List<IField>();
         }
         public SelectQueryTemplate(IList<IField> selectFields) {
+
+            ArgumentNullException.ThrowIfNull(selectFields);
+
             SelectFields = selectFields;
         }
         public ITop<RESULT> Distinct {
@@ -90,16 +96,24 @@ namespace QueryLite {
             return this;
         }
         public IHint<RESULT> From(ITable table) {
+
+            ArgumentNullException.ThrowIfNull(table);
+
             FromTable = table;
             return this;
         }
 
         public IJoin<RESULT> With(params SqlServerTableHint[] hints) {
+
+            ArgumentNullException.ThrowIfNull(hints);
+
             Hints = hints;
             return this;
         }
 
         public IJoinOn<RESULT> Join(ITable table) {
+
+            ArgumentNullException.ThrowIfNull(table);
 
             Join<RESULT> join = new Join<RESULT>(JoinType.Join, table, this);
 
@@ -110,6 +124,8 @@ namespace QueryLite {
             return join;
         }
         public IJoinOn<RESULT> LeftJoin(ITable table) {
+
+            ArgumentNullException.ThrowIfNull(table);
 
             Join<RESULT> join = new Join<RESULT>(JoinType.LeftJoin, table, this);
 
@@ -125,21 +141,33 @@ namespace QueryLite {
             return this;
         }
         public IHaving<RESULT> GroupBy(params ISelectable[] groupBy) {
+
+            ArgumentNullException.ThrowIfNull(groupBy);
+
             GroupByFields = groupBy;
             return this;
         }
 
         public IOrderBy<RESULT> Having(ICondition condition) {
+
+            ArgumentNullException.ThrowIfNull(condition);
+
             HavingCondition = condition;
             return this;
         }
 
         public IFor<RESULT> OrderBy(params IOrderByColumn[] orderBy) {
+
+            ArgumentNullException.ThrowIfNull(orderBy);
+
             OrderByFields = orderBy;
             return this;
         }
 
         public IOption<RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
+
+            ArgumentNullException.ThrowIfNull(ofTables);
+
             ForType = forType;
             OfTables = ofTables;
             WaitType = waitType;
@@ -147,6 +175,8 @@ namespace QueryLite {
         }
 
         public IExecute<RESULT> Option(params SqlServerQueryOption[] options) {
+
+            ArgumentNullException.ThrowIfNull(options);
 
             if(options.Length == 0) {
                 throw new ArgumentException($"{nameof(options)} cannot be empty");
@@ -158,6 +188,7 @@ namespace QueryLite {
         public IExecute<RESULT> Option(string labelName, params SqlServerQueryOption[] options) {
 
             ArgumentException.ThrowIfNullOrEmpty(labelName);
+            ArgumentNullException.ThrowIfNull(options);
 
             if(options.Length == 0) {
                 throw new ArgumentException($"{nameof(options)} cannot be empty");
@@ -168,6 +199,8 @@ namespace QueryLite {
         }
 
         public string GetSql(IDatabase database, IParameters? parameters = null) {
+
+            ArgumentNullException.ThrowIfNull(database);
 
             FieldCollector fieldCollector = new FieldCollector();
 
@@ -182,6 +215,9 @@ namespace QueryLite {
         }
 
         public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortSelect;
@@ -214,6 +250,9 @@ namespace QueryLite {
 
         public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
+
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortSelect;
             }
@@ -239,12 +278,15 @@ namespace QueryLite {
                 selectFields: SelectFields,
                 fieldCollector: fieldCollector,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? new CancellationToken()
+                cancellationToken: cancellationToken ?? CancellationToken.None
             );
             return result;
         }
 
         public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(database);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortSelect;
@@ -271,12 +313,15 @@ namespace QueryLite {
                 selectFields: SelectFields,
                 fieldCollector: fieldCollector,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? new CancellationToken()
+                cancellationToken: cancellationToken ?? CancellationToken.None
             );
             return result;
         }
 
         public QueryResult<RESULT> Execute(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(database);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortSelect;
@@ -319,6 +364,8 @@ namespace QueryLite {
 
         public IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
 
+            ArgumentNullException.ThrowIfNull(selectFunc);
+
             SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
             template.ParentUnion = this;
             ChildUnion = template;
@@ -327,6 +374,8 @@ namespace QueryLite {
         }
 
         public IDistinct<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
+
+            ArgumentNullException.ThrowIfNull(selectFunc);
 
             SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
             template.ParentUnion = this;

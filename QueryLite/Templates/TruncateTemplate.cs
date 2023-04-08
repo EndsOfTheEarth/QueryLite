@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,10 +32,16 @@ namespace QueryLite {
         public ITable Table { get; }
 
         public TruncateQueryTemplate(ITable table) {
+
+            ArgumentNullException.ThrowIfNull(table);
+
             Table = table;
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortDelete;
@@ -54,6 +61,9 @@ namespace QueryLite {
         }
 
         public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortDelete;

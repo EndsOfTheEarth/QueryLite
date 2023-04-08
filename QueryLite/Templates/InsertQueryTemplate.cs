@@ -35,36 +35,58 @@ namespace QueryLite {
         public IList<IColumn>? ReturningFields { get; private set; }
 
         public InsertQueryTemplate(ITable table) {
+
+            ArgumentNullException.ThrowIfNull(table);
+
             Table = table;
         }
 
         public IInsertSetNext Set<TYPE>(Column<TYPE> column, TYPE value) where TYPE : notnull {
+            
+            ArgumentNullException.ThrowIfNull(column);
+            ArgumentNullException.ThrowIfNull(value);
+
             SetValues.Add(new SetValue(column, value));
             return this;
         }
 
         public IInsertSetNext Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : class {
+
+            ArgumentNullException.ThrowIfNull(column);
+
             SetValues.Add(new SetValue(column, value));
             return this;
         }
 
         public IInsertSetNext Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : struct {
+
+            ArgumentNullException.ThrowIfNull(column);
+
             SetValues.Add(new SetValue(column, value));
             return this;
         }
 
         public IInsertSetNext Set<TYPE>(Column<TYPE> column, AFunction<TYPE> function) where TYPE : notnull {
+            
+            ArgumentNullException.ThrowIfNull(column);
+            ArgumentNullException.ThrowIfNull(function);
+
             SetValues.Add(new SetValue(column, function));
             return this;
         }
 
         public string GetSql(IDatabase database) {
 
+            ArgumentNullException.ThrowIfNull(database);
+
             IParameters parameters = database.CreateParameters();
             return database.InsertGenerator.GetSql(this, database, parameters);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortInsert;
@@ -83,12 +105,16 @@ namespace QueryLite {
                 parameters: parameters,
                 sql: sql,
                 queryType: QueryType.Insert,
-                debugName: debugName);
-
+                debugName: debugName
+            );
             return result;
         }
 
         public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(func);
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortInsert;
@@ -116,12 +142,15 @@ namespace QueryLite {
                 queryType: QueryType.Insert,
                 selectFields: fieldCollector.Fields,
                 fieldCollector: fieldCollector,
-                debugName: debugName);
-
+                debugName: debugName
+            );
             return result;
         }
 
         public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortInsert;
@@ -141,12 +170,16 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Insert,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? new CancellationToken()
+                cancellationToken: cancellationToken ?? CancellationToken.None
             );
             return result;
         }
 
         public Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(func);
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortInsert;
@@ -175,7 +208,7 @@ namespace QueryLite {
                 selectFields: fieldCollector.Fields,
                 fieldCollector: fieldCollector,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? new CancellationToken()
+                cancellationToken: cancellationToken ?? CancellationToken.None
             );
             return result;
         }

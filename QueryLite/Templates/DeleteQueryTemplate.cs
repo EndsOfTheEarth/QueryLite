@@ -36,14 +36,22 @@ namespace QueryLite {
         public IList<IColumn>? ReturningColumns { get; private set; }
 
         public DeleteQueryTemplate(ITable table) {
+
+            ArgumentNullException.ThrowIfNull(table);
             Table = table;
         }
         public DeleteQueryTemplate(ITable table, ICondition whereCondition) {
+
+            ArgumentNullException.ThrowIfNull(table);
+            ArgumentNullException.ThrowIfNull(whereCondition);
+
             Table = table;
             WhereCondition = whereCondition;
         }
 
         public IDeleteJoinOn Join(ITable table) {
+
+            ArgumentNullException.ThrowIfNull(table);
 
             if(Joins == null) {
                 Joins = new List<IJoin>(1);
@@ -55,6 +63,8 @@ namespace QueryLite {
 
         public IDeleteJoinOn LeftJoin(ITable table) {
 
+            ArgumentNullException.ThrowIfNull(table);
+
             if(Joins == null) {
                 Joins = new List<IJoin>(1);
             }
@@ -64,6 +74,8 @@ namespace QueryLite {
         }
 
         public IDeleteExecute Where(ICondition condition) {
+
+            ArgumentNullException.ThrowIfNull(condition);
 
             if(WhereCondition != null) {
                 throw new Exception($"Where condition has already been set");
@@ -79,11 +91,16 @@ namespace QueryLite {
 
         public string GetSql(IDatabase database) {
 
+            ArgumentNullException.ThrowIfNull(database);
+
             IParameters parameters = database.CreateParameters();
             return database.DeleteGenerator.GetSql(this, database, parameters);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortDelete;
@@ -109,6 +126,10 @@ namespace QueryLite {
 
 
         public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(func);
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortDelete;
@@ -143,6 +164,9 @@ namespace QueryLite {
 
         public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
+
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortDelete;
             }
@@ -161,12 +185,16 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Delete,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? new CancellationToken()
+                cancellationToken: cancellationToken ?? CancellationToken.None
             );
             return result;
         }
 
         public Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(func);
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
 
             if(timeout == null) {
                 timeout = TimeoutLevel.ShortDelete;
@@ -195,7 +223,7 @@ namespace QueryLite {
                 selectFields: fieldCollector.Fields,
                 fieldCollector: fieldCollector,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? new CancellationToken()
+                cancellationToken: cancellationToken ?? CancellationToken.None
             );
             return result;
         }
