@@ -29,131 +29,131 @@ namespace QueryLite.Databases.SqlServer {
 
     public static class SqlServerSqlTypeMappings {
 
-        public static DbType GetDbType(Type type) {
+        public static SqlDbType GetDbType(Type type) {
 
             if(type == typeof(Guid)) {
-                return DbType.Guid;
+                return SqlDbType.UniqueIdentifier;
             }
             if(type == typeof(Guid?)) {
-                return DbType.Guid;
+                return SqlDbType.UniqueIdentifier;
             }
 
             if(type == typeof(bool)) {
-                return DbType.Boolean;
+                return SqlDbType.Bit;
             }
             if(type == typeof(bool?)) {
-                return DbType.Boolean;
+                return SqlDbType.Bit;
             }
 
             if(type == typeof(Bit)) {
-                return DbType.Boolean;
+                return SqlDbType.Bit;
             }
             if(type == typeof(Bit?)) {
-                return DbType.Boolean;
+                return SqlDbType.Bit;
             }
 
             if(type == typeof(byte[])) {
-                return DbType.Binary;
+                return SqlDbType.Binary;
             }
             if(type == typeof(byte?[])) {
-                return DbType.Binary;
+                return SqlDbType.Binary;
             }
 
             if(type == typeof(DateTimeOffset)) {
-                return DbType.DateTimeOffset;
+                return SqlDbType.DateTimeOffset;
             }
             if(type == typeof(DateTimeOffset?)) {
-                return DbType.DateTimeOffset;
+                return SqlDbType.DateTimeOffset;
             }
 
             if(type == typeof(DateTime)) {
-                return DbType.DateTime;
+                return SqlDbType.DateTime;
             }
             if(type == typeof(DateTime?)) {
-                return DbType.DateTime;
+                return SqlDbType.DateTime;
             }
 
             if(type == typeof(TimeOnly)) {
-                return DbType.DateTime2;    //Note: DateTime2 is required to get the TIME to save to microseconds precision
+                return SqlDbType.Time;
             }
             if(type == typeof(TimeOnly?)) {
-                return DbType.DateTime2;    //Note: DateTime2 is required to get the TIME to save to microseconds precision
+                return SqlDbType.Time;
             }
 
             if(type == typeof(DateOnly)) {
-                return DbType.Date;
+                return SqlDbType.Date;
             }
             if(type == typeof(DateOnly?)) {
-                return DbType.Date;
+                return SqlDbType.Date;
             }
 
             if(type == typeof(decimal)) {
-                return DbType.Decimal;
+                return SqlDbType.Decimal;
             }
             if(type == typeof(decimal?)) {
-                return DbType.Decimal;
+                return SqlDbType.Decimal;
             }
 
             if(type == typeof(double)) {
-                return DbType.Double;
+                return SqlDbType.Float;
             }
             if(type == typeof(double?)) {
-                return DbType.Double;
+                return SqlDbType.Float;
             }
 
             if(type == typeof(float)) {
-                return DbType.Single;
+                return SqlDbType.Real;
             }
             if(type == typeof(float?)) {
-                return DbType.Single;
+                return SqlDbType.Real;
             }
 
             if(type.IsEnum) {
-                return DbType.Int32;
+                return SqlDbType.Int;
             }
 
             if(type == typeof(short)) {
-                return DbType.Int16;
+                return SqlDbType.SmallInt;
             }
             if(type == typeof(short?)) {
-                return DbType.Int16;
+                return SqlDbType.SmallInt;
             }
 
             if(type == typeof(int)) {
-                return DbType.Int32;
+                return SqlDbType.Int;
             }
             if(type == typeof(int?)) {
-                return DbType.Int32;
+                return SqlDbType.Int;
             }
 
             if(type == typeof(long)) {
-                return DbType.Int64;
+                return SqlDbType.BigInt;
             }
             if(type == typeof(long?)) {
-                return DbType.Int64;
+                return SqlDbType.BigInt;
             }
 
             if(type == typeof(string)) {
-                return DbType.String;
+                return SqlDbType.NVarChar;
             }
 
             if(type.IsAssignableTo(typeof(IGuidType))) {
-                return DbType.Guid;
+                return SqlDbType.UniqueIdentifier;
             }
             if(type.IsAssignableTo(typeof(IStringType))) {
-                return DbType.String;
+                return SqlDbType.NVarChar;
             }
             if(type.IsAssignableTo(typeof(IInt16Type))) {
-                return DbType.Int16;
+                return SqlDbType.SmallInt;
             }
             if(type.IsAssignableTo(typeof(IInt32Type))) {
-                return DbType.Int32;
+                return SqlDbType.Int;
             }
             if(type.IsAssignableTo(typeof(IInt64Type))) {
-                return DbType.Int64;
+                return SqlDbType.BigInt;
             }
             if(type.IsAssignableTo(typeof(IBoolType))) {
-                return DbType.Boolean;
+                return SqlDbType.Bit;
             }
             throw new Exception($"Unknown SqlServer parameter type '{type.FullName}'");
         }
@@ -166,8 +166,8 @@ namespace QueryLite.Databases.SqlServer {
             if(value is DateOnly dateOnly) {
                 return dateOnly.ToDateTime(TimeOnly.MinValue);
             }
-            if(value is TimeOnly timeOnly) {    //Note: Ado requires a datetime to be set as a parameter for the TIME data type
-                return new DateTime(year: 1900, month: 1, day: 1, hour: timeOnly.Hour, minute: timeOnly.Minute, second: timeOnly.Second, millisecond: timeOnly.Millisecond, microsecond: timeOnly.Microsecond);
+            if(value is TimeOnly timeOnly) {
+                return timeOnly.ToTimeSpan();
             }
             return value;
         }

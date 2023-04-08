@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 
 namespace QueryLite.Databases.SqlServer {
 
@@ -61,10 +62,10 @@ namespace QueryLite.Databases.SqlServer {
 
             foreach(Param param in ParameterList) {
 
-                DbParameter parameter = command.CreateParameter();
+                SqlParameter parameter = ((SqlCommand)command).CreateParameter();
 
                 parameter.ParameterName = param.Name;
-                parameter.DbType = param.DbType;
+                parameter.SqlDbType = param.SqlDbType;
 
                 if(param.Value != null) {
                     parameter.Value = SqlServerSqlTypeMappings.ConvertToRawType(param.Value);
@@ -79,13 +80,13 @@ namespace QueryLite.Databases.SqlServer {
 
             public string Name { get; set; }
             public Type Type { get; set; }
-            public DbType DbType { get; set; }
+            public SqlDbType SqlDbType { get; set; }
             public object? Value { get; set; }
 
-            public Param(string name, Type type, DbType dbType, object? value) {
+            public Param(string name, Type type, SqlDbType dbType, object? value) {
                 Name = name;
                 Type = type;
-                DbType = dbType;
+                SqlDbType = dbType;
                 Value = value;
             }
         }
