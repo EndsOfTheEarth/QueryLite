@@ -31,6 +31,10 @@ namespace QueryLite {
         
     }
 
+    public interface ISelectable<TYPE> where TYPE : notnull {
+
+    }
+
     public interface IField : ISelectable, IOrderByColumn {
 
         Type Type { get; }
@@ -80,7 +84,7 @@ namespace QueryLite {
     }
 
     [DebuggerDisplay("Column Name: {ColumnName}, .net Type: {Type.FullName}, IsNullable: {IsNullable}, Length: {Length}")]
-    public abstract class AColumn<TYPE> : IColumn where TYPE : notnull {
+    public abstract class AColumn<TYPE> : ISelectable<TYPE>, IColumn where TYPE : notnull {
 
         /// <summary>
         /// Table this column belongs to
@@ -176,11 +180,11 @@ namespace QueryLite {
             return new InNotInCondition<TYPE>(this, isIn: false, list: list);
         }
 
-        public ICondition In<RESULT>(IExecute<RESULT> query) {
-            return new InNotInNestedQueryCondition<TYPE, RESULT>(this, isIn: true, nestedQuery: query);
+        public ICondition In<FIELD>(IExecute<FIELD> query) where FIELD : ISelectable<TYPE>{
+            return new InNotInNestedQueryCondition<TYPE, FIELD>(this, isIn: true, nestedQuery: query);
         }
-        public ICondition NotIn<RESULT>(IExecute<RESULT> query) {
-            return new InNotInNestedQueryCondition<TYPE, RESULT>(this, isIn: false, nestedQuery: query);
+        public ICondition NotIn<FIELD>(IExecute<FIELD> query) where FIELD : ISelectable<TYPE> {
+            return new InNotInNestedQueryCondition<TYPE, FIELD>(this, isIn: false, nestedQuery: query);
         }
 
         //

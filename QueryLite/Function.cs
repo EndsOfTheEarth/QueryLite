@@ -43,7 +43,7 @@ namespace QueryLite {
         internal string GetSql(IDatabase database, bool useAlias, IParameters? parameters);
     }
 
-    public abstract class AFunction<TYPE> : IFunction where TYPE : notnull {
+    public abstract class AFunction<TYPE> : ISelectable<TYPE>, IFunction where TYPE : notnull {
 
         public Type Type => typeof(TYPE);
 

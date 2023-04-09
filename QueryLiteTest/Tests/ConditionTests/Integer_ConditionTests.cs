@@ -480,6 +480,30 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                COUNT_ALL count = new COUNT_ALL();
+
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(
+                        table.Int.In(
+                            Query.NestedSelect(count)
+                                .From(table2)
+                                .Where(table2.Int == types1.Int)
+                        )
+                    )
+                    .OrderBy(table.Int.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(result.Rows.Count, 1);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+            }
+
+            {
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
