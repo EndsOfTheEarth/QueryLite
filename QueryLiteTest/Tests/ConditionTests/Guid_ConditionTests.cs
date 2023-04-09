@@ -20,7 +20,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             using(Transaction transation = new Transaction(TestDatabase.Database)) {
 
-                Query.DeleteFrom(allTypesTable)
+                Query.Delete(allTypesTable)
                     .NoWhereCondition()
                     .Execute(transation);
 

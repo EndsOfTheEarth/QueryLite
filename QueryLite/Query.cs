@@ -43,7 +43,7 @@ namespace QueryLite {
         /// <summary>
         /// Sql insert query
         /// </summary>
-        public static IInsertSet InsertInto(ITable table) {
+        public static IInsertSet Insert(ITable table) {
             return new InsertQueryTemplate(table);
         }
 
@@ -57,14 +57,14 @@ namespace QueryLite {
         /// <summary>
         /// Sql delete query
         /// </summary>
-        public static IDeleteJoin DeleteFrom(ITable table) {
+        public static IDeleteJoin Delete(ITable table) {
             return new DeleteQueryTemplate(table);
         }
 
         /// <summary>
         /// Sql truncate query
         /// </summary>
-        public static ITruncate TruncateTable(ITable table) {
+        public static ITruncate Truncate(ITable table) {
             return new TruncateQueryTemplate(table);
         }
     }

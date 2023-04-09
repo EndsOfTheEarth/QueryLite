@@ -18,7 +18,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transation = new Transaction(TestDatabase.Database)) {
 
-                Query.DeleteFrom(allTypesTable)
+                Query.Delete(allTypesTable)
                     .NoWhereCondition()
                     .Execute(transation, TimeoutLevel.ShortDelete);
 
@@ -76,7 +76,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<IntKey<AllTypes>> result = Query.InsertInto(table)
+                QueryResult<IntKey<AllTypes>> result = Query.Insert(table)
                     .Set(table.Guid, new NEWID())
                     .Set(table.String, info.String)
                     .Set(table.SmallInt, info.SmallInt)
@@ -189,7 +189,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 var result = Query
-                    .DeleteFrom(table)
+                    .Delete(table)
                     .Where(table.Guid == new NEWID() | table.DateTime == new GETDATE() | table.DateTimeOffset == new SYSDATETIMEOFFSET())
                     .Execute(
                         result => new {
@@ -210,7 +210,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 var result = Query
-                    .DeleteFrom(table)
+                    .Delete(table)
                     .Where(table.Guid != new NEWID())
                     .Execute(
                         result => new {

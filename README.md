@@ -111,7 +111,7 @@ StringKey<ICustomer> customerId = new StringKey<ICustomer>("ABC");
 
 using(Transaction transaction = new Transaction(DB.Northwind)) {
 
-    var result = Query.InsertInto(customersTable)
+    var result = Query.Insert(customersTable)
         .Set(customersTable.CustomerID, customerId)
         .Set(customersTable.CompanyName, "company name")
         .Set(customersTable.ContactName, "contact name")
@@ -175,7 +175,7 @@ StringKey<ICustomer> customerId = new StringKey<ICustomer>("ABC");
 
 using(Transaction transaction = new Transaction(DB.Northwind)) {
 
-    Query.DeleteFrom(customersTable)
+    Query.Delete(customersTable)
         .Where(customersTable.CustomerID == customerId)
         .Execute(transaction);
 

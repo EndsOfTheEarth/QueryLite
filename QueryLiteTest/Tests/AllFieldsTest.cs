@@ -27,7 +27,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transation = new Transaction(TestDatabase.Database)) {
 
-                Query.DeleteFrom(allTypesTable)
+                Query.Delete(allTypesTable)
                     .NoWhereCondition()
                     .Execute(transation);
 
@@ -564,7 +564,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 NonQueryResult result = await Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .Join(allTypesTable2).On(allTypesTable.Id == allTypesTable2.Id)
                     .Where(allTypesTable.Id == allTypes1.Id)
                     .ExecuteAsync(transaction);
@@ -572,7 +572,7 @@ namespace QueryLiteTest.Tests {
                 Assert.AreEqual(result.RowsEffected, 1);
 
                 result = await Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .LeftJoin(allTypesTable2).On(allTypesTable.Id == IntKey<AllTypes>.ValueOf(int.MaxValue))    //Left join with an id that does not exist
                     .Where(allTypesTable.Id == allTypes2.Id & allTypesTable2.Id.IsNotNull)  //Is not null should return zero rows
                     .ExecuteAsync(transaction);
@@ -581,7 +581,7 @@ namespace QueryLiteTest.Tests {
 
 
                 result = await Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .LeftJoin(allTypesTable2).On(allTypesTable.Id == IntKey<AllTypes>.ValueOf(int.MaxValue))    //Left join with an id that does not exist
                     .Where(allTypesTable.Id == allTypes2.Id & allTypesTable2.Id.IsNull)
                     .ExecuteAsync(transaction);
@@ -612,7 +612,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 QueryResult<AllTypesInfo> result = await Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .Join(allTypesTable2).On(allTypesTable.Id == allTypesTable2.Id)
                     .Where(allTypesTable.Id == allTypes3.Id)
                     .ExecuteAsync(
@@ -655,7 +655,7 @@ namespace QueryLiteTest.Tests {
 
                 AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-                QueryResult<AllTypesInfo> result = Query.InsertInto(allTypesTable)
+                QueryResult<AllTypesInfo> result = Query.Insert(allTypesTable)
                     .Set(allTypesTable.Guid, allTypes.Guid)
                     .Set(allTypesTable.String, allTypes.String)
                     .Set(allTypesTable.SmallInt, allTypes.SmallInt)
@@ -699,7 +699,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 NonQueryResult truncateResult = Query
-                    .TruncateTable(allTypesTable)
+                    .Truncate(allTypesTable)
                     .Execute(transaction, TimeoutLevel.ShortDelete);
 
                 transaction.Commit();
@@ -724,7 +724,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 NonQueryResult truncateResult = await Query
-                    .TruncateTable(allTypesTable)
+                    .Truncate(allTypesTable)
                     .ExecuteAsync(transaction);
 
                 transaction.Commit();
@@ -750,7 +750,7 @@ namespace QueryLiteTest.Tests {
 
                 AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-                QueryResult<AllTypesInfo> result = await Query.InsertInto(allTypesTable)
+                QueryResult<AllTypesInfo> result = await Query.Insert(allTypesTable)
                     .Set(allTypesTable.Guid, allTypes.Guid)
                     .Set(allTypesTable.String, allTypes.String)
                     .Set(allTypesTable.SmallInt, allTypes.SmallInt)
@@ -922,7 +922,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 NonQueryResult result = Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .Where(allTypesTable.Id == allTypes.Id)
                     .Execute(transaction, timeout: TimeoutLevel.ShortDelete);
 
@@ -966,7 +966,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 QueryResult<AllTypesInfo> result = Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .Where(allTypesTable.Id == allTypes.Id)
                     .Execute(
                         result => new AllTypesInfo(result, allTypesTable),
@@ -1018,7 +1018,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 NonQueryResult result = await Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .Where(allTypesTable.Id == allTypes.Id)
                     .ExecuteAsync(transaction);
 
@@ -1062,7 +1062,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 QueryResult<AllTypesInfo> result = await Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .Where(allTypesTable.Id == allTypes.Id)
                     .ExecuteAsync(
                         result => new AllTypesInfo(result, allTypesTable),
@@ -1229,7 +1229,7 @@ namespace QueryLiteTest.Tests {
 
                 AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-                var result = Query.InsertInto(allTypesTable)
+                var result = Query.Insert(allTypesTable)
                     .Set(allTypesTable.Guid, allTypes.Guid)
                     .Set(allTypesTable.String, allTypes.String)
                     .Set(allTypesTable.SmallInt, allTypes.SmallInt)
@@ -1343,7 +1343,7 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 NonQueryResult result = Query
-                    .DeleteFrom(allTypesTable)
+                    .Delete(allTypesTable)
                     .Where(allTypesTable.Id == allTypes.Id)
                     .Execute(transaction, TimeoutLevel.ShortDelete);
 

@@ -18,7 +18,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transation = new Transaction(TestDatabase.Database)) {
 
-                Query.DeleteFrom(allTypesTable)
+                Query.Delete(allTypesTable)
                     .NoWhereCondition()
                     .Execute(transation, TimeoutLevel.ShortDelete);
 
@@ -67,7 +67,7 @@ namespace QueryLiteTest.Tests {
 
                     list.Add(allTypes);
 
-                    var result = Query.InsertInto(allTypesTable)
+                    var result = Query.Insert(allTypesTable)
                         .Set(allTypesTable.Guid, allTypes.Guid)
                         .Set(allTypesTable.String, allTypes.String)
                         .Set(allTypesTable.SmallInt, allTypes.SmallInt)

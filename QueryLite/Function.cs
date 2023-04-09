@@ -67,10 +67,10 @@ namespace QueryLite {
         }
         public abstract string GetSql(IDatabase database, bool useAlias, IParameters? parameters);
 
-        public static ICondition operator ==(AFunction<TYPE> function, AFunction<TYPE> columnB) {
+        public static ICondition operator ==(AFunction<TYPE> function, ISelectable<TYPE> columnB) {
             return new GenericCondition(function, Operator.EQUALS, columnB);
         }
-        public static ICondition operator !=(AFunction<TYPE> function, AFunction<TYPE> columnB) {
+        public static ICondition operator !=(AFunction<TYPE> function, ISelectable<TYPE> columnB) {
             return new GenericCondition(function, Operator.NOT_EQUALS, columnB);
         }
 

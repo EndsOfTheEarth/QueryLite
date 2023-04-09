@@ -327,13 +327,13 @@ var result = Query
     .Execute(DB.Northwind, TimeoutLevel.MediumSelect); //Medium select timeout
 
 var result = Query
-    .InsertInto(shipperTable)
+    .Insert(shipperTable)
     .Set(shipperTable.CompanyName, "My company name")
     .Set(shipperTable.Phone, "123456789")
     .Execute(transaction);  //This will default to TimeoutLevel.ShortInsert
 
 var result = Query
-    .InsertInto(shipperTable)
+    .Insert(shipperTable)
     .Set(shipperTable.CompanyName, "My company name")
     .Set(shipperTable.Phone, "123456789")
     .Execute(transaction, TimeoutLevel.MediumInsert);  //Medium insert timeout
@@ -418,7 +418,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     ShipperTable shipperTable = ShipperTable.Instance;
 
     var result = Query
-        .InsertInto(shipperTable)
+        .Insert(shipperTable)
         .Set(shipperTable.CompanyName, "My company name")
         .Set(shipperTable.Phone, "123456789")
         .Execute(
@@ -499,7 +499,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     ShipperTable shipperTable = ShipperTable.Instance;
 
     var result = Query
-        .DeleteFrom(shipperTable)
+        .Delete(shipperTable)
         .Where(shipperTable.ShipperID == new IntKey<IShipper>(100))
         .Execute(transaction);
 
@@ -515,7 +515,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     ShipperTable shipperTable = ShipperTable.Instance;
 
     var result = Query
-        .DeleteFrom(shipperTable)
+        .Delete(shipperTable)
         .Where(shipperTable.ShipperID == new IntKey<IShipper>(100))
         .Execute(
             deleted => deleted.Get(shipperTable.ShipperID),
@@ -539,7 +539,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     CustomersTable customersTable = CustomersTable.Instance;
 
     NonQueryResult result = Query
-        .DeleteFrom(orderTable)
+        .Delete(orderTable)
         .Join(customersTable).On(orderTable.CustomerID == customersTable.CustomerID)
         .Where(customersTable.Region.IsNull)
         .Execute(transaction);
@@ -556,7 +556,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     ShipperTable shipperTable = ShipperTable.Instance;
 
     NonQueryResult result = Query
-        .TruncateTable(shipperTable)
+        .Truncate(shipperTable)
         .Execute(transaction);
 
     transaction.Commit();
