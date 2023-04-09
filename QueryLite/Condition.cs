@@ -155,6 +155,20 @@ namespace QueryLite {
         }
     }
 
+    internal sealed class NullNotNullFunctionCondition<TYPE> : ICondition where TYPE : notnull {
+
+        private IFunction Left { get; }
+        private bool IsNull { get; }
+
+        public NullNotNullFunctionCondition(IFunction left, bool isNull) {
+            Left = left;
+            IsNull = isNull;
+        }
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+            sql.Append(Left.GetSql(database, useAlias, parameters)).Append(IsNull ? " IS NULL" : " IS NOT NULL");
+        }
+    }
+
     internal sealed class GenericCondition : ICondition {
 
         public IField Left { get; private set; }

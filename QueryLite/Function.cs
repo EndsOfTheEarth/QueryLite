@@ -93,6 +93,10 @@ namespace QueryLite {
         public static ICondition operator >=(AFunction<TYPE> function, TYPE value) {
             return new GenericCondition(function, Operator.GREATER_THAN_OR_EQUAL, value);
         }
+
+        public ICondition IsNull => new NullNotNullFunctionCondition<TYPE>(this, isNull: true);
+        public ICondition IsNotNull => new NullNotNullFunctionCondition<TYPE>(this, isNull: false);
+
         public override int GetHashCode() {
             return base.GetHashCode();
         }
@@ -111,6 +115,30 @@ namespace QueryLite {
 
         protected NullableFunction(string name) : base(name) {
 
+        }
+    }
+
+    public sealed class RawSqlFunction<TYPE> : Function<TYPE> where TYPE : notnull {
+
+        private string Sql { get; }
+
+        public RawSqlFunction(string sql) : base(sql) {
+            Sql = sql;
+        }
+        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+            return Sql;
+        }
+    }
+
+    public sealed class NullableRawSqlFunction<TYPE> : NullableFunction<TYPE> where TYPE : notnull {
+
+        private string Sql { get; }
+
+        public NullableRawSqlFunction(string sql) : base(sql) {
+            Sql = sql;
+        }
+        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+            return Sql;
         }
     }
 }

@@ -21,6 +21,8 @@ CREATE TABLE AllTypes (
 	CONSTRAINT pk_TableA PRIMARY KEY(taId)
 );
 
+COMMENT ON TABLE alltypes IS 'All types table used for automated testing';
+
 CREATE TABLE Parent (
 	Id UUID NOT NULL,
 	Id2 UUID NOT NULL,

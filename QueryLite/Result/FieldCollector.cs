@@ -32,7 +32,7 @@ namespace QueryLite {
         void IResultRow.Reset() {
             Fields.Clear();
         }
-        public List<IField> Fields { get; } = new List<IField>();
+        public List<IField> Fields { get; } = new List<IField>(1);
 
         public List<IColumn> GetFieldsAsColumns() {
 
