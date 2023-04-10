@@ -53,7 +53,7 @@ namespace QueryLite.DbSchema {
                 )
                 .From(tablesTable)
                 .Join(columnsTable).On(tablesTable.Table_schema == columnsTable.Table_schema & tablesTable.Table_name == columnsTable.Table_name)
-                .Where(tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") & tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema"))
+                //.Where(tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") & tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema"))
                 .OrderBy(columnsTable.Ordinal_position)
                 .Execute(database);
 
@@ -137,9 +137,10 @@ namespace QueryLite.DbSchema {
                 )
                 .Where(
                     tableConstraints.Constraint_type == "PRIMARY KEY" &
-                    keyColumnUsage.Ordinal_position.IsNotNull &
-                    tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                    tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                    keyColumnUsage.Ordinal_position.IsNotNull
+                    //&
+                    //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
+                    //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
                 )
                 .OrderBy(keyColumnUsage.Ordinal_position)
                 .Execute(database, TimeoutLevel.ShortSelect);
@@ -265,8 +266,8 @@ namespace QueryLite.DbSchema {
                     .From(tablesTable)
                     .Where(
                         tablesTable.Table_type == "BASE TABLE" &
-                        tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                        tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema") &
+                        //tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
+                        //tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema") &
                         obj_Description.IsNotNull
                     )
                     .Execute(database);
@@ -298,9 +299,10 @@ namespace QueryLite.DbSchema {
                     )
                     .From(columnsTable)
                     .Where(
-                        column_Obj_Description.IsNotNull &
-                        columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                        columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                        column_Obj_Description.IsNotNull
+                        //&
+                        //columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
+                        //columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
                     )
                     .Execute(database);
 

@@ -107,7 +107,16 @@ namespace QueryLite.CodeGeneratorUI {
 
             Dictionary<StringKey<ISchemaName>, SchemaNode> schemaLookup = new Dictionary<StringKey<ISchemaName>, SchemaNode>();
 
+            bool includeSystemSchemas = chkIncludeSystemSchemas.Checked;
+
             foreach(DatabaseTable table in Tables) {
+
+                if(!includeSystemSchemas && _database.DatabaseType == DatabaseType.PostgreSql) { //Skip system schemas
+
+                    if(string.Compare(table.Schema.Value, "pg_catalog", ignoreCase: true) == 0 || string.Compare(table.Schema.Value, "information_schema", ignoreCase: true) == 0) {
+                        continue;
+                    }
+                }
 
                 if(!schemaLookup.TryGetValue(table.Schema, out SchemaNode? schemaNode)) {
                     schemaNode = new SchemaNode(table.Schema);

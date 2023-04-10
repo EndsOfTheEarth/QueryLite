@@ -64,6 +64,7 @@ namespace QueryLite.CodeGeneratorUI {
             lblPrefix = new System.Windows.Forms.Label();
             btnClose = new System.Windows.Forms.Button();
             txtCode = new System.Windows.Forms.TextBox();
+            chkIncludeSystemSchemas = new System.Windows.Forms.CheckBox();
             lblDatabaseType = new System.Windows.Forms.Label();
             cboDatabaseType = new System.Windows.Forms.ComboBox();
             lblConnectionString = new System.Windows.Forms.Label();
@@ -282,6 +283,17 @@ namespace QueryLite.CodeGeneratorUI {
             txtCode.TabIndex = 11;
             txtCode.WordWrap = false;
             // 
+            // chkIncludeSystemSchemas
+            // 
+            chkIncludeSystemSchemas.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            chkIncludeSystemSchemas.AutoSize = true;
+            chkIncludeSystemSchemas.Location = new System.Drawing.Point(968, 52);
+            chkIncludeSystemSchemas.Name = "chkIncludeSystemSchemas";
+            chkIncludeSystemSchemas.Size = new System.Drawing.Size(156, 19);
+            chkIncludeSystemSchemas.TabIndex = 7;
+            chkIncludeSystemSchemas.Text = "Include System Schemas";
+            chkIncludeSystemSchemas.UseVisualStyleBackColor = true;
+            // 
             // lblDatabaseType
             // 
             lblDatabaseType.AutoSize = true;
@@ -332,6 +344,7 @@ namespace QueryLite.CodeGeneratorUI {
             // grpConnection
             // 
             grpConnection.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            grpConnection.Controls.Add(chkIncludeSystemSchemas);
             grpConnection.Controls.Add(lblExample);
             grpConnection.Controls.Add(txtExampleConnectionString);
             grpConnection.Controls.Add(lblConnectionString);
@@ -361,7 +374,7 @@ namespace QueryLite.CodeGeneratorUI {
             txtExampleConnectionString.Location = new System.Drawing.Point(384, 48);
             txtExampleConnectionString.Name = "txtExampleConnectionString";
             txtExampleConnectionString.ReadOnly = true;
-            txtExampleConnectionString.Size = new System.Drawing.Size(735, 23);
+            txtExampleConnectionString.Size = new System.Drawing.Size(576, 23);
             txtExampleConnectionString.TabIndex = 6;
             // 
             // MainForm
@@ -412,5 +425,6 @@ namespace QueryLite.CodeGeneratorUI {
         private System.Windows.Forms.CheckBox chkIncludeJsonAttributes;
         private System.Windows.Forms.NumericUpDown numNumberOfInstanceProperties;
         private System.Windows.Forms.Label lblNumberOfInstanceProperties;
+        private System.Windows.Forms.CheckBox chkIncludeSystemSchemas;
     }
 }
