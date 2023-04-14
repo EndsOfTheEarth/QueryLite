@@ -69,10 +69,12 @@ namespace QueryLite.CodeGeneratorUI {
             cboDatabaseType = new System.Windows.Forms.ComboBox();
             lblConnectionString = new System.Windows.Forms.Label();
             txtConnectionString = new System.Windows.Forms.TextBox();
-            btnConnect = new System.Windows.Forms.Button();
+            btnLoad = new System.Windows.Forms.Button();
             grpConnection = new System.Windows.Forms.GroupBox();
             lblExample = new System.Windows.Forms.Label();
             txtExampleConnectionString = new System.Windows.Forms.TextBox();
+            BtnExpandAll = new System.Windows.Forms.Button();
+            BtnCollapseAll = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
             splitContainer.Panel1.SuspendLayout();
             splitContainer.Panel2.SuspendLayout();
@@ -84,11 +86,14 @@ namespace QueryLite.CodeGeneratorUI {
             // splitContainer
             // 
             splitContainer.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            splitContainer.Location = new System.Drawing.Point(0, 92);
+            splitContainer.Location = new System.Drawing.Point(0, 153);
+            splitContainer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
             // 
+            splitContainer.Panel1.Controls.Add(BtnCollapseAll);
+            splitContainer.Panel1.Controls.Add(BtnExpandAll);
             splitContainer.Panel1.Controls.Add(tvwTables);
             // 
             // splitContainer.Panel2
@@ -108,8 +113,9 @@ namespace QueryLite.CodeGeneratorUI {
             splitContainer.Panel2.Controls.Add(lblPrefix);
             splitContainer.Panel2.Controls.Add(btnClose);
             splitContainer.Panel2.Controls.Add(txtCode);
-            splitContainer.Size = new System.Drawing.Size(1136, 547);
-            splitContainer.SplitterDistance = 222;
+            splitContainer.Size = new System.Drawing.Size(1623, 912);
+            splitContainer.SplitterDistance = 317;
+            splitContainer.SplitterWidth = 6;
             splitContainer.TabIndex = 1;
             // 
             // tvwTables
@@ -117,19 +123,19 @@ namespace QueryLite.CodeGeneratorUI {
             tvwTables.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             tvwTables.HideSelection = false;
             tvwTables.Location = new System.Drawing.Point(0, 0);
+            tvwTables.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             tvwTables.Name = "tvwTables";
-            tvwTables.Size = new System.Drawing.Size(221, 519);
+            tvwTables.Size = new System.Drawing.Size(314, 862);
             tvwTables.TabIndex = 0;
             tvwTables.AfterSelect += TvwTables_AfterSelect;
             // 
             // numNumberOfInstanceProperties
             // 
-            numNumberOfInstanceProperties.Location = new System.Drawing.Point(516, 5);
-            numNumberOfInstanceProperties.Margin = new System.Windows.Forms.Padding(2);
+            numNumberOfInstanceProperties.Location = new System.Drawing.Point(737, 8);
             numNumberOfInstanceProperties.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
             numNumberOfInstanceProperties.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numNumberOfInstanceProperties.Name = "numNumberOfInstanceProperties";
-            numNumberOfInstanceProperties.Size = new System.Drawing.Size(38, 23);
+            numNumberOfInstanceProperties.Size = new System.Drawing.Size(54, 31);
             numNumberOfInstanceProperties.TabIndex = 5;
             numNumberOfInstanceProperties.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numNumberOfInstanceProperties.ValueChanged += CheckBoxes_CheckedChanged;
@@ -137,18 +143,20 @@ namespace QueryLite.CodeGeneratorUI {
             // lblNumberOfInstanceProperties
             // 
             lblNumberOfInstanceProperties.AutoSize = true;
-            lblNumberOfInstanceProperties.Location = new System.Drawing.Point(369, 8);
+            lblNumberOfInstanceProperties.Location = new System.Drawing.Point(527, 13);
+            lblNumberOfInstanceProperties.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             lblNumberOfInstanceProperties.Name = "lblNumberOfInstanceProperties";
-            lblNumberOfInstanceProperties.Size = new System.Drawing.Size(133, 15);
+            lblNumberOfInstanceProperties.Size = new System.Drawing.Size(203, 25);
             lblNumberOfInstanceProperties.TabIndex = 4;
             lblNumberOfInstanceProperties.Text = "# Of Instance Properties";
             // 
             // chkIncludeJsonAttributes
             // 
             chkIncludeJsonAttributes.AutoSize = true;
-            chkIncludeJsonAttributes.Location = new System.Drawing.Point(622, 32);
+            chkIncludeJsonAttributes.Location = new System.Drawing.Point(889, 53);
+            chkIncludeJsonAttributes.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             chkIncludeJsonAttributes.Name = "chkIncludeJsonAttributes";
-            chkIncludeJsonAttributes.Size = new System.Drawing.Size(146, 19);
+            chkIncludeJsonAttributes.Size = new System.Drawing.Size(218, 29);
             chkIncludeJsonAttributes.TabIndex = 10;
             chkIncludeJsonAttributes.Text = "Include Json Attributes";
             chkIncludeJsonAttributes.UseVisualStyleBackColor = true;
@@ -159,9 +167,10 @@ namespace QueryLite.CodeGeneratorUI {
             chkIncludeConstraints.AutoSize = true;
             chkIncludeConstraints.Checked = true;
             chkIncludeConstraints.CheckState = System.Windows.Forms.CheckState.Checked;
-            chkIncludeConstraints.Location = new System.Drawing.Point(265, 32);
+            chkIncludeConstraints.Location = new System.Drawing.Point(379, 53);
+            chkIncludeConstraints.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             chkIncludeConstraints.Name = "chkIncludeConstraints";
-            chkIncludeConstraints.Size = new System.Drawing.Size(128, 19);
+            chkIncludeConstraints.Size = new System.Drawing.Size(189, 29);
             chkIncludeConstraints.TabIndex = 8;
             chkIncludeConstraints.Text = "Include Constraints";
             chkIncludeConstraints.UseVisualStyleBackColor = true;
@@ -170,9 +179,10 @@ namespace QueryLite.CodeGeneratorUI {
             // chkIncludeDescriptions
             // 
             chkIncludeDescriptions.AutoSize = true;
-            chkIncludeDescriptions.Location = new System.Drawing.Point(122, 32);
+            chkIncludeDescriptions.Location = new System.Drawing.Point(174, 53);
+            chkIncludeDescriptions.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             chkIncludeDescriptions.Name = "chkIncludeDescriptions";
-            chkIncludeDescriptions.Size = new System.Drawing.Size(133, 19);
+            chkIncludeDescriptions.Size = new System.Drawing.Size(198, 29);
             chkIncludeDescriptions.TabIndex = 7;
             chkIncludeDescriptions.Text = "Include Descriptions";
             chkIncludeDescriptions.UseVisualStyleBackColor = true;
@@ -183,9 +193,10 @@ namespace QueryLite.CodeGeneratorUI {
             chkUseIdentifiers.AutoSize = true;
             chkUseIdentifiers.Checked = true;
             chkUseIdentifiers.CheckState = System.Windows.Forms.CheckState.Checked;
-            chkUseIdentifiers.Location = new System.Drawing.Point(4, 32);
+            chkUseIdentifiers.Location = new System.Drawing.Point(6, 53);
+            chkUseIdentifiers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             chkUseIdentifiers.Name = "chkUseIdentifiers";
-            chkUseIdentifiers.Size = new System.Drawing.Size(100, 19);
+            chkUseIdentifiers.Size = new System.Drawing.Size(150, 29);
             chkUseIdentifiers.TabIndex = 6;
             chkUseIdentifiers.Text = "Use Identifiers";
             chkUseIdentifiers.UseVisualStyleBackColor = true;
@@ -195,9 +206,10 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             chkSingleFiles.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             chkSingleFiles.AutoSize = true;
-            chkSingleFiles.Location = new System.Drawing.Point(133, 521);
+            chkSingleFiles.Location = new System.Drawing.Point(190, 871);
+            chkSingleFiles.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             chkSingleFiles.Name = "chkSingleFiles";
-            chkSingleFiles.Size = new System.Drawing.Size(84, 19);
+            chkSingleFiles.Size = new System.Drawing.Size(125, 29);
             chkSingleFiles.TabIndex = 13;
             chkSingleFiles.Text = "Single Files";
             chkSingleFiles.UseVisualStyleBackColor = true;
@@ -205,9 +217,10 @@ namespace QueryLite.CodeGeneratorUI {
             // btnOutputAllToFile
             // 
             btnOutputAllToFile.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnOutputAllToFile.Location = new System.Drawing.Point(3, 521);
+            btnOutputAllToFile.Location = new System.Drawing.Point(4, 868);
+            btnOutputAllToFile.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             btnOutputAllToFile.Name = "btnOutputAllToFile";
-            btnOutputAllToFile.Size = new System.Drawing.Size(123, 23);
+            btnOutputAllToFile.Size = new System.Drawing.Size(176, 38);
             btnOutputAllToFile.TabIndex = 12;
             btnOutputAllToFile.Text = "Output All To File";
             btnOutputAllToFile.UseVisualStyleBackColor = true;
@@ -215,9 +228,10 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             // txtNamespace
             // 
-            txtNamespace.Location = new System.Drawing.Point(78, 4);
+            txtNamespace.Location = new System.Drawing.Point(111, 7);
+            txtNamespace.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             txtNamespace.Name = "txtNamespace";
-            txtNamespace.Size = new System.Drawing.Size(175, 23);
+            txtNamespace.Size = new System.Drawing.Size(248, 31);
             txtNamespace.TabIndex = 1;
             txtNamespace.Text = "MyProject";
             txtNamespace.TextChanged += CheckBoxes_CheckedChanged;
@@ -225,18 +239,20 @@ namespace QueryLite.CodeGeneratorUI {
             // lblNamespace
             // 
             lblNamespace.AutoSize = true;
-            lblNamespace.Location = new System.Drawing.Point(3, 9);
+            lblNamespace.Location = new System.Drawing.Point(4, 15);
+            lblNamespace.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             lblNamespace.Name = "lblNamespace";
-            lblNamespace.Size = new System.Drawing.Size(69, 15);
+            lblNamespace.Size = new System.Drawing.Size(104, 25);
             lblNamespace.TabIndex = 0;
             lblNamespace.Text = "Namespace";
             // 
             // chkIncludeMessagePackAttributes
             // 
             chkIncludeMessagePackAttributes.AutoSize = true;
-            chkIncludeMessagePackAttributes.Location = new System.Drawing.Point(410, 32);
+            chkIncludeMessagePackAttributes.Location = new System.Drawing.Point(586, 53);
+            chkIncludeMessagePackAttributes.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             chkIncludeMessagePackAttributes.Name = "chkIncludeMessagePackAttributes";
-            chkIncludeMessagePackAttributes.Size = new System.Drawing.Size(197, 19);
+            chkIncludeMessagePackAttributes.Size = new System.Drawing.Size(293, 29);
             chkIncludeMessagePackAttributes.TabIndex = 9;
             chkIncludeMessagePackAttributes.Text = "Include Message Pack Attributes";
             chkIncludeMessagePackAttributes.UseVisualStyleBackColor = true;
@@ -244,27 +260,30 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             // txtPrefix
             // 
-            txtPrefix.Location = new System.Drawing.Point(302, 4);
+            txtPrefix.Location = new System.Drawing.Point(431, 7);
+            txtPrefix.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             txtPrefix.Name = "txtPrefix";
-            txtPrefix.Size = new System.Drawing.Size(52, 23);
+            txtPrefix.Size = new System.Drawing.Size(73, 31);
             txtPrefix.TabIndex = 3;
             txtPrefix.TextChanged += CheckBoxes_CheckedChanged;
             // 
             // lblPrefix
             // 
             lblPrefix.AutoSize = true;
-            lblPrefix.Location = new System.Drawing.Point(259, 9);
+            lblPrefix.Location = new System.Drawing.Point(370, 15);
+            lblPrefix.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             lblPrefix.Name = "lblPrefix";
-            lblPrefix.Size = new System.Drawing.Size(37, 15);
+            lblPrefix.Size = new System.Drawing.Size(55, 25);
             lblPrefix.TabIndex = 2;
             lblPrefix.Text = "Prefix";
             // 
             // btnClose
             // 
             btnClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnClose.Location = new System.Drawing.Point(828, 520);
+            btnClose.Location = new System.Drawing.Point(1181, 867);
+            btnClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             btnClose.Name = "btnClose";
-            btnClose.Size = new System.Drawing.Size(75, 23);
+            btnClose.Size = new System.Drawing.Size(107, 38);
             btnClose.TabIndex = 14;
             btnClose.Text = "&Close";
             btnClose.UseVisualStyleBackColor = true;
@@ -274,12 +293,13 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             txtCode.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             txtCode.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            txtCode.Location = new System.Drawing.Point(3, 56);
+            txtCode.Location = new System.Drawing.Point(4, 93);
+            txtCode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             txtCode.Multiline = true;
             txtCode.Name = "txtCode";
             txtCode.ReadOnly = true;
             txtCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            txtCode.Size = new System.Drawing.Size(901, 463);
+            txtCode.Size = new System.Drawing.Size(1283, 769);
             txtCode.TabIndex = 11;
             txtCode.WordWrap = false;
             // 
@@ -287,9 +307,10 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             chkIncludeSystemSchemas.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             chkIncludeSystemSchemas.AutoSize = true;
-            chkIncludeSystemSchemas.Location = new System.Drawing.Point(968, 52);
+            chkIncludeSystemSchemas.Location = new System.Drawing.Point(1373, 87);
+            chkIncludeSystemSchemas.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             chkIncludeSystemSchemas.Name = "chkIncludeSystemSchemas";
-            chkIncludeSystemSchemas.Size = new System.Drawing.Size(156, 19);
+            chkIncludeSystemSchemas.Size = new System.Drawing.Size(232, 29);
             chkIncludeSystemSchemas.TabIndex = 7;
             chkIncludeSystemSchemas.Text = "Include System Schemas";
             chkIncludeSystemSchemas.UseVisualStyleBackColor = true;
@@ -297,9 +318,10 @@ namespace QueryLite.CodeGeneratorUI {
             // lblDatabaseType
             // 
             lblDatabaseType.AutoSize = true;
-            lblDatabaseType.Location = new System.Drawing.Point(4, 52);
+            lblDatabaseType.Location = new System.Drawing.Point(6, 87);
+            lblDatabaseType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             lblDatabaseType.Name = "lblDatabaseType";
-            lblDatabaseType.Size = new System.Drawing.Size(82, 15);
+            lblDatabaseType.Size = new System.Drawing.Size(128, 25);
             lblDatabaseType.TabIndex = 2;
             lblDatabaseType.Text = "Database Type";
             // 
@@ -307,39 +329,43 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             cboDatabaseType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cboDatabaseType.FormattingEnabled = true;
-            cboDatabaseType.Location = new System.Drawing.Point(112, 48);
+            cboDatabaseType.Location = new System.Drawing.Point(160, 80);
+            cboDatabaseType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             cboDatabaseType.Name = "cboDatabaseType";
-            cboDatabaseType.Size = new System.Drawing.Size(96, 23);
+            cboDatabaseType.Size = new System.Drawing.Size(135, 33);
             cboDatabaseType.TabIndex = 3;
             cboDatabaseType.SelectedIndexChanged += CboDatabaseType_SelectedIndexChanged;
             // 
             // lblConnectionString
             // 
             lblConnectionString.AutoSize = true;
-            lblConnectionString.Location = new System.Drawing.Point(4, 24);
+            lblConnectionString.Location = new System.Drawing.Point(6, 40);
+            lblConnectionString.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             lblConnectionString.Name = "lblConnectionString";
-            lblConnectionString.Size = new System.Drawing.Size(103, 15);
+            lblConnectionString.Size = new System.Drawing.Size(153, 25);
             lblConnectionString.TabIndex = 0;
             lblConnectionString.Text = "Connection String";
             // 
             // txtConnectionString
             // 
             txtConnectionString.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            txtConnectionString.Location = new System.Drawing.Point(112, 20);
+            txtConnectionString.Location = new System.Drawing.Point(160, 33);
+            txtConnectionString.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             txtConnectionString.Name = "txtConnectionString";
-            txtConnectionString.Size = new System.Drawing.Size(1014, 23);
+            txtConnectionString.Size = new System.Drawing.Size(1447, 31);
             txtConnectionString.TabIndex = 1;
             // 
-            // btnConnect
+            // btnLoad
             // 
-            btnConnect.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            btnConnect.Location = new System.Drawing.Point(212, 44);
-            btnConnect.Name = "btnConnect";
-            btnConnect.Size = new System.Drawing.Size(96, 28);
-            btnConnect.TabIndex = 4;
-            btnConnect.Text = "Connect";
-            btnConnect.UseVisualStyleBackColor = true;
-            btnConnect.Click += BtnConnect_Click;
+            btnLoad.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            btnLoad.Location = new System.Drawing.Point(303, 73);
+            btnLoad.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btnLoad.Name = "btnLoad";
+            btnLoad.Size = new System.Drawing.Size(137, 47);
+            btnLoad.TabIndex = 4;
+            btnLoad.Text = "&Load";
+            btnLoad.UseVisualStyleBackColor = true;
+            btnLoad.Click += BtnLoad_Click;
             // 
             // grpConnection
             // 
@@ -348,13 +374,15 @@ namespace QueryLite.CodeGeneratorUI {
             grpConnection.Controls.Add(lblExample);
             grpConnection.Controls.Add(txtExampleConnectionString);
             grpConnection.Controls.Add(lblConnectionString);
-            grpConnection.Controls.Add(btnConnect);
+            grpConnection.Controls.Add(btnLoad);
             grpConnection.Controls.Add(lblDatabaseType);
             grpConnection.Controls.Add(txtConnectionString);
             grpConnection.Controls.Add(cboDatabaseType);
-            grpConnection.Location = new System.Drawing.Point(4, 8);
+            grpConnection.Location = new System.Drawing.Point(6, 13);
+            grpConnection.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             grpConnection.Name = "grpConnection";
-            grpConnection.Size = new System.Drawing.Size(1130, 80);
+            grpConnection.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            grpConnection.Size = new System.Drawing.Size(1614, 133);
             grpConnection.TabIndex = 0;
             grpConnection.TabStop = false;
             grpConnection.Text = "Database Connection";
@@ -362,28 +390,53 @@ namespace QueryLite.CodeGeneratorUI {
             // lblExample
             // 
             lblExample.AutoSize = true;
-            lblExample.Location = new System.Drawing.Point(328, 52);
+            lblExample.Location = new System.Drawing.Point(469, 87);
+            lblExample.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             lblExample.Name = "lblExample";
-            lblExample.Size = new System.Drawing.Size(52, 15);
+            lblExample.Size = new System.Drawing.Size(78, 25);
             lblExample.TabIndex = 5;
             lblExample.Text = "Example";
             // 
             // txtExampleConnectionString
             // 
             txtExampleConnectionString.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            txtExampleConnectionString.Location = new System.Drawing.Point(384, 48);
+            txtExampleConnectionString.Location = new System.Drawing.Point(549, 80);
+            txtExampleConnectionString.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             txtExampleConnectionString.Name = "txtExampleConnectionString";
             txtExampleConnectionString.ReadOnly = true;
-            txtExampleConnectionString.Size = new System.Drawing.Size(576, 23);
+            txtExampleConnectionString.Size = new System.Drawing.Size(821, 31);
             txtExampleConnectionString.TabIndex = 6;
+            // 
+            // BtnExpandAll
+            // 
+            BtnExpandAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            BtnExpandAll.Location = new System.Drawing.Point(6, 869);
+            BtnExpandAll.Name = "BtnExpandAll";
+            BtnExpandAll.Size = new System.Drawing.Size(112, 38);
+            BtnExpandAll.TabIndex = 1;
+            BtnExpandAll.Text = "Expand All";
+            BtnExpandAll.UseVisualStyleBackColor = true;
+            BtnExpandAll.Click += BtnExpandAll_Click;
+            // 
+            // BtnCollapseAll
+            // 
+            BtnCollapseAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            BtnCollapseAll.Location = new System.Drawing.Point(122, 870);
+            BtnCollapseAll.Name = "BtnCollapseAll";
+            BtnCollapseAll.Size = new System.Drawing.Size(112, 38);
+            BtnCollapseAll.TabIndex = 2;
+            BtnCollapseAll.Text = "Collapse All";
+            BtnCollapseAll.UseVisualStyleBackColor = true;
+            BtnCollapseAll.Click += BtnCollapseAll_Click;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1136, 640);
+            ClientSize = new System.Drawing.Size(1623, 1067);
             Controls.Add(grpConnection);
             Controls.Add(splitContainer);
+            Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             Name = "MainForm";
             SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             Text = "Query Lite Code Generator";
@@ -417,7 +470,7 @@ namespace QueryLite.CodeGeneratorUI {
         private System.Windows.Forms.ComboBox cboDatabaseType;
         private System.Windows.Forms.Label lblConnectionString;
         private System.Windows.Forms.TextBox txtConnectionString;
-        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.Button btnLoad;
         private System.Windows.Forms.GroupBox grpConnection;
         private System.Windows.Forms.Label lblExample;
         private System.Windows.Forms.TextBox txtExampleConnectionString;
@@ -426,5 +479,7 @@ namespace QueryLite.CodeGeneratorUI {
         private System.Windows.Forms.NumericUpDown numNumberOfInstanceProperties;
         private System.Windows.Forms.Label lblNumberOfInstanceProperties;
         private System.Windows.Forms.CheckBox chkIncludeSystemSchemas;
+        private System.Windows.Forms.Button BtnCollapseAll;
+        private System.Windows.Forms.Button BtnExpandAll;
     }
 }

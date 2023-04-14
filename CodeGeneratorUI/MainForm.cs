@@ -49,7 +49,7 @@ namespace QueryLite.CodeGeneratorUI {
             splitContainer.Enabled = false;
         }
 
-        private void BtnConnect_Click(object sender, EventArgs e) {
+        private void BtnLoad_Click(object sender, EventArgs e) {
 
             if(string.IsNullOrWhiteSpace(txtConnectionString.Text)) {
                 MessageBox.Show(owner: this, text: "Please enter a connection string", caption: "Connection String Required", buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
@@ -123,9 +123,16 @@ namespace QueryLite.CodeGeneratorUI {
                     schemaLookup.Add(table.Schema, schemaNode);
                     tvwTables.Nodes.Add(schemaNode);
                 }
-                schemaNode.Nodes.Add(new TableNode(table));
+                TableNode tableNode = new TableNode(table);
+
+                foreach(DatabaseColumn column in table.Columns) {
+                    tableNode.Nodes.Add(new ColumnNode(tableNode, column));
+                }
+                schemaNode.Nodes.Add(tableNode);
             }
-            tvwTables.ExpandAll();
+            foreach(TreeNode node in tvwTables.Nodes) {
+                node.Expand();
+            }
         }
 
         private class DatabaseTypeItem {
@@ -156,6 +163,17 @@ namespace QueryLite.CodeGeneratorUI {
                 Text = table.TableName.Value + (table.IsView ? " (View)" : "");
             }
         }
+        private class ColumnNode : TreeNode {
+
+            public TableNode TableNode { get; }
+            public DatabaseColumn Column { get; }
+
+            public ColumnNode(TableNode tableNode, DatabaseColumn column) {
+                TableNode = tableNode;
+                Column = column;
+                Text = $"{column.ColumnName} ({column.SqlDataTypeName} {(column.IsNullable ? "NULL" : "NOT NULL")})";
+            }
+        }
 
         private void TvwTables_AfterSelect(object sender, TreeViewEventArgs e) {
             UpdateCode(true);
@@ -177,7 +195,16 @@ namespace QueryLite.CodeGeneratorUI {
 
                 txtCode.Text = string.Empty;
 
-                if(tvwTables.SelectedNode != null && tvwTables.SelectedNode is TableNode tableNode) {
+                TableNode? tableNode = null;
+
+                if(tvwTables.SelectedNode is TableNode node) {
+                    tableNode = node;
+                }
+                if(tvwTables.SelectedNode is ColumnNode columnNode) {
+                    tableNode = columnNode.TableNode;
+                }
+
+                if(tableNode != null) {
 
                     DatabaseTable table = tableNode.Table;
 
@@ -303,6 +330,29 @@ namespace QueryLite.CodeGeneratorUI {
                 else {
                     txtExampleConnectionString.Text = "";
                 }
+            }
+        }
+
+        private void BtnExpandAll_Click(object sender, EventArgs e) {
+
+            TreeNode? selectedNode = tvwTables.SelectedNode;
+
+            foreach(TreeNode node in tvwTables.Nodes) {
+                node.Expand();
+            }
+            if(selectedNode != null) {
+                tvwTables.SelectedNode = selectedNode;
+            }
+        }
+
+        private void BtnCollapseAll_Click(object sender, EventArgs e) {
+
+            TreeNode? selectedNode = tvwTables.SelectedNode;
+
+            tvwTables.CollapseAll();
+
+            if(selectedNode != null) {
+                tvwTables.SelectedNode = selectedNode;
             }
         }
     }
