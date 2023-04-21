@@ -171,7 +171,7 @@ namespace QueryLite.CodeGeneratorUI {
             public ColumnNode(TableNode tableNode, DatabaseColumn column) {
                 TableNode = tableNode;
                 Column = column;
-                Text = $"{column.ColumnName} ({column.SqlDataTypeName} {(column.IsNullable ? "NULL" : "NOT NULL")})";
+                Text = $"{column.ColumnName} ({column.SqlDataTypeName} {(column.IsNullable ? "NULL" : "NOT NULL")} {(column.IsPrimaryKey ? "PK" : string.Empty)})";
             }
         }
 
