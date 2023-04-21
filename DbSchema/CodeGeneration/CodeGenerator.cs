@@ -191,7 +191,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 columnType = "TimeOnly";
                 defaultValue = "";
             }
-            else if(dotNetType == typeof(StringKey<IUnknownType>)) {
+            else if(dotNetType == typeof(IUnknownType)) {
                 columnType = "__UnknownType__";
                 defaultValue = "__UnknownType__";
             }

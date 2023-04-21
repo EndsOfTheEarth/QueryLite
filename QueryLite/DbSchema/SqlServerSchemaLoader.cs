@@ -94,7 +94,7 @@ namespace QueryLite.DbSchema {
                     typelookup.Add(columnRow.Data_type, dotNetType);
                 }
 
-                DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(StringKey<IUnknownType>)));
+                DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(IUnknownType)));
 
                 int? length = null;
 
