@@ -229,7 +229,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
 
@@ -263,7 +263,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
 
@@ -298,7 +298,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
 
@@ -344,7 +344,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
 

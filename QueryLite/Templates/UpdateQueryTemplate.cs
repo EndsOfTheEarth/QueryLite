@@ -31,7 +31,7 @@ namespace QueryLite {
     internal sealed class UpdateQueryTemplate : IUpdateSet, IUpdateJoin, IUpdateWhere, IUpdateExecute {
 
         public ITable Table { get; }
-        public IList<SetValue> SetValues { get; } = new List<SetValue>();
+        public IList<SetValue> SetValues { get; } = new List<SetValue>(1);
         public IList<IJoin>? Joins { get; private set; }
         public ICondition? WhereCondition { get; private set; }
         public IList<IColumn>? ReturningColumns { get; private set; }
@@ -117,8 +117,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            IParameters parameters = database.CreateParameters();
-            return database.UpdateGenerator.GetSql(this, database, parameters);
+            return database.UpdateGenerator.GetSql(this, database, parameters: null);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
@@ -132,7 +131,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
 
             string sql = database.UpdateGenerator.GetSql(this, database, parameters);
 
@@ -166,7 +165,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
 
             string sql = database.UpdateGenerator.GetSql(this, database, parameters);
 
@@ -196,7 +195,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
 
             string sql = database.UpdateGenerator.GetSql(this, database, parameters);
 
@@ -231,7 +230,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
 
             string sql = database.UpdateGenerator.GetSql(this, database, parameters);
 

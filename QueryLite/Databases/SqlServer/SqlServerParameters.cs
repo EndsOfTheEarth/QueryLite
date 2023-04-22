@@ -31,7 +31,11 @@ namespace QueryLite.Databases.SqlServer {
 
     public sealed class SqlServerParameters : IParameters {
 
-        private List<Param> ParameterList { get; } = new List<Param>();
+        private List<Param> ParameterList { get; }
+
+        public SqlServerParameters(int initParams) {
+            ParameterList = new List<Param>(initParams);
+        }
 
         private int count;
 

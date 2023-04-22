@@ -31,8 +31,11 @@ namespace QueryLite.Databases.PostgreSql {
 
     public sealed class PostgreSqlParameters : IParameters {
 
-        private List<PostgreSqlParam> ParameterList { get; } = new List<PostgreSqlParam>();
+        private List<PostgreSqlParam> ParameterList { get; }
 
+        public PostgreSqlParameters(int initParams) {
+            ParameterList = new List<PostgreSqlParam>(initParams);
+        }
         private int count;
 
         public void Add(IDatabase database, Type type, object? value, out string paramName) {

@@ -72,8 +72,8 @@ namespace QueryLite.Databases.SqlServer {
         public string ConvertToSql(object value) {
             return SqlServerSqlTypeMappings.ConvertToSql(value);
         }
-        public IParameters CreateParameters() {
-            return new SqlServerParameters();
+        public IParameters CreateParameters(int initParams) {
+            return new SqlServerParameters(initParams);
         }
         public string? GetCSharpCodeSet(Type dotNetType) {
             return SqlServerSqlTypeMappings.GetCSharpCodeSet(dotNetType);

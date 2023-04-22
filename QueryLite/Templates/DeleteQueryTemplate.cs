@@ -93,8 +93,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            IParameters parameters = database.CreateParameters();
-            return database.DeleteGenerator.GetSql(this, database, parameters);
+            return database.DeleteGenerator.GetSql(this, database, parameters : null);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
@@ -108,7 +107,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters);
 
@@ -143,7 +142,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters);
 
@@ -173,7 +172,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters);
 
@@ -208,7 +207,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters() : null;
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters);
 
