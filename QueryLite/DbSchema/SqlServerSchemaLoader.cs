@@ -25,8 +25,6 @@ using QueryLite.DbSchema.Tables;
 using QueryLite.DbSchema.Tables.SqlServer;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite.DbSchema {
 
@@ -412,7 +410,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("bit", typeof(Bit));
             _Lookup.Add("varbinary", typeof(byte[]));
             _Lookup.Add("datetime", typeof(DateTime));
-            _Lookup.Add("smalldatetime", typeof(DateTime));            
+            _Lookup.Add("smalldatetime", typeof(DateTime));
             _Lookup.Add("datetimeoffset", typeof(DateTimeOffset));
             _Lookup.Add("date", typeof(DateOnly));
             _Lookup.Add("time", typeof(TimeOnly));
