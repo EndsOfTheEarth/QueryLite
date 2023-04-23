@@ -362,6 +362,184 @@ namespace QueryLite {
             return result;
         }
 
+        public RESULT? SingleOrDefault(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            FieldCollector fieldCollector;
+
+            SelectQueryTemplate<RESULT?>? template = this;
+
+            while(template.ParentUnion != null) {
+                template = template.ParentUnion;
+                fieldCollector = new FieldCollector();
+                template.SelectFunction!(fieldCollector);
+                template.SelectFields = fieldCollector.Fields;
+            }
+
+            fieldCollector = new FieldCollector();
+
+            SelectFunction!(fieldCollector);
+
+            SelectFields = fieldCollector.Fields;
+
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+
+            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
+
+            RESULT? result = QueryExecutor.SingleOrDefault(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout.Value,
+                parameters: parameters,
+                func: SelectFunction,
+                sql: sql,
+                queryType: QueryType.Select,
+                fieldCollector: fieldCollector,
+                debugName: debugName
+            );
+            return result;
+        }
+
+        public RESULT? SingleOrDefault(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(database);
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            FieldCollector fieldCollector;
+
+            SelectQueryTemplate<RESULT?>? template = this;
+
+            while(template.ParentUnion != null) {
+                template = template.ParentUnion;
+                fieldCollector = new FieldCollector();
+                template.SelectFunction!(fieldCollector);
+                template.SelectFields = fieldCollector.Fields;
+            }
+
+            fieldCollector = new FieldCollector();
+
+            SelectFunction!(fieldCollector);
+
+            SelectFields = fieldCollector.Fields;
+
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+
+            string sql = database.QueryGenerator.GetSql(this, database, parameters);
+
+            RESULT? result = QueryExecutor.SingleOrDefault(
+                database: database,
+                transaction: null,
+                timeout: timeout.Value,
+                parameters: parameters,
+                func: SelectFunction,
+                sql: sql,
+                queryType: QueryType.Select,
+                fieldCollector: fieldCollector,
+                debugName: debugName
+            );
+            return result;
+        }
+
+        public async Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            FieldCollector fieldCollector;
+
+            SelectQueryTemplate<RESULT?>? template = this;
+
+            while(template.ParentUnion != null) {
+                template = template.ParentUnion;
+                fieldCollector = new FieldCollector();
+                template.SelectFunction!(fieldCollector);
+                template.SelectFields = fieldCollector.Fields;
+            }
+
+            fieldCollector = new FieldCollector();
+
+            SelectFunction!(fieldCollector);
+
+            SelectFields = fieldCollector.Fields;
+
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+
+            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
+
+            RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
+                database: transaction.Database,
+                cancellationToken: cancellationToken ?? CancellationToken.None,
+                transaction: transaction,
+                timeout: timeout.Value,
+                parameters: parameters,
+                func: SelectFunction,
+                sql: sql,
+                queryType: QueryType.Select,
+                fieldCollector: fieldCollector,
+                debugName: debugName
+            );
+            return result;
+        }
+
+        public async Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(database);
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            FieldCollector fieldCollector;
+
+            SelectQueryTemplate<RESULT?>? template = this;
+
+            while(template.ParentUnion != null) {
+                template = template.ParentUnion;
+                fieldCollector = new FieldCollector();
+                template.SelectFunction!(fieldCollector);
+                template.SelectFields = fieldCollector.Fields;
+            }
+
+            fieldCollector = new FieldCollector();
+
+            SelectFunction!(fieldCollector);
+
+            SelectFields = fieldCollector.Fields;
+
+            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+
+            string sql = database.QueryGenerator.GetSql(this, database, parameters);
+
+            RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
+                database: database,
+                cancellationToken: cancellationToken ?? CancellationToken.None,
+                transaction: null,
+                timeout: timeout.Value,
+                parameters: parameters,
+                func: SelectFunction,
+                sql: sql,
+                queryType: QueryType.Select,
+                fieldCollector: fieldCollector,
+                debugName: debugName
+            );
+            return result;
+        }
+
         public IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
 
             ArgumentNullException.ThrowIfNull(selectFunc);
