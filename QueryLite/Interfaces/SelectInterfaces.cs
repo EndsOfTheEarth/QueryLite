@@ -265,15 +265,47 @@ namespace QueryLite {
         public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         public QueryResult<RESULT> Execute(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
-        
-
         public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
+        /// <summary>
+        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="timeout"></param>
+        /// <param name="useParameters"></param>
+        /// <param name="debugName"></param>
+        /// <returns></returns>
         public RESULT? SingleOrDefault(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+
+        /// <summary>
+        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="timeout"></param>
+        /// <param name="useParameters"></param>
+        /// <param name="debugName"></param>
+        /// <returns></returns>
         public RESULT? SingleOrDefault(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
+        /// <summary>
+        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="timeout"></param>
+        /// <param name="useParameters"></param>
+        /// <param name="debugName"></param>
+        /// <returns></returns>
         public Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+
+        /// <summary>
+        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="timeout"></param>
+        /// <param name="useParameters"></param>
+        /// <param name="debugName"></param>
+        /// <returns></returns>
         public Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
     }
 

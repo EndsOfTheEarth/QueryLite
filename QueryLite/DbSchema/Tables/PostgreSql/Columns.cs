@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-
 namespace QueryLite.DbSchema.Tables.PostgreSql {
 
     public sealed class ColumnsTable : ATable {

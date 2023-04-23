@@ -25,6 +25,9 @@ using System;
 
 namespace QueryLite {
 
+    /// <summary>
+    /// Query timeout period measured in seconds
+    /// </summary>
     public readonly struct QueryTimeout { //Decided to not call it Timeout as there is a Timeout class in the System.Threading namespace
 
         /// <summary>
@@ -41,6 +44,9 @@ namespace QueryLite {
                 throw new Exception($"{nameof(seconds)} must be > 0");
             }
             Seconds = seconds;
+        }
+        public override string ToString() {
+            return $"{Seconds} seconds";
         }
     }
 

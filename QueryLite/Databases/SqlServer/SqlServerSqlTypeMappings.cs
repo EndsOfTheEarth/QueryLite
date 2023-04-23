@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 
 namespace QueryLite.Databases.SqlServer {
