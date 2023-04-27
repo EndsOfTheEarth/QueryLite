@@ -132,14 +132,10 @@ namespace QueryLite {
         /// <summary>
         /// Counter used to give each transaction a unique id mainly for debugging purposes
         /// </summary>
-        private static ulong sCounter = 0;
+        private static volatile uint sCounter = 0;
 
         private static ulong GetNextId() {
-
-            if(sCounter == ulong.MaxValue) {  //Should never come close to reaching this
-                sCounter = ulong.MinValue;
-            }
-            return sCounter++;  //In theory some transactions could get the same id but this is better than using lock() while potentially being called on async threads
+            return sCounter++;
         }
 
         /// <summary>

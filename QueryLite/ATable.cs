@@ -58,12 +58,12 @@ namespace QueryLite {
     /// </summary>
     internal static class AliasGenerator {
 
-        private static long counter = 0;
+        private static volatile uint counter = 0;
         private readonly static object lock_ = new object();
 
         public static string GetAlias() {
 
-            long alias;
+            uint alias;
 
             lock(lock_) {
                 alias = counter++;
