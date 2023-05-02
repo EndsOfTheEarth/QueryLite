@@ -199,6 +199,7 @@ namespace QueryLiteTest.Tests {
 
             public Guid Guid { get; set; } = Guid.NewGuid();
             public Guid Guid2 { get; set; } = Guid.NewGuid();
+            public AllTypesEnum Enum { get; set; } = AllTypesEnum.A;
 
             public string StringValue = "asdasfs";
 
@@ -210,18 +211,21 @@ namespace QueryLiteTest.Tests {
 
             Request request = new Request();
 
-            GuidParameter<Request> guidParam = new GuidParameter<Request>(item => item.Guid);
-            GuidParameter<Request> guidParam2 = new GuidParameter<Request>(item => item.Guid2);
+            IParameter<Guid, Request> guidParam = ParameterFactory.CreateParameter<Request>(item => item.Guid);
+            IParameter<Guid, Request> guidParam2 = ParameterFactory.CreateParameter<Request>(item => item.Guid2);
+
+            IParameter<AllTypesEnum, Request> enumParameter = ParameterFactory.CreateParameter<Request, AllTypesEnum>(item => item.Enum);
 
             AllTypesTable table = AllTypesTable.Instance;
 
-            ICompiledQueryExecute<Request, IntKey<AllTypes>> selectQuery = QueryTest
+            IPreparedQueryExecute<Request, IntKey<AllTypes>> selectQuery = QueryTest
                 .Query<Request>(databaseType: DatabaseType.SqlServer)
                 .Select(row => row.Get(table.Id))
                 .From(table)
                 .Where(
                     table.Guid.EQUALS(guidParam)
                     .AND(table.Guid.NOT_EQUALS(guidParam2))
+                    .AND(table.Enum.EQUALS(enumParameter))
                 )
                 .Build();
 

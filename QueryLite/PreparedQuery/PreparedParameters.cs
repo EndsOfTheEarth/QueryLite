@@ -1,4 +1,27 @@
-﻿using System;
+﻿/*
+ * MIT License
+ *
+ * Copyright (c) 2023 EndsOfTheEarth
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ **/
+using System;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Runtime.CompilerServices;
@@ -10,6 +33,162 @@ namespace QueryLite.PreparedQuery {
         string? Name { get; set; }
 
         public void PopulateParameter(ITEM item, DbParameter parameter);
+    }
+
+    public static class ParameterFactory {
+
+        public static IParameter<Guid, ITEM> CreateParameter<ITEM>(Func<ITEM, Guid> func) {
+            return new GuidParameter<ITEM>(func);
+        }
+        public static IParameter<Guid?, ITEM> CreateParameter<ITEM>(Func<ITEM, Guid?> func) {
+            return new NullableGuidParameter<ITEM>(func);
+        }
+        public static IParameter<string, ITEM> CreateParameter<ITEM>(Func<ITEM, string> func) {
+            return new StringParameter<ITEM>(func);
+        }
+
+
+        public static IParameter<short, ITEM> CreateParameter<ITEM>(Func<ITEM, short> func) {
+            return new ShortParameter<ITEM>(func);
+        }
+        public static IParameter<short?, ITEM> CreateParameter<ITEM>(Func<ITEM, short?> func) {
+            return new NullableShortParameter<ITEM>(func);
+        }
+
+        public static IParameter<int, ITEM> CreateParameter<ITEM>(Func<ITEM, int> func) {
+            return new IntParameter<ITEM>(func);
+        }
+        public static IParameter<int?, ITEM> CreateParameter<ITEM>(Func<ITEM, int?> func) {
+            return new NullableIntParameter<ITEM>(func);
+        }
+
+        public static IParameter<long, ITEM> CreateParameter<ITEM>(Func<ITEM, long> func) {
+            return new LongParameter<ITEM>(func);
+        }
+        public static IParameter<long?, ITEM> CreateParameter<ITEM>(Func<ITEM, long?> func) {
+            return new NullableLongParameter<ITEM>(func);
+        }
+
+        public static IParameter<bool, ITEM> CreateParameter<ITEM>(Func<ITEM, bool> func) {
+            return new BoolParameter<ITEM>(func);
+        }
+        public static IParameter<bool?, ITEM> CreateParameter<ITEM>(Func<ITEM, bool?> func) {
+            return new NullableBoolParameter<ITEM>(func);
+        }
+
+        public static IParameter<Bit, ITEM> CreateParameter<ITEM>(Func<ITEM, Bit> func) {
+            return new BitParameter<ITEM>(func);
+        }
+        public static IParameter<Bit?, ITEM> CreateParameter<ITEM>(Func<ITEM, Bit?> func) {
+            return new NullableBitParameter<ITEM>(func);
+        }
+
+        public static IParameter<decimal, ITEM> CreateParameter<ITEM>(Func<ITEM, decimal> func) {
+            return new DecimalParameter<ITEM>(func);
+        }
+        public static IParameter<decimal?, ITEM> CreateParameter<ITEM>(Func<ITEM, decimal?> func) {
+            return new NullableDecimalParameter<ITEM>(func);
+        }
+
+        public static IParameter<float, ITEM> CreateParameter<ITEM>(Func<ITEM, float> func) {
+            return new FloatParameter<ITEM>(func);
+        }
+        public static IParameter<float?, ITEM> CreateParameter<ITEM>(Func<ITEM, float?> func) {
+            return new NullableFloatParameter<ITEM>(func);
+        }
+
+        public static IParameter<double, ITEM> CreateParameter<ITEM>(Func<ITEM, double> func) {
+            return new DoubleParameter<ITEM>(func);
+        }
+        public static IParameter<double?, ITEM> CreateParameter<ITEM>(Func<ITEM, double?> func) {
+            return new NullableDoubleParameter<ITEM>(func);
+        }
+
+        //public static IParameter<byte[], ITEM> CreateParameter<ITEM>(Func<ITEM, byte[]> func) {
+        //    return new ByteArrayParameter<ITEM>(func);
+        //}
+        public static IParameter<byte[]?, ITEM> CreateParameter<ITEM>(Func<ITEM, byte[]?> func) {
+            return new NullableByteArrayParameter<ITEM>(func);
+        }
+
+        public static IParameter<DateTime, ITEM> CreateParameter<ITEM>(Func<ITEM, DateTime> func) {
+            return new DateTimeParameter<ITEM>(func);
+        }
+        public static IParameter<DateTime?, ITEM> CreateParameter<ITEM>(Func<ITEM, DateTime?> func) {
+            return new NullableDateTimeParameter<ITEM>(func);
+        }
+
+        public static IParameter<DateTimeOffset, ITEM> CreateParameter<ITEM>(Func<ITEM, DateTimeOffset> func) {
+            return new DateTimeOffsetParameter<ITEM>(func);
+        }
+        public static IParameter<DateTimeOffset?, ITEM> CreateParameter<ITEM>(Func<ITEM, DateTimeOffset?> func) {
+            return new NullableDateTimeOffsetParameter<ITEM>(func);
+        }
+
+        public static IParameter<DateOnly, ITEM> CreateParameter<ITEM>(Func<ITEM, DateOnly> func) {
+            return new DateOnlyParameter<ITEM>(func);
+        }
+        public static IParameter<DateOnly?, ITEM> CreateParameter<ITEM>(Func<ITEM, DateOnly?> func) {
+            return new NullableDateOnlyParameter<ITEM>(func);
+        }
+
+        public static IParameter<TimeOnly, ITEM> CreateParameter<ITEM>(Func<ITEM, TimeOnly> func) {
+            return new TimeOnlyParameter<ITEM>(func);
+        }
+        public static IParameter<TimeOnly?, ITEM> CreateParameter<ITEM>(Func<ITEM, TimeOnly?> func) {
+            return new NullableTimeOnlyParameter<ITEM>(func);
+        }
+
+        public static IParameter<ENUM, ITEM> CreateParameter<ITEM, ENUM>(Func<ITEM, ENUM> func) where ENUM : struct, Enum {
+            return new EnumParameter<ITEM, ENUM>(func);
+        }
+        public static IParameter<ENUM?, ITEM> CreateParameter<ITEM, ENUM>(Func<ITEM, ENUM?> func) where ENUM : struct, Enum {
+            return new NullableEnumParameter<ITEM, ENUM>(func);
+        }
+
+
+        public static IParameter<GuidKey<TYPE>, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, GuidKey<TYPE>> func) {
+            return new GuidKeyParameter<ITEM, TYPE>(func);
+        }
+        public static IParameter<GuidKey<TYPE>?, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, GuidKey<TYPE>?> func) {
+            return new NullableGuidKeyParameter<ITEM, TYPE>(func);
+        }
+
+        public static IParameter<StringKey<TYPE>, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, StringKey<TYPE>> func) {
+            return new StringKeyParameter<ITEM, TYPE>(func);
+        }
+        public static IParameter<StringKey<TYPE>?, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, StringKey<TYPE>?> func) {
+            return new NullableStringKeyParameter<ITEM, TYPE>(func);
+        }
+
+
+        public static IParameter<ShortKey<TYPE>, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, ShortKey<TYPE>> func) {
+            return new ShortKeyParameter<ITEM, TYPE>(func);
+        }
+        public static IParameter<ShortKey<TYPE>?, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, ShortKey<TYPE>?> func) {
+            return new NullableShortKeyParameter<ITEM, TYPE>(func);
+        }
+
+        public static IParameter<IntKey<TYPE>, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, IntKey<TYPE>> func) {
+            return new IntKeyParameter<ITEM, TYPE>(func);
+        }
+        public static IParameter<IntKey<TYPE>?, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, IntKey<TYPE>?> func) {
+            return new NullableIntKeyParameter<ITEM, TYPE>(func);
+        }
+
+        public static IParameter<LongKey<TYPE>, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, LongKey<TYPE>> func) {
+            return new LongKeyParameter<ITEM, TYPE>(func);
+        }
+        public static IParameter<LongKey<TYPE>?, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, LongKey<TYPE>?> func) {
+            return new NullableLongKeyParameter<ITEM, TYPE>(func);
+        }
+
+        public static IParameter<BoolValue<TYPE>, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, BoolValue<TYPE>> func) {
+            return new BoolValueParameter<ITEM, TYPE>(func);
+        }
+        public static IParameter<BoolValue<TYPE>?, ITEM> CreateParameter<ITEM, TYPE>(Func<ITEM, BoolValue<TYPE>?> func) {
+            return new NullableBoolValueParameter<ITEM, TYPE>(func);
+        }
     }
 
     public interface IParameter<VALUE, ITEM> : IParameter<ITEM> {
@@ -419,22 +598,22 @@ namespace QueryLite.PreparedQuery {
         }
     }
 
-    public class ByteArrayParameter<ITEM> : IParameter<byte[], ITEM> {
+    //public class ByteArrayParameter<ITEM> : IParameter<byte[], ITEM> {
 
-        public ByteArrayParameter(Func<ITEM, byte[]> func) {
-            Func = func;
-        }
-        public string? Name { get; set; }
-        public Func<ITEM, byte[]> Func { get; private set; }
+    //    public ByteArrayParameter(Func<ITEM, byte[]> func) {
+    //        Func = func;
+    //    }
+    //    public string? Name { get; set; }
+    //    public Func<ITEM, byte[]> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+    //    public void PopulateParameter(ITEM item, DbParameter parameter) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+    //        SqlParameter sqlParameter = (SqlParameter)parameter;
 
-            sqlParameter.SqlDbType = System.Data.SqlDbType.Binary;
-            sqlParameter.Value = Func(item);
-        }
-    }
+    //        sqlParameter.SqlDbType = System.Data.SqlDbType.Binary;
+    //        sqlParameter.Value = Func(item);
+    //    }
+    //}
 
     public class NullableByteArrayParameter<ITEM> : IParameter<byte[]?, ITEM> {
 
@@ -785,7 +964,7 @@ namespace QueryLite.PreparedQuery {
         }
     }
 
-    public class EnumParameter<ITEM, ENUM> where ENUM : Enum, IParameter<ENUM, ITEM> {
+    public class EnumParameter<ITEM, ENUM> : IParameter<ENUM, ITEM>  where ENUM : struct, Enum {
 
         public EnumParameter(Func<ITEM, ENUM> func) {
             Func = func;
@@ -800,7 +979,7 @@ namespace QueryLite.PreparedQuery {
         }
     }
 
-    public class NullableEnumParameter<ITEM, ENUM> where ENUM : Enum, IParameter<ENUM?, ITEM> {
+    public class NullableEnumParameter<ITEM, ENUM> : IParameter<ENUM?, ITEM> where ENUM : struct, Enum {
 
         public NullableEnumParameter(Func<ITEM, ENUM?> func) {
             Func = func;
@@ -815,10 +994,262 @@ namespace QueryLite.PreparedQuery {
             ENUM? value = Func(item);
 
             if(value != null) {
-                EnumHelper.SetParameterValue<ENUM>(value: value, parameter: (SqlParameter)parameter, _IntegerType);
+                EnumHelper.SetParameterValue<ENUM>(value: value.Value, parameter: (SqlParameter)parameter, _IntegerType);
             }
             else {
                 EnumHelper.SetNullParameterValue<ENUM>(parameter: (SqlParameter)parameter, _IntegerType);
+            }
+        }
+    }
+
+    public class GuidKeyParameter<ITEM, TYPE> : IParameter<GuidKey<TYPE>, ITEM> {
+
+        public GuidKeyParameter(Func<ITEM, GuidKey<TYPE>> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, GuidKey<TYPE>> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.UniqueIdentifier;
+            sqlParameter.Value = Func(item).Value;
+        }
+    }
+
+    public class NullableGuidKeyParameter<ITEM, TYPE> : IParameter<GuidKey<TYPE>?, ITEM> {
+
+        public NullableGuidKeyParameter(Func<ITEM, GuidKey<TYPE>?> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, GuidKey<TYPE>?> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.UniqueIdentifier;
+
+            GuidKey<TYPE>? value = Func(item);
+
+            if(value != null) {
+                sqlParameter.Value = value.Value;
+            }
+            else {
+                sqlParameter.Value = DBNull.Value;
+            }
+        }
+    }
+
+    public class StringKeyParameter<ITEM, TYPE> : IParameter<StringKey<TYPE>, ITEM> {
+
+        public StringKeyParameter(Func<ITEM, StringKey<TYPE>> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, StringKey<TYPE>> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.NVarChar;
+            sqlParameter.Value = Func(item).Value;
+        }
+    }
+
+    public class NullableStringKeyParameter<ITEM, TYPE> : IParameter<StringKey<TYPE>?, ITEM> {
+
+        public NullableStringKeyParameter(Func<ITEM, StringKey<TYPE>?> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, StringKey<TYPE>?> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.NVarChar;
+
+            StringKey<TYPE>? value = Func(item);
+
+            if(value != null) {
+                sqlParameter.Value = value.Value;
+            }
+            else {
+                sqlParameter.Value = DBNull.Value;
+            }
+        }
+    }
+
+    public class ShortKeyParameter<ITEM, TYPE> : IParameter<ShortKey<TYPE>, ITEM> {
+
+        public ShortKeyParameter(Func<ITEM, ShortKey<TYPE>> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, ShortKey<TYPE>> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.SmallInt;
+            sqlParameter.Value = Func(item).Value;
+        }
+    }
+
+    public class NullableShortKeyParameter<ITEM, TYPE> : IParameter<ShortKey<TYPE>?, ITEM> {
+
+        public NullableShortKeyParameter(Func<ITEM, ShortKey<TYPE>?> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, ShortKey<TYPE>?> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.SmallInt;
+
+            ShortKey<TYPE>? value = Func(item);
+
+            if(value != null) {
+                sqlParameter.Value = value.Value;
+            }
+            else {
+                sqlParameter.Value = DBNull.Value;
+            }
+        }
+    }
+
+    public class IntKeyParameter<ITEM, TYPE> : IParameter<IntKey<TYPE>, ITEM> {
+
+        public IntKeyParameter(Func<ITEM, IntKey<TYPE>> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, IntKey<TYPE>> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.Int;
+            sqlParameter.Value = Func(item).Value;
+        }
+    }
+
+    public class NullableIntKeyParameter<ITEM, TYPE> : IParameter<IntKey<TYPE>?, ITEM> {
+
+        public NullableIntKeyParameter(Func<ITEM, IntKey<TYPE>?> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, IntKey<TYPE>?> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.Int;
+
+            IntKey<TYPE>? value = Func(item);
+
+            if(value != null) {
+                sqlParameter.Value = value.Value;
+            }
+            else {
+                sqlParameter.Value = DBNull.Value;
+            }
+        }
+    }
+
+    public class LongKeyParameter<ITEM, TYPE> : IParameter<LongKey<TYPE>, ITEM> {
+
+        public LongKeyParameter(Func<ITEM, LongKey<TYPE>> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, LongKey<TYPE>> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.BigInt;
+            sqlParameter.Value = Func(item).Value;
+        }
+    }
+
+    public class NullableLongKeyParameter<ITEM, TYPE> : IParameter<LongKey<TYPE>?, ITEM> {
+
+        public NullableLongKeyParameter(Func<ITEM, LongKey<TYPE>?> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, LongKey<TYPE>?> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.BigInt;
+
+            LongKey<TYPE>? value = Func(item);
+
+            if(value != null) {
+                sqlParameter.Value = value.Value;
+            }
+            else {
+                sqlParameter.Value = DBNull.Value;
+            }
+        }
+    }
+
+    public class BoolValueParameter<ITEM, TYPE> : IParameter<BoolValue<TYPE>, ITEM> {
+
+        public BoolValueParameter(Func<ITEM, BoolValue<TYPE>> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, BoolValue<TYPE>> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.TinyInt;
+            sqlParameter.Value = Func(item).Value;
+        }
+    }
+
+    public class NullableBoolValueParameter<ITEM, TYPE> : IParameter<BoolValue<TYPE>?, ITEM> {
+
+        public NullableBoolValueParameter(Func<ITEM, BoolValue<TYPE>?> func) {
+            Func = func;
+        }
+        public string? Name { get; set; }
+        public Func<ITEM, BoolValue<TYPE>?> Func { get; private set; }
+
+        public void PopulateParameter(ITEM item, DbParameter parameter) {
+
+            SqlParameter sqlParameter = (SqlParameter)parameter;
+
+            sqlParameter.SqlDbType = System.Data.SqlDbType.TinyInt;
+
+            BoolValue<TYPE>? value = Func(item);
+
+            if(value != null) {
+                sqlParameter.Value = value.Value;
+            }
+            else {
+                sqlParameter.Value = DBNull.Value;
             }
         }
     }

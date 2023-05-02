@@ -1,4 +1,27 @@
-﻿using QueryLite.Databases.SqlServer;
+﻿/*
+ * MIT License
+ *
+ * Copyright (c) 2023 EndsOfTheEarth
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ **/
+using QueryLite.Databases.SqlServer;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -13,7 +36,7 @@ namespace QueryLite.PreparedQuery {
     }
 
     public class PreparedSelect<ITEM> {
-        public ICompiledDistinct<ITEM, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) {
+        public IPreparedDistinct<ITEM, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) {
             return new SqlServerQueryBuilder<ITEM, RESULT>(selectFunc);
         }
     }
@@ -22,126 +45,126 @@ namespace QueryLite.PreparedQuery {
 
     //public interface ICompileSelect<ITEM> {
 
-    //    ICompiledDistinct<ITEM, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
+    //    IPreparedDistinct<ITEM, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
     //}
 
-    public interface ICompiledDistinct<ITEM, RESULT> : ICompiledTop<ITEM, RESULT> {
+    public interface IPreparedDistinct<ITEM, RESULT> : IPreparedTop<ITEM, RESULT> {
 
-        ICompiledTop<ITEM, RESULT> Distinct { get; }
+        IPreparedTop<ITEM, RESULT> Distinct { get; }
     }
 
-    public interface ICompiledTop<ITEM, RESULT> : ICompiledFrom<ITEM, RESULT> {
+    public interface IPreparedTop<ITEM, RESULT> : IPreparedFrom<ITEM, RESULT> {
 
         /// <summary>
         /// Return TOP n rows
         /// </summary>
         /// <param name="rows"></param>
         /// <returns></returns>
-        ICompiledFrom<ITEM, RESULT> Top(int rows);
+        IPreparedFrom<ITEM, RESULT> Top(int rows);
     }
-    public interface ICompiledFrom<ITEM, RESULT> {
+    public interface IPreparedFrom<ITEM, RESULT> {
 
         /// <summary>
         /// From table clause
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        ICompiledHint<ITEM, RESULT> From(ITable table);
+        IPreparedHint<ITEM, RESULT> From(ITable table);
     }
 
-    public interface ICompiledHint<ITEM, RESULT> : ICompiledJoin<ITEM, RESULT> {
+    public interface IPreparedHint<ITEM, RESULT> : IPreparedJoin<ITEM, RESULT> {
 
         /// <summary>
         /// The 'With' option only works on sql server. For other databases the query will ignore these table hints and execute without them.
         /// </summary>
         /// <param name="hints"></param>
         /// <returns></returns>
-        public ICompiledJoin<ITEM, RESULT> With(params SqlServerTableHint[] hints);
+        public IPreparedJoin<ITEM, RESULT> With(params SqlServerTableHint[] hints);
     }
 
 
-    public interface ICompiledJoin<ITEM, RESULT> : ICompiledWhere<ITEM, RESULT> {
+    public interface IPreparedJoin<ITEM, RESULT> : IPreparedWhere<ITEM, RESULT> {
 
         /// <summary>
         /// Join table clause
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        ICompiledJoinOn<ITEM, RESULT> Join(ITable table);
+        IPreparedJoinOn<ITEM, RESULT> Join(ITable table);
 
         /// <summary>
         /// Left join table clause
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        ICompiledJoinOn<ITEM, RESULT> LeftJoin(ITable table);
+        IPreparedJoinOn<ITEM, RESULT> LeftJoin(ITable table);
     }
 
-    public interface ICompiledJoinOn<ITEM, RESULT> {
+    public interface IPreparedJoinOn<ITEM, RESULT> {
 
         /// <summary>
         /// Join condition
         /// </summary>
         /// <param name="on"></param>
         /// <returns></returns>
-        ICompiledJoin<ITEM, RESULT> On(ICondition on);
+        IPreparedJoin<ITEM, RESULT> On(ICondition on);
     }
 
-    public interface ICompiledWhere<ITEM, RESULT> : ICompiledGroupBy<ITEM, RESULT> {
+    public interface IPreparedWhere<ITEM, RESULT> : IPreparedGroupBy<ITEM, RESULT> {
 
         /// <summary>
         /// Where condition clause
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
-        ICompiledGroupBy<ITEM, RESULT> Where(ACompiledCondition<ITEM>? condition);
+        IPreparedGroupBy<ITEM, RESULT> Where(APreparedCondition<ITEM>? condition);
     }
 
-    public interface ICompiledGroupBy<ITEM, RESULT> : ICompiledHaving<ITEM, RESULT> {
+    public interface IPreparedGroupBy<ITEM, RESULT> : IPreparedHaving<ITEM, RESULT> {
 
         /// <summary>
         /// Group by clause
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
-        ICompiledHaving<ITEM, RESULT> GroupBy(params ISelectable[] columns);
+        IPreparedHaving<ITEM, RESULT> GroupBy(params ISelectable[] columns);
     }
 
-    public interface ICompiledHaving<ITEM, RESULT> : ICompiledOrderBy<ITEM, RESULT> {
+    public interface IPreparedHaving<ITEM, RESULT> : IPreparedOrderBy<ITEM, RESULT> {
 
         /// <summary>
         /// Having clause
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
-        ICompiledOrderBy<ITEM, RESULT> Having(ICondition condition);
+        IPreparedOrderBy<ITEM, RESULT> Having(ICondition condition);
     }
 
-    public interface ICompiledOrderBy<ITEM, RESULT> : ICompiledFor<ITEM, RESULT> {
+    public interface IPreparedOrderBy<ITEM, RESULT> : IPreparedFor<ITEM, RESULT> {
 
         /// <summary>
         /// Order by clause
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
-        ICompiledFor<ITEM, RESULT> OrderBy(params IOrderByColumn[] columns);
+        IPreparedFor<ITEM, RESULT> OrderBy(params IOrderByColumn[] columns);
 
         /// <summary>
         /// Union query
         /// </summary>
         /// <param name="selectFunc"></param>
         /// <returns></returns>
-        ICompiledDistinct<ITEM, RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc);
+        IPreparedDistinct<ITEM, RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc);
 
         /// <summary>
         /// Union all query
         /// </summary>
         /// <param name="selectFunc"></param>
         /// <returns></returns>
-        ICompiledDistinct<ITEM, RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc);
+        IPreparedDistinct<ITEM, RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc);
     }
 
-    public interface ICompiledFor<ITEM, RESULT> : ICompiledOption<ITEM, RESULT> {
+    public interface IPreparedFor<ITEM, RESULT> : IPreparedOption<ITEM, RESULT> {
 
         /// <summary>
         /// FOR caluse. PostgreSql only
@@ -150,10 +173,10 @@ namespace QueryLite.PreparedQuery {
         /// <param name="ofTables"></param>
         /// <param name="waitType"></param>
         /// <returns></returns>
-        ICompiledOption<ITEM, RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType);
+        IPreparedOption<ITEM, RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType);
     }
 
-    public interface ICompiledOption<ITEM, RESULT> : ICompileQuery<ITEM, RESULT> {
+    public interface IPreparedOption<ITEM, RESULT> : ICompileQuery<ITEM, RESULT> {
 
         /// <summary>
         /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will ignore these table hints and execute without them.
@@ -172,17 +195,17 @@ namespace QueryLite.PreparedQuery {
 
     public interface ICompileQuery<ITEM, RESULT> {
 
-        ICompiledQueryExecute<ITEM, RESULT> Build();
+        IPreparedQueryExecute<ITEM, RESULT> Build();
     }
 
     
 
     
 
-    public class SqlServerQueryBuilder<ITEM, RESULT> : ICompiledDistinct<ITEM, RESULT>, ICompiledTop<ITEM, RESULT>, ICompiledFrom<ITEM, RESULT>, ICompiledHint<ITEM, RESULT>,
-                                                        ICompiledJoin<ITEM, RESULT>, ICompiledJoinOn<ITEM, RESULT>, ICompiledWhere<ITEM, RESULT>, ICompiledGroupBy<ITEM, RESULT>,
-                                                        ICompiledHaving<ITEM, RESULT>, ICompiledOrderBy<ITEM, RESULT>, ICompiledFor<ITEM, RESULT>, ICompiledOption<ITEM, RESULT>,
-                                                        ICompileQuery<ITEM, RESULT>, ICompiledQueryExecute<ITEM, RESULT> {
+    public class SqlServerQueryBuilder<ITEM, RESULT> : IPreparedDistinct<ITEM, RESULT>, IPreparedTop<ITEM, RESULT>, IPreparedFrom<ITEM, RESULT>, IPreparedHint<ITEM, RESULT>,
+                                                        IPreparedJoin<ITEM, RESULT>, IPreparedJoinOn<ITEM, RESULT>, IPreparedWhere<ITEM, RESULT>, IPreparedGroupBy<ITEM, RESULT>,
+                                                        IPreparedHaving<ITEM, RESULT>, IPreparedOrderBy<ITEM, RESULT>, IPreparedFor<ITEM, RESULT>, IPreparedOption<ITEM, RESULT>,
+                                                        ICompileQuery<ITEM, RESULT>, IPreparedQueryExecute<ITEM, RESULT> {
 
         private Func<IResultRow, RESULT> _selectFunc;
         private StringBuilder _sql = new StringBuilder();
@@ -197,14 +220,14 @@ namespace QueryLite.PreparedQuery {
             _sql.Append("SELECT");
         }
 
-        public ICompiledTop<ITEM, RESULT> Distinct {
+        public IPreparedTop<ITEM, RESULT> Distinct {
             get {
                 _sql.Append(" DISTINCT");
                 return this;
             }
         }
 
-        public ICompiledHint<ITEM, RESULT> From(ITable table) {
+        public IPreparedHint<ITEM, RESULT> From(ITable table) {
 
             //todo: get select columns
 
@@ -231,29 +254,29 @@ namespace QueryLite.PreparedQuery {
             return this;
         }
 
-        public ICompiledQueryExecute<ITEM, RESULT> Build() {
+        public IPreparedQueryExecute<ITEM, RESULT> Build() {
             _sqlQuery = _sql.ToString();
             _sql.Clear();
             return this;
         }
 
-        public ICompiledOption<ITEM, RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
+        public IPreparedOption<ITEM, RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
             throw new NotImplementedException();
         }
 
-        public ICompiledHaving<ITEM, RESULT> GroupBy(params ISelectable[] columns) {
+        public IPreparedHaving<ITEM, RESULT> GroupBy(params ISelectable[] columns) {
             throw new NotImplementedException();
         }
 
-        public ICompiledOrderBy<ITEM, RESULT> Having(ICondition condition) {
+        public IPreparedOrderBy<ITEM, RESULT> Having(ICondition condition) {
             throw new NotImplementedException();
         }
 
-        public ICompiledJoinOn<ITEM, RESULT> Join(ITable table) {
+        public IPreparedJoinOn<ITEM, RESULT> Join(ITable table) {
             throw new NotImplementedException();
         }
 
-        public ICompiledJoinOn<ITEM, RESULT> LeftJoin(ITable table) {
+        public IPreparedJoinOn<ITEM, RESULT> LeftJoin(ITable table) {
             throw new NotImplementedException();
         }
 
@@ -265,24 +288,24 @@ namespace QueryLite.PreparedQuery {
             throw new NotImplementedException();
         }
 
-        public ICompiledFor<ITEM, RESULT> OrderBy(params IOrderByColumn[] columns) {
+        public IPreparedFor<ITEM, RESULT> OrderBy(params IOrderByColumn[] columns) {
             throw new NotImplementedException();
         }
 
-        public ICompiledFrom<ITEM, RESULT> Top(int rows) {
+        public IPreparedFrom<ITEM, RESULT> Top(int rows) {
             _sql.Append(" TOP ").Append(rows);
             return this;
         }
 
-        public ICompiledDistinct<ITEM, RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
+        public IPreparedDistinct<ITEM, RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
             throw new NotImplementedException();
         }
 
-        public ICompiledDistinct<ITEM, RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
+        public IPreparedDistinct<ITEM, RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
             throw new NotImplementedException();
         }
 
-        public ICompiledGroupBy<ITEM, RESULT> Where(ACompiledCondition<ITEM>? condition) {
+        public IPreparedGroupBy<ITEM, RESULT> Where(APreparedCondition<ITEM>? condition) {
 
             if(condition != null) {
 
@@ -301,11 +324,11 @@ namespace QueryLite.PreparedQuery {
             return this;
         }
 
-        public ICompiledJoin<ITEM, RESULT> With(params SqlServerTableHint[] hints) {
+        public IPreparedJoin<ITEM, RESULT> With(params SqlServerTableHint[] hints) {
             throw new NotImplementedException();
         }
 
-        public ICompiledJoin<ITEM, RESULT> On(ICondition on) {
+        public IPreparedJoin<ITEM, RESULT> On(ICondition on) {
             throw new NotImplementedException();
         }
 
@@ -340,7 +363,7 @@ namespace QueryLite.PreparedQuery {
         }
     }
 
-    public interface ICompiledQueryExecute<ITEM, RESULT> {
+    public interface IPreparedQueryExecute<ITEM, RESULT> {
 
         List<RESULT> Execute(ITEM item, SqlConnection connection);
     }
