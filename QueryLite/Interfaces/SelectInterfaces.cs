@@ -311,7 +311,7 @@ namespace QueryLite {
 
     public interface IQueryResult { }
 
-    public sealed class QueryResult<RESULT> : IQueryResult {
+    public readonly struct QueryResult<RESULT> : IQueryResult {
 
         /// <summary>
         /// Returned rows
@@ -337,7 +337,7 @@ namespace QueryLite {
             return $"Rows: {Rows.Count}, Rows Effected: {RowsEffected}";
         }
     }
-    public sealed class NonQueryResult : IQueryResult {
+    public readonly struct NonQueryResult : IQueryResult {
 
         /// <summary>
         /// Sql of query
