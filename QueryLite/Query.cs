@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
 
@@ -39,6 +40,9 @@ namespace QueryLite {
         /// Sql select query
         /// </summary>
         public static IDistinct<RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new SelectQueryTemplate<RESULT>(selectFunc);
+
+
+        public static PreparedSelect<PARAMETERS> Prepare<PARAMETERS>() => new PreparedSelect<PARAMETERS>();
 
         /// <summary>
         /// Sql insert query

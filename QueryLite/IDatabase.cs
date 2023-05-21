@@ -53,8 +53,8 @@ namespace QueryLite {
     }
 
     public enum DatabaseType {
-        SqlServer = 1,
-        PostgreSql = 2
+        SqlServer = 0,  //Note: These integer values are used by the prepared query functionality
+        PostgreSql = 1
     }
 
     public interface IInternalConnection {
@@ -64,5 +64,7 @@ namespace QueryLite {
         internal IUpdateQueryGenerator UpdateGenerator { get; }
         internal IDeleteQueryGenerator DeleteGenerator { get; }
         internal ITruncateQueryGenerator TruncateGenerator { get; }
+
+        internal IPreparedQueryGenerator PreparedQueryGenerator { get; }
     }
 }

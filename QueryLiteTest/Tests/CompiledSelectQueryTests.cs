@@ -218,8 +218,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable table = AllTypesTable.Instance;
 
-            IPreparedQueryExecute<Request, IntKey<AllTypes>> selectQuery = QueryTest
-                .Query<Request>(databaseType: DatabaseType.SqlServer)
+            IPreparedQueryExecute<Request, IntKey<AllTypes>> selectQuery = Query.Prepare<Request>()
                 .Select(row => row.Get(table.Id))
                 .From(table)
                 .Where(
@@ -229,11 +228,11 @@ namespace QueryLiteTest.Tests {
                 )
                 .Build();
 
-            using SqlConnection connection = (SqlConnection)TestDatabase.Database.GetNewConnection();
+            //using SqlConnection connection = (SqlConnection)TestDatabase.Database.GetNewConnection();
 
-            connection.Open();
+            //connection.Open();
 
-            List<IntKey<AllTypes>> result = selectQuery.Execute(request, connection);
+            List<IntKey<AllTypes>> result = selectQuery.Execute(request, TestDatabase.Database);
         }
     }
 }
