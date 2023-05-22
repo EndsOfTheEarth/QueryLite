@@ -223,9 +223,15 @@ namespace QueryLiteTest.Tests {
                 .Select(row => row.Get(table.Id))
                 .From(table)
                 .Where(
-                    table.Guid.NOT_EQUALS(guidParameter)
-                    .AND(table.Guid.IS_NOT_NULL<ParameterValues, Guid>())
-                    .AND(table.Enum.EQUALS(enumParameter))
+                    table.Guid.IS_NOT_NULL()
+                    .AND(
+                        table.Guid.NOT_EQUALS(guidParameter)
+                        .AND(
+                            table.Guid.IS_NOT_NULL())
+                            .AND(
+                                table.Enum.EQUALS(enumParameter)
+                            )
+                    )
                 )
                 .Build();
 
