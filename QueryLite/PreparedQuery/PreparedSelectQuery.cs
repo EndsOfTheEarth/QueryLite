@@ -187,7 +187,7 @@ namespace QueryLite.PreparedQuery {
     //                SqlParameter sqlParameter = new SqlParameter() {
     //                    ParameterName = parameter.Name
     //                };
-    //                parameter.PopulateParameter(item, sqlParameter);
+    //                parameter.CreateParameter(item, sqlParameter);
     //                command.Parameters.Add(sqlParameter);
     //            }
     //        }

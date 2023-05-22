@@ -28,11 +28,12 @@ using System.Runtime.CompilerServices;
 
 namespace QueryLite.PreparedQuery {
 
-    public interface IParameter<ITEM> {
+    
+    public interface IParameter<PARAMETERS> {
 
         string? Name { get; set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter);
+        public DbParameter CreateParameter(PARAMETERS item, DbCommand command);
     }
 
     public static class ParameterFactory {
@@ -46,7 +47,6 @@ namespace QueryLite.PreparedQuery {
         public static IParameter<string, ITEM> CreateParameter<ITEM>(Func<ITEM, string> func) {
             return new StringParameter<ITEM>(func);
         }
-
 
         public static IParameter<short, ITEM> CreateParameter<ITEM>(Func<ITEM, short> func) {
             return new ShortParameter<ITEM>(func);
@@ -203,12 +203,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, Guid> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.UniqueIdentifier;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -220,10 +223,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, Guid?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.UniqueIdentifier;
 
             Guid? value = Func(item);
@@ -234,6 +238,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -245,10 +250,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, string> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.NVarChar;
 
             string value = Func(item);
@@ -259,6 +265,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -270,12 +277,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, short> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.SmallInt;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -287,10 +297,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, short?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.SmallInt;
 
             short? value = Func(item);
@@ -301,6 +312,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -312,12 +324,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, int> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Int;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -329,10 +344,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, int?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Int;
 
             int? value = Func(item);
@@ -343,6 +359,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -354,12 +371,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, long> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.BigInt;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -371,10 +391,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, long?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.BigInt;
 
             long? value = Func(item);
@@ -385,6 +406,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -396,12 +418,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, bool> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.TinyInt;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -413,10 +438,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, bool?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.TinyInt;
 
             bool? value = Func(item);
@@ -427,6 +453,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -438,12 +465,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, Bit> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Bit;
             sqlParameter.Value = Func(item).Value;
+
+            return sqlParameter;
         }
     }
 
@@ -455,10 +485,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, Bit?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Bit;
 
             Bit? value = Func(item);
@@ -469,6 +500,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -480,12 +512,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, decimal> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Decimal;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -497,10 +532,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, decimal?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Decimal;
 
             decimal? value = Func(item);
@@ -511,6 +547,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -522,12 +559,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, float> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Real;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -539,10 +579,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, float?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Real;
 
             float? value = Func(item);
@@ -553,6 +594,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -564,12 +606,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, double> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Float;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -581,10 +626,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, double?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Float;
 
             double? value = Func(item);
@@ -595,6 +641,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -606,9 +653,9 @@ namespace QueryLite.PreparedQuery {
     //    public string? Name { get; set; }
     //    public Func<ITEM, byte[]> Func { get; private set; }
 
-    //    public void PopulateParameter(ITEM item, DbParameter parameter) {
+    //    public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-    //        SqlParameter sqlParameter = (SqlParameter)parameter;
+    //        SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
     //        sqlParameter.SqlDbType = System.Data.SqlDbType.Binary;
     //        sqlParameter.Value = Func(item);
@@ -623,10 +670,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, byte[]?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Binary;
 
             byte[]? value = Func(item);
@@ -637,6 +685,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -648,12 +697,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, DateTime> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.DateTime;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -665,10 +717,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, DateTime?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.DateTime;
 
             DateTime? value = Func(item);
@@ -679,6 +732,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -690,12 +744,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, DateTimeOffset> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.DateTimeOffset;
             sqlParameter.Value = Func(item);
+
+            return sqlParameter;
         }
     }
 
@@ -707,10 +764,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, DateTimeOffset?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.DateTimeOffset;
 
             DateTimeOffset? value = Func(item);
@@ -721,6 +779,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -732,12 +791,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, DateOnly> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Date;
             sqlParameter.Value = Func(item).ToDateTime(TimeOnly.MinValue);
+
+            return sqlParameter;
         }
     }
 
@@ -749,10 +811,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, DateOnly?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Date;
 
             DateOnly? value = Func(item);
@@ -763,6 +826,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -774,12 +838,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, TimeOnly> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Time;
             sqlParameter.Value = Func(item).ToTimeSpan();
+
+            return sqlParameter;
         }
     }
 
@@ -791,10 +858,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, TimeOnly?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Time;
 
             TimeOnly? value = Func(item);
@@ -805,6 +873,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -974,8 +1043,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, ENUM> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
-            EnumHelper.SetParameterValue<ENUM>(value: Func(item), parameter: (SqlParameter)parameter, _IntegerType);
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
+
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
+
+            sqlParameter.ParameterName = Name;
+
+            EnumHelper.SetParameterValue<ENUM>(value: Func(item), parameter: sqlParameter, _IntegerType);
+
+            return sqlParameter;
         }
     }
 
@@ -989,16 +1065,21 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, ENUM?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
+
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
+
+            sqlParameter.ParameterName = Name;
 
             ENUM? value = Func(item);
 
             if(value != null) {
-                EnumHelper.SetParameterValue<ENUM>(value: value.Value, parameter: (SqlParameter)parameter, _IntegerType);
+                EnumHelper.SetParameterValue<ENUM>(value: value.Value, parameter: sqlParameter, _IntegerType);
             }
             else {
-                EnumHelper.SetNullParameterValue<ENUM>(parameter: (SqlParameter)parameter, _IntegerType);
+                EnumHelper.SetNullParameterValue<ENUM>(parameter: sqlParameter, _IntegerType);
             }
+            return sqlParameter;
         }
     }
 
@@ -1010,12 +1091,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, GuidKey<TYPE>> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.UniqueIdentifier;
             sqlParameter.Value = Func(item).Value;
+
+            return sqlParameter;
         }
     }
 
@@ -1027,10 +1111,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, GuidKey<TYPE>?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.UniqueIdentifier;
 
             GuidKey<TYPE>? value = Func(item);
@@ -1041,6 +1126,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -1052,12 +1138,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, StringKey<TYPE>> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.NVarChar;
             sqlParameter.Value = Func(item).Value;
+
+            return sqlParameter;
         }
     }
 
@@ -1069,10 +1158,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, StringKey<TYPE>?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.NVarChar;
 
             StringKey<TYPE>? value = Func(item);
@@ -1083,6 +1173,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -1094,12 +1185,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, ShortKey<TYPE>> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.SmallInt;
             sqlParameter.Value = Func(item).Value;
+
+            return sqlParameter;
         }
     }
 
@@ -1111,10 +1205,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, ShortKey<TYPE>?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.SmallInt;
 
             ShortKey<TYPE>? value = Func(item);
@@ -1125,6 +1220,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -1136,12 +1232,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, IntKey<TYPE>> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Int;
             sqlParameter.Value = Func(item).Value;
+
+            return sqlParameter;
         }
     }
 
@@ -1153,10 +1252,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, IntKey<TYPE>?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.Int;
 
             IntKey<TYPE>? value = Func(item);
@@ -1167,6 +1267,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -1178,12 +1279,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, LongKey<TYPE>> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.BigInt;
             sqlParameter.Value = Func(item).Value;
+
+            return sqlParameter;
         }
     }
 
@@ -1195,10 +1299,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, LongKey<TYPE>?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.BigInt;
 
             LongKey<TYPE>? value = Func(item);
@@ -1209,6 +1314,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 
@@ -1220,12 +1326,15 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, BoolValue<TYPE>> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.TinyInt;
             sqlParameter.Value = Func(item).Value;
+
+            return sqlParameter;
         }
     }
 
@@ -1237,10 +1346,11 @@ namespace QueryLite.PreparedQuery {
         public string? Name { get; set; }
         public Func<ITEM, BoolValue<TYPE>?> Func { get; private set; }
 
-        public void PopulateParameter(ITEM item, DbParameter parameter) {
+        public DbParameter CreateParameter(ITEM item, DbCommand command) {
 
-            SqlParameter sqlParameter = (SqlParameter)parameter;
+            SqlParameter sqlParameter = ((SqlCommand)command).CreateParameter();
 
+            sqlParameter.ParameterName = Name;
             sqlParameter.SqlDbType = System.Data.SqlDbType.TinyInt;
 
             BoolValue<TYPE>? value = Func(item);
@@ -1251,6 +1361,7 @@ namespace QueryLite.PreparedQuery {
             else {
                 sqlParameter.Value = DBNull.Value;
             }
+            return sqlParameter;
         }
     }
 }

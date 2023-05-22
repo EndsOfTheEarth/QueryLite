@@ -195,7 +195,7 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(EnumHelper.UnsafeConvertToLong(LongEnum.C), (long)LongEnum.C);
         }
 
-        public struct Request {
+        public struct ParameterValues {
 
             public Guid Guid { get; set; } = Guid.NewGuid();
             public Guid Guid2 { get; set; } = Guid.NewGuid();
@@ -203,36 +203,33 @@ namespace QueryLiteTest.Tests {
 
             public string StringValue = "asdasfs";
 
-            public Request() {
+            public ParameterValues() {
             }
         }
         [TestMethod]
         public void Test01() {
 
-            Request request = new Request();
+            ParameterValues parameterValues = new ParameterValues();
 
-            IParameter<Guid, Request> guidParam = ParameterFactory.CreateParameter<Request>(item => item.Guid);
-            IParameter<Guid, Request> guidParam2 = ParameterFactory.CreateParameter<Request>(item => item.Guid2);
+            IParameter<Guid, ParameterValues> guidParameter = ParameterFactory.CreateParameter<ParameterValues>(item => item.Guid);
 
-            IParameter<AllTypesEnum, Request> enumParameter = ParameterFactory.CreateParameter<Request, AllTypesEnum>(item => item.Enum);
+            IParameter<AllTypesEnum, ParameterValues> enumParameter = ParameterFactory.CreateParameter<ParameterValues, AllTypesEnum>(item => item.Enum);
 
             AllTypesTable table = AllTypesTable.Instance;
 
-            IPreparedQueryExecute<Request, IntKey<AllTypes>> selectQuery = Query.Prepare<Request>()
+            IPreparedQueryExecute<ParameterValues, IntKey<AllTypes>> selectQuery =
+                Query
+                .Prepare<ParameterValues>()
                 .Select(row => row.Get(table.Id))
                 .From(table)
                 .Where(
-                    table.Guid.EQUALS(guidParam)
-                    .AND(table.Guid.NOT_EQUALS(guidParam2))
+                    table.Guid.NOT_EQUALS(guidParameter)
+                    .AND(table.Guid.IS_NOT_NULL<ParameterValues, Guid>())
                     .AND(table.Enum.EQUALS(enumParameter))
                 )
                 .Build();
 
-            //using SqlConnection connection = (SqlConnection)TestDatabase.Database.GetNewConnection();
-
-            //connection.Open();
-
-            List<IntKey<AllTypes>> result = selectQuery.Execute(request, TestDatabase.Database);
+            QueryResult<IntKey<AllTypes>> result = selectQuery.Execute(parameterValues, TestDatabase.Database);
         }
     }
 }

@@ -55,31 +55,31 @@ namespace QueryLite {
         IPreparedJoin<PARAMETERS, RESULT> LeftJoin(ITable table);
     }
 
-    public interface IPreparedJoin<PARAMS> {
+    public interface IPreparedJoin<PARAMETERS> {
 
         JoinType JoinType { get; }
         ITable Table { get; }
-        ICondition Condition { get; }
+        IPreparedCondition<PARAMETERS> Condition { get; }
     }
-    internal sealed class PreparedJoin<PARAMS, RESULT> : IPreparedJoin<PARAMS> {
+    internal sealed class PreparedJoin<PARAMETERS, RESULT> : IPreparedJoin<PARAMETERS> {
 
         public JoinType JoinType { get; private set; }
         public ITable Table { get; private set; }
 
-        private ICondition? _condition;
+        private IPreparedCondition<PARAMETERS>? _condition;
 
-        public ICondition Condition {
+        public IPreparedCondition<PARAMETERS> Condition {
             get { return _condition!; }
         }
 
-        private readonly PreparedQueryTemplate<PARAMS, RESULT> Template;
+        private readonly PreparedQueryTemplate<PARAMETERS, RESULT> Template;
 
-        internal PreparedJoin(JoinType joinType, ITable table, PreparedQueryTemplate<PARAMS, RESULT> tempate) {
+        internal PreparedJoin(JoinType joinType, ITable table, PreparedQueryTemplate<PARAMETERS, RESULT> tempate) {
             JoinType = joinType;
             Table = table;
             Template = tempate;
         }
-        public IPreparedJoin<PARAMS, RESULT> On(ICondition on) {
+        public IPreparedJoin<PARAMETERS, RESULT> On(IPreparedCondition<PARAMETERS> on) {
             _condition = on;
             return Template;
         }
@@ -92,7 +92,7 @@ namespace QueryLite {
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
-        IPreparedGroupBy<PARAMETERS, RESULT> Where(APreparedCondition<PARAMETERS>? condition);
+        IPreparedGroupBy<PARAMETERS, RESULT> Where(IPreparedCondition<PARAMETERS>? condition);
     }
 
     public interface IPreparedGroupBy<PARAMETERS, RESULT> : IPreparedHaving<PARAMETERS, RESULT> {
@@ -112,7 +112,7 @@ namespace QueryLite {
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
-        IPreparedOrderBy<PARAMETERS, RESULT> Having(ICondition condition);
+        IPreparedOrderBy<PARAMETERS, RESULT> Having(IPreparedCondition<PARAMETERS> condition);
     }
 
     public interface IPreparedOrderBy<PARAMETERS, RESULT> : IPreparedFor<PARAMETERS, RESULT> {
@@ -175,6 +175,6 @@ namespace QueryLite {
     
     public interface IPreparedQueryExecute<PARAMETERS, RESULT> {
 
-        List<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
     }
 }

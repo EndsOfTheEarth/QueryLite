@@ -40,6 +40,8 @@ namespace QueryLite.Databases.PostgreSql {
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new PostgreSqlDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
 
+        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator => throw new NotImplementedException();  //TODO: Implement
+
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 
         public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {

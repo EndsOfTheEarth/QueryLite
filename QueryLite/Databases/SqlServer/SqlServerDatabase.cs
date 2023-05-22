@@ -39,8 +39,9 @@ namespace QueryLite.Databases.SqlServer {
         IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new SqlServerUpdateQueryGenerator();
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new SqlServerDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new SqlServerTruncateQueryGenerator();
+        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerCompiledSelectQueryGenerator();
 
-        public DatabaseType DatabaseType => DatabaseType.SqlServer;
+        public DatabaseType DatabaseType => DatabaseType.SqlServer;        
 
         public SqlServerDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 

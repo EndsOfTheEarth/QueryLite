@@ -1,6 +1,7 @@
 ﻿using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
+using System.Transactions;
 
 namespace QueryLite {
 
@@ -21,9 +22,9 @@ namespace QueryLite {
         public ITable? FromTable { get; private set; }
         public SqlServerTableHint[]? Hints { get; private set; }
         public IList<IPreparedJoin<PARAMETERS>>? Joins { get; private set; }
-        public APreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
+        public IPreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
         public ISelectable[]? GroupByFields { get; private set; }
-        public ICondition? HavingCondition { get; private set; }
+        public IPreparedCondition<PARAMETERS>? HavingCondition { get; private set; }
         public IOrderByColumn[]? OrderByFields { get; private set; }
 
         public ForType? ForType { get; private set; } = null;
@@ -99,7 +100,7 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedGroupBy<PARAMETERS, RESULT> Where(APreparedCondition<PARAMETERS>? condition) {
+        public IPreparedGroupBy<PARAMETERS, RESULT> Where(IPreparedCondition<PARAMETERS>? condition) {
 
             WhereCondition = condition;
             return this;
@@ -113,7 +114,7 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedOrderBy<PARAMETERS, RESULT> Having(ICondition condition) {
+        public IPreparedOrderBy<PARAMETERS, RESULT> Having(IPreparedCondition<PARAMETERS> condition) {
 
             ArgumentNullException.ThrowIfNull(condition);
 
@@ -185,6 +186,13 @@ namespace QueryLite {
         }
 
         public IPreparedQueryExecute<PARAMETERS, RESULT> Build() {
+
+            FieldCollector fieldCollector = new FieldCollector();
+
+            SelectFunction!(fieldCollector);
+
+            SelectFields = fieldCollector.Fields;
+
             return new PreparedQuery<PARAMETERS, RESULT>(this);
         }
     }
@@ -194,6 +202,7 @@ namespace QueryLite {
         private PreparedQueryTemplate<PARAMETERS, RESULT> QueryTemplate { get; }
 
         private readonly string?[] _sql;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        private readonly List<IParameter<PARAMETERS>>?[] _parameterCollectors;
 
         public PreparedQuery(PreparedQueryTemplate<PARAMETERS, RESULT> template) {
             QueryTemplate = template;
@@ -211,18 +220,50 @@ namespace QueryLite {
                 }
             }
             _sql = new string?[max];
+            _parameterCollectors = new List<IParameter<PARAMETERS>>?[max];
         }
 
-        public List<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
+            string sql;
+            List<IParameter<PARAMETERS>> queryParameters;
+
             if(_sql[dbTypeIndex] == null) {
 
-                database.PreparedQueryGenerator.GetSql(QueryTemplate, database, out List<IParameter<PARAMETERS>> paramList);
+                ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
 
+                sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
+
+                queryParameters = paramCollector.Parameters;
+
+                _sql[dbTypeIndex] = sql;
+                _parameterCollectors[dbTypeIndex] = queryParameters;
             }
-            throw new NotImplementedException();
+            else {
+                sql = _sql[dbTypeIndex]!;
+                queryParameters = _parameterCollectors[dbTypeIndex]!;
+            }
+
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
+                database: database,
+                paramValue: parameters,
+                transaction: null,
+                timeout: timeout.Value,
+                parameters: queryParameters,
+                func: QueryTemplate.SelectFunction!,
+                sql: sql,
+                queryType: QueryType.Select,
+                debugName: debugName
+            );
+            return result;
         }
     }
 }
