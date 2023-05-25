@@ -42,7 +42,7 @@ namespace QueryLite {
         public static IDistinct<RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new SelectQueryTemplate<RESULT>(selectFunc);
 
 
-        public static PreparedSelect<PARAMETERS> Prepare<PARAMETERS>() => new PreparedSelect<PARAMETERS>();
+        public static PreparedSelect<PARAMETERS> PrepareWithParameters<PARAMETERS>() => new PreparedSelect<PARAMETERS>();
 
         /// <summary>
         /// Sql insert query

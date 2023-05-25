@@ -1065,7 +1065,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<IParameter<PARAMETERS>> parameters,
+            IList<QueryParameter<PARAMETERS>> parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -1124,7 +1124,7 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue, command));
+                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -1215,7 +1215,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<IParameter<PARAMETERS>> parameters,
+            IList<QueryParameter<PARAMETERS>> parameters,
             string sql,
             QueryType queryType,
             string debugName) {
@@ -1273,7 +1273,7 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue, command));
+                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -1491,7 +1491,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<IParameter<PARAMETERS>> parameters,
+            IList<QueryParameter<PARAMETERS>> parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -1551,7 +1551,7 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue, command));
+                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -1647,7 +1647,7 @@ namespace QueryLite {
             Transaction? transaction,
             CancellationToken cancellationToken,
             QueryTimeout timeout,
-            IList<IParameter<PARAMETERS>> parameters,
+            IList<QueryParameter<PARAMETERS>> parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -1707,7 +1707,7 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue, command));
+                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -1802,7 +1802,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<IParameter<PARAMETERS>> parameters,
+            IList<QueryParameter<PARAMETERS>> parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -1864,7 +1864,7 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue, command));
+                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -1955,7 +1955,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<IParameter<PARAMETERS>> parameters,
+            IList<QueryParameter<PARAMETERS>> parameters,
             string sql,
             QueryType queryType,
             string debugName,
@@ -2014,7 +2014,7 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue, command));
+                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {

@@ -1,7 +1,7 @@
 ﻿using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
-using System.Transactions;
+using System.Data.Common;
 
 namespace QueryLite {
 
@@ -201,8 +201,7 @@ namespace QueryLite {
 
         private PreparedQueryTemplate<PARAMETERS, RESULT> QueryTemplate { get; }
 
-        private readonly string?[] _sql;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
-        private readonly List<IParameter<PARAMETERS>>?[] _parameterCollectors;
+        private readonly PreparedQueryDetail<PARAMETERS>?[] _queries;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
 
         public PreparedQuery(PreparedQueryTemplate<PARAMETERS, RESULT> template) {
             QueryTemplate = template;
@@ -212,38 +211,43 @@ namespace QueryLite {
             int max = 0;
 
             foreach(DatabaseType value in values) {
-                
+
                 int valueAsInt = (int)value;
 
                 if(valueAsInt > max) {
                     max = valueAsInt;
                 }
             }
-            _sql = new string?[max];
-            _parameterCollectors = new List<IParameter<PARAMETERS>>?[max];
+            _queries = new PreparedQueryDetail<PARAMETERS>?[max];
         }
 
         public QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
-            string sql;
-            List<IParameter<PARAMETERS>> queryParameters;
+            PreparedQueryDetail<PARAMETERS> queryDetail;
 
-            if(_sql[dbTypeIndex] == null) {
+            if(_queries[dbTypeIndex] == null) {
 
                 ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
 
-                sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
+                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
 
-                queryParameters = paramCollector.Parameters;
+                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql);
 
-                _sql[dbTypeIndex] = sql;
-                _parameterCollectors[dbTypeIndex] = queryParameters;
+                for(int index = 0; index < paramCollector.Parameters.Count; index++) {
+
+                    IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
+
+                    //TODO: Also implement for postgresql
+                    CreateParameterDelegate createParameterFunction = SqlServerParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
+
+                    queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
+                }
+                _queries[dbTypeIndex] = queryDetail;
             }
             else {
-                sql = _sql[dbTypeIndex]!;
-                queryParameters = _parameterCollectors[dbTypeIndex]!;
+                queryDetail = _queries[dbTypeIndex]!;
             }
 
             ArgumentNullException.ThrowIfNull(debugName);
@@ -257,13 +261,36 @@ namespace QueryLite {
                 paramValue: parameters,
                 transaction: null,
                 timeout: timeout.Value,
-                parameters: queryParameters,
+                parameters: queryDetail.QueryParameters,
                 func: QueryTemplate.SelectFunction!,
-                sql: sql,
+                sql: queryDetail.Sql,
                 queryType: QueryType.Select,
                 debugName: debugName
             );
             return result;
         }
+    }
+
+    internal class PreparedQueryDetail<PARAMETERS> {
+
+        public PreparedQueryDetail(string sql) {
+            Sql = sql;
+        }
+        public string Sql { get; }
+        public List<QueryParameter<PARAMETERS>> QueryParameters { get; } = new List<QueryParameter<PARAMETERS>>();
+
+    }
+
+    public class QueryParameter<PARAMETERS> {
+
+        public QueryParameter(IParameter<PARAMETERS> parameter, CreateParameterDelegate createParameterFunction) {
+            Parameter = parameter;
+            CreateParameterFunction = createParameterFunction;
+        }
+
+        public DbParameter CreateParameter(PARAMETERS parameters) => CreateParameterFunction(Parameter.Name, Parameter.GetValue(parameters));
+
+        public IParameter<PARAMETERS> Parameter { get; }
+        public CreateParameterDelegate CreateParameterFunction { get; }
     }
 }

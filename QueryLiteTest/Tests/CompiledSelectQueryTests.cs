@@ -6,6 +6,7 @@ using QueryLiteTestLogic;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Reflection.Metadata;
 
 namespace QueryLiteTest.Tests {
 
@@ -204,22 +205,23 @@ namespace QueryLiteTest.Tests {
             public string StringValue = "asdasfs";
 
             public ParameterValues() {
+
             }
         }
+
         [TestMethod]
         public void Test01() {
 
             ParameterValues parameterValues = new ParameterValues();
 
-            IParameter<Guid, ParameterValues> guidParameter = ParameterFactory.CreateParameter<ParameterValues>(item => item.Guid);
-
-            IParameter<AllTypesEnum, ParameterValues> enumParameter = ParameterFactory.CreateParameter<ParameterValues, AllTypesEnum>(item => item.Enum);
+            Parameter<ParameterValues, Guid> guidParameter = new Parameter<ParameterValues, Guid>(parameters => parameters.Guid);
+            Parameter<ParameterValues, AllTypesEnum> enumParameter = new Parameter<ParameterValues, AllTypesEnum>(parameters => parameters.Enum);
 
             AllTypesTable table = AllTypesTable.Instance;
 
             IPreparedQueryExecute<ParameterValues, IntKey<AllTypes>> selectQuery =
                 Query
-                .Prepare<ParameterValues>()
+                .PrepareWithParameters<ParameterValues>()
                 .Select(row => row.Get(table.Id))
                 .From(table)
                 .Where(

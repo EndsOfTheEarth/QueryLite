@@ -28,10 +28,10 @@ namespace QueryLite.PreparedQuery {
 
     public static class ColumnExtension {
 
-        public static IPreparedCondition<PARAMETERS> EQUALS<TYPE, PARAMETERS>(this Column<TYPE> column, IParameter<TYPE, PARAMETERS> parameter) where TYPE : notnull {
+        public static IPreparedCondition<PARAMETERS> EQUALS<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
             return new PreparedParameterCondition<PARAMETERS>(column, "=", parameter);
         }
-        public static IPreparedCondition<PARAMETERS> NOT_EQUALS<TYPE, PARAMETERS>(this Column<TYPE> column, IParameter<TYPE, PARAMETERS> parameter) where TYPE : notnull {
+        public static IPreparedCondition<PARAMETERS> NOT_EQUALS<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
             return new PreparedParameterCondition<PARAMETERS>(column, "!=", parameter);
         }
         public static IPreparedCondition IS_NULL<TYPE>(this Column<TYPE> column) where TYPE : notnull {
@@ -41,17 +41,17 @@ namespace QueryLite.PreparedQuery {
             return new PreparedIsNullCondition(column, @operator: "IS NOT NULL");
         }
 
-        public static IPreparedCondition<PARAMETERS> LESS_THAN<TYPE, PARAMETERS>(this Column<TYPE> column, IParameter<TYPE, PARAMETERS> parameter) where TYPE : notnull {
+        public static IPreparedCondition<PARAMETERS> LESS_THAN<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
             return new PreparedParameterCondition<PARAMETERS>(column, "<", parameter);
         }
-        public static IPreparedCondition<PARAMETERS> LESS_THAN_OR_EQUAL<TYPE, PARAMETERS>(this Column<TYPE> column, IParameter<TYPE, PARAMETERS> parameter) where TYPE : notnull {
+        public static IPreparedCondition<PARAMETERS> LESS_THAN_OR_EQUAL<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
             return new PreparedParameterCondition<PARAMETERS>(column, "<=", parameter);
         }
 
-        public static IPreparedCondition<PARAMETERS> GREATER_THAN<TYPE, PARAMETERS>(this Column<TYPE> column, IParameter<TYPE, PARAMETERS> parameter) where TYPE : notnull {
+        public static IPreparedCondition<PARAMETERS> GREATER_THAN<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
             return new PreparedParameterCondition<PARAMETERS>(column, ">", parameter);
         }
-        public static IPreparedCondition<PARAMETERS> GREATER_THAN_OR_EQUAL<TYPE, PARAMETERS>(this Column<TYPE> column, IParameter<TYPE, PARAMETERS> parameter) where TYPE : notnull {
+        public static IPreparedCondition<PARAMETERS> GREATER_THAN_OR_EQUAL<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
             return new PreparedParameterCondition<PARAMETERS>(column, ">=", parameter);
         }
     }
