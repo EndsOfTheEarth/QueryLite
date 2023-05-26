@@ -1,6 +1,8 @@
 ﻿using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace QueryLite {
 
@@ -93,6 +95,13 @@ namespace QueryLite {
         /// <param name="condition"></param>
         /// <returns></returns>
         IPreparedGroupBy<PARAMETERS, RESULT> Where(IPreparedCondition<PARAMETERS>? condition);
+
+        /// <summary>
+        /// Where condition clause
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        //IPreparedGroupBy<PARAMETERS, RESULT> Where(ICondition? condition);
     }
 
     public interface IPreparedGroupBy<PARAMETERS, RESULT> : IPreparedHaving<PARAMETERS, RESULT> {
@@ -176,5 +185,9 @@ namespace QueryLite {
     public interface IPreparedQueryExecute<PARAMETERS, RESULT> {
 
         QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
+        QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "");
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "");
     }
 }

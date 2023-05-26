@@ -4,9 +4,6 @@ using QueryLite.PreparedQuery;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Reflection.Metadata;
 
 namespace QueryLiteTest.Tests {
 
@@ -225,15 +222,10 @@ namespace QueryLiteTest.Tests {
                 .Select(row => row.Get(table.Id))
                 .From(table)
                 .Where(
-                    table.Guid.IS_NOT_NULL()
-                    .AND(
-                        table.Guid.NOT_EQUALS(guidParameter)
-                        .AND(
-                            table.Guid.IS_NOT_NULL())
-                            .AND(
-                                table.Enum.EQUALS(enumParameter)
-                            )
-                    )
+                    table.Guid.IS_NOT_NULL().AND(
+                    table.Guid.NOT_EQUALS(guidParameter).AND(
+                    table.Guid.IS_NOT_NULL()).AND(
+                    table.Enum.EQUALS(enumParameter)))
                 )
                 .Build();
 
