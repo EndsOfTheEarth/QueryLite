@@ -33,11 +33,6 @@ namespace QueryLiteTest.Tests {
                     .NoWhereCondition()
                     .Execute(transation);
 
-                if(query1 == null) {
-                    
-                    
-                }
-
                 QueryResult<int> result = query1!.Execute(parameters: true, transation);
 
                 Assert.AreEqual(result.Rows.Count, 1);
@@ -69,6 +64,7 @@ namespace QueryLiteTest.Tests {
                     .PrepareWithParameters<bool>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
+                    .Where(allTypesTable.Id.EQUALS<bool, IntKey<AllTypes>>(allTypesTable.Id))
                     .Build();
             }
 
@@ -389,8 +385,6 @@ namespace QueryLiteTest.Tests {
                 timeOnly: new TimeOnly(hour: 9, minute: 59, second: 1, millisecond: 770, microsecond: 1)
             );
         }
-
-        
 
         private void AssertRowExists(AllTypes allTypes) {
 

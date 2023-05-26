@@ -95,13 +95,6 @@ namespace QueryLite {
         /// <param name="condition"></param>
         /// <returns></returns>
         IPreparedGroupBy<PARAMETERS, RESULT> Where(IPreparedCondition<PARAMETERS>? condition);
-
-        /// <summary>
-        /// Where condition clause
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        //IPreparedGroupBy<PARAMETERS, RESULT> Where(ICondition? condition);
     }
 
     public interface IPreparedGroupBy<PARAMETERS, RESULT> : IPreparedHaving<PARAMETERS, RESULT> {

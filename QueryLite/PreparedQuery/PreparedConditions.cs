@@ -54,6 +54,20 @@ namespace QueryLite.PreparedQuery {
         public static IPreparedCondition<PARAMETERS> GREATER_THAN_OR_EQUAL<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
             return new PreparedParameterCondition<PARAMETERS>(column, ">=", parameter);
         }
+
+        public static IPreparedCondition<PARAMETERS> EQUALS<PARAMETERS, TYPE>(this Column<TYPE> columnA, Column<TYPE> columnB) where TYPE : notnull {
+            return new PreparedColumnCondition<PARAMETERS>(columnA, "=", columnB);
+        }
+        public static IPreparedCondition<PARAMETERS> NOT_EQUALS<PARAMETERS, TYPE>(this Column<TYPE> columnA, Column<TYPE> columnB) where TYPE : notnull {
+            return new PreparedColumnCondition<PARAMETERS>(columnA, "!=", columnB);
+        }
+
+        public static IPreparedCondition<PARAMETERS> EQUALS<PARAMETERS, TYPE>(this Column<TYPE> columnA, NullableColumn<TYPE> columnB) where TYPE : notnull {
+            return new PreparedColumnCondition<PARAMETERS>(columnA, "=", columnB);
+        }
+        public static IPreparedCondition<PARAMETERS> NOT_EQUALS<PARAMETERS, TYPE>(this Column<TYPE> columnA, NullableColumn<TYPE> columnB) where TYPE : notnull {
+            return new PreparedColumnCondition<PARAMETERS>(columnA, "!=", columnB);
+        }
     }
 
     public interface IParameterCollector<PARAMETERS> {
@@ -217,6 +231,31 @@ namespace QueryLite.PreparedQuery {
                 sql.Append(Column.Table.Alias).Append('.');
             }
             sql.Append(Column.ColumnName).Append(' ').Append(Operator);
+        }
+    }
+
+    public class PreparedColumnCondition<PARAMETERS> : IPreparedCondition<PARAMETERS> {
+
+        public PreparedColumnCondition(IColumn columnA, string @operator, IColumn columnB) {
+            ColumnA = columnA;
+            Operator = @operator;
+            ColumnB = columnB;
+        }
+        public IColumn ColumnA { get; }
+        public string Operator { get; }
+        public IColumn ColumnB { get; }
+
+        public void GetSql(StringBuilder sql, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+
+            if(useAlias) {
+                sql.Append(ColumnA.Table.Alias).Append('.');
+            }
+            sql.Append(ColumnA.ColumnName).Append(' ').Append(Operator);
+
+            if(useAlias) {
+                sql.Append(ColumnB.Table.Alias).Append('.');
+            }
+            sql.Append(' ').Append(ColumnB.ColumnName);
         }
     }
 }
