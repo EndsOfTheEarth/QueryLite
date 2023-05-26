@@ -116,7 +116,7 @@ namespace QueryLite.Databases.PostgreSql {
                     sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
                 }
                 else {
-                    throw new Exception($"Unkown field type. Type = { field }");
+                    throw new Exception($"Unknown field type. Type = { field }");
                 }
             }
         }
@@ -205,7 +205,7 @@ namespace QueryLite.Databases.PostgreSql {
                         PostgreSqlHelper.AppendColumnName(sql, column);
                     }
                     else {
-                        throw new Exception($"Unkown field type. Type = { field }");
+                        throw new Exception($"Unknown field type. Type = { field }");
                     }
                 }
             }
@@ -249,7 +249,7 @@ namespace QueryLite.Databases.PostgreSql {
                         sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
                     }
                     else {
-                        throw new Exception($"Unkown field type. Type = { field }");
+                        throw new Exception($"Unknown field type. Type = { field }");
                     }
 
                     sql.Append(orderByColumn.OrderBy switch

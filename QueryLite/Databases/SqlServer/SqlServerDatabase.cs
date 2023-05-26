@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.PreparedQuery;
 using System;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -39,7 +40,8 @@ namespace QueryLite.Databases.SqlServer {
         IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new SqlServerUpdateQueryGenerator();
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new SqlServerDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new SqlServerTruncateQueryGenerator();
-        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerCompiledSelectQueryGenerator();
+        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerPreparedSelectQueryGenerator();
+        IParameterMapper IInternalConnection.ParameterMapper { get; } = new SqlServerParameterMapper();
 
         public DatabaseType DatabaseType => DatabaseType.SqlServer;        
 

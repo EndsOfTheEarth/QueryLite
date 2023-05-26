@@ -23,20 +23,15 @@
  **/
 using QueryLite.PreparedQuery;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.PostgreSql {
 
-    internal sealed class SqlServerCompiledSelectQueryGenerator : IPreparedQueryGenerator {
+    internal sealed class PostgreSqlPreparedSelectQueryGenerator : IPreparedQueryGenerator {
 
         string IPreparedQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
             return GetSql(template, database, parameters);
         }
-
-        //string IQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
-        //    return GetSql(template, database, parameters);
-        //}
 
         internal static string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
 
@@ -57,7 +52,6 @@ namespace QueryLite.Databases.SqlServer {
 
                 bool useAliases = template.Joins != null && template.Joins.Count > 0;
 
-                GenerateTopClause(sql, template);
                 GenerateSelectClause(sql, template, useAliases: useAliases, database, parameters);
                 GenerateFromClause(sql, template, useAliases: useAliases, database);
 
@@ -68,6 +62,8 @@ namespace QueryLite.Databases.SqlServer {
                 GenerateGroupByClause(sql, template, useAliases: useAliases);
                 GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
                 GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
+                GenerateLimitClause(sql, template);
+                GenerateForCaluse(sql, template, useAliases: useAliases);
 
                 if(template.ChildUnion != null) {
 
@@ -78,7 +74,7 @@ namespace QueryLite.Databases.SqlServer {
                         sql.Append(" UNION ALL ");
                     }
                     else {
-                        throw new Exception($"Unknown {nameof(template.ChildUnionType)} type. Value = '{template.ChildUnionType}'");
+                        throw new Exception($"Unknown { nameof(template.ChildUnionType) } type. Value { template.ChildUnionType }");
                     }
                     template = template.ChildUnion;
                 }
@@ -93,45 +89,39 @@ namespace QueryLite.Databases.SqlServer {
 
             sql.Append(' ');
 
-            bool setComma = false;
+            bool isFirst = true;
 
             foreach(IField field in template.SelectFields) {
 
                 if(field is IColumn column) {
 
-                    if(setComma) {
+                    if(!isFirst) {
                         sql.Append(',');
                     }
                     else {
-                        setComma = true;
+                        isFirst = false;
                     }
                     if(useAliases) {
                         sql.Append(column.Table.Alias).Append('.');
                     }
-                    SqlServerHelper.AppendColumnName(sql, column);
+                    PostgreSqlHelper.AppendColumnName(sql, column);
                 }
                 else if(field is IFunction function) {
 
-                    if(setComma) {
+                    if(!isFirst) {
                         sql.Append(',');
                     }
                     else {
-                        setComma = true;
-                    }                    
+                        isFirst = false;
+                    }
                     sql.Append(function.GetSql(database, useAlias: useAliases, parameters: null));
                 }
                 else {
-                    throw new Exception($"Unkown field type. Type = {field}");
+                    throw new Exception($"Unknown field type. Type = { field }");
                 }
             }
         }
 
-        private static void GenerateTopClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template) {
-
-            if(template.TopRows != null) {
-                sql.Append(" TOP ").Append(template.TopRows.Value);
-            }
-        }
         private static void GenerateFromClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
 
             if(template.FromTable == null) {
@@ -142,31 +132,14 @@ namespace QueryLite.Databases.SqlServer {
             string schemaName = database.SchemaMap(template.FromTable.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                PostgreSqlHelper.AppendEncase(sql, schemaName, forceEnclose: false);
                 sql.Append('.');
             }
-
-            SqlServerHelper.AppendEnclose(sql, template.FromTable.TableName, forceEnclose: template.FromTable.Enclose);
+            
+            PostgreSqlHelper.AppendEncase(sql, template.FromTable.TableName, forceEnclose: template.FromTable.Enclose);
 
             if(useAliases) {
                 sql.Append(" AS ").Append(template.FromTable.Alias);
-            }
-
-            if(template.Hints != null && template.Hints.Length > 0) {
-
-                sql.Append(" WITH(");
-
-                int hintCount = 0;
-
-                foreach(SqlServerTableHint hint in template.Hints) {
-
-                    if(hintCount > 0) {
-                        sql.Append(',');
-                    }
-                    sql.Append(hint.ToString());
-                    hintCount++;
-                }
-                sql.Append(')');
             }
         }
 
@@ -176,21 +149,24 @@ namespace QueryLite.Databases.SqlServer {
                 return;
             }
 
-            foreach(IPreparedJoin<PARAMETERS> join in template.Joins) {
+            for(int index = 0; index < template.Joins.Count; index++) {
 
-                sql.Append(join.JoinType switch {
+                IPreparedJoin<PARAMETERS> join = template.Joins[index];
+
+                sql.Append(join.JoinType switch
+                {
                     JoinType.Join => " JOIN ",
                     JoinType.LeftJoin => " LEFT JOIN ",
-                    _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
+                    _ => throw new Exception($"Unknown join type. Type = { join.JoinType }")
                 });
 
                 string schemaName = database.SchemaMap(join.Table.SchemaName);
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                    PostgreSqlHelper.AppendEncase(sql, schemaName, forceEnclose: false);
                     sql.Append('.');
                 }
-                SqlServerHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
+                PostgreSqlHelper.AppendEncase(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
 
                 if(useAliases) {
                     sql.Append(" AS ").Append(join.Table.Alias);
@@ -214,25 +190,25 @@ namespace QueryLite.Databases.SqlServer {
 
                 sql.Append(" GROUP BY ");
 
-                bool setComma = false;
+                bool isFirst = true;
 
                 foreach(ISelectable field in template.GroupByFields) {
 
                     if(field is IColumn column) {
 
-                        if(setComma) {
+                        if(!isFirst) {
                             sql.Append(',');
                         }
                         else {
-                            setComma = true;
+                            isFirst = true;
                         }
                         if(useAliases) {
                             sql.Append(column.Table.Alias).Append('.');
                         }
-                        SqlServerHelper.AppendColumnName(sql, column);
+                        PostgreSqlHelper.AppendColumnName(sql, column);
                     }
                     else {
-                        throw new Exception($"Unkown field type. Type = {field}");
+                        throw new Exception($"Unknown field type. Type = { field }");
                     }
                 }
             }
@@ -245,118 +221,116 @@ namespace QueryLite.Databases.SqlServer {
                 template.HavingCondition.GetSql(sql, database, parameters, useAlias: useAliases);
             }
         }
+
         private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
 
             if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
 
                 sql.Append(" ORDER BY ");
 
-                bool setComma = false;
+                bool isFirst = true;
 
                 foreach(IOrderByColumn orderByColumn in template.OrderByFields) {
 
                     IField field = orderByColumn.Field;
 
-                    if(setComma) {
+                    if(!isFirst) {
                         sql.Append(',');
                     }
                     else {
-                        setComma = true;
+                        isFirst = false;
                     }
 
                     if(field is IColumn column) {
 
-                        if(useAliases) {
+                        if(template.ParentUnion == null && useAliases) {  //Cannot alias in the order by column when this is a union query
                             sql.Append(column.Table.Alias).Append('.');
                         }
-                        SqlServerHelper.AppendColumnName(sql, column);
+                        PostgreSqlHelper.AppendColumnName(sql, column);
                     }
                     else if(field is IFunction function) {
-                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters: null));
+                        sql.Append(function.GetSql(database, useAlias: useAliases, null));
                     }
                     else {
-                        throw new Exception($"Unkown field type. Type = {field}");
+                        throw new Exception($"Unknown field type. Type = { field }");
                     }
-                    sql.Append(orderByColumn.OrderBy switch {
+
+                    sql.Append(orderByColumn.OrderBy switch
+                    {
                         OrderBy.ASC => " ASC",
                         OrderBy.DESC => " DESC",
                         OrderBy.Default => "",
-                        _ => throw new Exception($"Unknown {nameof(OrderBy)} type. Type: '{field.OrderBy}'")
+                        _ => throw new Exception($"Unknown { nameof(OrderBy) } type. Type: '{ field.OrderBy }'")
                     });
                 }
             }
+        }
+        private static void GenerateLimitClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template) {
 
-            if(template.Options != null && template.Options.Length > 0) {
-
-                sql.Append(" OPTION (");
-
-                bool setComma = false;
-
-                if(!string.IsNullOrEmpty(template.OptionLabelName)) {
-
-                    sql.Append("LABEL = '").Append(Helpers.EscapeForSql(template.OptionLabelName)).Append('\'');
-                    setComma = true;
-                }
-
-                foreach(SqlServerQueryOption option in template.Options) {
-
-                    if(setComma) {
-                        sql.Append(',');
-                    }
-                    else {
-                        setComma = true;
-                    }
-
-                    switch(option) {
-
-                        case SqlServerQueryOption.HASH_JOIN:
-                            sql.Append("HASH JOIN");
-                            break;
-                        case SqlServerQueryOption.LOOP_JOIN:
-                            sql.Append("LOOP JOIN");
-                            break;
-                        case SqlServerQueryOption.MERGE_JOIN:
-                            sql.Append("MERGE JOIN");
-                            break;
-                        case SqlServerQueryOption.FORCE_ORDER:
-                            sql.Append("FORCE ORDER");
-                            break;
-                        case SqlServerQueryOption.FORCE_EXTERNALPUSHDOWN:
-                            sql.Append("FORCE EXTERNALPUSHDOWN");
-                            break;
-                        case SqlServerQueryOption.DISABLE_EXTERNALPUSHDOWN:
-                            sql.Append("DISABLE EXTERNALPUSHDOWN");
-                            break;
-                        default:
-                            throw new Exception($"Unknown {nameof(SqlServerQueryOption)}. Value = '{option}'");
-                    }
-                }
-                sql.Append(')');
+            if (template.TopRows != null) {
+                sql.Append(" LIMIT ").Append(template.TopRows.Value);
             }
         }
 
+        private static void GenerateForCaluse<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases) {
+
+            if (template.ForType != null) {
+
+                sql.Append(" FOR ");
+
+                switch (template.ForType.Value) {
+                    case ForType.UPDATE:
+                        sql.Append("UPDATE");
+                        break;
+                    case ForType.NO_KEY_UPDATE:
+                        sql.Append("NO KEY UPDATE");
+                        break;
+                    case ForType.SHARE:
+                        sql.Append("SHARE");
+                        break;
+                    case ForType.KEY_SHARE:
+                        sql.Append("KEY SHARE");
+                        break;
+                    default:
+                        throw new Exception($"Unknown { nameof(template.ForType) } type { template.ForType }");
+                }
+
+                if (template.OfTables != null && template.OfTables.Length > 0) {
+
+                    sql.Append(" OF ");
+
+                    bool isFirst = true;
+                    foreach (ITable table in template.OfTables) {
+
+                        if(!isFirst) {
+                            sql.Append(',');
+                        }
+                        else {
+                            isFirst = false;
+                        }
+                        if(useAliases) {
+                            sql.Append(table.Alias);
+                        }
+                    }
+                }
+
+                if (template.WaitType != null) {
+
+                    switch (template.WaitType.Value) {
+                        case WaitType.WAIT:
+                            //Do nothing as this is the default value
+                            break;
+                        case WaitType.NOWAIT:
+                            sql.Append(" NOWAIT");
+                            break;
+                        case WaitType.SKIP_LOCKED:
+                            sql.Append(" SKIP LOCKED");
+                            break;
+                        default:
+                            throw new Exception($"Unknown { nameof(template.WaitType) } type { template.WaitType }");
+                    }
+                }
+            }
+        }
     }
-
-    //public static class SqlServerHelper {
-
-    //    public static void AppendColumnName(StringBuilder sql, IColumn column) {
-
-    //        if(column.Enclose || column.ColumnName.Contains(' ')) {
-    //            sql.Append('[').Append(column.ColumnName).Append(']');
-    //        }
-    //        else {
-    //            sql.Append(column.ColumnName);
-    //        }
-    //    }
-
-    //    public static void AppendEnclose(StringBuilder sql, string value, bool forceEnclose) {
-
-    //        if(forceEnclose || value.Contains(' ')) {
-    //            sql.Append('[').Append(value).Append(']');
-    //        }
-    //        else {
-    //            sql.Append(value);
-    //        }
-    //    }
-    //}
 }

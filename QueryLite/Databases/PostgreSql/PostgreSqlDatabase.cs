@@ -22,6 +22,8 @@
  * SOFTWARE.
  **/
 using Npgsql;
+using QueryLite.Databases.SqlServer;
+using QueryLite.PreparedQuery;
 using System;
 using System.Data.Common;
 
@@ -39,8 +41,8 @@ namespace QueryLite.Databases.PostgreSql {
         IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new PostgreSqlUpdateQueryGenerator();
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new PostgreSqlDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
-
-        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator => throw new NotImplementedException();  //TODO: Implement
+        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
+        IParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMapper();
 
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 
