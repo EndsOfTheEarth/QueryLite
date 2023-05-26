@@ -131,18 +131,18 @@ namespace QueryLite {
             Enclose = enclose;
         }
 
-        public static ICondition operator ==(AColumn<TYPE> columnA, AColumn<TYPE> columnB) {
-            return new GenericCondition(columnA, Operator.EQUALS, columnB);
+        public static IColumnCondition operator ==(AColumn<TYPE> columnA, AColumn<TYPE> columnB) {
+            return new ColumnCondition(columnA, Operator.EQUALS, columnB);
         }
-        public static ICondition operator !=(AColumn<TYPE> columnA, AColumn<TYPE> columnB) {
-            return new GenericCondition(columnA, Operator.NOT_EQUALS, columnB);
+        public static IColumnCondition operator !=(AColumn<TYPE> columnA, AColumn<TYPE> columnB) {
+            return new ColumnCondition(columnA, Operator.NOT_EQUALS, columnB);
         }
 
-        public static ICondition operator ==(AColumn<TYPE> columnA, AFunction<TYPE> columnB) {
-            return new GenericCondition(columnA, Operator.EQUALS, columnB);
+        public static IColumnCondition operator ==(AColumn<TYPE> columnA, AFunction<TYPE> columnB) {
+            return new ColumnCondition(columnA, Operator.EQUALS, columnB);
         }
-        public static ICondition operator !=(AColumn<TYPE> columnA, AFunction<TYPE> columnB) {
-            return new GenericCondition(columnA, Operator.NOT_EQUALS, columnB);
+        public static IColumnCondition operator !=(AColumn<TYPE> columnA, AFunction<TYPE> columnB) {
+            return new ColumnCondition(columnA, Operator.NOT_EQUALS, columnB);
         }
 
         /// <summary>
@@ -190,18 +190,18 @@ namespace QueryLite {
         //
         //  Numeric conditions
         //
-        public static ICondition operator <(AColumn<TYPE> condition, Column<TYPE> columnB) {
-            return new GenericCondition(condition.Field, Operator.LESS_THAN, columnB);
+        public static IColumnCondition operator <(AColumn<TYPE> condition, Column<TYPE> columnB) {
+            return new ColumnCondition(condition.Field, Operator.LESS_THAN, columnB);
         }
-        public static ICondition operator >(AColumn<TYPE> condition, Column<TYPE> columnB) {
-            return new GenericCondition(condition.Field, Operator.GREATER_THAN, columnB);
+        public static IColumnCondition operator >(AColumn<TYPE> condition, Column<TYPE> columnB) {
+            return new ColumnCondition(condition.Field, Operator.GREATER_THAN, columnB);
         }
 
-        public static ICondition operator <=(AColumn<TYPE> condition, Column<TYPE> columnB) {
-            return new GenericCondition(condition.Field, Operator.LESS_THAN_OR_EQUAL, columnB);
+        public static IColumnCondition operator <=(AColumn<TYPE> condition, Column<TYPE> columnB) {
+            return new ColumnCondition(condition.Field, Operator.LESS_THAN_OR_EQUAL, columnB);
         }
-        public static ICondition operator >=(AColumn<TYPE> condition, Column<TYPE> columnB) {
-            return new GenericCondition(condition.Field, Operator.GREATER_THAN_OR_EQUAL, columnB);
+        public static IColumnCondition operator >=(AColumn<TYPE> condition, Column<TYPE> columnB) {
+            return new ColumnCondition(condition.Field, Operator.GREATER_THAN_OR_EQUAL, columnB);
         }
 
         public static ICondition operator <(AColumn<TYPE> condition, TYPE value) {
@@ -225,8 +225,8 @@ namespace QueryLite {
             return new GenericCondition(Field, Operator.NOT_LIKE, like.Expression);
         }
 
-        public ICondition IsNull => new NullNotNullCondition<TYPE>(this, isNull: true);
-        public ICondition IsNotNull => new NullNotNullCondition<TYPE>(this, isNull: false);
+        public IColumnCondition IsNull => new NullNotNullCondition<TYPE>(this, isNull: true);
+        public IColumnCondition IsNotNull => new NullNotNullCondition<TYPE>(this, isNull: false);
 
         public IOrderByColumn ASC => new OrderByColumn(this, OrderBy.ASC);
 

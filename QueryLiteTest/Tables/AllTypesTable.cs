@@ -57,23 +57,23 @@ namespace QueryLiteTest.Tables {
 
         public AllTypesInfo() { }
 
-        public AllTypesInfo(IResultRow result, AllTypesTable table) {
-            Id = result.Get(table.Id);
-            Guid = result.Get(table.Guid);
-            String = result.Get(table.String);
-            SmallInt = result.Get(table.SmallInt);
-            Int = result.Get(table.Int);
-            BigInt = result.Get(table.BigInt);
-            Decimal = result.Get(table.Decimal);
-            Float = result.Get(table.Float);
-            Double = result.Get(table.Double);
-            Boolean = result.Get(table.Boolean);
-            Bytes = result.Get(table.Bytes);
-            DateTime = result.Get(table.DateTime);
-            DateTimeOffset = result.Get(table.DateTimeOffset);
-            Enum = result.GetEnum(table.Enum);
-            DateOnly = result.Get(table.DateOnly);
-            TimeOnly = result.Get(table.TimeOnly);
+        public AllTypesInfo(IResultRow row, AllTypesTable table) {
+            Id = row.Get(table.Id);
+            Guid = row.Get(table.Guid);
+            String = row.Get(table.String);
+            SmallInt = row.Get(table.SmallInt);
+            Int = row.Get(table.Int);
+            BigInt = row.Get(table.BigInt);
+            Decimal = row.Get(table.Decimal);
+            Float = row.Get(table.Float);
+            Double = row.Get(table.Double);
+            Boolean = row.Get(table.Boolean);
+            Bytes = row.Get(table.Bytes);
+            DateTime = row.Get(table.DateTime);
+            DateTimeOffset = row.Get(table.DateTimeOffset);
+            Enum = row.GetEnum(table.Enum);
+            DateOnly = row.Get(table.DateOnly);
+            TimeOnly = row.Get(table.TimeOnly);
         }
 
         public IntKey<AllTypes> Id { get; set; }

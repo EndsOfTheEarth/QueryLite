@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -42,6 +43,10 @@ namespace QueryLite {
     }
     internal interface ITruncateQueryGenerator {
         internal string GetSql(TruncateQueryTemplate template, IDatabase database, IParameters? parameters);
+    }
+
+    internal interface IPreparedQueryGenerator {
+        internal string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters);
     }
 
     internal sealed class SelectQueryTemplate<RESULT> : IDistinct<RESULT>, ITop<RESULT>, IFrom<RESULT>, IHint<RESULT>, IJoin<RESULT>, IWhere<RESULT>, IGroupBy<RESULT>, IHaving<RESULT>, IOrderBy<RESULT>, IFor<RESULT>, IExecute<RESULT> {

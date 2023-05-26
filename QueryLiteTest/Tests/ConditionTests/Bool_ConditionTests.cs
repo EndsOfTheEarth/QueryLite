@@ -1,5 +1,4 @@
-﻿using MessagePack.Formatters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLiteTest.Tables;
@@ -18,11 +17,11 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            using(Transaction transation = new Transaction(TestDatabase.Database)) {
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 Query.Delete(allTypesTable)
                     .NoWhereCondition()
-                    .Execute(transation);
+                    .Execute(transaction);
 
                 COUNT_ALL count = new COUNT_ALL();
 
@@ -31,7 +30,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         result => result.Get(count)
                     )
                     .From(allTypesTable)
-                    .Execute(transation);
+                    .Execute(transaction);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -41,7 +40,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(countValue, 0);
 
-                transation.Commit();
+                transaction.Commit();
             }
         }
 
@@ -72,7 +71,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
             AllTypes types2 = GetAllType();
             AllTypes types3 = GetAllType();
 
-            //Set Booleans so they sort in a way that makes validation simplier
+            //Set Booleans so they sort in a way that makes validation simpler
             types1.Boolean = true;
             types2.Boolean = false;
             types3.Boolean = false;

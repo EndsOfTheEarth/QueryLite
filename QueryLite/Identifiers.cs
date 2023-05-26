@@ -32,12 +32,30 @@ namespace QueryLite {
         object GetValueAsObject();
     }
 
-    public interface IGuidType { }
-    public interface IStringType { }
-    public interface IInt16Type { }
-    public interface IInt32Type { }
-    public interface IInt64Type { }
-    public interface IBoolType { }
+    public interface IGuidType {
+        
+        Guid Value { get; }
+    }
+    public interface IStringType {
+        
+        string Value { get; }
+    }
+    public interface IInt16Type {
+        
+        short Value { get; }
+    }
+    public interface IInt32Type {
+    
+        int Value { get; }
+    }
+    public interface IInt64Type {
+    
+        long Value { get; }
+    }
+    public interface IBoolType {
+    
+        bool Value { get; }
+    }
 
     public readonly struct GuidKey<TYPE> : IKeyValue, IGuidType, IEquatable<GuidKey<TYPE>> {
 
