@@ -1806,8 +1806,8 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            IList<IField> selectFields,
-            FieldCollector fieldCollector,
+            //IList<IField> selectFields,
+            //FieldCollector fieldCollector,
             string debugName,
             CancellationToken cancellationToken) {
 

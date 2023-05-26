@@ -117,9 +117,8 @@ namespace QueryLite.Databases.SqlServer {
                     }
                     else {
                         setComma = true;
-                    }
-                    throw new NotImplementedException();
-                    //sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    }                    
+                    sql.Append(function.GetSql(database, useAlias: useAliases, parameters: null));
                 }
                 else {
                     throw new Exception($"Unkown field type. Type = {field}");
@@ -273,9 +272,7 @@ namespace QueryLite.Databases.SqlServer {
                         SqlServerHelper.AppendColumnName(sql, column);
                     }
                     else if(field is IFunction function) {
-
-                        throw new NotImplementedException();
-                        //sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters: null));
                     }
                     else {
                         throw new Exception($"Unkown field type. Type = {field}");

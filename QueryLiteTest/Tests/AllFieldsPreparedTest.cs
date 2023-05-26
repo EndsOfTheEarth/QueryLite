@@ -64,7 +64,6 @@ namespace QueryLiteTest.Tests {
             COUNT_ALL count = new COUNT_ALL();
 
             {
-                
 
                 query1 = Query
                     .PrepareWithParameters<bool>()
@@ -89,7 +88,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                IPreparedQueryExecute<bool, int> _selectAllCountQuery = Query
+                _selectAllCountQuery = Query
                     .PrepareWithParameters<bool>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
@@ -107,9 +106,6 @@ namespace QueryLiteTest.Tests {
                     .Build();
             }
         }
-
-
-
 
         [TestCleanup]
         public void CleanUp() {

@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace QueryLite {
 
@@ -266,6 +268,159 @@ namespace QueryLite {
                 sql: queryDetail.Sql,
                 queryType: QueryType.Select,
                 debugName: debugName
+            );
+            return result;
+        }
+
+        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+
+            IDatabase database = transaction.Database;
+
+            int dbTypeIndex = (int)database.DatabaseType;
+
+            PreparedQueryDetail<PARAMETERS> queryDetail;
+
+            if(_queries[dbTypeIndex] == null) {
+
+                ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
+
+                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
+
+                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql);
+
+                for(int index = 0; index < paramCollector.Parameters.Count; index++) {
+
+                    IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
+
+                    //TODO: Also implement for postgresql
+                    CreateParameterDelegate createParameterFunction = SqlServerParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
+
+                    queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
+                }
+                _queries[dbTypeIndex] = queryDetail;
+            }
+            else {
+                queryDetail = _queries[dbTypeIndex]!;
+            }
+
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
+                database: database,
+                paramValue: parameters,
+                transaction: transaction,
+                timeout: timeout.Value,
+                parameters: queryDetail.QueryParameters,
+                func: QueryTemplate.SelectFunction!,
+                sql: queryDetail.Sql,
+                queryType: QueryType.Select,
+                debugName: debugName
+            );
+            return result;
+        }
+
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+
+            int dbTypeIndex = (int)database.DatabaseType;
+
+            PreparedQueryDetail<PARAMETERS> queryDetail;
+
+            if(_queries[dbTypeIndex] == null) {
+
+                ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
+
+                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
+
+                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql);
+
+                for(int index = 0; index < paramCollector.Parameters.Count; index++) {
+
+                    IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
+
+                    //TODO: Also implement for postgresql
+                    CreateParameterDelegate createParameterFunction = SqlServerParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
+
+                    queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
+                }
+                _queries[dbTypeIndex] = queryDetail;
+            }
+            else {
+                queryDetail = _queries[dbTypeIndex]!;
+            }
+
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
+                database: database,
+                paramValue: parameters,
+                transaction: null,
+                timeout: timeout.Value,
+                parameters: queryDetail.QueryParameters,
+                func: QueryTemplate.SelectFunction!,
+                sql: queryDetail.Sql,
+                queryType: QueryType.Select,
+                debugName: debugName,
+                cancellationToken: cancellationToken
+            );
+            return result;
+        }
+
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+
+            IDatabase database = transaction.Database;
+
+            int dbTypeIndex = (int)database.DatabaseType;
+
+            PreparedQueryDetail<PARAMETERS> queryDetail;
+
+            if(_queries[dbTypeIndex] == null) {
+
+                ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
+
+                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
+
+                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql);
+
+                for(int index = 0; index < paramCollector.Parameters.Count; index++) {
+
+                    IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
+
+                    //TODO: Also implement for postgresql
+                    CreateParameterDelegate createParameterFunction = SqlServerParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
+
+                    queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
+                }
+                _queries[dbTypeIndex] = queryDetail;
+            }
+            else {
+                queryDetail = _queries[dbTypeIndex]!;
+            }
+
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
+                database: database,
+                paramValue: parameters,
+                transaction: transaction,
+                timeout: timeout.Value,
+                parameters: queryDetail.QueryParameters,
+                func: QueryTemplate.SelectFunction!,
+                sql: queryDetail.Sql,
+                queryType: QueryType.Select,
+                debugName: debugName,
+                cancellationToken: cancellationToken
             );
             return result;
         }
