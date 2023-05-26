@@ -181,7 +181,7 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class NullNotNullCondition<TYPE> : ICondition where TYPE : notnull {
+    internal sealed class NullNotNullCondition<TYPE> : IColumnCondition where TYPE : notnull {
 
         private IColumn Left { get; }
         private bool IsNull { get; }

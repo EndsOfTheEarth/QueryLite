@@ -59,9 +59,9 @@ namespace QueryLite {
 
     public interface IPreparedJoin<PARAMETERS> {
 
-        JoinType JoinType { get; }
-        ITable Table { get; }
-        IPreparedCondition<PARAMETERS> Condition { get; }
+        internal JoinType JoinType { get; }
+        internal ITable Table { get; }
+        internal IPreparedCondition<PARAMETERS> Condition { get; }
     }
 
     public interface IPreparedJoinOn<PARAMETERS, RESULT> : IPreparedJoin<PARAMETERS> {
@@ -105,6 +105,13 @@ namespace QueryLite {
         /// <param name="condition"></param>
         /// <returns></returns>
         IPreparedGroupBy<PARAMETERS, RESULT> Where(IPreparedCondition<PARAMETERS>? condition);
+
+        /// <summary>
+        /// Where condition clause
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        IPreparedGroupBy<PARAMETERS, RESULT> Where(IColumnCondition condition);
     }
 
     public interface IPreparedGroupBy<PARAMETERS, RESULT> : IPreparedHaving<PARAMETERS, RESULT> {
@@ -186,6 +193,12 @@ namespace QueryLite {
     }
     
     public interface IPreparedQueryExecute<PARAMETERS, RESULT> {
+
+        /// <summary>
+        /// Initialize generates the underlying sql query if it do not already exist. This method is mostly used for benchmarking where we want the sql to be generated before the query is used.
+        /// </summary>
+        /// <param name="database"></param>
+        void Initialize(IDatabase database);
 
         QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
         QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");

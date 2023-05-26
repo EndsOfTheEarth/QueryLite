@@ -225,8 +225,8 @@ namespace QueryLite {
             return new GenericCondition(Field, Operator.NOT_LIKE, like.Expression);
         }
 
-        public ICondition IsNull => new NullNotNullCondition<TYPE>(this, isNull: true);
-        public ICondition IsNotNull => new NullNotNullCondition<TYPE>(this, isNull: false);
+        public IColumnCondition IsNull => new NullNotNullCondition<TYPE>(this, isNull: true);
+        public IColumnCondition IsNotNull => new NullNotNullCondition<TYPE>(this, isNull: false);
 
         public IOrderByColumn ASC => new OrderByColumn(this, OrderBy.ASC);
 

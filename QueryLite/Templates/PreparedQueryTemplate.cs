@@ -103,8 +103,12 @@ namespace QueryLite {
         }
 
         public IPreparedGroupBy<PARAMETERS, RESULT> Where(IPreparedCondition<PARAMETERS>? condition) {
-
             WhereCondition = condition;
+            return this;
+        }
+
+        public IPreparedGroupBy<PARAMETERS, RESULT> Where(IColumnCondition condition) {
+            WhereCondition = new PreparedConditionWrapper<PARAMETERS>(condition);
             return this;
         }
 
@@ -223,7 +227,11 @@ namespace QueryLite {
             _queries = new PreparedQueryDetail<PARAMETERS>?[max];
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+        public void Initialize(IDatabase database) {
+            _ = GetQueryDetail(database);
+        }
+
+        public PreparedQueryDetail<PARAMETERS> GetQueryDetail(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
@@ -251,6 +259,14 @@ namespace QueryLite {
             else {
                 queryDetail = _queries[dbTypeIndex]!;
             }
+            return queryDetail;
+        }
+
+        public QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+
+            int dbTypeIndex = (int)database.DatabaseType;
+
+            PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
 
@@ -278,30 +294,7 @@ namespace QueryLite {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
-            PreparedQueryDetail<PARAMETERS> queryDetail;
-
-            if(_queries[dbTypeIndex] == null) {
-
-                ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
-
-                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
-
-                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql);
-
-                for(int index = 0; index < paramCollector.Parameters.Count; index++) {
-
-                    IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
-
-                    //TODO: Also implement for postgresql
-                    CreateParameterDelegate createParameterFunction = SqlServerParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
-
-                    queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
-                }
-                _queries[dbTypeIndex] = queryDetail;
-            }
-            else {
-                queryDetail = _queries[dbTypeIndex]!;
-            }
+            PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
 
@@ -327,30 +320,7 @@ namespace QueryLite {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
-            PreparedQueryDetail<PARAMETERS> queryDetail;
-
-            if(_queries[dbTypeIndex] == null) {
-
-                ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
-
-                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
-
-                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql);
-
-                for(int index = 0; index < paramCollector.Parameters.Count; index++) {
-
-                    IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
-
-                    //TODO: Also implement for postgresql
-                    CreateParameterDelegate createParameterFunction = SqlServerParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
-
-                    queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
-                }
-                _queries[dbTypeIndex] = queryDetail;
-            }
-            else {
-                queryDetail = _queries[dbTypeIndex]!;
-            }
+            PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
 
@@ -379,30 +349,7 @@ namespace QueryLite {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
-            PreparedQueryDetail<PARAMETERS> queryDetail;
-
-            if(_queries[dbTypeIndex] == null) {
-
-                ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
-
-                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
-
-                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql);
-
-                for(int index = 0; index < paramCollector.Parameters.Count; index++) {
-
-                    IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
-
-                    //TODO: Also implement for postgresql
-                    CreateParameterDelegate createParameterFunction = SqlServerParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
-
-                    queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
-                }
-                _queries[dbTypeIndex] = queryDetail;
-            }
-            else {
-                queryDetail = _queries[dbTypeIndex]!;
-            }
+            PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
 
