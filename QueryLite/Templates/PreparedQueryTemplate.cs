@@ -76,7 +76,7 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedJoin<PARAMETERS, RESULT> Join(ITable table) {
+        public IPreparedJoinOn<PARAMETERS, RESULT> Join(ITable table) {
 
             ArgumentNullException.ThrowIfNull(table);
 
@@ -86,10 +86,10 @@ namespace QueryLite {
                 Joins = new List<IPreparedJoin<PARAMETERS>>(1);
             }
             Joins.Add(join);
-            return this;
+            return join;
         }
 
-        public IPreparedJoin<PARAMETERS, RESULT> LeftJoin(ITable table) {
+        public IPreparedJoinOn<PARAMETERS, RESULT> LeftJoin(ITable table) {
 
             ArgumentNullException.ThrowIfNull(table);
 
@@ -99,7 +99,7 @@ namespace QueryLite {
                 Joins = new List<IPreparedJoin<PARAMETERS>>(1);
             }
             Joins.Add(join);
-            return this;
+            return join;
         }
 
         public IPreparedGroupBy<PARAMETERS, RESULT> Where(IPreparedCondition<PARAMETERS>? condition) {

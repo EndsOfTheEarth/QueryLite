@@ -1054,46 +1054,14 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(beginRowCount, await GetNumberOfRowsAsync() + 1);
         }
 
-
-        /*
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * Altered queries up to this point. TODO: Alter queries below to be prepared queries
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * */
-
         private int GetNumberOfRows() {
 
-            AllTypesTable allTypesTable = AllTypesTable.Instance;
-
-            COUNT_ALL count = new COUNT_ALL();
-
-            var result = Query
-                .Select(
-                    result => new {
-                        Count = result.Get(count)
-                    }
-                )
-                .From(allTypesTable)
-                .Execute(TestDatabase.Database);
+            QueryResult<int> result = _selectAllCountQuery!.Execute(parameters: true, TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);
 
-            int? countValue = result.Rows[0].Count;
+            int? countValue = result.Rows[0];
 
             Assert.IsNotNull(countValue);
             return countValue!.Value;
@@ -1101,52 +1069,75 @@ namespace QueryLiteTest.Tests {
 
         private async Task<int> GetNumberOfRowsAsync() {
 
-            AllTypesTable allTypesTable = AllTypesTable.Instance;
-
-            COUNT_ALL count = new COUNT_ALL();
-
-            var result = await Query
-                .Select(
-                    result => new {
-                        Count = result.Get(count)
-                    }
-                )
-                .From(allTypesTable)
-                .ExecuteAsync(TestDatabase.Database);
+            QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);
 
-            int? countValue = result.Rows[0].Count;
+            int? countValue = result.Rows[0];
 
             Assert.IsNotNull(countValue);
             return countValue!.Value;
         }
 
+        private class AllTypesInfoResult {
+
+            public AllTypesInfoResult(AllTypesInfo allTypesRow1, AllTypesInfo allTypesRow2, AllTypesInfo allTypesRow3, AllTypesInfo allTypesRow4) {
+                AllTypesRow1 = allTypesRow1;
+                AllTypesRow2 = allTypesRow2;
+                AllTypesRow3 = allTypesRow3;
+                AllTypesRow4 = allTypesRow4;
+            }
+            public AllTypesInfo AllTypesRow1 { get; set; }
+            public AllTypesInfo AllTypesRow2 { get; set; }
+            public AllTypesInfo AllTypesRow3 { get; set; }
+            public AllTypesInfo AllTypesRow4 { get; set; }
+        }
+
+        private class JoinQueryParams {
+
+            public JoinQueryParams(AllTypes allTypes, IntKey<AllTypes> id) {
+                AllTypes = allTypes;
+                Id = id;
+            }
+            public AllTypes AllTypes { get; }
+            public IntKey<AllTypes> Id { get; }
+        }
         private void JoinQuery(AllTypes allTypes) {
+
+            IntKey<AllTypes> id = new IntKey<AllTypes>(928756923);
+
+            JoinQueryParams joinQueryParams = new JoinQueryParams(allTypes, id);
 
             AllTypesTable allTypesTable1 = AllTypesTable.Instance;
             AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
             AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
             AllTypesTable allTypesTable4 = AllTypesTable.Instance4;
 
-            var result = Query
+            Parameter<JoinQueryParams, IntKey<AllTypes>> idParam = new Parameter<JoinQueryParams, IntKey<AllTypes>>(parameters => parameters.Id);
+
+            Parameter<JoinQueryParams, IntKey<AllTypes>> allTypesIdParam = new Parameter<JoinQueryParams, IntKey<AllTypes>>(parameters => parameters.AllTypes.Id);
+
+            IPreparedQueryExecute<JoinQueryParams, AllTypesInfoResult> joinQuery1 = Query
+                .PrepareWithParameters<JoinQueryParams>()
                 .Select(
-                    result => new {
-                        AllTypesRow1 = new AllTypesInfo(result, allTypesTable1),
-                        AllTypesRow2 = new AllTypesInfo(result, allTypesTable2),
-                        AllTypesRow3 = new AllTypesInfo(result, allTypesTable3),
-                        AllTypesRow4 = new AllTypesInfo(result, allTypesTable4),
-                    }
+                    row => new AllTypesInfoResult(
+                        allTypesRow1: new AllTypesInfo(row, allTypesTable1),
+                        allTypesRow2: new AllTypesInfo(row, allTypesTable2),
+                        allTypesRow3: new AllTypesInfo(row, allTypesTable3),
+                        allTypesRow4: new AllTypesInfo(row, allTypesTable4)
+                    )
                 )
                 .From(allTypesTable1)
                 .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
-                .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id)
-                .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
-                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new IntKey<AllTypes>(928756923))
-                .Where(allTypesTable1.Id == allTypes.Id)
+                .Join(allTypesTable2).On(allTypesTable1.Id.EQUALS<JoinQueryParams, IntKey<AllTypes>>(allTypesTable2.Id))
+                .Join(allTypesTable3).On(allTypesTable2.Id.EQUALS<JoinQueryParams, IntKey<AllTypes>>(allTypesTable3.Id))
+                .LeftJoin(allTypesTable4).On(allTypesTable4.Id.EQUALS(idParam))
+                .Where(allTypesTable1.Id.EQUALS(allTypesIdParam))
                 .Option(labelName: "Label 1", SqlServerQueryOption.FORCE_ORDER)
-                .Execute(TestDatabase.Database);
+                .Build();
+
+            QueryResult<AllTypesInfoResult> result = joinQuery1.Execute(parameters: joinQueryParams, TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);

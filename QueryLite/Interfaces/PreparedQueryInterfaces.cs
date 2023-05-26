@@ -47,14 +47,14 @@ namespace QueryLite {
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        IPreparedJoin<PARAMETERS, RESULT> Join(ITable table);
+        IPreparedJoinOn<PARAMETERS, RESULT> Join(ITable table);
 
         /// <summary>
         /// Left join table clause
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        IPreparedJoin<PARAMETERS, RESULT> LeftJoin(ITable table);
+        IPreparedJoinOn<PARAMETERS, RESULT> LeftJoin(ITable table);
     }
 
     public interface IPreparedJoin<PARAMETERS> {
@@ -63,7 +63,12 @@ namespace QueryLite {
         ITable Table { get; }
         IPreparedCondition<PARAMETERS> Condition { get; }
     }
-    internal sealed class PreparedJoin<PARAMETERS, RESULT> : IPreparedJoin<PARAMETERS> {
+
+    public interface IPreparedJoinOn<PARAMETERS, RESULT> : IPreparedJoin<PARAMETERS> {
+
+        IPreparedJoin<PARAMETERS, RESULT> On(IPreparedCondition<PARAMETERS> on);
+    }
+    internal sealed class PreparedJoin<PARAMETERS, RESULT> : IPreparedJoinOn<PARAMETERS, RESULT> {
 
         public JoinType JoinType { get; private set; }
         public ITable Table { get; private set; }
