@@ -1,53 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using QueryLite;
 using QueryLite.PreparedQuery;
-using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
 
 namespace QueryLiteTest.Tests {
 
     [TestClass]
-    public sealed class CompiledSelectQueryTests {
-
-        //[TestInitialize]
-        //public void ClearTable() {
-
-        //    AllTypesTable allTypesTable = AllTypesTable.Instance;
-
-        //    using(Transaction transation = new Transaction(TestDatabase.Database)) {
-
-        //        Query.Delete(allTypesTable)
-        //            .NoWhereCondition()
-        //            .Execute(transation, TimeoutLevel.ShortDelete);
-
-        //        COUNT_ALL count = new COUNT_ALL();
-
-        //        var result = Query
-        //            .Select(
-        //                result => new {
-        //                    Count = result.Get(count)
-        //                }
-        //            )
-        //            .From(allTypesTable)
-        //            .Execute(transation);
-
-        //        Assert.AreEqual(result.Rows.Count, 1);
-        //        Assert.AreEqual(result.RowsEffected, 0);
-
-        //        int? countValue = result.Rows[0].Count;
-
-        //        Assert.IsNotNull(countValue);
-        //        Assert.AreEqual(countValue, 0);
-
-        //        transation.Commit();
-        //    }
-        //}
-
-        //[TestCleanup]
-        //public void CleanUp() {
-        //    Settings.UseParameters = false;
-        //}
+    public sealed class EnumConversionTests {
 
         public enum SByteEnum : sbyte {
             A = -1,
@@ -204,32 +163,6 @@ namespace QueryLiteTest.Tests {
             public ParameterValues() {
 
             }
-        }
-
-        [TestMethod]
-        public void Test01() {
-
-            ParameterValues parameterValues = new ParameterValues();
-
-            Parameter<ParameterValues, Guid> guidParameter = new Parameter<ParameterValues, Guid>(parameters => parameters.Guid);
-            Parameter<ParameterValues, AllTypesEnum> enumParameter = new Parameter<ParameterValues, AllTypesEnum>(parameters => parameters.Enum);
-
-            AllTypesTable table = AllTypesTable.Instance;
-
-            IPreparedQueryExecute<ParameterValues, IntKey<AllTypes>> selectQuery =
-                Query
-                .PrepareWithParameters<ParameterValues>()
-                .Select(row => row.Get(table.Id))
-                .From(table)
-                .Where(
-                    table.Guid.IS_NOT_NULL().AND(
-                    table.Guid.NOT_EQUALS(guidParameter).AND(
-                    table.Guid.IS_NOT_NULL()).AND(
-                    table.Enum.EQUALS(enumParameter)))
-                )
-                .Build();
-
-            QueryResult<IntKey<AllTypes>> result = selectQuery.Execute(parameterValues, TestDatabase.Database);
         }
     }
 }

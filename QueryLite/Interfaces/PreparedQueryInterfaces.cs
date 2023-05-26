@@ -82,10 +82,10 @@ namespace QueryLite {
 
         private readonly PreparedQueryTemplate<PARAMETERS, RESULT> Template;
 
-        internal PreparedJoin(JoinType joinType, ITable table, PreparedQueryTemplate<PARAMETERS, RESULT> tempate) {
+        internal PreparedJoin(JoinType joinType, ITable table, PreparedQueryTemplate<PARAMETERS, RESULT> template) {
             JoinType = joinType;
             Table = table;
-            Template = tempate;
+            Template = template;
         }
         public IPreparedJoin<PARAMETERS, RESULT> On(IPreparedCondition<PARAMETERS> on) {
             _condition = on;
@@ -161,7 +161,7 @@ namespace QueryLite {
     public interface IPreparedFor<PARAMETERS, RESULT> : IPreparedOption<PARAMETERS, RESULT> {
 
         /// <summary>
-        /// FOR caluse. PostgreSql only
+        /// FOR clause. PostgreSql only
         /// </summary>
         /// <param name="forType"></param>
         /// <param name="ofTables"></param>
@@ -200,10 +200,50 @@ namespace QueryLite {
         /// <param name="database"></param>
         void Initialize(IDatabase database);
 
-        QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
-        QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+        QueryResult<RESULT> Execute(PARAMETERS parameterValues, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
+        QueryResult<RESULT> Execute(PARAMETERS parameterValues, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "");
-        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "");
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "");
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "");
+
+        /// <summary>
+        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="timeout"></param>
+        /// <param name="useParameters"></param>
+        /// <param name="debugName"></param>
+        /// <returns></returns>
+        public RESULT? SingleOrDefault(PARAMETERS parameterValues, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+
+        /// <summary>
+        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="timeout"></param>
+        /// <param name="useParameters"></param>
+        /// <param name="debugName"></param>
+        /// <returns></returns>
+        public RESULT? SingleOrDefault(PARAMETERS parameterValues, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
+
+        /// <summary>
+        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="timeout"></param>
+        /// <param name="useParameters"></param>
+        /// <param name="debugName"></param>
+        /// <returns></returns>
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
+
+        /// <summary>
+        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="timeout"></param>
+        /// <param name="useParameters"></param>
+        /// <param name="debugName"></param>
+        /// <returns></returns>
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace QueryLite {
 
@@ -262,7 +263,7 @@ namespace QueryLite {
             return queryDetail;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameterValues, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
@@ -276,7 +277,7 @@ namespace QueryLite {
 
             QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
                 database: database,
-                paramValue: parameters,
+                paramValue: parameterValues,
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -288,7 +289,7 @@ namespace QueryLite {
             return result;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameterValues, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -304,7 +305,7 @@ namespace QueryLite {
 
             QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
                 database: database,
-                paramValue: parameters,
+                paramValue: parameterValues,
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -316,7 +317,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
@@ -330,7 +331,7 @@ namespace QueryLite {
 
             QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
                 database: database,
-                paramValue: parameters,
+                paramValue: parameterValues,
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -343,7 +344,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -359,7 +360,7 @@ namespace QueryLite {
 
             QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
                 database: database,
-                paramValue: parameters,
+                paramValue: parameterValues,
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -368,6 +369,116 @@ namespace QueryLite {
                 queryType: QueryType.Select,
                 debugName: debugName,
                 cancellationToken: cancellationToken
+            );
+            return result;
+        }
+
+        public RESULT? SingleOrDefault(PARAMETERS parameterValues, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+
+            IDatabase database = transaction.Database;
+
+            int dbTypeIndex = (int)database.DatabaseType;
+
+            PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
+
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            RESULT? result = PreparedQueryExecutor.SingleOrDefault(
+                database: database,
+                paramValue: parameterValues,
+                transaction: transaction,
+                timeout: timeout.Value,
+                parameters: queryDetail.QueryParameters,
+                func: QueryTemplate.SelectFunction!,
+                sql: queryDetail.Sql,
+                queryType: QueryType.Select,
+                debugName: debugName
+            );
+            return result;
+        }
+
+        public RESULT? SingleOrDefault(PARAMETERS parameterValues, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+
+            int dbTypeIndex = (int)database.DatabaseType;
+
+            PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
+
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            RESULT? result = PreparedQueryExecutor.SingleOrDefault(
+                database: database,
+                paramValue: parameterValues,
+                transaction: null,
+                timeout: timeout.Value,
+                parameters: queryDetail.QueryParameters,
+                func: QueryTemplate.SelectFunction!,
+                sql: queryDetail.Sql,
+                queryType: QueryType.Select,
+                debugName: debugName
+            );
+            return result;
+        }
+
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+
+            IDatabase database = transaction.Database;
+
+            int dbTypeIndex = (int)database.DatabaseType;
+
+            PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
+
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
+                database: database,
+                paramValue: parameterValues,
+                transaction: transaction,
+                cancellationToken: cancellationToken ?? CancellationToken.None,
+                timeout: timeout.Value,
+                parameters: queryDetail.QueryParameters,
+                func: QueryTemplate.SelectFunction!,
+                sql: queryDetail.Sql,
+                queryType: QueryType.Select,
+                debugName: debugName
+            );
+            return result;
+        }
+
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+
+            int dbTypeIndex = (int)database.DatabaseType;
+
+            PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
+
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout == null) {
+                timeout = TimeoutLevel.ShortSelect;
+            }
+
+            RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
+                database: database,
+                paramValue: parameterValues,
+                transaction: null,
+                cancellationToken: cancellationToken ?? CancellationToken.None,
+                timeout: timeout.Value,
+                parameters: queryDetail.QueryParameters,
+                func: QueryTemplate.SelectFunction!,
+                sql: queryDetail.Sql,
+                queryType: QueryType.Select,
+                debugName: debugName
             );
             return result;
         }

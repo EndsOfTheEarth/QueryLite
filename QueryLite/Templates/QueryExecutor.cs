@@ -1495,7 +1495,6 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            FieldCollector fieldCollector,
             string debugName) {
 
             DbConnection? dbConnection = null;
@@ -1651,7 +1650,6 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            FieldCollector fieldCollector,
             string debugName) {
 
             DbConnection? dbConnection = null;
