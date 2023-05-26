@@ -57,7 +57,7 @@ namespace QueryLite {
         bool Value { get; }
     }
 
-    public readonly struct GuidKey<TYPE> : IKeyValue, IGuidType {
+    public readonly struct GuidKey<TYPE> : IKeyValue, IGuidType, IEquatable<GuidKey<TYPE>> {
 
         [Key(0)]
         [JsonPropertyName("Value")]
@@ -131,9 +131,12 @@ namespace QueryLite {
         public override string ToString() {
             return Value.ToString() ?? string.Empty;
         }
+        public bool Equals(GuidKey<TYPE> other) {
+            return Value == other.Value;
+        }
     }
 
-    public readonly struct StringKey<TYPE> : IKeyValue, IStringType {
+    public readonly struct StringKey<TYPE> : IKeyValue, IStringType, IEquatable<StringKey<TYPE>> {
 
         [Key(0)]
         [JsonPropertyName("Value")]
@@ -197,9 +200,13 @@ namespace QueryLite {
         public override string ToString() {
             return Value ?? string.Empty;
         }
+
+        public bool Equals(StringKey<TYPE> other) {
+            return Value.CompareTo(other.Value) == 0;
+        }
     }
 
-    public readonly struct ShortKey<TYPE> : IKeyValue, IInt16Type {
+    public readonly struct ShortKey<TYPE> : IKeyValue, IInt16Type, IEquatable<ShortKey<TYPE>> {
 
         [Key(0)]
         [JsonPropertyName("Value")]
@@ -272,9 +279,13 @@ namespace QueryLite {
         public override string ToString() {
             return Value.ToString() ?? string.Empty;
         }
+
+        public bool Equals(ShortKey<TYPE> other) {
+            return Value == other.Value;
+        }
     }
 
-    public readonly struct IntKey<TYPE> : IKeyValue, IInt32Type {
+    public readonly struct IntKey<TYPE> : IKeyValue, IInt32Type, IEquatable<IntKey<TYPE>> {
 
         [Key(0)]
         [JsonPropertyName("Value")]
@@ -347,9 +358,13 @@ namespace QueryLite {
         public override string ToString() {
             return Value.ToString() ?? string.Empty;
         }
+
+        public bool Equals(IntKey<TYPE> other) {
+            return Value == other.Value;
+        }
     }
 
-    public readonly struct LongKey<TYPE> : IKeyValue, IInt64Type {
+    public readonly struct LongKey<TYPE> : IKeyValue, IInt64Type, IEquatable<LongKey<TYPE>> {
 
         [Key(0)]
         [JsonPropertyName("Value")]
@@ -421,9 +436,13 @@ namespace QueryLite {
         public override string ToString() {
             return Value.ToString() ?? string.Empty;
         }
+
+        public bool Equals(LongKey<TYPE> other) {
+            return Value == other.Value;
+        }
     }
 
-    public readonly struct BoolValue<TYPE> : IKeyValue, IBoolType {
+    public readonly struct BoolValue<TYPE> : IKeyValue, IBoolType, IEquatable<BoolValue<TYPE>> {
 
         [Key(0)]
         [JsonPropertyName("Value")]
@@ -483,6 +502,10 @@ namespace QueryLite {
         }
         public override string ToString() {
             return Value.ToString() ?? string.Empty;
+        }
+
+        public bool Equals(BoolValue<TYPE> other) {
+            return Value == other.Value;
         }
     }
 
