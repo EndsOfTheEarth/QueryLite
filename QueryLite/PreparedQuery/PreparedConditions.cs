@@ -90,7 +90,7 @@ namespace QueryLite.PreparedQuery {
 
     public interface IPreparedCondition {
 
-        public void GetSql(StringBuilder sql, bool useAlias);
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias);
 
         public IPreparedCondition<PARAMETERS> AND<PARAMETERS>(IPreparedCondition<PARAMETERS> condition) {
             return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
@@ -108,7 +108,7 @@ namespace QueryLite.PreparedQuery {
     }
     public interface IPreparedCondition<PARAMETERS> {
 
-        public void GetSql(StringBuilder sql, IParameterCollector<PARAMETERS> paramCollector, bool useAlias);
+        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias);
 
         public IPreparedCondition<PARAMETERS> AND(IPreparedCondition<PARAMETERS> condition) {
             return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
@@ -125,6 +125,18 @@ namespace QueryLite.PreparedQuery {
         }
     }
 
+    public class PreparedConditionWrapper<PARAMETERS> : IPreparedCondition<PARAMETERS> {
+
+        private IColumnCondition Condition { get; }
+
+        public PreparedConditionWrapper(IColumnCondition condition) {
+            Condition = condition;
+        }
+
+        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+            Condition.GetSql(sql, database, useAlias: useAlias, parameters: null);
+        }
+    }
     public class PreparedParameterCondition<PARAMETERS> : IPreparedCondition<PARAMETERS> {
 
         public PreparedParameterCondition(IColumn column, string @operator, IParameter<PARAMETERS>? parameter) {
@@ -136,7 +148,7 @@ namespace QueryLite.PreparedQuery {
         public string Operator { get; }
         public IParameter<PARAMETERS>? Parameter { get; }
 
-        public void GetSql(StringBuilder sql, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
 
             if(Parameter != null) {
                 paramCollector.Add(Parameter);
@@ -194,23 +206,23 @@ namespace QueryLite.PreparedQuery {
         public IPreparedCondition<PARAMETERS>? ConditionB1 { get; }
         public IPreparedCondition? ConditionB2 { get; }
 
-        public void GetSql(StringBuilder sql, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
 
             sql.Append('(');
 
             if(ConditionA1 != null) {
-                ConditionA1.GetSql(sql, paramCollector, useAlias: useAlias);
+                ConditionA1.GetSql(sql, database, paramCollector, useAlias: useAlias);
             }
             else {
-                ConditionA2!.GetSql(sql, useAlias: useAlias);
+                ConditionA2!.GetSql(sql, database, useAlias: useAlias);
             }
             sql.Append(' ').Append(Operator).Append(' ');
 
             if(ConditionB1 != null) {
-                ConditionB1.GetSql(sql, paramCollector, useAlias: useAlias);
+                ConditionB1.GetSql(sql, database, paramCollector, useAlias: useAlias);
             }
             else {
-                ConditionB2!.GetSql(sql, useAlias: useAlias);
+                ConditionB2!.GetSql(sql, database, useAlias: useAlias);
             }
             sql.Append(')');
         }
@@ -225,7 +237,7 @@ namespace QueryLite.PreparedQuery {
         public IColumn Column { get; }
         public string Operator { get; }
 
-        public void GetSql(StringBuilder sql, bool useAlias) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias) {
 
             if(useAlias) {
                 sql.Append(Column.Table.Alias).Append('.');
@@ -245,7 +257,7 @@ namespace QueryLite.PreparedQuery {
         public string Operator { get; }
         public IColumn ColumnB { get; }
 
-        public void GetSql(StringBuilder sql, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
 
             if(useAlias) {
                 sql.Append(ColumnA.Table.Alias).Append('.');

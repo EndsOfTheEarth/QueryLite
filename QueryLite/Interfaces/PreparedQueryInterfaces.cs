@@ -67,6 +67,7 @@ namespace QueryLite {
     public interface IPreparedJoinOn<PARAMETERS, RESULT> : IPreparedJoin<PARAMETERS> {
 
         IPreparedJoin<PARAMETERS, RESULT> On(IPreparedCondition<PARAMETERS> on);
+        IPreparedJoin<PARAMETERS, RESULT> On(IColumnCondition on);        
     }
     internal sealed class PreparedJoin<PARAMETERS, RESULT> : IPreparedJoinOn<PARAMETERS, RESULT> {
 
@@ -88,6 +89,10 @@ namespace QueryLite {
         }
         public IPreparedJoin<PARAMETERS, RESULT> On(IPreparedCondition<PARAMETERS> on) {
             _condition = on;
+            return Template;
+        }
+        public IPreparedJoin<PARAMETERS, RESULT> On(IColumnCondition on) {
+            _condition = new PreparedConditionWrapper<PARAMETERS>(on);
             return Template;
         }
     }

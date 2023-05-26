@@ -196,7 +196,7 @@ namespace QueryLite.Databases.SqlServer {
                     sql.Append(" AS ").Append(join.Table.Alias);
                 }
                 sql.Append(" ON ");
-                join.Condition.GetSql(sql, parameters, useAlias: useAliases);
+                join.Condition.GetSql(sql, database, parameters, useAlias: useAliases);
             }
         }
 
@@ -204,7 +204,7 @@ namespace QueryLite.Databases.SqlServer {
 
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, parameters, useAlias: useAliases);
+                template.WhereCondition.GetSql(sql, database, parameters, useAlias: useAliases);
             }
         }
 
@@ -242,7 +242,7 @@ namespace QueryLite.Databases.SqlServer {
 
             if(template.HavingCondition != null) {
                 sql.Append(" HAVING ");
-                template.HavingCondition.GetSql(sql, parameters, useAlias: useAliases);
+                template.HavingCondition.GetSql(sql, database, parameters, useAlias: useAliases);
             }
         }
         private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, IParameterCollector<PARAMETERS> parameters) {

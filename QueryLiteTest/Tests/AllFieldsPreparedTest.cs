@@ -18,8 +18,6 @@ namespace QueryLiteTest.Tests {
     [TestClass]
     public sealed class AllFieldsPreparedTest {
 
-        
-
         [TestInitialize]
         public void ClearTable() {
 
@@ -1080,9 +1078,9 @@ namespace QueryLiteTest.Tests {
             return countValue!.Value;
         }
 
-        private class AllTypesInfoResult {
+        private class AllTypesInfoResult4 {
 
-            public AllTypesInfoResult(AllTypesInfo allTypesRow1, AllTypesInfo allTypesRow2, AllTypesInfo allTypesRow3, AllTypesInfo allTypesRow4) {
+            public AllTypesInfoResult4(AllTypesInfo allTypesRow1, AllTypesInfo allTypesRow2, AllTypesInfo allTypesRow3, AllTypesInfo allTypesRow4) {
                 AllTypesRow1 = allTypesRow1;
                 AllTypesRow2 = allTypesRow2;
                 AllTypesRow3 = allTypesRow3;
@@ -1118,10 +1116,10 @@ namespace QueryLiteTest.Tests {
 
             Parameter<JoinQueryParams, IntKey<AllTypes>> allTypesIdParam = new Parameter<JoinQueryParams, IntKey<AllTypes>>(parameters => parameters.AllTypes.Id);
 
-            IPreparedQueryExecute<JoinQueryParams, AllTypesInfoResult> joinQuery1 = Query
+            IPreparedQueryExecute<JoinQueryParams, AllTypesInfoResult4> joinQuery1 = Query
                 .PrepareWithParameters<JoinQueryParams>()
                 .Select(
-                    row => new AllTypesInfoResult(
+                    row => new AllTypesInfoResult4(
                         allTypesRow1: new AllTypesInfo(row, allTypesTable1),
                         allTypesRow2: new AllTypesInfo(row, allTypesTable2),
                         allTypesRow3: new AllTypesInfo(row, allTypesTable3),
@@ -1130,14 +1128,14 @@ namespace QueryLiteTest.Tests {
                 )
                 .From(allTypesTable1)
                 .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
-                .Join(allTypesTable2).On(allTypesTable1.Id.EQUALS<JoinQueryParams, IntKey<AllTypes>>(allTypesTable2.Id))
-                .Join(allTypesTable3).On(allTypesTable2.Id.EQUALS<JoinQueryParams, IntKey<AllTypes>>(allTypesTable3.Id))
+                .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id & allTypesTable1.Id == allTypesTable2.Id)   //Duplicate conditions to test C# type checker
+                .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id & allTypesTable2.Id == allTypesTable3.Id)
                 .LeftJoin(allTypesTable4).On(allTypesTable4.Id.EQUALS(idParam))
                 .Where(allTypesTable1.Id.EQUALS(allTypesIdParam))
                 .Option(labelName: "Label 1", SqlServerQueryOption.FORCE_ORDER)
                 .Build();
 
-            QueryResult<AllTypesInfoResult> result = joinQuery1.Execute(parameters: joinQueryParams, TestDatabase.Database);
+            QueryResult<AllTypesInfoResult4> result = joinQuery1.Execute(parameters: joinQueryParams, TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);
@@ -1153,25 +1151,41 @@ namespace QueryLiteTest.Tests {
             Assert.IsTrue(!row4.Id.IsValid);
         }
 
+        private class AllTypesInfoResult3 {
+
+            public AllTypesInfoResult3(AllTypesInfo allTypesRow1, AllTypesInfo allTypesRow2, AllTypesInfo allTypesRow3) {
+                AllTypesRow1 = allTypesRow1;
+                AllTypesRow2 = allTypesRow2;
+                AllTypesRow3 = allTypesRow3;
+            }
+            public AllTypesInfo AllTypesRow1 { get; set; }
+            public AllTypesInfo AllTypesRow2 { get; set; }
+            public AllTypesInfo AllTypesRow3 { get; set; }
+        }
         private async Task JoinQueryAsync(AllTypes allTypes) {
 
             AllTypesTable allTypesTable1 = AllTypesTable.Instance;
             AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
             AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
 
-            var result = await Query
+            Parameter<AllTypes, IntKey<AllTypes>> idParam = new Parameter<AllTypes, IntKey<AllTypes>>(allTypesParam => allTypesParam.Id);
+
+            IPreparedQueryExecute<AllTypes, AllTypesInfoResult3> joinQuery = Query
+                .PrepareWithParameters<AllTypes>()
                 .Select(
-                    result => new {
-                        AllTypesRow1 = new AllTypesInfo(result, allTypesTable1),
-                        AllTypesRow2 = new AllTypesInfo(result, allTypesTable2),
-                        AllTypesRow3 = new AllTypesInfo(result, allTypesTable3)
-                    }
+                    row => new AllTypesInfoResult3(
+                        allTypesRow1: new AllTypesInfo(row, allTypesTable1),
+                        allTypesRow2: new AllTypesInfo(row, allTypesTable2),
+                        allTypesRow3: new AllTypesInfo(row, allTypesTable3)
+                    )
                 )
                 .From(allTypesTable1)
                 .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id)
                 .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
-                .Where(allTypesTable1.Id == allTypes.Id)
-                .ExecuteAsync(TestDatabase.Database);
+                .Where(allTypesTable1.Id.EQUALS(idParam))
+                .Build();
+
+            QueryResult<AllTypesInfoResult3> result = await joinQuery.ExecuteAsync(parameters: allTypes, TestDatabase.Database, CancellationToken.None);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);
