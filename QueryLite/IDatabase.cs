@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.PreparedQuery;
 using System;
 using System.Data.Common;
 
@@ -64,7 +65,7 @@ namespace QueryLite {
         internal IUpdateQueryGenerator UpdateGenerator { get; }
         internal IDeleteQueryGenerator DeleteGenerator { get; }
         internal ITruncateQueryGenerator TruncateGenerator { get; }
-
         internal IPreparedQueryGenerator PreparedQueryGenerator { get; }
+        internal IParameterMapper ParameterMapper { get; }
     }
 }

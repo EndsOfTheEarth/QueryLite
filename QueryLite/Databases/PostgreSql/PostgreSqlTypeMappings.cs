@@ -58,6 +58,10 @@ namespace QueryLite.Databases.PostgreSql {
                 return NpgsqlDbType.Bytea;
             }
 
+            if(type == typeof(byte)) {
+                return NpgsqlDbType.Smallint;
+            }
+
             if(type == typeof(DateTimeOffset)) {
                 return NpgsqlDbType.TimestampTz;
             }

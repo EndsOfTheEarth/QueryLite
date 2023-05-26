@@ -225,7 +225,7 @@ namespace QueryLite {
                     max = valueAsInt;
                 }
             }
-            _queries = new PreparedQueryDetail<PARAMETERS>?[max];
+            _queries = new PreparedQueryDetail<PARAMETERS>?[max + 1];
         }
 
         public void Initialize(IDatabase database) {
@@ -250,8 +250,7 @@ namespace QueryLite {
 
                     IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
 
-                    //TODO: Also implement for postgresql
-                    CreateParameterDelegate createParameterFunction = SqlServerParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
+                    CreateParameterDelegate createParameterFunction = database.ParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
 
                     queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
                 }
