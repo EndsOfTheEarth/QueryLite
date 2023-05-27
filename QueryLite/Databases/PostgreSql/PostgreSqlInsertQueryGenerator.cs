@@ -42,31 +42,27 @@ namespace QueryLite.Databases.PostgreSql {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(database, CollectorMode.Insert);
+                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, database, CollectorMode.Insert);
 
+                sql.Append('(');
                 template.ValuesCollector!(valuesCollector);
+                sql.Append(") VALUES(");
 
                 parameters = valuesCollector.Parameters;
 
-                sql.Append('(');
-                sql.Append(valuesCollector.ValuesSql);
-
-                sql.Append(") VALUES(");
                 sql.Append(valuesCollector.ParamSql);
                 sql.Append(')');
             }
             else {
 
-                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(database, CollectorMode.Insert);
+                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(sql, database, CollectorMode.Insert);
 
+                sql.Append('(');
                 template.ValuesCollector!(valuesCollector);
+                sql.Append(") VALUES(");
 
                 parameters = null;
 
-                sql.Append('(');
-                sql.Append(valuesCollector.ValuesSql);
-
-                sql.Append(") VALUES(");
                 sql.Append(valuesCollector.ParamsSql);
                 sql.Append(')');
             }

@@ -29,20 +29,20 @@ using System.Text;
 
 namespace QueryLite.Databases.SqlServer {
 
-    
-    internal class SqlServerSetValuesParameterCollector : ISetValuesCollector {
+    internal sealed class SqlServerSetValuesParameterCollector : ISetValuesCollector {
 
         public SqlServerParameters Parameters { get; } = new SqlServerParameters(initParams: 1);
 
-        public StringBuilder ValuesSql = new StringBuilder();
+        private readonly StringBuilder _sql;
         public StringBuilder? ParamSql;
 
-        private IDatabase _database;
-        private CollectorMode _collectorMode;
+        private readonly IDatabase _database;
+        private readonly CollectorMode _collectorMode;
 
         private int _counter;
 
-        public SqlServerSetValuesParameterCollector(IDatabase database, CollectorMode collectorMode) {
+        public SqlServerSetValuesParameterCollector(StringBuilder sql, IDatabase database, CollectorMode collectorMode) {
+            _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
 
@@ -56,13 +56,13 @@ namespace QueryLite.Databases.SqlServer {
             if(_collectorMode == CollectorMode.Insert) {
 
                 if(_counter > 0) {
-                    ValuesSql.Append(',');
+                    _sql.Append(',');
                     ParamSql!.Append(',');
                 }
 
                 string paramName = $"@{_counter++}";
 
-                SqlServerHelper.AppendEnclose(ValuesSql, column.ColumnName, forceEnclose: false);
+                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
 
                 ParamSql!.Append(paramName);
 
@@ -74,15 +74,15 @@ namespace QueryLite.Databases.SqlServer {
             else if(_collectorMode == CollectorMode.Update) {
 
                 if(_counter > 0) {
-                    ValuesSql.Append(',');
+                    _sql.Append(',');
                 }
 
                 string paramName = $"@{_counter++}";
 
-                SqlServerHelper.AppendEnclose(ValuesSql, column.Table.Alias, forceEnclose: false);
-                ValuesSql.Append('.');
-                SqlServerHelper.AppendEnclose(ValuesSql, column.ColumnName, forceEnclose: false);
-                ValuesSql.Append('=').Append(paramName);
+                SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
+                _sql.Append('.');
+                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                _sql.Append('=').Append(paramName);
 
                 Parameters.ParameterList.Add(new SqlParameter(parameterName: paramName, value) { SqlDbType = dbType });
             }
@@ -97,24 +97,24 @@ namespace QueryLite.Databases.SqlServer {
             if(_collectorMode == CollectorMode.Insert) {
 
                 if(_counter > 0) {
-                    ValuesSql.Append(',');
+                    _sql.Append(',');
                     ParamSql!.Append(',');
                 }
                 _counter++;
-                SqlServerHelper.AppendEnclose(ValuesSql, column.ColumnName, forceEnclose: false);
+                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
                 ParamSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
 
                 if(_counter > 0) {
-                    ValuesSql.Append(',');
+                    _sql.Append(',');
                 }
                 _counter++;
 
-                SqlServerHelper.AppendEnclose(ValuesSql, column.Table.Alias, forceEnclose: false);
-                ValuesSql.Append('.');
-                SqlServerHelper.AppendEnclose(ValuesSql, column.ColumnName, forceEnclose: false);
-                ValuesSql.Append('=').Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
+                SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
+                _sql.Append('.');
+                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                _sql.Append('=').Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");
@@ -393,12 +393,13 @@ namespace QueryLite.Databases.SqlServer {
         }
     }
 
-    internal class SqlServerSetValuesCollector : ISetValuesCollector {
+    internal sealed class SqlServerSetValuesCollector : ISetValuesCollector {
 
-        private IDatabase _database;
-        private CollectorMode _collectorMode;
+        private readonly IDatabase _database;
+        private readonly CollectorMode _collectorMode;
 
-        public SqlServerSetValuesCollector(IDatabase database, CollectorMode collectorMode) {
+        public SqlServerSetValuesCollector(StringBuilder sql, IDatabase database, CollectorMode collectorMode) {
+            _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
 
@@ -407,31 +408,37 @@ namespace QueryLite.Databases.SqlServer {
             }
         }
 
-        public StringBuilder ValuesSql = new StringBuilder();
+        private readonly StringBuilder _sql;
         public StringBuilder? ParamsSql;
+
+        private bool _first = true;
 
         private ISetValuesCollector SetValue(IColumn column, string value) {
 
             if(_collectorMode == CollectorMode.Insert) {
 
-                if(ValuesSql.Length > 0) {
-                    ValuesSql.Append(',');
+                if(!_first) {
+                    _sql.Append(',');
                     ParamsSql!.Append(',');
                 }
-                SqlServerHelper.AppendEnclose(ValuesSql, column.ColumnName, forceEnclose: false);
-
+                else {
+                    _first = false;
+                }
+                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
                 ParamsSql!.Append(value);
             }
             else if(_collectorMode == CollectorMode.Update) {
 
-                if(ValuesSql.Length > 0) {
-                    ValuesSql.Append(',');
+                if(!_first) {
+                    _sql.Append(',');
                 }
-
-                SqlServerHelper.AppendEnclose(ValuesSql, column.Table.Alias, forceEnclose: false);
-                ValuesSql.Append('.');
-                SqlServerHelper.AppendEnclose(ValuesSql, column.ColumnName, forceEnclose: false);
-                ValuesSql.Append('=').Append(value);
+                else {
+                    _first = false;
+                }
+                SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
+                _sql.Append('.');
+                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                _sql.Append('=').Append(value);
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");

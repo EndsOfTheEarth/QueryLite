@@ -36,28 +36,21 @@ namespace QueryLite.Databases.SqlServer {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(database, CollectorMode.Update);
-
-                template.ValuesCollector!(valuesCollector);
-
-                parameters = valuesCollector.Parameters;
+                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, database, CollectorMode.Update);
 
                 sql.Append(" SET ");
+                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
 
-                sql.Append(valuesCollector.ValuesSql.ToString());
-
+                parameters = valuesCollector.Parameters;                
             }
             else {
 
-                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(database, CollectorMode.Update);
-
-                template.ValuesCollector!(valuesCollector);
-
-                parameters = null;
+                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(sql, database, CollectorMode.Update);
 
                 sql.Append(" SET ");
+                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
 
-                sql.Append(valuesCollector.ValuesSql.ToString());
+                parameters = null;
             }
 
             if(template.ReturningColumns?.Count > 0) {

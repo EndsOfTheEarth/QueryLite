@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Databases.SqlServer;
 using System;
 using System.Text;
 
@@ -45,28 +44,23 @@ namespace QueryLite.Databases.PostgreSql {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(database, CollectorMode.Update);
+                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, database, CollectorMode.Update);
+
+                sql.Append(" SET ");
 
                 template.ValuesCollector!(valuesCollector);
 
                 parameters = valuesCollector.Parameters;
-
-                sql.Append(" SET ");
-
-                sql.Append(valuesCollector.ValuesSql.ToString());
-
             }
             else {
 
-                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(database, CollectorMode.Update);
+                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(sql, database, CollectorMode.Update);
+
+                sql.Append(" SET ");
 
                 template.ValuesCollector!(valuesCollector);
 
                 parameters = null;
-
-                sql.Append(" SET ");
-
-                sql.Append(valuesCollector.ValuesSql.ToString());
             }
 
             sql.Append(" FROM ");

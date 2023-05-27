@@ -42,15 +42,17 @@ namespace QueryLite.Databases.SqlServer {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(database, CollectorMode.Insert);
+                
 
-                template.ValuesCollector!(valuesCollector);
-
-                parameters = valuesCollector.Parameters;
+                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, database, CollectorMode.Insert);
 
                 sql.Append('(');
-                sql.Append(valuesCollector.ValuesSql);
+                
+                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
+                
                 sql.Append(')');
+
+                parameters = valuesCollector.Parameters;
 
                 GetReturningSyntax(template, sql);
 
@@ -58,14 +60,13 @@ namespace QueryLite.Databases.SqlServer {
             }
             else {
 
-                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(database, CollectorMode.Insert);
-                template.ValuesCollector!(valuesCollector);
+                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(sql, database, CollectorMode.Insert);
 
-                parameters = null;
-
-                sql.Append("(");
-                sql.Append(valuesCollector.ValuesSql);
+                sql.Append('(');
+                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
                 sql.Append(')');
+
+                parameters = null;                
 
                 GetReturningSyntax(template, sql);
 

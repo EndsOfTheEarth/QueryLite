@@ -23,7 +23,6 @@
  **/
 using Npgsql;
 using NpgsqlTypes;
-using QueryLite.Databases.SqlServer;
 using QueryLite.PreparedQuery;
 using System;
 using System.Text;
@@ -34,15 +33,17 @@ namespace QueryLite.Databases.PostgreSql {
 
         public PostgreSqlParameters Parameters { get; } = new PostgreSqlParameters(initParams: 1);
 
-        public StringBuilder ValuesSql = new StringBuilder();
+        private readonly StringBuilder _sql;
         public StringBuilder? ParamSql;
 
-        private IDatabase _database;
-        private CollectorMode _collectorMode;
+        private readonly IDatabase _database;
+        private readonly CollectorMode _collectorMode;
 
         private int _counter;
 
-        public PostgreSqlSetValuesParameterCollector(IDatabase database, CollectorMode collectorMode) {
+        public PostgreSqlSetValuesParameterCollector(StringBuilder sql, IDatabase database, CollectorMode collectorMode) {
+
+            _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
 
@@ -56,13 +57,13 @@ namespace QueryLite.Databases.PostgreSql {
             if(_collectorMode == CollectorMode.Insert) {
 
                 if(_counter > 0) {
-                    ValuesSql.Append(',');
+                    _sql.Append(',');
                     ParamSql!.Append(',');
                 }
 
                 string paramName = $"@{_counter++}";
 
-                PostgreSqlHelper.AppendEncase(ValuesSql, column.ColumnName, forceEnclose: false);
+                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
 
                 ParamSql!.Append(paramName);
 
@@ -74,13 +75,13 @@ namespace QueryLite.Databases.PostgreSql {
             else if(_collectorMode == CollectorMode.Update) {
 
                 if(_counter > 0) {
-                    ValuesSql.Append(',');
+                    _sql.Append(',');
                 }
 
                 string paramName = $"@{_counter++}";
 
-                PostgreSqlHelper.AppendEncase(ValuesSql, column.ColumnName, forceEnclose: false);
-                ValuesSql.Append('=').Append(paramName);
+                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
+                _sql.Append('=').Append(paramName);
 
                 Parameters.ParameterList.Add(new NpgsqlParameter(parameterName: paramName, value) { NpgsqlDbType = dbType });
             }
@@ -95,22 +96,22 @@ namespace QueryLite.Databases.PostgreSql {
             if(_collectorMode == CollectorMode.Insert) {
 
                 if(_counter > 0) {
-                    ValuesSql.Append(',');
+                    _sql.Append(',');
                     ParamSql!.Append(',');
                 }
                 _counter++;
-                PostgreSqlHelper.AppendEncase(ValuesSql, column.ColumnName, forceEnclose: false);
+                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
                 ParamSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
 
                 if(_counter > 0) {
-                    ValuesSql.Append(',');
+                    _sql.Append(',');
                 }
                 _counter++;
 
-                PostgreSqlHelper.AppendEncase(ValuesSql, column.ColumnName, forceEnclose: false);
-                ValuesSql.Append('=').Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
+                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
+                _sql.Append('=').Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");
@@ -391,10 +392,17 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal class PostgreSqlSetValuesCollector : ISetValuesCollector {
 
+        private readonly StringBuilder _sql;
+        public StringBuilder? ParamsSql;
+
         private IDatabase _database;
         private CollectorMode _collectorMode;
 
-        public PostgreSqlSetValuesCollector(IDatabase database, CollectorMode collectorMode) {
+        private bool _first = true;
+
+        public PostgreSqlSetValuesCollector(StringBuilder sql, IDatabase database, CollectorMode collectorMode) {
+
+            _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
 
@@ -403,31 +411,31 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        public StringBuilder ValuesSql = new StringBuilder();
-        public StringBuilder? ParamsSql;
-
         private ISetValuesCollector SetValue(IColumn column, string value) {
 
             if(_collectorMode == CollectorMode.Insert) {
 
-                if(ValuesSql.Length > 0) {
-                    ValuesSql.Append(',');
+                if(!_first) {
+                    _sql.Append(',');
                     ParamsSql!.Append(',');
                 }
-                PostgreSqlHelper.AppendEncase(ValuesSql, column.ColumnName, forceEnclose: false);
+                else {
+                    _first = false;
+                }
+                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
 
                 ParamsSql!.Append(value);
             }
             else if(_collectorMode == CollectorMode.Update) {
 
-                if(ValuesSql.Length > 0) {
-                    ValuesSql.Append(',');
+                if(!_first) {
+                    _sql.Append(',');
                 }
-
-                //PostgreSqlHelper.AppendEncase(ValuesSql, column.Table.Alias, forceEnclose: false);
-                //ValuesSql.Append('.');
-                PostgreSqlHelper.AppendEncase(ValuesSql, column.ColumnName, forceEnclose: false);
-                ValuesSql.Append('=').Append(value);
+                else {
+                    _first = false;
+                }
+                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
+                _sql.Append('=').Append(value);
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");

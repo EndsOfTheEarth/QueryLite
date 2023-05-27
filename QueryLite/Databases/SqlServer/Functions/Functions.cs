@@ -25,6 +25,9 @@ using System;
 
 namespace QueryLite.Databases.SqlServer.Functions {
 
+    /// <summary>
+    /// Sql Count(*) function
+    /// </summary>
     public sealed class COUNT_ALL : Function<int> {
 
         public static COUNT_ALL Instance { get; } = new COUNT_ALL();
@@ -36,6 +39,9 @@ namespace QueryLite.Databases.SqlServer.Functions {
         }
     }
 
+    /// <summary>
+    /// Sql GETDATE() function
+    /// </summary>
     public sealed class GETDATE : Function<DateTime> {
 
         public static GETDATE Instance { get; } = new GETDATE();
@@ -47,6 +53,9 @@ namespace QueryLite.Databases.SqlServer.Functions {
         }
     }
 
+    /// <summary>
+    /// Sql NEWID() function
+    /// </summary>
     public sealed class NEWID : Function<Guid> {
 
         public static NEWID Instance { get; } = new NEWID();
@@ -58,6 +67,9 @@ namespace QueryLite.Databases.SqlServer.Functions {
         }
     }
 
+    /// <summary>
+    /// Sql SYSDATETIMEOFFSET() function
+    /// </summary>
     public sealed class SYSDATETIMEOFFSET : Function<DateTimeOffset> {
 
         public static SYSDATETIMEOFFSET Instance { get; } = new SYSDATETIMEOFFSET();

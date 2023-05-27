@@ -21,11 +21,11 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            using(Transaction transation = new Transaction(TestDatabase.Database)) {
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 Query.Delete(allTypesTable)
                     .NoWhereCondition()
-                    .Execute(transation);
+                    .Execute(transaction);
 
                 COUNT_ALL count = COUNT_ALL.Instance;
 
@@ -34,7 +34,7 @@ namespace QueryLiteTest.Tests {
                         row => row.Get(count)
                     )
                     .From(allTypesTable)
-                    .Execute(transation);
+                    .Execute(transaction);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -44,7 +44,7 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(countValue, 0);
 
-                transation.Commit();
+                transaction.Commit();
             }
         }
 
@@ -54,14 +54,14 @@ namespace QueryLiteTest.Tests {
         }
 
         [TestMethod]
-        public void BasicWithQueriesAndNoParmeters() {
+        public void BasicWithQueriesAndNoParameters() {
 
             Settings.UseParameters = false;
             BasicInsertUpdateAndDeleteWithQueries();
         }
 
         [TestMethod]
-        public async Task BasicWithQueriesAndNoParmetersAsync() {
+        public async Task BasicWithQueriesAndNoParametersAsync() {
 
             Settings.UseParameters = false;
             await BasicInsertUpdateAndDeleteWithQueriesAsync();
@@ -82,14 +82,14 @@ namespace QueryLiteTest.Tests {
         }
 
         [TestMethod]
-        public void BasicWithQueriesAndParmeters() {
+        public void BasicWithQueriesAndParameters() {
 
             Settings.UseParameters = true;
             BasicInsertUpdateAndDeleteWithQueries();
         }
 
         [TestMethod]
-        public async Task BasicWithQueriesAndParmetersAsync() {
+        public async Task BasicWithQueriesAndParametersAsync() {
 
             Settings.UseParameters = true;
             await BasicInsertUpdateAndDeleteWithQueriesAsync();
