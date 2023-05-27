@@ -23,6 +23,7 @@
  **/
 using Npgsql;
 using NpgsqlTypes;
+using QueryLite.Databases.SqlServer;
 using QueryLite.PreparedQuery;
 using System;
 using System.Text;
@@ -78,8 +79,6 @@ namespace QueryLite.Databases.PostgreSql {
 
                 string paramName = $"@{_counter++}";
 
-                //PostgreSqlHelper.AppendEncase(ValuesSql, column.Table.Alias, forceEnclose: false);
-                //ValuesSql.Append('.');
                 PostgreSqlHelper.AppendEncase(ValuesSql, column.ColumnName, forceEnclose: false);
                 ValuesSql.Append('=').Append(paramName);
 
@@ -110,8 +109,6 @@ namespace QueryLite.Databases.PostgreSql {
                 }
                 _counter++;
 
-                //PostgreSqlHelper.AppendEncase(ValuesSql, column.Table.Alias, forceEnclose: false);
-                //ValuesSql.Append('.');
                 PostgreSqlHelper.AppendEncase(ValuesSql, column.ColumnName, forceEnclose: false);
                 ValuesSql.Append('=').Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
@@ -441,192 +438,192 @@ namespace QueryLite.Databases.PostgreSql {
 
             ArgumentNullException.ThrowIfNull(value);
 
-            return SetValue(column, $"'{Helpers.EscapeForSql(value)}'");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<string> column, string? value) {
 
             if(value != null) {
-                return SetValue(column, $"'{Helpers.EscapeForSql(value)}'");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<Guid> column, Guid value) {
-            return SetValue(column, $"'{Helpers.EscapeForSql(value.ToString())}'");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<Guid> column, Guid? value) {
 
             if(value != null) {
-                return SetValue(column, $"'{Helpers.EscapeForSql(value.Value.ToString())}'");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<bool> column, bool value) {
-            return SetValue(column, value ? "true" : "false");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<bool> column, bool? value) {
 
             if(value != null) {
-                return SetValue(column, value.Value ? "true" : "false");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<Bit> column, Bit value) {
-            return SetValue(column, value.Value ? "true" : "false");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<Bit> column, Bit? value) {
 
             if(value != null) {
-                return SetValue(column, value.Value.Value ? "true" : "false");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<decimal> column, decimal value) {
-            return SetValue(column, Helpers.EscapeForSql(value.ToString()));
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<decimal> column, decimal? value) {
 
             if(value != null) {
-                return SetValue(column, Helpers.EscapeForSql(value.Value.ToString()));
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<short> column, short value) {
-            return SetValue(column, value.ToString());
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<short> column, short? value) {
 
             if(value != null) {
-                return SetValue(column, value.Value.ToString());
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<int> column, int value) {
-            return SetValue(column, value.ToString());
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<int> column, int? value) {
 
             if(value != null) {
-                return SetValue(column, value.Value.ToString());
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<long> column, long value) {
-            return SetValue(column, value.ToString());
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<long> column, long? value) {
 
             if(value != null) {
-                return SetValue(column, value.Value.ToString());
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<float> column, float value) {
-            return SetValue(column, Helpers.EscapeForSql(value.ToString()));
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<float> column, float? value) {
 
             if(value != null) {
-                return SetValue(column, Helpers.EscapeForSql(value.Value.ToString()));
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<double> column, double value) {
-            return SetValue(column, Helpers.EscapeForSql(value.ToString()));
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<double> column, double? value) {
 
             if(value != null) {
-                return SetValue(column, Helpers.EscapeForSql(value.Value.ToString()));
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<TimeOnly> column, TimeOnly value) {
-            return SetValue(column, $"'{Helpers.EscapeForSql(value.ToString("HH:mm:ss.fffffff"))}'");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<TimeOnly> column, TimeOnly? value) {
 
             if(value != null) {
-                return SetValue(column, $"'{Helpers.EscapeForSql(value.Value.ToString("HH:mm:ss.fffffff"))}'");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<DateTime> column, DateTime value) {
-            return SetValue(column, $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<DateTime> column, DateTime? value) {
 
             if(value != null) {
-                return SetValue(column, $"'{Helpers.EscapeForSql(value.Value.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<DateOnly> column, DateOnly value) {
-            return SetValue(column, $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd"))}'");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<DateOnly> column, DateOnly? value) {
             if(value != null) {
-                return SetValue(column, $"'{Helpers.EscapeForSql(value.Value.ToString("yyyy-MM-dd"))}'");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<DateTimeOffset> column, DateTimeOffset value) {
-            return SetValue(column, $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz"))}'");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<DateTimeOffset> column, DateTimeOffset? value) {
 
             if(value != null) {
-                return SetValue(column, $"'{Helpers.EscapeForSql(value.Value.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz"))}'");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<byte> column, byte value) {
-            return SetValue(column, value.ToString());
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<byte> column, byte? value) {
 
             if(value != null) {
-                return SetValue(column, value.Value.ToString());
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<byte[]> column, byte[] value) {
-            return SetValue(column, $"decode('{(BitConverter.ToString(value)).Replace("-", string.Empty)}', 'hex')");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<byte[]> column, byte[]? value) {
 
             if(value != null) {
-                return SetValue(column, $"decode('{(BitConverter.ToString(value)).Replace("-", string.Empty)}', 'hex')");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
@@ -644,73 +641,73 @@ namespace QueryLite.Databases.PostgreSql {
         }
 
         public ISetValuesCollector Set<TYPE>(Column<StringKey<TYPE>> column, StringKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, $"'{Helpers.EscapeForSql(value.Value)}'");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<StringKey<TYPE>> column, StringKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, $"'{Helpers.EscapeForSql(value.Value.Value)}'");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<GuidKey<TYPE>> column, GuidKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, $"'{Helpers.EscapeForSql(value.ToString())}'");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<GuidKey<TYPE>> column, GuidKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, $"'{Helpers.EscapeForSql(value.Value.ToString())}'");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<ShortKey<TYPE>> column, ShortKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, value.Value.ToString());
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<ShortKey<TYPE>> column, ShortKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, value.Value.Value.ToString());
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<IntKey<TYPE>> column, IntKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, value.Value.ToString());
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<IntKey<TYPE>> column, IntKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, value.Value.Value.ToString());
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<LongKey<TYPE>> column, LongKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, value.Value.ToString());
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<LongKey<TYPE>> column, LongKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, value.Value.Value.ToString());
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<BoolValue<TYPE>> column, BoolValue<TYPE> value) where TYPE : notnull {
-            return SetValue(column, value.Value ? "true" : "false");
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<BoolValue<TYPE>> column, BoolValue<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, value.Value.Value ? "true" : "false");
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value));
             }
             return SetValue(column, "null");
         }

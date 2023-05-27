@@ -178,59 +178,118 @@ namespace QueryLite.Databases.PostgreSql {
             return value;
         }
 
+        public static string ToSqlString(bool value) => value ? "true" : "false";
+
+        public static string ToSqlString(Bit value) => value.Value ? "true" : "false";
+
+        public static string ToSqlString(byte[] value) => $"decode('{(BitConverter.ToString(value)).Replace("-", string.Empty)}', 'hex')";
+
+        public static string ToSqlString(byte value) => value.ToString();
+
+        public static string ToSqlString(DateTimeOffset value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz"))}'";
+
+        public static string ToSqlString(DateTime value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'";
+
+        public static string ToSqlString(TimeOnly value) => $"'{Helpers.EscapeForSql(value.ToString("HH:mm:ss.fffffff"))}'";
+
+        public static string ToSqlString(DateOnly value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd"))}'";
+
+        public static string ToSqlString(decimal value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
+
+        public static string ToSqlString(double value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
+
+        public static string ToSqlString(float value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
+
+        public static string ToSqlString(Guid value) => $"'{Helpers.EscapeForSql(value.ToString())}'";
+
+        public static string ToSqlString(short value) => value != 0 ? value.ToString() : "0";
+
+        public static string ToSqlString(int value) => value != 0 ? value.ToString() : "0";
+
+        public static string ToSqlString(long value) => value != 0 ? value.ToString() : "0";
+
+        public static string ToSqlString(string value) => value.Length > 0 ? $"'{Helpers.EscapeForSql(value)}'" : "''";
+
+        public static string ToSqlString(IGuidType value) => ToSqlString(value.Value);
+
+        public static string ToSqlString(IStringType value) => ToSqlString(value.Value);
+
+        public static string ToSqlString(IInt16Type value) => ToSqlString(value.Value);
+
+        public static string ToSqlString(IInt32Type value) => ToSqlString(value.Value);
+
+        public static string ToSqlString(IInt64Type value) => ToSqlString(value.Value);
+
+        public static string ToSqlString(IBoolType value) => ToSqlString(value.Value);
+
         public static string ConvertToSql(object value) {
 
             if(value is bool boolValue) {
-                return boolValue ? "true" : "false";
+                return ToSqlString(boolValue);
             }
             if(value is Bit bitValue) {
-                return bitValue.Value ? "true" : "false";
+                return ToSqlString(bitValue);
             }
             if(value is byte[] byteArray) {
-                return $"decode('{(BitConverter.ToString(byteArray)).Replace("-", string.Empty)}', 'hex')";
+                return ToSqlString(byteArray);
             }
             if(value is byte byteValue) {
-                return byteValue.ToString();
+                return ToSqlString(byteValue);
             }
             if(value is DateTimeOffset dateTimeOffsetValue) {
-                return $"'{Helpers.EscapeForSql(dateTimeOffsetValue.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz"))}'";
+                return ToSqlString(dateTimeOffsetValue);
             }
             if(value is DateTime dateTimeValue) {
-                return $"'{Helpers.EscapeForSql(dateTimeValue.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'";
+                return ToSqlString(dateTimeValue);
             }
             if(value is TimeOnly timeOnly) {
-                return $"'{Helpers.EscapeForSql(timeOnly.ToString("HH:mm:ss.fffffff"))}'";
+                return ToSqlString(timeOnly);
             }
             if(value is DateOnly dateOnly) {
-                return $"'{Helpers.EscapeForSql(dateOnly.ToString("yyyy-MM-dd"))}'";
+                return ToSqlString(dateOnly);
             }
             if(value is decimal decimalValue) {
-                return $"{Helpers.EscapeForSql(decimalValue.ToString())}";
+                return ToSqlString(decimalValue);
             }
             if(value is double doubleValue) {
-                return $"{Helpers.EscapeForSql(doubleValue.ToString())}";
+                return ToSqlString(doubleValue);
             }
             if(value is float floatValue) {
-                return $"{Helpers.EscapeForSql(floatValue.ToString())}";
+                return ToSqlString(floatValue);
             }
             if(value is Guid guidValue) {
-                return $"'{Helpers.EscapeForSql(guidValue.ToString())}'";
+                return ToSqlString(guidValue);
             }
             if(value is short shortValue) {
-                return shortValue.ToString();
+                return ToSqlString(shortValue);
             }
             if(value is int intValue) {
-                return intValue.ToString();
+                return ToSqlString(intValue);
             }
             if(value is long longValue) {
-                return longValue.ToString();
+                return ToSqlString(longValue);
             }
             if(value is string stringValue) {
-                return $"'{Helpers.EscapeForSql(stringValue)}'";
+                return ToSqlString(stringValue);
             }
 
-            if(value is IKeyValue keyValue) {
-                return ConvertToSql(keyValue.GetValueAsObject());
+            if(value is IGuidType guidType) {
+                return ToSqlString(guidType);
+            }
+            if(value is IStringType stringType) {
+                return ToSqlString(stringType);
+            }
+            if(value is IInt16Type int16Type) {
+                return ToSqlString(int16Type);
+            }
+            if(value is IInt32Type int32Type) {
+                return ToSqlString(int32Type);
+            }
+            if(value is IInt64Type int64Type) {
+                return ToSqlString(int64Type);
+            }
+            if(value is IBoolType boolType) {
+                return ToSqlString(boolType);
             }
 
             Type type = value.GetType();
