@@ -21,9 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
@@ -32,8 +29,6 @@ namespace QueryLite.Databases.PostgreSql {
 
         string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
-            throw new NotImplementedException();
-            /*
             StringBuilder sql = new StringBuilder("INSERT INTO ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
@@ -42,65 +37,39 @@ namespace QueryLite.Databases.PostgreSql {
                 PostgreSqlHelper.AppendEncase(sql, schemaName, forceEnclose: false);
                 sql.Append('.');
             }
+
             PostgreSqlHelper.AppendEncase(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
-            sql.Append('(');
 
-            {
-                bool first = true;
+            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                for(int index = 0; index < template.ValueFields!.Count; index++) {
+                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(database, CollectorMode.Insert);
 
-                    IColumn insertColumn = template.ValueFields[index];
+                template.ValuesCollector!(valuesCollector);
 
-                    if(!first) {
-                        sql.Append(',');
-                    }
-                    else {
-                        first = false;
-                    }
-                    PostgreSqlHelper.AppendColumnName(sql, insertColumn.Column);
-                }
+                parameters = valuesCollector.Parameters;
+
+                sql.Append('(');
+                sql.Append(valuesCollector.ValuesSql);
+
+                sql.Append(") VALUES(");
+                sql.Append(valuesCollector.ParamSql);
+                sql.Append(')');
             }
+            else {
 
-            sql.Append(") VALUES(");
+                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(database, CollectorMode.Insert);
 
-            {
+                template.ValuesCollector!(valuesCollector);
 
-                bool first = true;
+                parameters = null;
 
-                foreach(SetValue insertSet in template.SetValues) {
+                sql.Append('(');
+                sql.Append(valuesCollector.ValuesSql);
 
-                    if(!first) {
-                        sql.Append(',');
-                    }
-                    else {
-                        first = false;
-                    }
-
-                    if(insertSet.Value is IColumn rightColumn) {
-                        sql.Append(rightColumn.Table.Alias).Append('.');
-                        PostgreSqlHelper.AppendColumnName(sql, rightColumn);
-                    }
-                    else if(insertSet.Value is IFunction rightFunction) {
-                        sql.Append(rightFunction.GetSql(database, useAlias: true, parameters));
-                    }
-                    else if(parameters == null) {
-
-                        if(insertSet.Value != null) {
-                            sql.Append(database.ConvertToSql(insertSet.Value));
-                        }
-                        else {
-                            sql.Append(" NULL");
-                        }
-                    }
-                    else {
-                        parameters.Add(database, insertSet.Column.Type, insertSet.Value, out string paramName);
-                        sql.Append(paramName);
-                    }
-                }
+                sql.Append(") VALUES(");
+                sql.Append(valuesCollector.ParamsSql);
+                sql.Append(')');
             }
-
-            sql.Append(')');
 
             {
                 if(template.ReturningFields != null && template.ReturningFields.Count > 0) {
@@ -122,7 +91,6 @@ namespace QueryLite.Databases.PostgreSql {
                 }
             }
             return sql.ToString();
-            */
         }
     }
 }

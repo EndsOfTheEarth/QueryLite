@@ -636,6 +636,10 @@ namespace QueryLite {
             
             foreach(DatabaseTable dbTable in dbSchema.Tables) {
 
+                if(string.Compare(dbTable.Schema.Value, "pg_catalog", ignoreCase: true) == 0 || string.Compare(dbTable.Schema.Value, "information_schema", ignoreCase: true) == 0) {
+                    continue;
+                }
+
                 string key = $"{dbTable.Schema}~~{dbTable.TableName}";
 
                 if(!codeTableLookup.ContainsKey(key)) {

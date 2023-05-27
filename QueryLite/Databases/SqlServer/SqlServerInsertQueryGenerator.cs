@@ -48,7 +48,7 @@ namespace QueryLite.Databases.SqlServer {
 
                 parameters = valuesCollector.Parameters;
 
-                sql.Append("(");
+                sql.Append('(');
                 sql.Append(valuesCollector.ValuesSql);
                 sql.Append(')');
 

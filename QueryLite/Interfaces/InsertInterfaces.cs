@@ -43,6 +43,11 @@ namespace QueryLite {
         Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
     }
 
+    internal enum CollectorMode {
+        Insert,
+        Update
+    }
+
     public interface ISetValuesCollector {
 
         public ISetValuesCollector Set(Column<string> column, string value);

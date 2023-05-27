@@ -282,7 +282,6 @@ namespace QueryLite.Databases.SqlServer {
             }
         }
 
-
         //public static void SetNullParameterValue<ENUM>(SqlParameter parameter, NumericType integerType) where ENUM : Enum {
 
         //    if(integerType == NumericType.UShort) {
