@@ -107,7 +107,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters);
 
@@ -142,7 +142,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters);
 
@@ -172,7 +172,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters);
 
@@ -207,7 +207,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters);
 

@@ -1,6 +1,5 @@
 ﻿using QueryLite.PreparedQuery;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -67,7 +66,7 @@ namespace QueryLite {
     public interface IPreparedJoinOn<PARAMETERS, RESULT> : IPreparedJoin<PARAMETERS> {
 
         IPreparedJoin<PARAMETERS, RESULT> On(IPreparedCondition<PARAMETERS> on);
-        IPreparedJoin<PARAMETERS, RESULT> On(IColumnCondition on);        
+        IPreparedJoin<PARAMETERS, RESULT> On(IColumnCondition on);
     }
     internal sealed class PreparedJoin<PARAMETERS, RESULT> : IPreparedJoinOn<PARAMETERS, RESULT> {
 
@@ -191,7 +190,7 @@ namespace QueryLite {
 
         IPreparedQueryExecute<PARAMETERS, RESULT> Build();
     }
-    
+
     public interface IPreparedQueryExecute<PARAMETERS, RESULT> {
 
         /// <summary>

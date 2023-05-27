@@ -28,11 +28,11 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlSelectQueryGenerator : IQueryGenerator {
 
-        string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParameters? parameters) {
+        string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters) {
             return GetSql(template, database, parameters);
         }
 
-        internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParameters? parameters) {
+        internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters) {
 
             //We need to start with the first query template
             while(template.ParentUnion != null) {
@@ -84,7 +84,7 @@ namespace QueryLite.Databases.PostgreSql {
             return sql.ToString();
         }
 
-        private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+        private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
             sql.Append(' ');
 
@@ -142,7 +142,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateJoins<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+        private static void GenerateJoins<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
             if(template.Joins == null) {
                 return;
@@ -173,7 +173,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateWhereClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+        private static void GenerateWhereClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
@@ -211,7 +211,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateHavingClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+        private static void GenerateHavingClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
             if(template.HavingCondition != null) {
                 sql.Append(" HAVING ");
@@ -219,7 +219,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateOrderByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParameters? parameters) {
+        private static void GenerateOrderByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
             if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
 

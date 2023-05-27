@@ -29,7 +29,7 @@ namespace QueryLite {
 
     public interface ICondition {
 
-        void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters);
+        void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters);
 
         //public static ICondition And(ICondition? conditionA, ICondition conditionB) {
         //    return conditionA != null ? new AndOrCondition(conditionA, isAnd: true, conditionB) : conditionB;
@@ -74,7 +74,7 @@ namespace QueryLite {
             ConditionB = conditionB;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             sql.Append('(');
             ConditionA.GetSql(sql, database, useAlias, parameters);
             sql.Append(IsAnd ? " AND " : " OR ");
@@ -98,7 +98,7 @@ namespace QueryLite {
             ConditionB = conditionB;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             sql.Append('(');
             ConditionA.GetSql(sql, database, useAlias, parameters);
             sql.Append(IsAnd ? " AND " : " OR ");
@@ -129,7 +129,7 @@ namespace QueryLite {
             List = list;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(useAlias) {
                 sql.Append(Left.Table.Alias).Append('.');
@@ -150,7 +150,7 @@ namespace QueryLite {
                     sql.Append(database.ConvertToSql(item));
                 }
                 else {
-                    parameters.Add(database, Left.Type, item, out string paramName);
+                    parameters.AddParameter(database, Left.Type, value: item, out string paramName);
                     sql.Append(paramName);
                 }
             }
@@ -170,7 +170,7 @@ namespace QueryLite {
             NestedQuery = nestedQuery;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(useAlias) {
                 sql.Append(Left.Table.Alias).Append('.');
@@ -190,7 +190,7 @@ namespace QueryLite {
             Left = left;
             IsNull = isNull;
         }
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             sql.Append((useAlias ? Left.Table.Alias + "." : "")).Append(Left.ColumnName).Append(IsNull ? " IS NULL" : " IS NOT NULL");
         }
     }
@@ -204,7 +204,7 @@ namespace QueryLite {
             Left = left;
             IsNull = isNull;
         }
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             sql.Append(Left.GetSql(database, useAlias, parameters)).Append(IsNull ? " IS NULL" : " IS NOT NULL");
         }
     }
@@ -221,7 +221,7 @@ namespace QueryLite {
             Right = right;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(Left is IColumn leftColumn) {
 
@@ -267,7 +267,7 @@ namespace QueryLite {
                     sql.Append(database.ConvertToSql(value));
                 }
                 else {
-                    parameters.Add(database, value.GetType(), value, out string paramName);
+                    parameters.AddParameter(database, value.GetType(), value: value, out string paramName);
                     sql.Append(paramName);
                 }
             }
@@ -291,7 +291,7 @@ namespace QueryLite {
             Right = right;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParameters? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(Left is IColumn leftColumn) {
 

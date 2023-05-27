@@ -72,7 +72,7 @@ namespace QueryLite {
 
             //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
 
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IList<DbParameter>? parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             NonQueryResult result = QueryExecutor.ExecuteNonQuery(
                 database: database,
@@ -106,7 +106,7 @@ namespace QueryLite {
 
             //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
 
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IList<DbParameter>? parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -136,7 +136,7 @@ namespace QueryLite {
 
             //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
 
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IList<DbParameter>? parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             Task<NonQueryResult> result = QueryExecutor.ExecuteNonQueryAsync(
                 database: database,
@@ -171,7 +171,7 @@ namespace QueryLite {
 
             //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
 
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IList<DbParameter>? parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
                 database: database,

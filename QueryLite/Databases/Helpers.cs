@@ -51,4 +51,19 @@ namespace QueryLite.Databases {
             return _function(value);
         }
     }
+
+    /// <summary>
+    /// Cache parameter names to reduce memory allocations
+    /// </summary>
+    internal static class ParamNameCache {
+
+        public static string[] ParamNames = new string[50];
+
+        static ParamNameCache() {
+
+            for(int index = 0; index < ParamNames.Length; index++) {
+                ParamNames[index] = $"@{index}";
+            }
+        }
+    }
 }

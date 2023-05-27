@@ -22,6 +22,7 @@
  * SOFTWARE.
  **/
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 
 namespace QueryLite {
@@ -29,8 +30,9 @@ namespace QueryLite {
     /// <summary>
     /// The parameters class is used to help sql query generators create and execute queries with parameters
     /// </summary>
-    public interface IParameters {
+    public interface IParametersBuilder {
 
+        public IList<DbParameter> ParameterList { get; }
         /// <summary>
         /// Add a new parameter to query
         /// </summary>
@@ -38,14 +40,7 @@ namespace QueryLite {
         /// <param name="type">.net type of parameter value</param>
         /// <param name="value">Value of parameter</param>
         /// <param name="paramName">Name of the newly generated parameter name for the sql query</param>
-        void Add(IDatabase database, Type type, object? value, out string paramName);
-
-        /// <summary>
-        /// Set parameters on the sql command
-        /// </summary>
-        /// <param name="database"></param>
-        /// <param name="command"></param>
-        void SetParameters(IDatabase database, DbCommand command);
+        void AddParameter(IDatabase database, Type type, object? value, out string paramName);
     }
 
     public enum Parameters {

@@ -37,7 +37,7 @@ namespace QueryLite.DbSchema {
             public COLUMNPROPERTY(ColumnsTable table) : base("COLUMNPROPERTY") {
                 Table = table;
             }
-            public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+            public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
                 if(useAlias) {
                     return $"COLUMNPROPERTY(object_id({Table.Alias}.{Table.Table_schema.ColumnName} + '.' + {Table.Alias}.{Table.Table_name.ColumnName}), COLUMN_NAME, 'IsIdentity')";
                 }

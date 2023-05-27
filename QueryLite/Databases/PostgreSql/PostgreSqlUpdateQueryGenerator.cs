@@ -28,8 +28,10 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, IParameters? parameters) {
+        string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
+            throw new NotImplementedException();
+            /*
             StringBuilder sql = new StringBuilder("UPDATE ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
@@ -132,6 +134,7 @@ namespace QueryLite.Databases.PostgreSql {
                 }
             }
             return sql.ToString();
+            */
         }
     }
 }

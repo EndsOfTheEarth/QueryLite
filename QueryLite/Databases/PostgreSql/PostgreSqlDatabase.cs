@@ -76,7 +76,7 @@ namespace QueryLite.Databases.PostgreSql {
         public string ConvertToSql(object value) {
             return PostgreSqlTypeMappings.ConvertToSql(value);
         }
-        public IParameters CreateParameters(int initParams) {
+        public IParametersBuilder CreateParameters(int initParams) {
             return new PostgreSqlParameters(initParams);
         }
 

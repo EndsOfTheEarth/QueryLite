@@ -23,25 +23,27 @@
  **/
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace QueryLite.Databases.SqlServer {
 
-    public sealed class SqlServerParameters : IParameters {
+    public sealed class SqlServerParameters : IParametersBuilder {
 
-        private List<Param> ParameterList { get; }
+        public IList<DbParameter> ParameterList { get; }
 
         public SqlServerParameters(int initParams) {
-            ParameterList = new List<Param>(initParams);
+            ParameterList = new List<DbParameter>(initParams);
         }
 
-        private int count;
+        public void AddParameter(IDatabase database, Type type, object? value, out string paramName) {
 
-        public void Add(IDatabase database, Type type, object? value, out string paramName) {
-
-            paramName = "@" + count.ToString();
+            if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
+                paramName = ParamNameCache.ParamNames[ParameterList.Count];
+            }
+            else {
+                paramName = $"@{ParameterList.Count}";
+            }
 
             if(value != null) {
 
@@ -52,47 +54,14 @@ namespace QueryLite.Databases.SqlServer {
                     value = bitValue.Value;
                 }
             }
+            else {
+                value = DBNull.Value;
+            }
             ParameterList.Add(
-                new Param(
-                    name: paramName,
-                    type: type,
-                    dbType: SqlServerSqlTypeMappings.GetDbType(type),
-                    value: value
-                )
+                new SqlParameter(parameterName: paramName, value: SqlServerSqlTypeMappings.ConvertToRawType(value)) {
+                    SqlDbType = SqlServerSqlTypeMappings.GetDbType(type)
+                }
             );
-            count++;
-        }
-        public void SetParameters(IDatabase database, DbCommand command) {
-
-            foreach(Param param in ParameterList) {
-
-                SqlParameter parameter = ((SqlCommand)command).CreateParameter();
-
-                parameter.ParameterName = param.Name;
-                parameter.SqlDbType = param.SqlDbType;
-
-                if(param.Value != null) {
-                    parameter.Value = SqlServerSqlTypeMappings.ConvertToRawType(param.Value);
-                }
-                else {
-                    parameter.Value = DBNull.Value;
-                }
-                command.Parameters.Add(parameter);
-            }
-        }
-        private sealed class Param {
-
-            public string Name { get; set; }
-            public Type Type { get; set; }
-            public SqlDbType SqlDbType { get; set; }
-            public object? Value { get; set; }
-
-            public Param(string name, Type type, SqlDbType dbType, object? value) {
-                Name = name;
-                Type = type;
-                SqlDbType = dbType;
-                Value = value;
-            }
         }
     }
 }

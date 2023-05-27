@@ -28,50 +28,36 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, IParameters? parameters) {
+        string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
             StringBuilder sql = new StringBuilder("UPDATE ", capacity: 256);
 
             sql.Append(template.Table.Alias);
 
-            {
+            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
+
+                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(database, CollectorMode.Update);
+
+                template.ValuesCollector!(valuesCollector);
+
+                parameters = valuesCollector.Parameters;
+
                 sql.Append(" SET ");
 
-                bool first = true;
+                sql.Append(valuesCollector.ValuesSql.ToString());
 
-                foreach(SetValue setValue in template.SetValues) {
+            }
+            else {
 
-                    if(!first) {
-                        sql.Append(',');
-                    }
-                    else {
-                        first = false;
-                    }
+                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(database, CollectorMode.Update);
 
-                    SqlServerHelper.AppendColumnName(sql, setValue.Column);
-                    sql.Append('=');
+                template.ValuesCollector!(valuesCollector);
 
-                    if(setValue.Value is IColumn rightColumn) {
-                        sql.Append(rightColumn.Table.Alias).Append('.');
-                        SqlServerHelper.AppendColumnName(sql, rightColumn);
-                    }
-                    else if(setValue.Value is IFunction rightFunction) {
-                        sql.Append(rightFunction.GetSql(database, useAlias: true, parameters));
-                    }
-                    else if(parameters == null) {
+                parameters = null;
 
-                        if(setValue.Value != null) {
-                            sql.Append(database.ConvertToSql(setValue.Value));
-                        }
-                        else {
-                            sql.Append(" NULL");
-                        }
-                    }
-                    else {
-                        parameters.Add(database, setValue.Column.Type, setValue.Value, out string paramName);
-                        sql.Append(paramName);
-                    }
-                }
+                sql.Append(" SET ");
+
+                sql.Append(valuesCollector.ValuesSql.ToString());
             }
 
             if(template.ReturningColumns?.Count > 0) {
@@ -121,7 +107,7 @@ namespace QueryLite.Databases.SqlServer {
                     SqlServerHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
                     sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
                     join.Condition.GetSql(sql, database, useAlias: true, parameters);
-                }   
+                }
             }
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");

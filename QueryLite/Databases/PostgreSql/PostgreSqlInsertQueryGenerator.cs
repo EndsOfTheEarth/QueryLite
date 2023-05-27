@@ -30,7 +30,7 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlInsertQueryGenerator : IInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IList<DbParameter>? parameters) {
+        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
             throw new NotImplementedException();
             /*

@@ -29,7 +29,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
         public COUNT_ALL() : base("COUNT(*)") { }
 
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "COUNT(*)";
         }
     }
@@ -38,7 +38,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
         public GETDATE() : base("GETDATE()") { }
 
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "GETDATE()";
         }
     }
@@ -47,7 +47,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
         public NEWID() : base("NEWID()") { }
 
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "NEWID()";
         }
     }
@@ -56,7 +56,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
         public SYSDATETIMEOFFSET() : base("SYSDATETIMEOFFSET()") { }
 
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "SYSDATETIMEOFFSET()";
         }
     }

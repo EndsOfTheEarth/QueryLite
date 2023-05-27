@@ -21,21 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.DbSchema.Tables;
-using QueryLite.PreparedQuery;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Data.SqlClient;
 using System.Text;
 
 namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerInsertQueryGenerator : IInsertQueryGenerator {
 
-        
-        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IList<DbParameter>? parameters) {
+        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
             StringBuilder sql = new StringBuilder("INSERT INTO ", capacity: 256);
 
@@ -48,11 +40,9 @@ namespace QueryLite.Databases.SqlServer {
 
             SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
-            //sql.Append(' ').Append(template.Table.Alias);
-
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(database);
+                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(database, CollectorMode.Insert);
 
                 template.ValuesCollector!(valuesCollector);
 
@@ -65,11 +55,10 @@ namespace QueryLite.Databases.SqlServer {
                 GetReturningSyntax(template, sql);
 
                 sql.Append(" VALUES(").Append(valuesCollector.ParamSql).Append(')');
-
             }
             else {
 
-                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(database);
+                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(database, CollectorMode.Insert);
                 template.ValuesCollector!(valuesCollector);
 
                 parameters = null;

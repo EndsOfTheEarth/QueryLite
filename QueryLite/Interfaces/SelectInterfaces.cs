@@ -260,7 +260,7 @@ namespace QueryLite {
         /// <param name="database"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public string GetSql(IDatabase database, IParameters? parameters = null);
+        public string GetSql(IDatabase database, IParametersBuilder? parameters = null);
 
         public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         public QueryResult<RESULT> Execute(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");

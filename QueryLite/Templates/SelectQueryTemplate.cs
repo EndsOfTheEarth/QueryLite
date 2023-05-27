@@ -31,19 +31,19 @@ using System.Threading.Tasks;
 namespace QueryLite {
 
     internal interface IQueryGenerator {
-        internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParameters? parameters);
+        internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters);
     }
     internal interface IInsertQueryGenerator {
-        internal string GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IList<DbParameter>? parameters);
+        internal string GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters);
     }
     internal interface IUpdateQueryGenerator {
-        internal string GetSql(UpdateQueryTemplate template, IDatabase database, IParameters? parameters);
+        internal string GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters);
     }
     internal interface IDeleteQueryGenerator {
-        internal string GetSql(DeleteQueryTemplate template, IDatabase database, IParameters? parameters);
+        internal string GetSql(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters);
     }
     internal interface ITruncateQueryGenerator {
-        internal string GetSql(TruncateQueryTemplate template, IDatabase database, IParameters? parameters);
+        internal string GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters);
     }
 
     internal interface IPreparedQueryGenerator {
@@ -204,7 +204,7 @@ namespace QueryLite {
             return this;
         }
 
-        public string GetSql(IDatabase database, IParameters? parameters = null) {
+        public string GetSql(IDatabase database, IParametersBuilder? parameters = null) {
 
             ArgumentNullException.ThrowIfNull(database);
 
@@ -235,7 +235,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
 
@@ -269,7 +269,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
 
@@ -304,7 +304,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
 
@@ -350,7 +350,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
 
@@ -394,7 +394,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
 
@@ -438,7 +438,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
 
@@ -482,7 +482,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
 
@@ -527,7 +527,7 @@ namespace QueryLite {
 
             SelectFields = fieldCollector.Fields;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
 

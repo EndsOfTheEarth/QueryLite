@@ -28,7 +28,7 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerDeleteQueryGenerator : IDeleteQueryGenerator {
 
-        string IDeleteQueryGenerator.GetSql(DeleteQueryTemplate template, IDatabase database, IParameters? parameters) {
+        string IDeleteQueryGenerator.GetSql(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
 
             StringBuilder? outputClause = null;
 

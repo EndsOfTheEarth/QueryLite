@@ -160,9 +160,11 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 var result = Query.Update(table)
-                    .Set(table.Guid, new NEWID())
-                    .Set(table.DateTime, new GETDATE())
-                    .Set(table.DateTimeOffset, new SYSDATETIMEOFFSET())
+                    .Values(values => values
+                        .Set(table.Guid, new NEWID())
+                        .Set(table.DateTime, new GETDATE())
+                        .Set(table.DateTimeOffset, new SYSDATETIMEOFFSET())
+                    )
                     .Where(table.Id == info.Id)
                     .Execute(
                         result => new {

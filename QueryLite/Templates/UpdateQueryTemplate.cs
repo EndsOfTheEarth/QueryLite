@@ -31,7 +31,7 @@ namespace QueryLite {
     internal sealed class UpdateQueryTemplate : IUpdateSet, IUpdateJoin, IUpdateWhere, IUpdateExecute {
 
         public ITable Table { get; }
-        public IList<SetValue> SetValues { get; } = new List<SetValue>(1);
+        public Action<ISetValuesCollector>? ValuesCollector;
         public IList<IJoin>? Joins { get; private set; }
         public ICondition? WhereCondition { get; private set; }
         public IList<IColumn>? ReturningColumns { get; private set; }
@@ -43,34 +43,8 @@ namespace QueryLite {
             Table = table;
         }
 
-        public IUpdateJoin Set<TYPE>(Column<TYPE> column, TYPE value) where TYPE : notnull {
-            
-            ArgumentNullException.ThrowIfNull(column);
-            ArgumentNullException.ThrowIfNull(value);
-
-            SetValues.Add(new SetValue(column, value));
-            return this;
-        }
-        public IUpdateJoin Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : class {
-
-            ArgumentNullException.ThrowIfNull(column);
-
-            SetValues.Add(new SetValue(column, value));
-            return this;
-        }
-        public IUpdateJoin Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : struct {
-
-            ArgumentNullException.ThrowIfNull(column);
-
-            SetValues.Add(new SetValue(column, value));
-            return this;
-        }
-        public IUpdateJoin Set<TYPE>(Column<TYPE> column, AFunction<TYPE> function) where TYPE : notnull {
-            
-            ArgumentNullException.ThrowIfNull(column);
-            ArgumentNullException.ThrowIfNull(function);
-
-            SetValues.Add(new SetValue(column, function));
+        public IUpdateWhere Values(Action<ISetValuesCollector> values) {
+            ValuesCollector = values;
             return this;
         }
 
@@ -117,7 +91,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.UpdateGenerator.GetSql(this, database, parameters: null);
+            return database.UpdateGenerator.GetSql(this, database, Parameters.Off, out _);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
@@ -131,9 +105,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
-
-            string sql = database.UpdateGenerator.GetSql(this, database, parameters);
+            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             NonQueryResult result = QueryExecutor.ExecuteNonQuery(
                 database: database,
@@ -165,9 +137,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
-
-            string sql = database.UpdateGenerator.GetSql(this, database, parameters);
+            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -195,9 +165,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
-
-            string sql = database.UpdateGenerator.GetSql(this, database, parameters);
+            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             Task<NonQueryResult> result = QueryExecutor.ExecuteNonQueryAsync(
                 database: database,
@@ -230,9 +198,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
-
-            string sql = database.UpdateGenerator.GetSql(this, database, parameters);
+            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
                 database: database,

@@ -53,7 +53,7 @@ namespace QueryLite {
                 database: transaction.Database,
                 transaction: transaction,
                 timeout: timeout.Value,
-                parameters: (IParameters?) null,
+                parameters: (IParametersBuilder?) null,
                 sql: sql,
                 queryType: QueryType.Truncate,
                 debugName: debugName
@@ -75,7 +75,7 @@ namespace QueryLite {
                 database: transaction.Database,
                 transaction: transaction,
                 timeout: timeout.Value,
-                parameters: (IParameters?)null,
+                parameters: (IParametersBuilder?)null,
                 sql: sql,
                 queryType: QueryType.Truncate,
                 debugName: debugName,
