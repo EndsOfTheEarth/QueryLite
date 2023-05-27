@@ -27,7 +27,7 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerInsertQueryGenerator : IInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, IParameters? parameters) {
+        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
             StringBuilder sql = new StringBuilder("INSERT INTO ", capacity: 256);
 
@@ -37,52 +37,53 @@ namespace QueryLite.Databases.SqlServer {
                 SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
                 sql.Append('.');
             }
+
             SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
-            sql.Append(" (");
 
-            {
+            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
+
+                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(database, CollectorMode.Insert);
+
+                template.ValuesCollector!(valuesCollector);
+
+                parameters = valuesCollector.Parameters;
+
+                sql.Append('(');
+                sql.Append(valuesCollector.ValuesSql);
+                sql.Append(')');
+
+                GetReturningSyntax(template, sql);
+
+                sql.Append(" VALUES(").Append(valuesCollector.ParamSql).Append(')');
+            }
+            else {
+
+                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(database, CollectorMode.Insert);
+                template.ValuesCollector!(valuesCollector);
+
+                parameters = null;
+
+                sql.Append("(");
+                sql.Append(valuesCollector.ValuesSql);
+                sql.Append(')');
+
+                GetReturningSyntax(template, sql);
+
+                sql.Append(" VALUES(").Append(valuesCollector.ParamsSql).Append(')');
+
+            }
+            return sql.ToString();
+        }
+
+        private static void GetReturningSyntax(InsertQueryTemplate template, StringBuilder sql) {
+
+            if(template.ReturningFields != null && template.ReturningFields.Count > 0) {
+
+                sql.Append(" OUTPUT");
+
                 bool first = true;
 
-                foreach(SetValue insertSet in template.SetValues) {
-
-                    if(!first) {
-                        sql.Append(',');
-                    }
-                    first = false;
-                    SqlServerHelper.AppendColumnName(sql, insertSet.Column);
-                }
-            }
-
-            sql.Append(')');
-
-            {
-                if(template.ReturningFields != null && template.ReturningFields.Count > 0) {
-
-                    sql.Append(" OUTPUT ");
-
-                    bool first = true;
-
-                    foreach(IColumn column in template.ReturningFields) {
-
-                        if(!first) {
-                            sql.Append(',');
-                        }
-                        else {
-                            first = false;
-                        }
-                        sql.Append(" INSERTED.");
-                        SqlServerHelper.AppendColumnName(sql, column);
-                    }
-                }
-            }
-
-            sql.Append(" VALUES (");
-
-            {
-
-                bool first = true;
-
-                foreach(SetValue insertSet in template.SetValues) {
+                foreach(IColumn column in template.ReturningFields) {
 
                     if(!first) {
                         sql.Append(',');
@@ -90,31 +91,10 @@ namespace QueryLite.Databases.SqlServer {
                     else {
                         first = false;
                     }
-
-                    if(insertSet.Value is IColumn rightColumn) {
-                        sql.Append(rightColumn.Table.Alias).Append('.');
-                        SqlServerHelper.AppendColumnName(sql, rightColumn);
-                    }
-                    else if(insertSet.Value is IFunction rightFunction) {
-                        sql.Append(rightFunction.GetSql(database, useAlias: true, parameters));
-                    }
-                    else if(parameters == null) {
-
-                        if(insertSet.Value != null) {
-                            sql.Append(database.ConvertToSql(insertSet.Value));
-                        }
-                        else {
-                            sql.Append(" NULL");
-                        }
-                    }
-                    else {
-                        parameters.Add(database, insertSet.Column.Type, insertSet.Value, out string paramName);
-                        sql.Append(paramName);
-                    }
+                    sql.Append(" INSERTED.");
+                    SqlServerHelper.AppendColumnName(sql, column);
                 }
-            }            
-            sql.Append(')');
-            return sql.ToString();
+            }
         }
     }
 }

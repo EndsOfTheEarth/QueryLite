@@ -48,7 +48,7 @@ namespace QueryLite {
             IDatabase database,
             Transaction? transaction,
             QueryTimeout timeout,
-            IParameters? parameters,
+            IParametersBuilder? parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -108,7 +108,12 @@ namespace QueryLite {
 
                 command.CommandTimeout = timeout.Seconds;
 
-                parameters?.SetParameters(database, command);
+                if(parameters != null) {
+
+                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                        command.Parameters.Add(parameters.ParameterList[index]);
+                    }
+                }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
@@ -193,11 +198,12 @@ namespace QueryLite {
             }
         }
 
+        //TODO: This might be able to be removed at some stage, once parameters are changed
         public static NonQueryResult ExecuteNonQuery(
             IDatabase database,
             Transaction? transaction,
             QueryTimeout timeout,
-            IParameters? parameters,
+            IParametersBuilder? parameters,
             string sql,
             QueryType queryType,
             string debugName) {
@@ -255,7 +261,293 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 if(parameters != null) {
-                    parameters.SetParameters(database, command);
+
+                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                        command.Parameters.Add(parameters.ParameterList[index]);
+                    }
+                }
+
+                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+
+                    if(Debugger.IsAttached) {
+                        Debugger.Break();
+                    }
+                }
+
+                int rowsEffected = command.ExecuteNonQuery();
+                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+
+                if(closeConnection) {
+                    dbConnection.Close();
+                }
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: result.RowsEffected,
+                        queryType: queryType,
+                        result: result,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: null,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
+                return result;
+            }
+            catch(Exception ex) {
+
+                Settings.FireQueryPerformedEvent(
+                    database: database,
+                    sql: sql,
+                    rows: 0,
+                    rowsEffected: 0,
+                    queryType: queryType,
+                    result: null,
+                    start: start,
+                    end: DateTimeOffset.Now,
+                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                    exception: ex,
+                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
+                );
+                throw;
+            }
+            finally {
+                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                    dbConnection.Dispose();
+                }
+            }
+        }
+
+        public static QueryResult<RESULT> Execute<RESULT>(
+            IDatabase database,
+            Transaction? transaction,
+            QueryTimeout timeout,
+            IList<DbParameter>? parameters,
+            Func<IResultRow, RESULT> func,
+            string sql,
+            QueryType queryType,
+            IList<IField> selectFields,
+            FieldCollector fieldCollector,
+            string debugName) {
+
+            DbConnection? dbConnection = null;
+
+            bool closeConnection = false;
+
+            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+
+            DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
+
+            long? startTicks = hasEvents ? Stopwatch.GetTimestamp() : null;
+
+            try {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryExecutingEvent(
+                        database: database,
+                        sql: sql,
+                        queryType: queryType,
+                        start: start,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
+
+                if(transaction == null) {
+                    closeConnection = true;
+                    dbConnection = database.GetNewConnection();
+                    dbConnection.Open();
+                }
+                else {
+
+                    DbTransaction? dbTransaction = transaction.GetTransaction(database);
+
+                    if(dbTransaction == null) {
+                        dbConnection = database.GetNewConnection();
+                        dbConnection.Open();
+                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                    }
+                    else {
+                        dbConnection = dbTransaction.Connection;
+                    }
+                    closeConnection = false;
+                }
+
+                using DbCommand command = dbConnection!.CreateCommand();
+
+                command.CommandText = sql;
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                command.CommandTimeout = timeout.Seconds;
+
+                if(parameters != null) {
+
+                    for(int index = 0; index < parameters.Count; index++) {
+                        command.Parameters.Add(parameters[index]);
+                    }
+                }
+
+                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+
+                    if(Debugger.IsAttached) {
+                        Debugger.Break();
+                    }
+                }
+
+                using DbDataReader reader = command.ExecuteReader();
+
+                IResultRow resultRow;
+
+                if(database.DatabaseType == DatabaseType.SqlServer) {
+                    resultRow = new SqlServerResultRow(reader);
+                }
+                else if(database.DatabaseType == DatabaseType.PostgreSql) {
+                    resultRow = new PostgreSqlResultRow(reader);
+                }
+                else {
+                    throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{database.DatabaseType}'");
+                }
+
+                List<RESULT> rowList = new List<RESULT>();
+
+                while(reader.Read()) {
+                    rowList.Add(func(resultRow));
+                    resultRow.Reset();
+                }
+
+                reader.Close();
+
+                //Note: Reader must be closed for RecordsAffected to be populated
+                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+
+                if(closeConnection) {
+                    dbConnection.Close();
+                }
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: result.Rows.Count,
+                        rowsEffected: result.RowsEffected,
+                        queryType: queryType,
+                        result: result,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: null,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
+                return result;
+            }
+            catch(Exception ex) {
+
+                Settings.FireQueryPerformedEvent(
+                    database: database,
+                    sql: sql,
+                    rows: 0,
+                    rowsEffected: 0,
+                    queryType: queryType,
+                    result: null,
+                    start: start,
+                    end: DateTimeOffset.Now,
+                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                    exception: ex,
+                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
+                );
+                throw;
+            }
+            finally {
+                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                    dbConnection.Dispose();
+                }
+            }
+        }
+
+
+        public static NonQueryResult ExecuteNonQuery(
+            IDatabase database,
+            Transaction? transaction,
+            QueryTimeout timeout,
+            IList<DbParameter>? parameters,
+            string sql,
+            QueryType queryType,
+            string debugName) {
+
+            DbConnection? dbConnection = null;
+
+            bool closeConnection = false;
+
+            bool hasEvents = Settings.HasEvents;
+
+            DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
+
+            long? startTicks = hasEvents ? Stopwatch.GetTimestamp() : null;
+
+            try {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryExecutingEvent(
+                        database: database,
+                        sql: sql,
+                        queryType: queryType,
+                        start: start,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
+
+                if(transaction == null) {
+                    closeConnection = true;
+                    dbConnection = database.GetNewConnection();
+                    dbConnection.Open();
+                }
+                else {
+
+                    DbTransaction? dbTransaction = transaction.GetTransaction(database);
+
+                    if(dbTransaction == null) {
+                        dbConnection = database.GetNewConnection();
+                        dbConnection.Open();
+                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                    }
+                    else {
+                        dbConnection = dbTransaction.Connection;
+                    }
+                    closeConnection = false;
+                }
+
+                using DbCommand command = dbConnection!.CreateCommand();
+
+                command.CommandText = sql;
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                command.CommandTimeout = timeout.Seconds;
+
+                if(parameters != null) {
+
+                    for(int index = 0; index < parameters.Count; index++) {
+                        command.Parameters.Add(parameters[index]);
+                    }
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -321,7 +613,7 @@ namespace QueryLite {
         public static QueryResult<RESULT> Execute<RESULT>(IDatabase database,
             Transaction? transaction,
             QueryTimeout timeout,
-            IParameters? parameters,
+            IParametersBuilder? parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -380,9 +672,11 @@ namespace QueryLite {
 
                 command.CommandTimeout = timeout.Seconds;
 
-
                 if(parameters != null) {
-                    parameters.SetParameters(database, command);
+
+                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                        command.Parameters.Add(parameters.ParameterList[index]);
+                    }
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -470,7 +764,7 @@ namespace QueryLite {
         public static RESULT? SingleOrDefault<RESULT>(IDatabase database,
             Transaction? transaction,
             QueryTimeout timeout,
-            IParameters? parameters,
+            IParametersBuilder? parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -530,7 +824,10 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 if(parameters != null) {
-                    parameters.SetParameters(database, command);
+
+                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                        command.Parameters.Add(parameters.ParameterList[index]);
+                    }
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -624,7 +921,7 @@ namespace QueryLite {
             Transaction? transaction,
             CancellationToken cancellationToken,
             QueryTimeout timeout,
-            IParameters? parameters,
+            IParametersBuilder? parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -684,7 +981,10 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 if(parameters != null) {
-                    parameters.SetParameters(database, command);
+
+                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                        command.Parameters.Add(parameters.ParameterList[index]);
+                    }
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -778,7 +1078,7 @@ namespace QueryLite {
             IDatabase database,
             Transaction? transaction,
             QueryTimeout timeout,
-            IParameters? parameters,
+            IParametersBuilder? parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -840,7 +1140,10 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 if(parameters != null) {
-                    parameters.SetParameters(database, command);
+
+                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                        command.Parameters.Add(parameters.ParameterList[index]);
+                    }
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
@@ -930,7 +1233,7 @@ namespace QueryLite {
             IDatabase database,
             Transaction? transaction,
             QueryTimeout timeout,
-            IParameters? parameters,
+            IParametersBuilder? parameters,
             string sql,
             QueryType queryType,
             string debugName,
@@ -989,7 +1292,296 @@ namespace QueryLite {
                 command.CommandTimeout = timeout.Seconds;
 
                 if(parameters != null) {
-                    parameters.SetParameters(database, command);
+
+                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                        command.Parameters.Add(parameters.ParameterList[index]);
+                    }
+                }
+
+                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+
+                    if(Debugger.IsAttached) {
+                        Debugger.Break();
+                    }
+                }
+
+                int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+
+                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+
+                if(closeConnection) {
+                    dbConnection.Close();
+                }
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: result.RowsEffected,
+                        queryType: queryType,
+                        result: result,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: null,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
+                return result;
+            }
+            catch(Exception ex) {
+
+                Settings.FireQueryPerformedEvent(
+                    database: database,
+                    sql: sql,
+                    rows: 0,
+                    rowsEffected: 0,
+                    queryType: queryType,
+                    result: null,
+                    start: start,
+                    end: DateTimeOffset.Now,
+                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                    exception: ex,
+                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
+                );
+                throw;
+            }
+            finally {
+                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                    dbConnection.Dispose();
+                }
+            }
+        }
+
+
+        public static async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(
+            IDatabase database,
+            Transaction? transaction,
+            QueryTimeout timeout,
+            IList<DbParameter>? parameters,
+            Func<IResultRow, RESULT> func,
+            string sql,
+            QueryType queryType,
+            IList<IField> selectFields,
+            FieldCollector fieldCollector,
+            string debugName,
+            CancellationToken cancellationToken) {
+
+            DbConnection? dbConnection = null;
+
+            bool closeConnection = false;
+
+            bool hasEvents = Settings.HasEvents;
+
+            DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
+
+            long? startTicks = hasEvents ? Stopwatch.GetTimestamp() : null;
+
+            try {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryExecutingEvent(
+                        database: database,
+                        sql: sql,
+                        queryType: queryType,
+                        start: start,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
+
+                if(transaction == null) {
+                    closeConnection = true;
+                    dbConnection = database.GetNewConnection();
+                    dbConnection.Open();
+                }
+                else {
+
+                    DbTransaction? dbTransaction = transaction.GetTransaction(database);
+
+                    if(dbTransaction == null) {
+                        dbConnection = database.GetNewConnection();
+                        dbConnection.Open();
+                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                    }
+                    else {
+                        dbConnection = dbTransaction.Connection;
+                    }
+                    closeConnection = false;
+                }
+
+                using DbCommand command = dbConnection!.CreateCommand();
+
+                command.CommandText = sql;
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                command.CommandTimeout = timeout.Seconds;
+
+                if(parameters != null) {
+
+                    for(int index = 0; index < parameters.Count; index++) {
+                        command.Parameters.Add(parameters[index]);
+                    }
+                }
+
+                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+
+                    if(Debugger.IsAttached) {
+                        Debugger.Break();
+                    }
+                }
+
+                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+                IResultRow resultRow;
+
+                if(database.DatabaseType == DatabaseType.SqlServer) {
+                    resultRow = new SqlServerResultRow(reader);
+                }
+                else if(database.DatabaseType == DatabaseType.PostgreSql) {
+                    resultRow = new PostgreSqlResultRow(reader);
+                }
+                else {
+                    throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{database.DatabaseType}'");
+                }
+
+                List<RESULT> rowList = new List<RESULT>();
+
+                while(reader.Read()) {
+                    rowList.Add(func(resultRow));
+                    resultRow.Reset();
+                }
+
+                reader.Close();
+
+                //Note: Reader must be closed for RecordsAffected to be populated
+                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+
+                if(closeConnection) {
+                    dbConnection.Close();
+                }
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: result.Rows.Count,
+                        rowsEffected: result.RowsEffected,
+                        queryType: queryType,
+                        result: result,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: null,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
+                return result;
+            }
+            catch(Exception ex) {
+
+                Settings.FireQueryPerformedEvent(
+                    database: database,
+                    sql: sql,
+                    rows: 0,
+                    rowsEffected: 0,
+                    queryType: queryType,
+                    result: null,
+                    start: start,
+                    end: DateTimeOffset.Now,
+                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                    exception: ex,
+                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                    transactionId: transaction?.TransactionId,
+                    debugName: debugName
+                );
+                throw;
+            }
+            finally {
+                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                    dbConnection.Dispose();
+                }
+            }
+        }
+
+        public static async Task<NonQueryResult> ExecuteNonQueryAsync(
+            IDatabase database,
+            Transaction? transaction,
+            QueryTimeout timeout,
+            IList<DbParameter>? parameters,
+            string sql,
+            QueryType queryType,
+            string debugName,
+            CancellationToken cancellationToken) {
+
+            DbConnection? dbConnection = null;
+
+            bool closeConnection = false;
+
+            bool hasEvents = Settings.HasEvents;
+
+            DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
+
+            long? startTicks = hasEvents ? Stopwatch.GetTimestamp() : null;
+
+            try {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryExecutingEvent(
+                        database: database,
+                        sql: sql,
+                        queryType: queryType,
+                        start: start,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
+
+                if(transaction == null) {
+                    closeConnection = true;
+                    dbConnection = database.GetNewConnection();
+                    dbConnection.Open();
+                }
+                else {
+
+                    DbTransaction? dbTransaction = transaction.GetTransaction(database);
+
+                    if(dbTransaction == null) {
+                        dbConnection = database.GetNewConnection();
+                        dbConnection.Open();
+                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                    }
+                    else {
+                        dbConnection = dbTransaction.Connection;
+                    }
+                    closeConnection = false;
+                }
+
+                using DbCommand command = dbConnection!.CreateCommand();
+
+                command.CommandText = sql;
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                command.CommandTimeout = timeout.Seconds;
+
+                if(parameters != null) {
+
+                    for(int index = 0; index < parameters.Count; index++) {
+                        command.Parameters.Add(parameters[index]);
+                    }
                 }
 
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {

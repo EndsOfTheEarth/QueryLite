@@ -28,7 +28,7 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlDeleteQueryGenerator : IDeleteQueryGenerator {
 
-        string IDeleteQueryGenerator.GetSql(DeleteQueryTemplate template, IDatabase database, IParameters? parameters) {
+        string IDeleteQueryGenerator.GetSql(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
 
             if(template.Joins != null) {
                 throw new Exception("Delete join syntax is not supported by PostgreSql");

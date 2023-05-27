@@ -27,36 +27,44 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
     public sealed class COUNT_ALL : Function<int> {
 
-        public COUNT_ALL() : base("COUNT(*)") { }
+        public static COUNT_ALL Instance { get; } = new COUNT_ALL();
 
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        private COUNT_ALL() : base("COUNT(*)") { }
+
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "COUNT(*)";
         }
     }
 
     public sealed class GETDATE : Function<DateTime> {
 
-        public GETDATE() : base("GETDATE()") { }
+        public static GETDATE Instance { get; } = new GETDATE();
 
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        private GETDATE() : base("GETDATE()") { }
+
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "GETDATE()";
         }
     }
 
     public sealed class NEWID : Function<Guid> {
 
-        public NEWID() : base("NEWID()") { }
+        public static NEWID Instance { get; } = new NEWID();
 
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        private NEWID() : base("NEWID()") { }
+
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "NEWID()";
         }
     }
 
     public sealed class SYSDATETIMEOFFSET : Function<DateTimeOffset> {
 
-        public SYSDATETIMEOFFSET() : base("SYSDATETIMEOFFSET()") { }
+        public static SYSDATETIMEOFFSET Instance { get; } = new SYSDATETIMEOFFSET();
 
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        private SYSDATETIMEOFFSET() : base("SYSDATETIMEOFFSET()") { }
+
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "SYSDATETIMEOFFSET()";
         }
     }

@@ -40,7 +40,7 @@ namespace QueryLite {
         /// <param name="useAlias">Should table aliases be included in sql</param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        internal string GetSql(IDatabase database, bool useAlias, IParameters? parameters);
+        internal string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters);
     }
 
     public abstract class AFunction<TYPE> : ISelectable<TYPE>, IFunction where TYPE : notnull {
@@ -62,10 +62,10 @@ namespace QueryLite {
         public IList<IField> GetFields() {
             return new List<IField>(new IField[] { this });
         }
-        string IFunction.GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        string IFunction.GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return GetSql(database, useAlias, parameters);
         }
-        public abstract string GetSql(IDatabase database, bool useAlias, IParameters? parameters);
+        public abstract string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters);
 
         public static ICondition operator ==(AFunction<TYPE> function, ISelectable<TYPE> columnB) {
             return new GenericCondition(function, Operator.EQUALS, columnB);
@@ -125,7 +125,7 @@ namespace QueryLite {
         public RawSqlFunction(string sql) : base(sql) {
             Sql = sql;
         }
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return Sql;
         }
     }
@@ -137,7 +137,7 @@ namespace QueryLite {
         public NullableRawSqlFunction(string sql) : base(sql) {
             Sql = sql;
         }
-        public override string GetSql(IDatabase database, bool useAlias, IParameters? parameters) {
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return Sql;
         }
     }

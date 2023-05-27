@@ -22,25 +22,28 @@
  * SOFTWARE.
  **/
 using Npgsql;
-using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 
 namespace QueryLite.Databases.PostgreSql {
 
-    public sealed class PostgreSqlParameters : IParameters {
+    public sealed class PostgreSqlParameters : IParametersBuilder {
 
-        private List<PostgreSqlParam> ParameterList { get; }
+        public IList<DbParameter> ParameterList { get; }
 
         public PostgreSqlParameters(int initParams) {
-            ParameterList = new List<PostgreSqlParam>(initParams);
+            ParameterList = new List<DbParameter>(initParams);
         }
-        private int count;
 
-        public void Add(IDatabase database, Type type, object? value, out string paramName) {
+        public void AddParameter(IDatabase database, Type type, object? value, out string paramName) {
 
-            paramName = "@" + count.ToString();
+            if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
+                paramName = ParamNameCache.ParamNames[ParameterList.Count];
+            }
+            else {
+                paramName = $"@{ParameterList.Count}";
+            }
 
             if(value != null) {
 
@@ -51,48 +54,14 @@ namespace QueryLite.Databases.PostgreSql {
                     value = bitValue.Value;
                 }
             }
-
+            else {
+                value = DBNull.Value;
+            }
             ParameterList.Add(
-                new PostgreSqlParam(
-                    name: paramName,
-                    type: type,
-                    dbType: PostgreSqlTypeMappings.GetNpgsqlDbType(type),
-                    value: value
-                )
+                new NpgsqlParameter(parameterName: paramName, value: PostgreSqlTypeMappings.ConvertToRawType(value)) {
+                    NpgsqlDbType = PostgreSqlTypeMappings.GetNpgsqlDbType(type)
+                }
             );
-            count++;
         }
-        public void SetParameters(IDatabase database, DbCommand command) {
-
-            foreach(PostgreSqlParam param in ParameterList) {
-
-                NpgsqlParameter parameter = ((NpgsqlCommand)command).CreateParameter();
-
-                parameter.ParameterName = param.Name;
-                parameter.NpgsqlDbType = param.DbType;
-
-                if(param.Value != null) {
-                    parameter.Value = PostgreSqlTypeMappings.ConvertToRawType(param.Value);
-                }
-                else {
-                    parameter.Value = DBNull.Value;
-                }
-                command.Parameters.Add(parameter);
-            }
-        }
-        private sealed class PostgreSqlParam {
-
-            public string Name { get; set; }
-            public Type Type { get; set; }
-            public NpgsqlDbType DbType { get; set; }
-            public object? Value { get; set; }
-
-            public PostgreSqlParam(string name, Type type, NpgsqlDbType dbType, object? value) {
-                Name = name;
-                Type = type;
-                DbType = dbType;
-                Value = value;
-            }
-        }
-    }    
+    }
 }

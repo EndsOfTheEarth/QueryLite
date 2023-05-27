@@ -22,7 +22,7 @@ namespace QueryLiteTest.Tests {
                     .NoWhereCondition()
                     .Execute(transation, TimeoutLevel.ShortDelete);
 
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 var result = Query
                     .Select(
@@ -53,7 +53,7 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void InsertManyRows() {
 
-            AllTypesTable allTypesTable = AllTypesTable.Instance;
+            AllTypesTable table = AllTypesTable.Instance;
 
             const short records = 1000;
 
@@ -67,25 +67,27 @@ namespace QueryLiteTest.Tests {
 
                     list.Add(allTypes);
 
-                    var result = Query.Insert(allTypesTable)
-                        .Set(allTypesTable.Guid, allTypes.Guid)
-                        .Set(allTypesTable.String, allTypes.String)
-                        .Set(allTypesTable.SmallInt, allTypes.SmallInt)
-                        .Set(allTypesTable.Int, allTypes.Int)
-                        .Set(allTypesTable.BigInt, allTypes.BigInt)
-                        .Set(allTypesTable.Decimal, allTypes.Decimal)
-                        .Set(allTypesTable.Float, allTypes.Float)
-                        .Set(allTypesTable.Double, allTypes.Double)
-                        .Set(allTypesTable.Boolean, allTypes.Boolean)
-                        .Set(allTypesTable.Bytes, allTypes.Bytes)
-                        .Set(allTypesTable.DateTime, allTypes.DateTime)
-                        .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
-                        .Set(allTypesTable.Enum, allTypes.Enum)
-                        .Set(allTypesTable.DateOnly, allTypes.DateOnly)
-                        .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
+                    var result = Query.Insert(table)
+                        .Values(values => values
+                            .Set(table.Guid, allTypes.Guid)
+                            .Set(table.String, allTypes.String)
+                            .Set(table.SmallInt, allTypes.SmallInt)
+                            .Set(table.Int, allTypes.Int)
+                            .Set(table.BigInt, allTypes.BigInt)
+                            .Set(table.Decimal, allTypes.Decimal)
+                            .Set(table.Float, allTypes.Float)
+                            .Set(table.Double, allTypes.Double)
+                            .Set(table.Boolean, allTypes.Boolean)
+                            .Set(table.Bytes, allTypes.Bytes)
+                            .Set(table.DateTime, allTypes.DateTime)
+                            .Set(table.DateTimeOffset, allTypes.DateTimeOffset)
+                            .Set(table.Enum, allTypes.Enum)
+                            .Set(table.DateOnly, allTypes.DateOnly)
+                            .Set(table.TimeOnly, allTypes.TimeOnly)
+                        )
                         .Execute(
                             result => new {
-                                Id = result.Get(allTypesTable.Id)
+                                Id = result.Get(table.Id)
                             },
                             transaction,
                             TimeoutLevel.ShortInsert
@@ -103,11 +105,11 @@ namespace QueryLiteTest.Tests {
                 var result = Query
                     .Select(
                         result => new {
-                            AllTypesRow = new AllTypesInfo(result, allTypesTable)
+                            AllTypesRow = new AllTypesInfo(result, table)
                         }
                     )
-                    .From(allTypesTable)
-                    .OrderBy(allTypesTable.Id.ASC)
+                    .From(table)
+                    .OrderBy(table.Id.ASC)
                     .Execute(TestDatabase.Database);
 
                 Assert.AreEqual(result.Rows.Count, records);
@@ -125,11 +127,11 @@ namespace QueryLiteTest.Tests {
                 var result = Query
                     .Select(
                         result => new {
-                            AllTypesRow = new AllTypesInfo(result, allTypesTable)
+                            AllTypesRow = new AllTypesInfo(result, table)
                         }
                     )
-                    .From(allTypesTable)
-                    .OrderBy(allTypesTable.Id.DESC)
+                    .From(table)
+                    .OrderBy(table.Id.DESC)
                     .Execute(TestDatabase.Database);
 
                 Assert.AreEqual(result.Rows.Count, records);
@@ -146,17 +148,17 @@ namespace QueryLiteTest.Tests {
                 var result = Query
                     .Select(
                         result => new {
-                            AllTypesRow = new AllTypesInfo(result, allTypesTable)
+                            AllTypesRow = new AllTypesInfo(result, table)
                         }
                     )
-                    .From(allTypesTable)
+                    .From(table)
                     .UnionSelect(
                         result => new {
-                            AllTypesRow = new AllTypesInfo(result, allTypesTable)
+                            AllTypesRow = new AllTypesInfo(result, table)
                         }
                     )
-                    .From(allTypesTable)
-                    .OrderBy(allTypesTable.Id.DESC)
+                    .From(table)
+                    .OrderBy(table.Id.DESC)
                     .Execute(TestDatabase.Database);
 
                 Assert.AreEqual(result.Rows.Count, records);
@@ -174,17 +176,17 @@ namespace QueryLiteTest.Tests {
                 var result = Query
                     .Select(
                         result => new {
-                            AllTypesRow = new AllTypesInfo(result, allTypesTable)
+                            AllTypesRow = new AllTypesInfo(result, table)
                         }
                     )
-                    .From(allTypesTable)
+                    .From(table)
                     .Where(
-                        allTypesTable.Id.In(
+                        table.Id.In(
                             Query.NestedSelect(allTypesTable2.Id)
                             .From(allTypesTable2)
                         )
                     )
-                    .OrderBy(allTypesTable.Id.DESC)
+                    .OrderBy(table.Id.DESC)
                     .Execute(TestDatabase.Database);
 
                 Assert.AreEqual(result.Rows.Count, records);
@@ -202,17 +204,17 @@ namespace QueryLiteTest.Tests {
                 var result = Query
                     .Select(
                         result => new {
-                            AllTypesRow = new AllTypesInfo(result, allTypesTable)
+                            AllTypesRow = new AllTypesInfo(result, table)
                         }
                     )
-                    .From(allTypesTable)
+                    .From(table)
                     .Where(
-                        allTypesTable.Id.NotIn(
+                        table.Id.NotIn(
                             Query.NestedSelect(allTypesTable2.Id)
                             .From(allTypesTable2)
                         )
                     )
-                    .OrderBy(allTypesTable.Id.DESC)
+                    .OrderBy(table.Id.DESC)
                     .Execute(TestDatabase.Database);
 
                 Assert.AreEqual(result.Rows.Count, 0);

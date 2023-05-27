@@ -27,7 +27,7 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlTruncateQueryGenerator : ITruncateQueryGenerator {
 
-        string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template, IDatabase database, IParameters? parameters) {
+        string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
 
             StringBuilder sql = new StringBuilder("TRUNCATE TABLE ");
 

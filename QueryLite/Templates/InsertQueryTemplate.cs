@@ -21,17 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal sealed class InsertQueryTemplate : IInsertSet, IInsertSetNext, IInsertExecute {
+    internal sealed class InsertQueryTemplate : IInsertSet, IInsertExecute {
 
         public ITable Table { get; }
-        public IList<SetValue> SetValues { get; } = new List<SetValue>(1);
+        public Action<ISetValuesCollector>? ValuesCollector;
+
         public IList<IColumn>? ReturningFields { get; private set; }
 
         public InsertQueryTemplate(ITable table) {
@@ -41,37 +47,8 @@ namespace QueryLite {
             Table = table;
         }
 
-        public IInsertSetNext Set<TYPE>(Column<TYPE> column, TYPE value) where TYPE : notnull {
-            
-            ArgumentNullException.ThrowIfNull(column);
-            ArgumentNullException.ThrowIfNull(value);
-
-            SetValues.Add(new SetValue(column, value));
-            return this;
-        }
-
-        public IInsertSetNext Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : class {
-
-            ArgumentNullException.ThrowIfNull(column);
-
-            SetValues.Add(new SetValue(column, value));
-            return this;
-        }
-
-        public IInsertSetNext Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : struct {
-
-            ArgumentNullException.ThrowIfNull(column);
-
-            SetValues.Add(new SetValue(column, value));
-            return this;
-        }
-
-        public IInsertSetNext Set<TYPE>(Column<TYPE> column, AFunction<TYPE> function) where TYPE : notnull {
-            
-            ArgumentNullException.ThrowIfNull(column);
-            ArgumentNullException.ThrowIfNull(function);
-
-            SetValues.Add(new SetValue(column, function));
+        public IInsertExecute Values(Action<ISetValuesCollector> set) {
+            ValuesCollector = set;
             return this;
         }
 
@@ -79,7 +56,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.InsertGenerator.GetSql(this, database, parameters: null);
+            return database.InsertGenerator.GetSql(this, database, useParameters: Parameters.Off, out _);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
@@ -93,9 +70,9 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
+            //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
 
-            string sql = database.InsertGenerator.GetSql(this, database, parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             NonQueryResult result = QueryExecutor.ExecuteNonQuery(
                 database: database,
@@ -127,9 +104,9 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
+            //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
 
-            string sql = database.InsertGenerator.GetSql(this, database, parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -157,9 +134,9 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
+            //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
 
-            string sql = database.InsertGenerator.GetSql(this, database, parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             Task<NonQueryResult> result = QueryExecutor.ExecuteNonQueryAsync(
                 database: database,
@@ -192,9 +169,9 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: SetValues.Count) : null;
+            //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
 
-            string sql = database.InsertGenerator.GetSql(this, database, parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
 
             Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
                 database: database,
@@ -223,4 +200,6 @@ namespace QueryLite {
             Value = value;
         }
     }
+
+    
 }

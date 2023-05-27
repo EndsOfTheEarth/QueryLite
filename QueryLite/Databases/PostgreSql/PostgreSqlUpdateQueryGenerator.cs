@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.SqlServer;
 using System;
 using System.Text;
 
@@ -28,7 +29,7 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, IParameters? parameters) {
+        string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
             StringBuilder sql = new StringBuilder("UPDATE ");
 
@@ -38,45 +39,34 @@ namespace QueryLite.Databases.PostgreSql {
                 PostgreSqlHelper.AppendEncase(sql, schemaName, forceEnclose: false);
                 sql.Append('.');
             }
+
             PostgreSqlHelper.AppendEncase(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
             sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
 
-            {
+            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
+
+                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(database, CollectorMode.Update);
+
+                template.ValuesCollector!(valuesCollector);
+
+                parameters = valuesCollector.Parameters;
+
                 sql.Append(" SET ");
 
-                bool first = true;
+                sql.Append(valuesCollector.ValuesSql.ToString());
 
-                foreach(SetValue setValue in template.SetValues) {
+            }
+            else {
 
-                    if(!first) {
-                        sql.Append(',');
-                    }
-                    first = false;
+                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(database, CollectorMode.Update);
 
-                    PostgreSqlHelper.AppendColumnName(sql, setValue.Column);
-                    sql.Append(" = ");
+                template.ValuesCollector!(valuesCollector);
 
-                    if(setValue.Value is IColumn rightColumn) {
-                        sql.Append(rightColumn.Table.Alias).Append('.');
-                        PostgreSqlHelper.AppendColumnName(sql, rightColumn);
-                    }
-                    else if(setValue.Value is IFunction rightFunction) {
-                        sql.Append(rightFunction.GetSql(database, useAlias: true, parameters));
-                    }
-                    else if(parameters == null) {
+                parameters = null;
 
-                        if(setValue.Value != null) {
-                            sql.Append(database.ConvertToSql(setValue.Value));
-                        }
-                        else {
-                            sql.Append(" NULL");
-                        }
-                    }
-                    else {
-                        parameters.Add(database, setValue.Column.Type, setValue.Value, out string paramName);
-                        sql.Append(paramName);
-                    }
-                }
+                sql.Append(" SET ");
+
+                sql.Append(valuesCollector.ValuesSql.ToString());
             }
 
             sql.Append(" FROM ");

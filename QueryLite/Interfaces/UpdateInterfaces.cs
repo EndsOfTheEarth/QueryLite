@@ -28,10 +28,8 @@ using System.Threading.Tasks;
 namespace QueryLite {
 
     public interface IUpdateSet {
-        IUpdateJoin Set<TYPE>(Column<TYPE> column, TYPE value) where TYPE : notnull;
-        IUpdateJoin Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : class;
-        IUpdateJoin Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : struct;
-        IUpdateJoin Set<TYPE>(Column<TYPE> column, AFunction<TYPE> function) where TYPE : notnull;
+
+        IUpdateWhere Values(Action<ISetValuesCollector> values);
     }
 
     public interface IUpdateJoin : IUpdateWhere {

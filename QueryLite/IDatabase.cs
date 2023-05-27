@@ -49,7 +49,7 @@ namespace QueryLite {
         /// <returns></returns>
         DbConnection GetNewConnection();
         public string ConvertToSql(object value);
-        public IParameters CreateParameters(int initParams);
+        public IParametersBuilder CreateParameters(int initParams);
         string? GetCSharpCodeSet(Type dotNetType);
     }
 
