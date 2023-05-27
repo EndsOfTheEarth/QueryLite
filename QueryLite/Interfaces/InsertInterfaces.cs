@@ -46,8 +46,6 @@ namespace QueryLite {
 
     public interface ISetValuesCollector {
 
-        internal void Reset();
-
         public ISetValuesCollector Set(Column<string> column, string value);
         public ISetValuesCollector Set(NullableColumn<string> column, string? value);
 

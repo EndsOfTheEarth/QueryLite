@@ -547,9 +547,6 @@ namespace QueryLiteTest.Tests {
             InsertWithQueryAndRollback(GetAllTypes1());
         }
 
-        
-        private IPreparedQueryExecute<bool, int>? query8;
-
         private async Task BasicInsertAndDeleteJoinQueriesAsync() {
 
             AllTypes allTypes1 = GetAllTypes1();
@@ -704,8 +701,6 @@ namespace QueryLiteTest.Tests {
 
             Assert.AreEqual(result.Rows.First(), 0);
         }
-
-        private IPreparedQueryExecute<bool, int>? query10;
 
         private async Task TruncateAsync() {
 
@@ -976,8 +971,6 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(beginRowCount, GetNumberOfRows() + 1);
         }
 
-        private IPreparedQueryExecute<bool, int>? query13;
-
         private async Task DeleteWithQueryAsync(AllTypes allTypes) {
 
             Assert.IsTrue(allTypes.Id.IsValid);
@@ -1105,6 +1098,7 @@ namespace QueryLiteTest.Tests {
             public AllTypes AllTypes { get; }
             public IntKey<AllTypes> Id { get; }
         }
+
         private void JoinQuery(AllTypes allTypes) {
 
             IntKey<AllTypes> id = new IntKey<AllTypes>(928756923);
