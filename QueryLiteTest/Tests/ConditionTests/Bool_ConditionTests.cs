@@ -23,7 +23,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .NoWhereCondition()
                     .Execute(transaction);
 
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 QueryResult<int> result = Query
                     .Select(

@@ -27,7 +27,7 @@ namespace QueryLiteTest.Tests {
                     .NoWhereCondition()
                     .Execute(transation);
 
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 QueryResult<int> result = Query
                     .Select(
@@ -586,7 +586,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 QueryResult<int> result = await Query
                     .Select(result => result.Get(count))
@@ -623,7 +623,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 QueryResult<int> result = await Query
                     .Select(result => result.Get(count))
@@ -701,7 +701,7 @@ namespace QueryLiteTest.Tests {
                 transaction.Commit();
             }
 
-            COUNT_ALL count = new COUNT_ALL();
+            COUNT_ALL count = COUNT_ALL.Instance;
 
             var result = Query
                 .Select(row => new { Count = row.Get(count) })
@@ -726,7 +726,7 @@ namespace QueryLiteTest.Tests {
                 transaction.Commit();
             }
 
-            COUNT_ALL count = new COUNT_ALL();
+            COUNT_ALL count = COUNT_ALL.Instance;
 
             var result = await Query
                 .Select(row => new { Count = row.Get(count) })
@@ -934,7 +934,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 var result = Query
                     .Select(
@@ -986,7 +986,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 var result = Query
                     .Select(
@@ -1030,7 +1030,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 var result = await Query
                     .Select(
@@ -1081,7 +1081,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 var result = await Query
                     .Select(
@@ -1108,7 +1108,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            COUNT_ALL count = new COUNT_ALL();
+            COUNT_ALL count = COUNT_ALL.Instance;
 
             var result = Query
                 .Select(
@@ -1132,7 +1132,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            COUNT_ALL count = new COUNT_ALL();
+            COUNT_ALL count = COUNT_ALL.Instance;
 
             var result = await Query
                 .Select(

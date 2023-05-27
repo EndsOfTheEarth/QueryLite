@@ -112,17 +112,19 @@ StringKey<ICustomer> customerId = new StringKey<ICustomer>("ABC");
 using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     var result = Query.Insert(customersTable)
-        .Set(customersTable.CustomerID, customerId)
-        .Set(customersTable.CompanyName, "company name")
-        .Set(customersTable.ContactName, "contact name")
-        .Set(customersTable.ContactTitle, "title")
-        .Set(customersTable.Address, "address")
-        .Set(customersTable.City, "city")
-        .Set(customersTable.Region, "region")
-        .Set(customersTable.PostalCode, "12345")
-        .Set(customersTable.Country, "somewhere")
-        .Set(customersTable.Phone, "312-12312-123")
-        .Set(customersTable.Fax, null)
+        .Values(values => values
+            .Set(customersTable.CustomerID, customerId)
+            .Set(customersTable.CompanyName, "company name")
+            .Set(customersTable.ContactName, "contact name")
+            .Set(customersTable.ContactTitle, "title")
+            .Set(customersTable.Address, "address")
+            .Set(customersTable.City, "city")
+            .Set(customersTable.Region, "region")
+            .Set(customersTable.PostalCode, "12345")
+            .Set(customersTable.Country, "somewhere")
+            .Set(customersTable.Phone, "312-12312-123")
+            .Set(customersTable.Fax, null)
+        )
         .Execute(
             inserted => new {
                 PostalCode = inserted.Get(customersTable.PostalCode),
@@ -154,7 +156,10 @@ StringKey<ICustomer> customerId = new StringKey<ICustomer>("ABC");
 using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     Query.Update(customersTable)
-        .Set(customersTable.ContactName, "Mary")
+        .Values(values => values
+            .Set(customersTable.ContactTitle, "Mrs")
+            .Set(customersTable.ContactName, "Mary")
+        )
         .Where(customersTable.CustomerID == customerId)
         .Execute(transaction);
 

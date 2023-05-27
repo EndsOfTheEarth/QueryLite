@@ -151,18 +151,5 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(EnumHelper.UnsafeConvertToLong(LongEnum.B), (long)LongEnum.B);
             Assert.AreEqual(EnumHelper.UnsafeConvertToLong(LongEnum.C), (long)LongEnum.C);
         }
-
-        public struct ParameterValues {
-
-            public Guid Guid { get; set; } = Guid.NewGuid();
-            public Guid Guid2 { get; set; } = Guid.NewGuid();
-            public AllTypesEnum Enum { get; set; } = AllTypesEnum.A;
-
-            public string StringValue = "asdasfs";
-
-            public ParameterValues() {
-
-            }
-        }
     }
 }

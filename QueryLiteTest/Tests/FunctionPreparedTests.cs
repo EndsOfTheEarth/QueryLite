@@ -22,7 +22,7 @@ namespace QueryLiteTest.Tests {
                     .NoWhereCondition()
                     .Execute(transaction, TimeoutLevel.ShortDelete);
 
-                COUNT_ALL count = new COUNT_ALL();
+                COUNT_ALL count = COUNT_ALL.Instance;
 
                 IPreparedQueryExecute<bool, int> query = Query
                     .PrepareWithParameters<bool>()
@@ -77,9 +77,10 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<IntKey<AllTypes>> result = Query.Insert(table)
+                QueryResult<IntKey<AllTypes>> result = Query
+                    .Insert(table)
                     .Values(values => values
-                        .Set(table.Guid, new NEWID())
+                        .Set(table.Guid, NEWID.Instance)
                         .Set(table.String, info.String)
                         .Set(table.SmallInt, info.SmallInt)
                         .Set(table.Int, info.Int)
@@ -89,14 +90,14 @@ namespace QueryLiteTest.Tests {
                         .Set(table.Double, info.Double)
                         .Set(table.Boolean, info.Boolean)
                         .Set(table.Bytes, info.Bytes)
-                        .Set(table.DateTime, new GETDATE())
-                        .Set(table.DateTimeOffset, new SYSDATETIMEOFFSET())
+                        .Set(table.DateTime, GETDATE.Instance)
+                        .Set(table.DateTimeOffset, SYSDATETIMEOFFSET.Instance)
                         .Set(table.Enum, info.Enum)
                         .Set(table.DateOnly, info.DateOnly)
                         .Set(table.TimeOnly, info.TimeOnly)
                     )
                     .Execute(
-                        result => result.Get(table.Id),
+                        inserted => inserted.Get(table.Id),
                         transaction,
                         TimeoutLevel.ShortInsert
                     );
@@ -161,9 +162,9 @@ namespace QueryLiteTest.Tests {
 
                 var result = Query.Update(table)
                     .Values(values => values
-                        .Set(table.Guid, new NEWID())
-                        .Set(table.DateTime, new GETDATE())
-                        .Set(table.DateTimeOffset, new SYSDATETIMEOFFSET())
+                        .Set(table.Guid, NEWID.Instance)
+                        .Set(table.DateTime, GETDATE.Instance)
+                        .Set(table.DateTimeOffset, SYSDATETIMEOFFSET.Instance)
                     )
                     .Where(table.Id == info.Id)
                     .Execute(
@@ -198,7 +199,7 @@ namespace QueryLiteTest.Tests {
 
                 var result = Query
                     .Delete(table)
-                    .Where(table.Guid == new NEWID() | table.DateTime == new GETDATE() | table.DateTimeOffset == new SYSDATETIMEOFFSET())
+                    .Where(table.Guid == NEWID.Instance | table.DateTime == GETDATE.Instance | table.DateTimeOffset == SYSDATETIMEOFFSET.Instance)
                     .Execute(
                         result => new {
                             Guid = result.Get(table.Guid),
@@ -219,7 +220,7 @@ namespace QueryLiteTest.Tests {
 
                 var result = Query
                     .Delete(table)
-                    .Where(table.Guid != new NEWID())
+                    .Where(table.Guid != NEWID.Instance)
                     .Execute(
                         result => new {
                             Guid = result.Get(table.Guid),

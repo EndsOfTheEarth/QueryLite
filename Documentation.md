@@ -328,14 +328,18 @@ var result = Query
 
 var result = Query
     .Insert(shipperTable)
-    .Set(shipperTable.CompanyName, "My company name")
-    .Set(shipperTable.Phone, "123456789")
+    .Values(values => values
+        .Set(shipperTable.CompanyName, "My company name")
+        .Set(shipperTable.Phone, "123456789")
+    )
     .Execute(transaction);  //This will default to TimeoutLevel.ShortInsert
 
 var result = Query
     .Insert(shipperTable)
-    .Set(shipperTable.CompanyName, "My company name")
-    .Set(shipperTable.Phone, "123456789")
+    .Values(values => values
+        .Set(shipperTable.CompanyName, "My company name")
+        .Set(shipperTable.Phone, "123456789")
+    )
     .Execute(transaction, TimeoutLevel.MediumInsert);  //Medium insert timeout
 ```
 
@@ -404,7 +408,7 @@ var result = Query
             Query.NestedSelect(shipperTable2.CompanyName)
                 .From(shipperTable2)
                 .GroupBy(shipperTable2.CompanyName)
-                .Having(new COUNT_ALL() > 1)
+                .Having(COUNT_ALL.Instance > 1)
         )
     )
     .Execute(DB.Northwind);
@@ -419,8 +423,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     var result = Query
         .Insert(shipperTable)
-        .Set(shipperTable.CompanyName, "My company name")
-        .Set(shipperTable.Phone, "123456789")
+        .Values(values => values
+            .Set(shipperTable.CompanyName, "My company name")
+            .Set(shipperTable.Phone, "123456789")
+        )
         .Execute(
             //Returns the auto generated SupplierID column
             inserted => new { ShipperID = inserted.Get(shipperTable.ShipperID) },
@@ -441,8 +447,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     ShipperTable shipperTable = ShipperTable.Instance;
 
     var result = Query
-        .Update(shipperTable)            
-        .Set(shipperTable.Phone, "")
+        .Update(shipperTable)
+        .Values(values => values
+            .Set(shipperTable.Phone, "")
+        )
         .Where(shipperTable.Phone.IsNull)
         .Execute(transaction);
 
@@ -458,8 +466,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     ShipperTable shipperTable = ShipperTable.Instance;
 
     var result = Query
-        .Update(shipperTable)            
-        .Set(shipperTable.Phone, "")
+        .Update(shipperTable)
+        .Values(values => values
+            .Set(shipperTable.Phone, "")
+        )
         .Where(shipperTable.Phone.IsNull)
         .Execute(
             updated => updated.Get(shipperTable.ShipperID),
@@ -482,7 +492,9 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     NonQueryResult result = Query
         .Update(orderTable)
-        .Set(orderTable.ShipVia, null)
+        .Values(values => values
+            .Set(orderTable.ShipVia, null)
+        )
         .Join(customersTable).On(orderTable.CustomerID == customersTable.CustomerID)
         .Where(customersTable.Region.IsNull)
         .Execute(transaction);
@@ -599,10 +611,12 @@ var result = Query
 
 Currently only a small set of sql functions are supported. For Sql Server these are `COUNT_ALL`, `GETDATE`, `NEWID` and `SYSDATETIMEOFFSET`. Please note that creating custom sql functions is documented below this section.
 
+Note: Function classes that are immutable may implement a singleton pattern to reduce memory allocations. For example: `COUNT_ALL.Instance`, `GETDATE.Instance`, `NEWID.Instance` and `SYSDATETIMEOFFSET.Instance`.
+
 ```C#
 ShipperTable shipperTable = ShipperTable.Instance;
 
-COUNT_ALL count = new COUNT_ALL();
+COUNT_ALL count = COUNT_ALL.Instance;
 
 QueryResult<int> result = Query
     .Select(

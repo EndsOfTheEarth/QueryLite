@@ -25,13 +25,13 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            using(Transaction transation = new Transaction(TestDatabase.Database)) {
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 Query.Delete(allTypesTable)
                     .NoWhereCondition()
-                    .Execute(transation);
+                    .Execute(transaction);
 
-                QueryResult<int> result = query1!.Execute(parameterValues: true, transation);
+                QueryResult<int> result = query1!.Execute(parameterValues: true, transaction);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -41,7 +41,7 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(countValue, 0);
 
-                transation.Commit();
+                transaction.Commit();
             }
         }
 
@@ -54,7 +54,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            COUNT_ALL count = new COUNT_ALL();
+            COUNT_ALL count = COUNT_ALL.Instance;
 
             {
 
@@ -107,14 +107,14 @@ namespace QueryLiteTest.Tests {
         }
 
         [TestMethod]
-        public void BasicWithQueriesAndNoParmeters() {
+        public void BasicWithQueriesAndNoParameters() {
 
             Settings.UseParameters = false;
             BasicInsertUpdateAndDeleteWithQueries();
         }
 
         [TestMethod]
-        public async Task BasicWithQueriesAndNoParmetersAsync() {
+        public async Task BasicWithQueriesAndNoParametersAsync() {
 
             Settings.UseParameters = false;
             await BasicInsertUpdateAndDeleteWithQueriesAsync();
@@ -135,14 +135,14 @@ namespace QueryLiteTest.Tests {
         }
 
         [TestMethod]
-        public void BasicWithQueriesAndParmeters() {
+        public void BasicWithQueriesAndParameters() {
 
             Settings.UseParameters = true;
             BasicInsertUpdateAndDeleteWithQueries();
         }
 
         [TestMethod]
-        public async Task BasicWithQueriesAndParmetersAsync() {
+        public async Task BasicWithQueriesAndParametersAsync() {
 
             Settings.UseParameters = true;
             await BasicInsertUpdateAndDeleteWithQueriesAsync();
@@ -611,7 +611,7 @@ namespace QueryLiteTest.Tests {
                     .ExecuteAsync(
                         deleted => new AllTypesInfo(deleted, allTypesTable),
                         transaction
-                   );
+                    );
 
                 Assert.AreEqual(result.RowsEffected, 1);
                 Assert.AreEqual(result.Rows.Count, 1);
@@ -1038,7 +1038,6 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = new COUNT_ALL();
 
                 QueryResult<int> result = await _selectAllTypesCountQuery!.ExecuteAsync(parameterValues: allTypes, TestDatabase.Database, CancellationToken.None);
 

@@ -27,7 +27,9 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
     public sealed class COUNT_ALL : Function<int> {
 
-        public COUNT_ALL() : base("COUNT(*)") { }
+        public static COUNT_ALL Instance { get; } = new COUNT_ALL();
+
+        private COUNT_ALL() : base("COUNT(*)") { }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "COUNT(*)";
@@ -36,7 +38,9 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
     public sealed class GETDATE : Function<DateTime> {
 
-        public GETDATE() : base("GETDATE()") { }
+        public static GETDATE Instance { get; } = new GETDATE();
+
+        private GETDATE() : base("GETDATE()") { }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "GETDATE()";
@@ -45,7 +49,9 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
     public sealed class NEWID : Function<Guid> {
 
-        public NEWID() : base("NEWID()") { }
+        public static NEWID Instance { get; } = new NEWID();
+
+        private NEWID() : base("NEWID()") { }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "NEWID()";
@@ -54,7 +60,9 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
     public sealed class SYSDATETIMEOFFSET : Function<DateTimeOffset> {
 
-        public SYSDATETIMEOFFSET() : base("SYSDATETIMEOFFSET()") { }
+        public static SYSDATETIMEOFFSET Instance { get; } = new SYSDATETIMEOFFSET();
+
+        private SYSDATETIMEOFFSET() : base("SYSDATETIMEOFFSET()") { }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return "SYSDATETIMEOFFSET()";
