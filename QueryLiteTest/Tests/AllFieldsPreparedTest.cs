@@ -644,26 +644,28 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                AllTypesTable allTypesTable = AllTypesTable.Instance;
+                AllTypesTable table = AllTypesTable.Instance;
 
-                QueryResult<AllTypesInfo> result = Query.Insert(allTypesTable)
-                    .Set(allTypesTable.Guid, allTypes.Guid)
-                    .Set(allTypesTable.String, allTypes.String)
-                    .Set(allTypesTable.SmallInt, allTypes.SmallInt)
-                    .Set(allTypesTable.Int, allTypes.Int)
-                    .Set(allTypesTable.BigInt, allTypes.BigInt)
-                    .Set(allTypesTable.Decimal, allTypes.Decimal)
-                    .Set(allTypesTable.Float, allTypes.Float)
-                    .Set(allTypesTable.Double, allTypes.Double)
-                    .Set(allTypesTable.Boolean, allTypes.Boolean)
-                    .Set(allTypesTable.Bytes, allTypes.Bytes)
-                    .Set(allTypesTable.DateTime, allTypes.DateTime)
-                    .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
-                    .Set(allTypesTable.Enum, allTypes.Enum)
-                    .Set(allTypesTable.DateOnly, allTypes.DateOnly)
-                    .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
+                QueryResult<AllTypesInfo> result = Query.Insert(table)
+                    .Values(values => values
+                        .Set(table.Guid, allTypes.Guid)
+                        .Set(table.String, allTypes.String)
+                        .Set(table.SmallInt, allTypes.SmallInt)
+                        .Set(table.Int, allTypes.Int)
+                        .Set(table.BigInt, allTypes.BigInt)
+                        .Set(table.Decimal, allTypes.Decimal)
+                        .Set(table.Float, allTypes.Float)
+                        .Set(table.Double, allTypes.Double)
+                        .Set(table.Boolean, allTypes.Boolean)
+                        .Set(table.Bytes, allTypes.Bytes)
+                        .Set(table.DateTime, allTypes.DateTime)
+                        .Set(table.DateTimeOffset, allTypes.DateTimeOffset)
+                        .Set(table.Enum, allTypes.Enum)
+                        .Set(table.DateOnly, allTypes.DateOnly)
+                        .Set(table.TimeOnly, allTypes.TimeOnly)
+                    )
                     .Execute(
-                        result => new AllTypesInfo(result, allTypesTable),
+                        result => new AllTypesInfo(result, table),
                         transaction,
                         TimeoutLevel.ShortInsert
                     );
@@ -731,26 +733,28 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                AllTypesTable allTypesTable = AllTypesTable.Instance;
+                AllTypesTable table = AllTypesTable.Instance;
 
-                QueryResult<AllTypesInfo> result = await Query.Insert(allTypesTable)
-                    .Set(allTypesTable.Guid, allTypes.Guid)
-                    .Set(allTypesTable.String, allTypes.String)
-                    .Set(allTypesTable.SmallInt, allTypes.SmallInt)
-                    .Set(allTypesTable.Int, allTypes.Int)
-                    .Set(allTypesTable.BigInt, allTypes.BigInt)
-                    .Set(allTypesTable.Decimal, allTypes.Decimal)
-                    .Set(allTypesTable.Float, allTypes.Float)
-                    .Set(allTypesTable.Double, allTypes.Double)
-                    .Set(allTypesTable.Boolean, allTypes.Boolean)
-                    .Set(allTypesTable.Bytes, allTypes.Bytes)
-                    .Set(allTypesTable.DateTime, allTypes.DateTime)
-                    .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
-                    .Set(allTypesTable.Enum, allTypes.Enum)
-                    .Set(allTypesTable.DateOnly, allTypes.DateOnly)
-                    .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
+                QueryResult<AllTypesInfo> result = await Query.Insert(table)
+                    .Values(values => values
+                        .Set(table.Guid, allTypes.Guid)
+                        .Set(table.String, allTypes.String)
+                        .Set(table.SmallInt, allTypes.SmallInt)
+                        .Set(table.Int, allTypes.Int)
+                        .Set(table.BigInt, allTypes.BigInt)
+                        .Set(table.Decimal, allTypes.Decimal)
+                        .Set(table.Float, allTypes.Float)
+                        .Set(table.Double, allTypes.Double)
+                        .Set(table.Boolean, allTypes.Boolean)
+                        .Set(table.Bytes, allTypes.Bytes)
+                        .Set(table.DateTime, allTypes.DateTime)
+                        .Set(table.DateTimeOffset, allTypes.DateTimeOffset)
+                        .Set(table.Enum, allTypes.Enum)
+                        .Set(table.DateOnly, allTypes.DateOnly)
+                        .Set(table.TimeOnly, allTypes.TimeOnly)
+                    )
                     .ExecuteAsync(
-                        result => new AllTypesInfo(result, allTypesTable),
+                        result => new AllTypesInfo(result, table),
                         transaction,
                         cancellationToken: null,
                         TimeoutLevel.ShortInsert
@@ -1205,27 +1209,29 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                AllTypesTable allTypesTable = AllTypesTable.Instance;
+                AllTypesTable table = AllTypesTable.Instance;
 
-                var result = Query.Insert(allTypesTable)
-                    .Set(allTypesTable.Guid, allTypes.Guid)
-                    .Set(allTypesTable.String, allTypes.String)
-                    .Set(allTypesTable.SmallInt, allTypes.SmallInt)
-                    .Set(allTypesTable.Int, allTypes.Int)
-                    .Set(allTypesTable.BigInt, allTypes.BigInt)
-                    .Set(allTypesTable.Decimal, allTypes.Decimal)
-                    .Set(allTypesTable.Float, allTypes.Float)
-                    .Set(allTypesTable.Double, allTypes.Double)
-                    .Set(allTypesTable.Boolean, allTypes.Boolean)
-                    .Set(allTypesTable.Bytes, allTypes.Bytes)
-                    .Set(allTypesTable.DateTime, allTypes.DateTime)
-                    .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
-                    .Set(allTypesTable.Enum, allTypes.Enum)
-                    .Set(allTypesTable.DateOnly, allTypes.DateOnly)
-                    .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
+                var result = Query.Insert(table)
+                    .Values(values => values
+                        .Set(table.Guid, allTypes.Guid)
+                        .Set(table.String, allTypes.String)
+                        .Set(table.SmallInt, allTypes.SmallInt)
+                        .Set(table.Int, allTypes.Int)
+                        .Set(table.BigInt, allTypes.BigInt)
+                        .Set(table.Decimal, allTypes.Decimal)
+                        .Set(table.Float, allTypes.Float)
+                        .Set(table.Double, allTypes.Double)
+                        .Set(table.Boolean, allTypes.Boolean)
+                        .Set(table.Bytes, allTypes.Bytes)
+                        .Set(table.DateTime, allTypes.DateTime)
+                        .Set(table.DateTimeOffset, allTypes.DateTimeOffset)
+                        .Set(table.Enum, allTypes.Enum)
+                        .Set(table.DateOnly, allTypes.DateOnly)
+                        .Set(table.TimeOnly, allTypes.TimeOnly)
+                    )
                     .Execute(
                         result => new {
-                            AllTypesRow = new AllTypesInfo(result, allTypesTable)
+                            AllTypesRow = new AllTypesInfo(result, table)
                         },
                         transaction
                     );

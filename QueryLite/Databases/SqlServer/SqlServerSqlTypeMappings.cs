@@ -58,6 +58,10 @@ namespace QueryLite.Databases.SqlServer {
                 return SqlDbType.Binary;
             }
 
+            if(type == typeof(byte)) {
+                return SqlDbType.SmallInt;
+            }
+
             if(type == typeof(DateTimeOffset)) {
                 return SqlDbType.DateTimeOffset;
             }

@@ -24,6 +24,7 @@
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +34,7 @@ namespace QueryLite {
         internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParameters? parameters);
     }
     internal interface IInsertQueryGenerator {
-        internal string GetSql(InsertQueryTemplate template, IDatabase database, IParameters? parameters);
+        internal string GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IList<DbParameter>? parameters);
     }
     internal interface IUpdateQueryGenerator {
         internal string GetSql(UpdateQueryTemplate template, IDatabase database, IParameters? parameters);

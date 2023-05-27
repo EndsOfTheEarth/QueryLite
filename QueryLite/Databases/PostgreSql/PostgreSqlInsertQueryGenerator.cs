@@ -21,14 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlInsertQueryGenerator : IInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, IParameters? parameters) {
+        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IList<DbParameter>? parameters) {
 
+            throw new NotImplementedException();
+            /*
             StringBuilder sql = new StringBuilder("INSERT INTO ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
@@ -43,7 +48,9 @@ namespace QueryLite.Databases.PostgreSql {
             {
                 bool first = true;
 
-                foreach(SetValue insertSet in template.SetValues) {
+                for(int index = 0; index < template.ValueFields!.Count; index++) {
+
+                    IColumn insertColumn = template.ValueFields[index];
 
                     if(!first) {
                         sql.Append(',');
@@ -51,7 +58,7 @@ namespace QueryLite.Databases.PostgreSql {
                     else {
                         first = false;
                     }
-                    PostgreSqlHelper.AppendColumnName(sql, insertSet.Column);
+                    PostgreSqlHelper.AppendColumnName(sql, insertColumn.Column);
                 }
             }
 
@@ -115,6 +122,7 @@ namespace QueryLite.Databases.PostgreSql {
                 }
             }
             return sql.ToString();
+            */
         }
     }
 }

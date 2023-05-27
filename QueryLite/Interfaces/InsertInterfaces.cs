@@ -24,20 +24,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QueryLite {
     
     public interface IInsertSet {
 
-        IInsertSetNext Set<TYPE>(Column<TYPE> column, TYPE value) where TYPE : notnull;
-        IInsertSetNext Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : class;
-        IInsertSetNext Set<TYPE>(NullableColumn<TYPE> column, TYPE? value) where TYPE : struct;
-        IInsertSetNext Set<TYPE>(Column<TYPE> column, AFunction<TYPE> function) where TYPE : notnull;
+        IInsertExecute Values(Action<ISetValuesCollector> values);
     }
 
-    public interface IInsertSetNext : IInsertSet, IInsertExecute {
-
-    }
     public interface IInsertExecute {
 
         string GetSql(IDatabase database);
@@ -47,5 +42,195 @@ namespace QueryLite {
 
         Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+    }
+
+    public interface ISetValuesCollector {
+
+        internal void Reset();
+
+        public ISetValuesCollector Set(Column<string> column, string value);
+        public ISetValuesCollector Set(NullableColumn<string> column, string? value);
+
+        public ISetValuesCollector Set(Column<Guid> column, Guid value);
+        public ISetValuesCollector Set(NullableColumn<Guid> column, Guid? value);
+
+        public ISetValuesCollector Set(Column<bool> column, bool value);
+        public ISetValuesCollector Set(NullableColumn<bool> column, bool? value);
+
+        public ISetValuesCollector Set(Column<Bit> column, Bit value);
+        public ISetValuesCollector Set(NullableColumn<Bit> column, Bit? value);
+
+        public ISetValuesCollector Set(Column<decimal> column, decimal value);
+        public ISetValuesCollector Set(NullableColumn<decimal> column, decimal? value);
+
+        public ISetValuesCollector Set(Column<short> column, short value);
+        public ISetValuesCollector Set(NullableColumn<short> column, short? value);
+
+        public ISetValuesCollector Set(Column<int> column, int value);
+        public ISetValuesCollector Set(NullableColumn<int> column, int? value);
+
+        public ISetValuesCollector Set(Column<long> column, long value);
+        public ISetValuesCollector Set(NullableColumn<long> column, long? value);
+
+        public ISetValuesCollector Set(Column<float> column, float value);
+        public ISetValuesCollector Set(NullableColumn<float> column, float? value);
+
+        public ISetValuesCollector Set(Column<double> column, double value);
+        public ISetValuesCollector Set(NullableColumn<double> column, double? value);
+
+        public ISetValuesCollector Set(Column<TimeOnly> column, TimeOnly value);
+        public ISetValuesCollector Set(NullableColumn<TimeOnly> column, TimeOnly? value);
+
+        public ISetValuesCollector Set(Column<DateTime> column, DateTime value);
+        public ISetValuesCollector Set(NullableColumn<DateTime> column, DateTime? value);
+
+        public ISetValuesCollector Set(Column<DateOnly> column, DateOnly value);
+        public ISetValuesCollector Set(NullableColumn<DateOnly> column, DateOnly? value);
+
+        public ISetValuesCollector Set(Column<DateTimeOffset> column, DateTimeOffset value);
+        public ISetValuesCollector Set(NullableColumn<DateTimeOffset> column, DateTimeOffset? value);
+
+        public ISetValuesCollector Set(Column<byte> column, byte value);
+        public ISetValuesCollector Set(NullableColumn<byte> column, byte? value);
+
+        public ISetValuesCollector Set(Column<byte[]> column, byte[] value);
+        public ISetValuesCollector Set(NullableColumn<byte[]> column, byte[]? value);
+
+
+
+
+
+
+
+        public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum;
+        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : notnull, Enum;
+
+        public ISetValuesCollector Set<TYPE>(Column<StringKey<TYPE>> column, StringKey<TYPE> value) where TYPE : notnull;
+        public ISetValuesCollector Set<TYPE>(NullableColumn<StringKey<TYPE>> column, StringKey<TYPE>? value) where TYPE : notnull;
+
+        public ISetValuesCollector Set<TYPE>(Column<GuidKey<TYPE>> column, GuidKey<TYPE> value) where TYPE : notnull;
+        public ISetValuesCollector Set<TYPE>(NullableColumn<GuidKey<TYPE>> column, GuidKey<TYPE>? value) where TYPE : notnull;
+
+        public ISetValuesCollector Set<TYPE>(Column<ShortKey<TYPE>> column, ShortKey<TYPE> value) where TYPE : notnull;
+        public ISetValuesCollector Set<TYPE>(NullableColumn<ShortKey<TYPE>> column, ShortKey<TYPE>? value) where TYPE : notnull;
+
+        public ISetValuesCollector Set<TYPE>(Column<IntKey<TYPE>> column, IntKey<TYPE> value) where TYPE : notnull;
+        public ISetValuesCollector Set<TYPE>(NullableColumn<IntKey<TYPE>> column, IntKey<TYPE>? value) where TYPE : notnull;
+
+        public ISetValuesCollector Set<TYPE>(Column<LongKey<TYPE>> column, LongKey<TYPE> value) where TYPE : notnull;
+        public ISetValuesCollector Set<TYPE>(NullableColumn<LongKey<TYPE>> column, LongKey<TYPE>? value) where TYPE : notnull;
+
+        public ISetValuesCollector Set<TYPE>(Column<BoolValue<TYPE>> column, BoolValue<TYPE> value) where TYPE : notnull;
+        public ISetValuesCollector Set<TYPE>(NullableColumn<BoolValue<TYPE>> column, BoolValue<TYPE>? value) where TYPE : notnull;
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public ISetValuesCollector Set(AColumn<string> column, AFunction<string> value);
+
+        public ISetValuesCollector Set(AColumn<Guid> column, AFunction<Guid> value);
+
+        public ISetValuesCollector Set(AColumn<bool> column, AFunction<bool> value);
+
+        public ISetValuesCollector Set(AColumn<Bit> column, AFunction<Bit> value);
+
+        public ISetValuesCollector Set(AColumn<decimal> column, AFunction<decimal> value);
+
+        public ISetValuesCollector Set(AColumn<short> column, AFunction<short> value);
+
+        public ISetValuesCollector Set(AColumn<int> column, AFunction<int> value);
+
+        public ISetValuesCollector Set(AColumn<long> column, AFunction<long> value);
+
+        public ISetValuesCollector Set(AColumn<float> column, AFunction<float> value);
+
+        public ISetValuesCollector Set(AColumn<double> column, AFunction<double> value);
+
+        public ISetValuesCollector Set(AColumn<TimeOnly> column, AFunction<TimeOnly> value);
+
+        public ISetValuesCollector Set(AColumn<DateTime> column, AFunction<DateTime> value);
+
+        public ISetValuesCollector Set(AColumn<DateOnly> column, AFunction<DateOnly> value);
+
+        public ISetValuesCollector Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value);
+
+        public ISetValuesCollector Set(AColumn<byte> column, AFunction<byte> value);
+
+        public ISetValuesCollector Set(AColumn<byte[]> column, AFunction<byte[]> value);
+
+
+
+
+
+
+
+
+        
+
+        //public ISetValuesCollector Set(Function<string> column, string value);
+        //public ISetValuesCollector Set(NullableFunction<string> column, string? value);
+
+        //public ISetValuesCollector Set(Function<Guid> column, Guid value);
+        //public ISetValuesCollector Set(NullableFunction<Guid> column, Guid? value);
+
+        //public ISetValuesCollector Set(Function<bool> column, bool value);
+        //public ISetValuesCollector Set(NullableFunction<bool> column, bool? value);
+
+        //public ISetValuesCollector Set(Function<short> column, short value);
+        //public ISetValuesCollector Set(NullableFunction<short> column, short? value);
+
+        //public ISetValuesCollector Set(Function<int> column, int value);
+        //public ISetValuesCollector Set(NullableFunction<int> column, int? value);
+
+        //public ISetValuesCollector Set(Function<long> column, long value);
+        //public ISetValuesCollector Set(NullableFunction<long> column, long? value);
+
+        //public ISetValuesCollector Set(Function<float> column, float value);
+        //public ISetValuesCollector Set(NullableFunction<float> column, float? value);
+
+        //public ISetValuesCollector Set(Function<double> column, double value);
+        //public ISetValuesCollector Set(NullableFunction<double> column, double? value);
+
+        //public ISetValuesCollector Set(Function<DateTime> column, DateTime value);
+        //public ISetValuesCollector Set(NullableFunction<DateTime> column, DateTime? value);
+
+        //public ISetValuesCollector Set(Function<DateTimeOffset> column, DateTimeOffset value);
+        //public ISetValuesCollector Set(NullableFunction<DateTimeOffset> column, DateTimeOffset? value);
+
+        //public ISetValuesCollector Set(Function<byte> column, byte value);
+        //public ISetValuesCollector Set(NullableFunction<byte> column, byte? value);
+
+        //public ISetValuesCollector Set(Function<byte[]> column, byte[] value);
+        //public ISetValuesCollector Set(NullableFunction<byte[]> column, byte[]? value);
+
+        //public ISetValuesCollector SetEnum<ENUM>(Function<ENUM> column, ENUM value) where ENUM : notnull, Enum;
+        //public ISetValuesCollector SetEnum<ENUM>(NullableFunction<ENUM> column, ENUM? value) where ENUM : notnull, Enum;
+
+        //public ISetValuesCollector Set<TYPE>(Function<StringKey<TYPE>> column, StringKey<TYPE> value) where TYPE : notnull;
+        //public ISetValuesCollector Set<TYPE>(NullableFunction<StringKey<TYPE>> column, StringKey<TYPE>? value) where TYPE : notnull;
+
+        //public ISetValuesCollector Set<TYPE>(Function<GuidKey<TYPE>> column, GuidKey<TYPE> value) where TYPE : notnull;
+        //public ISetValuesCollector Set<TYPE>(NullableFunction<GuidKey<TYPE>> column, GuidKey<TYPE>? value) where TYPE : notnull;
+
+        //public ISetValuesCollector Set<TYPE>(Function<ShortKey<TYPE>> column, ShortKey<TYPE> value) where TYPE : notnull;
+        //public ISetValuesCollector Set<TYPE>(NullableFunction<ShortKey<TYPE>> column, ShortKey<TYPE>? value) where TYPE : notnull;
+
+        //public ISetValuesCollector Set<TYPE>(Function<IntKey<TYPE>> column, IntKey<TYPE> value) where TYPE : notnull;
+        //public ISetValuesCollector Set<TYPE>(NullableFunction<IntKey<TYPE>> column, IntKey<TYPE>? value) where TYPE : notnull;
+
+        //public ISetValuesCollector Set<TYPE>(Function<LongKey<TYPE>> column, LongKey<TYPE> value) where TYPE : notnull;
+        //public ISetValuesCollector Set<TYPE>(NullableFunction<LongKey<TYPE>> column, LongKey<TYPE>? value) where TYPE : notnull;
+
+        //public ISetValuesCollector Set<TYPE>(Function<BoolValue<TYPE>> column, BoolValue<TYPE> value) where TYPE : notnull;
+        //public ISetValuesCollector Set<TYPE>(NullableFunction<BoolValue<TYPE>> column, BoolValue<TYPE>? value) where TYPE : notnull;
     }
 }

@@ -78,21 +78,23 @@ namespace QueryLiteTest.Tests {
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 QueryResult<IntKey<AllTypes>> result = Query.Insert(table)
-                    .Set(table.Guid, new NEWID())
-                    .Set(table.String, info.String)
-                    .Set(table.SmallInt, info.SmallInt)
-                    .Set(table.Int, info.Int)
-                    .Set(table.BigInt, info.BigInt)
-                    .Set(table.Decimal, info.Decimal)
-                    .Set(table.Float, info.Float)
-                    .Set(table.Double, info.Double)
-                    .Set(table.Boolean, info.Boolean)
-                    .Set(table.Bytes, info.Bytes)
-                    .Set(table.DateTime, new GETDATE())
-                    .Set(table.DateTimeOffset, new SYSDATETIMEOFFSET())
-                    .Set(table.Enum, info.Enum)
-                    .Set(table.DateOnly, info.DateOnly)
-                    .Set(table.TimeOnly, info.TimeOnly)
+                    .Values(values => values
+                        .Set(table.Guid, new NEWID())
+                        .Set(table.String, info.String)
+                        .Set(table.SmallInt, info.SmallInt)
+                        .Set(table.Int, info.Int)
+                        .Set(table.BigInt, info.BigInt)
+                        .Set(table.Decimal, info.Decimal)
+                        .Set(table.Float, info.Float)
+                        .Set(table.Double, info.Double)
+                        .Set(table.Boolean, info.Boolean)
+                        .Set(table.Bytes, info.Bytes)
+                        .Set(table.DateTime, new GETDATE())
+                        .Set(table.DateTimeOffset, new SYSDATETIMEOFFSET())
+                        .Set(table.Enum, info.Enum)
+                        .Set(table.DateOnly, info.DateOnly)
+                        .Set(table.TimeOnly, info.TimeOnly)
+                    )
                     .Execute(
                         result => result.Get(table.Id),
                         transaction,
