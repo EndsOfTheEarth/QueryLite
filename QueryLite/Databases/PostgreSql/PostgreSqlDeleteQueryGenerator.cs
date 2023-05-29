@@ -33,7 +33,10 @@ namespace QueryLite.Databases.PostgreSql {
             if(template.Joins != null) {
                 throw new Exception("Delete join syntax is not supported by PostgreSql");
             }
-            StringBuilder sql = new StringBuilder("DELETE FROM ");
+
+            StringBuilder sql = StringBuilderCache.Acquire();
+            
+            sql.Append("DELETE FROM ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
@@ -65,7 +68,7 @@ namespace QueryLite.Databases.PostgreSql {
                     PostgreSqlHelper.AppendColumnName(sql, column);
                 }
             }
-            return sql.ToString();
+            return StringBuilderCache.ToStringAndRelease(sql);
         }
     }
 }

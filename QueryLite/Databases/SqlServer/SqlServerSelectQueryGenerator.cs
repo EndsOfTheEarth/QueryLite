@@ -39,7 +39,7 @@ namespace QueryLite.Databases.SqlServer {
                 template = template.ParentUnion;
             }
 
-            StringBuilder sql = new StringBuilder(capacity: 256);
+            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
             while(true) {
 
@@ -80,7 +80,7 @@ namespace QueryLite.Databases.SqlServer {
                     break;
                 }
             }
-            return sql.ToString();
+            return StringBuilderCache.ToStringAndRelease(sql);
         }
 
         private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {

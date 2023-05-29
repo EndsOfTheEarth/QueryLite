@@ -29,7 +29,9 @@ namespace QueryLite.Databases.SqlServer {
 
         string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
 
-            StringBuilder sql = new StringBuilder("TRUNCATE TABLE ");
+            StringBuilder sql = StringBuilderCache.Acquire();
+
+            sql.Append("TRUNCATE TABLE ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
@@ -38,7 +40,7 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append('.');
             }
             SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
-            return sql.ToString();
+            return StringBuilderCache.ToStringAndRelease(sql);
         }
     }
 }
