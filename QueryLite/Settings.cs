@@ -63,13 +63,13 @@ namespace QueryLite {
         /// <summary>
         /// Enable caching of StringBuilder objects to help reduce memory allocation when generating SQL queries.
         /// </summary>
-        public static bool EnableStringBuilderCacching { get; set; } = true;
+        public static bool EnableStringBuilderCaching { get; set; } = true;
 
         /// <summary>
         /// When the StringBuilder cache is turned on, any StringBuilders that have a capacity greater than this value will not be cached.
         /// This setting is used to limit a StringBuilder from holding on to a large amount of memory.
         /// </summary>
-        public static int StringBuilderCacheMaxCaracters { get; set; } = 20000;
+        public static int StringBuilderCacheMaxCharacters { get; set; } = 20000;
 
         public delegate void QueryExecutingDelegate(QueryExecutingDetail queryDetail);
 
