@@ -38,7 +38,7 @@ namespace QueryLite.Databases.SqlServer {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, database, CollectorMode.Update);
+                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql: null, database, CollectorMode.Update);
 
                 sql.Append(" SET ");
                 template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder

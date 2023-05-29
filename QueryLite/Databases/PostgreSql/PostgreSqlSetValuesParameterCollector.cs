@@ -34,38 +34,44 @@ namespace QueryLite.Databases.PostgreSql {
         public PostgreSqlParameters Parameters { get; } = new PostgreSqlParameters(initParams: 1);
 
         private readonly StringBuilder _sql;
-        public StringBuilder? ParamSql;
+        private StringBuilder? _paramSql;
 
         private readonly IDatabase _database;
         private readonly CollectorMode _collectorMode;
 
         private int _counter;
 
-        public PostgreSqlSetValuesParameterCollector(StringBuilder sql, IDatabase database, CollectorMode collectorMode) {
+        public PostgreSqlSetValuesParameterCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode collectorMode) {
 
             _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
-
-            if(_collectorMode == CollectorMode.Insert) {
-                ParamSql = new StringBuilder();
-            }
+            _paramSql = paramSql;
         }
 
         private ISetValuesCollector AddParameter(IColumn column, NpgsqlDbType dbType, object? value) {
+
+            string paramName;
+
+            if(ParamNameCache.ParamNames.Length < _counter) {
+                paramName = ParamNameCache.ParamNames[_counter];
+            }
+            else {
+                paramName = $"@{_counter}";
+            }
+
+            _counter++;
 
             if(_collectorMode == CollectorMode.Insert) {
 
                 if(_counter > 0) {
                     _sql.Append(',');
-                    ParamSql!.Append(',');
+                    _paramSql!.Append(',');
                 }
-
-                string paramName = $"@{_counter++}";
 
                 PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
 
-                ParamSql!.Append(paramName);
+                _paramSql!.Append(paramName);
 
                 if(value == null) {
                     value = DBNull.Value;
@@ -77,8 +83,6 @@ namespace QueryLite.Databases.PostgreSql {
                 if(_counter > 0) {
                     _sql.Append(',');
                 }
-
-                string paramName = $"@{_counter++}";
 
                 PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
                 _sql.Append('=').Append(paramName);
@@ -97,11 +101,11 @@ namespace QueryLite.Databases.PostgreSql {
 
                 if(_counter > 0) {
                     _sql.Append(',');
-                    ParamSql!.Append(',');
+                    _paramSql!.Append(',');
                 }
                 _counter++;
                 PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
-                ParamSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
+                _paramSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
 
