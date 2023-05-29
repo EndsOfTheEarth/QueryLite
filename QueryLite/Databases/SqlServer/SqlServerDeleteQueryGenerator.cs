@@ -30,27 +30,7 @@ namespace QueryLite.Databases.SqlServer {
 
         string IDeleteQueryGenerator.GetSql(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
 
-            StringBuilder? outputClause = null;
-
-            if(template.ReturningColumns?.Count > 0) {
-
-                outputClause = new StringBuilder();
-
-                outputClause.Append(" OUTPUT ");
-
-                for(int index = 0; index < template.ReturningColumns.Count; index++) {
-
-                    IColumn column = template.ReturningColumns[index];
-
-                    if(index > 0) {
-                        outputClause.Append(',');
-                    }
-                    outputClause.Append("DELETED.");
-                    SqlServerHelper.AppendColumnName(outputClause, column);
-                }
-            }
-
-            StringBuilder sql = new StringBuilder(capacity: 256);
+            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
             bool useAlias = template.Joins?.Count != 0;
 
@@ -61,9 +41,8 @@ namespace QueryLite.Databases.SqlServer {
 
                 sql.Append("DELETE ").Append(template.Table.Alias);
 
-                if(outputClause != null) {
-                    sql.Append(outputClause);
-                }
+                GenerateOutputCaluse(sql, template);
+                
                 sql.Append(" FROM ");
 
                 string schemaName = database.SchemaMap(template.Table.SchemaName);
@@ -74,7 +53,7 @@ namespace QueryLite.Databases.SqlServer {
                 }
                 SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
-                sql.Append(" AS ").Append(template.Table.Alias).Append(' ');                
+                sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
             }
             else {
 
@@ -88,10 +67,7 @@ namespace QueryLite.Databases.SqlServer {
                 }
                 SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
-
-                if(outputClause != null) {
-                    sql.Append(outputClause);
-                }
+                GenerateOutputCaluse(sql, template);
             }
 
             if(template.Joins != null) {
@@ -120,7 +96,26 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append(" WHERE ");
                 template.WhereCondition.GetSql(sql, database, useAlias: useAlias, parameters);
             }
-            return sql.ToString();
+            return StringBuilderCache.ToStringAndRelease(sql);
+        }
+
+        private static void GenerateOutputCaluse(StringBuilder sql, DeleteQueryTemplate template) {
+
+            if(template.ReturningColumns?.Count > 0) {
+
+                sql.Append(" OUTPUT ");
+
+                for(int index = 0; index < template.ReturningColumns.Count; index++) {
+
+                    IColumn column = template.ReturningColumns[index];
+
+                    if(index > 0) {
+                        sql.Append(',');
+                    }
+                    sql.Append("DELETED.");
+                    SqlServerHelper.AppendColumnName(sql, column);
+                }
+            }
         }
     }
 }

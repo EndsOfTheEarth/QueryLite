@@ -29,7 +29,9 @@ namespace QueryLite.Databases.SqlServer {
 
         string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
-            StringBuilder sql = new StringBuilder("INSERT INTO ", capacity: 256);
+            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
+
+            sql.Append("INSERT INTO ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
@@ -41,8 +43,6 @@ namespace QueryLite.Databases.SqlServer {
             SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
-
-                
 
                 SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, database, CollectorMode.Insert);
 
@@ -73,7 +73,7 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append(" VALUES(").Append(valuesCollector.ParamsSql).Append(')');
 
             }
-            return sql.ToString();
+            return StringBuilderCache.ToStringAndRelease(sql);
         }
 
         private static void GetReturningSyntax(InsertQueryTemplate template, StringBuilder sql) {

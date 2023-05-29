@@ -29,7 +29,9 @@ namespace QueryLite.Databases.PostgreSql {
 
         string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
-            StringBuilder sql = new StringBuilder("INSERT INTO ");
+            StringBuilder sql = StringBuilderCache.Acquire();
+            
+            sql.Append("INSERT INTO ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
@@ -86,7 +88,7 @@ namespace QueryLite.Databases.PostgreSql {
                     }
                 }
             }
-            return sql.ToString();
+            return StringBuilderCache.ToStringAndRelease(sql);
         }
     }
 }

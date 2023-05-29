@@ -30,7 +30,9 @@ namespace QueryLite.Databases.PostgreSql {
 
         string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
-            StringBuilder sql = new StringBuilder("UPDATE ");
+            StringBuilder sql = StringBuilderCache.Acquire();
+            
+            sql.Append("UPDATE ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
@@ -115,7 +117,7 @@ namespace QueryLite.Databases.PostgreSql {
                     PostgreSqlHelper.AppendColumnName(sql, column);
                 }
             }
-            return sql.ToString();
+            return StringBuilderCache.ToStringAndRelease(sql);
         }
     }
 }

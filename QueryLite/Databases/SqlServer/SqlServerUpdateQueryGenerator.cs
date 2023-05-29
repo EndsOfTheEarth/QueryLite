@@ -30,7 +30,9 @@ namespace QueryLite.Databases.SqlServer {
 
         string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
 
-            StringBuilder sql = new StringBuilder("UPDATE ", capacity: 256);
+            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
+            
+            sql.Append("UPDATE ");
 
             sql.Append(template.Table.Alias);
 
@@ -106,7 +108,7 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append(" WHERE ");
                 template.WhereCondition.GetSql(sql, database, useAlias: true, parameters);
             }
-            return sql.ToString();
+            return StringBuilderCache.ToStringAndRelease(sql);
         }
     }
 }
