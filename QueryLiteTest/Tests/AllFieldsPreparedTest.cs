@@ -641,7 +641,6 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable table = AllTypesTable.Instance;
 
-
             IPreparedInsertQuery<AllTypesInfo> insertQuery =
                 Prepare
                 .Insert<AllTypes>(table)
@@ -665,9 +664,7 @@ namespace QueryLiteTest.Tests {
                 .Returning(inserted => new AllTypesInfo(inserted, table))
                 .Build();
 
-            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-                
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {                
 
                 QueryResult<AllTypesInfo> result = Query.Insert(table)
                     .Values(values => values
