@@ -13,7 +13,7 @@ namespace QueryLite.Databases {
 
         public static StringBuilder Acquire(int capacity = 16) {
 
-            if(Settings.EnableStringBuilderCacching &&  capacity <= Settings.StringBuilderCacheMaxCaracters) {
+            if(Settings.EnableStringBuilderCaching &&  capacity <= Settings.StringBuilderCacheMaxCharacters) {
 
                 StringBuilder? builder = InstanceA;
 
@@ -36,7 +36,7 @@ namespace QueryLite.Databases {
 
         public static void Release(StringBuilder builder) {
 
-            if(Settings.EnableStringBuilderCacching && builder.Capacity <= Settings.StringBuilderCacheMaxCaracters) {
+            if(Settings.EnableStringBuilderCaching && builder.Capacity <= Settings.StringBuilderCacheMaxCharacters) {
                 InstanceA = InstanceB;
                 InstanceB = builder;
             }
