@@ -52,8 +52,6 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            IList<IField> selectFields,
-            FieldCollector fieldCollector,
             string debugName) {
 
             DbConnection? dbConnection = null;
@@ -768,7 +766,6 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            FieldCollector fieldCollector,
             string debugName) {
 
             DbConnection? dbConnection = null;
@@ -925,7 +922,6 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            FieldCollector fieldCollector,
             string debugName) {
 
             DbConnection? dbConnection = null;
@@ -1082,8 +1078,6 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            IList<IField> selectFields,
-            FieldCollector fieldCollector,
             string debugName,
             CancellationToken cancellationToken) {
 
@@ -1368,8 +1362,6 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            IList<IField> selectFields,
-            FieldCollector fieldCollector,
             string debugName,
             CancellationToken cancellationToken) {
 

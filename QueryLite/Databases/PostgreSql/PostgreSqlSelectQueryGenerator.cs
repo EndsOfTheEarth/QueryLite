@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.SqlServer;
 using System;
 using System.Text;
 
@@ -84,39 +85,58 @@ namespace QueryLite.Databases.PostgreSql {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
+        [ThreadStatic]
+        private static PostgreSqlSelectFieldCollector? _cachedCollectorInstance;
+
         private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
+
+            if(template.SelectFunction == null && (template.NestedSelectFields == null || template.NestedSelectFields.Count == 0)) {
+                throw new Exception($"{nameof(template.SelectFunction)} and {nameof(template.NestedSelectFields)} cannot both be null or empty");
+            }
 
             sql.Append(' ');
 
-            bool isFirst = true;
+            if(template.SelectFunction != null) {
 
-            foreach(IField field in template.SelectFields) {
+                if(Settings.EnableCollectorCaching) {
 
-                if(field is IColumn column) {
-
-                    if(!isFirst) {
-                        sql.Append(',');
+                    if(_cachedCollectorInstance == null) {
+                        _cachedCollectorInstance = new PostgreSqlSelectFieldCollector(database, parameters, useAlias: useAliases, sql);
                     }
                     else {
-                        isFirst = false;
+                        _cachedCollectorInstance.Reset(database, parameters, useAlias: useAliases, sql);
                     }
-                    if(useAliases) {
-                        sql.Append(column.Table.Alias).Append('.');
-                    }
-                    PostgreSqlHelper.AppendColumnName(sql, column);
-                }
-                else if(field is IFunction function) {
-
-                    if(!isFirst) {
-                        sql.Append(',');
-                    }
-                    else {
-                        isFirst = false;
-                    }
-                    sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    template.SelectFunction(_cachedCollectorInstance);
+                    _cachedCollectorInstance.Clear();
                 }
                 else {
-                    throw new Exception($"Unknown field type. Type = { field }");
+                    template.SelectFunction(new PostgreSqlSelectFieldCollector(database, parameters, useAlias: useAliases, sql));
+                }
+            }
+            else {
+
+                for(int index = 0; index < template.NestedSelectFields!.Count; index++) {
+
+                    if(index > 0) {
+                        sql.Append(',');
+                    }
+
+                    IField field = template.NestedSelectFields[index];
+
+                    if(field is IColumn column) {
+
+                        if(useAliases) {
+                            sql.Append(column.Table.Alias).Append('.');
+                        }
+                        SqlServerHelper.AppendColumnName(sql, column);
+                    }
+                    else if(field is IFunction function) {
+
+                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    }
+                    else {
+                        throw new Exception($"Unkown field type. Type = {field}");
+                    }
                 }
             }
         }

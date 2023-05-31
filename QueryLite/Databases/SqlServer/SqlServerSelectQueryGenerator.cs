@@ -47,7 +47,7 @@ namespace QueryLite.Databases.SqlServer {
 
                 if(template.IsDistinct) {
                     sql.Append(" DISTINCT");
-                }
+                }                
 
                 bool useAliases = template.Joins != null && template.Joins.Count > 0;
 
@@ -83,39 +83,58 @@ namespace QueryLite.Databases.SqlServer {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
+        [ThreadStatic]
+        private static SqlServerSelectFieldCollector? _cachedCollectorInstance;
+
         private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
+            if(template.SelectFunction == null && (template.NestedSelectFields == null || template.NestedSelectFields.Count == 0)) {
+                throw new Exception($"{nameof(template.SelectFunction)} and {nameof(template.NestedSelectFields)} cannot both be null or empty");
+            }
+
             sql.Append(' ');
+            
+            if(template.SelectFunction != null) {
 
-            bool setComma = false;
+                if(Settings.EnableCollectorCaching) {
 
-            foreach(IField field in template.SelectFields) {
-
-                if(field is IColumn column) {
-
-                    if(setComma) {
-                        sql.Append(',');
+                    if(_cachedCollectorInstance == null) {
+                        _cachedCollectorInstance = new SqlServerSelectFieldCollector(database, parameters, useAlias: useAliases, sql);
                     }
                     else {
-                        setComma = true;
+                        _cachedCollectorInstance.Reset(database, parameters, useAlias: useAliases, sql);
                     }
-                    if(useAliases) {
-                        sql.Append(column.Table.Alias).Append('.');
-                    }
-                    SqlServerHelper.AppendColumnName(sql, column);
-                }
-                else if(field is IFunction function) {
-
-                    if(setComma) {
-                        sql.Append(',');
-                    }
-                    else {
-                        setComma = true;
-                    }
-                    sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    template.SelectFunction(_cachedCollectorInstance);
+                    _cachedCollectorInstance.Clear();
                 }
                 else {
-                    throw new Exception($"Unkown field type. Type = { field }");
+                    template.SelectFunction(new SqlServerSelectFieldCollector(database, parameters, useAlias: useAliases, sql));
+                }
+            }
+            else {
+
+                for(int index = 0; index < template.NestedSelectFields!.Count; index++) {
+
+                    if(index > 0) {
+                        sql.Append(',');
+                    }
+
+                    IField field = template.NestedSelectFields[index];
+
+                    if(field is IColumn column) {
+
+                        if(useAliases) {
+                            sql.Append(column.Table.Alias).Append('.');
+                        }
+                        SqlServerHelper.AppendColumnName(sql, column);
+                    }
+                    else if(field is IFunction function) {
+
+                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    }
+                    else {
+                        throw new Exception($"Unkown field type. Type = {field}");
+                    }
                 }
             }
         }

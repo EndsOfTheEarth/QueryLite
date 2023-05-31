@@ -56,7 +56,7 @@ namespace QueryLite {
         public SelectQueryTemplate<RESULT>? ParentUnion { get; private set; }
         public SelectQueryTemplate<RESULT>? ChildUnion { get; private set; }
         public UnionType? ChildUnionType { get; private set; }
-        public IList<IField> SelectFields { get; private set; }
+        public IList<IField>? NestedSelectFields { get; private set; }
         public bool IsDistinct { get; private set; }
         public int? TopRows { get; private set; }
         public ITable? FromTable { get; private set; }
@@ -79,13 +79,12 @@ namespace QueryLite {
             ArgumentNullException.ThrowIfNull(selectFunction);
 
             SelectFunction = selectFunction;
-            SelectFields = new List<IField>();
         }
         public SelectQueryTemplate(IList<IField> selectFields) {
 
             ArgumentNullException.ThrowIfNull(selectFields);
 
-            SelectFields = selectFields;
+            NestedSelectFields = selectFields;
         }
         public ITop<RESULT> Distinct {
             get {
@@ -208,15 +207,6 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            if(SelectFunction != null) {
-                SelectFunction!(fieldCollector);
-                SelectFields = fieldCollector.Fields;
-            }
-            else if(SelectFields == null || SelectFields.Count == 0) {
-                throw new Exception($"{nameof(SelectFields)} should not be null or empty at this stage");
-            }
             return database.QueryGenerator.GetSql(this, database, parameters);
         }
 
@@ -229,12 +219,6 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            SelectFunction!(fieldCollector);
-
-            SelectFields = fieldCollector.Fields;
-
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
@@ -244,12 +228,10 @@ namespace QueryLite {
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: parameters,
-                func: SelectFunction,
+                func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                selectFields: SelectFields,
-                debugName: debugName,
-                fieldCollector: fieldCollector);
+                debugName: debugName);
 
             return result;
         }
@@ -263,12 +245,6 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            SelectFunction!(fieldCollector);
-
-            SelectFields = fieldCollector.Fields;
-
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
@@ -278,11 +254,9 @@ namespace QueryLite {
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: parameters,
-                func: SelectFunction,
+                func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                selectFields: SelectFields,
-                fieldCollector: fieldCollector,
                 debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None
             );
@@ -298,12 +272,6 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            SelectFunction!(fieldCollector);
-
-            SelectFields = fieldCollector.Fields;
-
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
@@ -313,11 +281,9 @@ namespace QueryLite {
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: parameters,
-                func: SelectFunction,
+                func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                selectFields: SelectFields,
-                fieldCollector: fieldCollector,
                 debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None
             );
@@ -333,23 +299,6 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            FieldCollector fieldCollector;
-
-            SelectQueryTemplate<RESULT>? template = this;
-
-            while(template.ParentUnion != null) {
-                template = template.ParentUnion;
-                fieldCollector = new FieldCollector();
-                template.SelectFunction!(fieldCollector);
-                template.SelectFields = fieldCollector.Fields;
-            }
-
-            fieldCollector = new FieldCollector();
-
-            SelectFunction!(fieldCollector);
-
-            SelectFields = fieldCollector.Fields;
-
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
@@ -359,10 +308,9 @@ namespace QueryLite {
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: parameters,
-                func: SelectFunction,
+                func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                fieldCollector: fieldCollector,
                 debugName: debugName
             );
             return result;
@@ -377,23 +325,6 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            FieldCollector fieldCollector;
-
-            SelectQueryTemplate<RESULT?>? template = this;
-
-            while(template.ParentUnion != null) {
-                template = template.ParentUnion;
-                fieldCollector = new FieldCollector();
-                template.SelectFunction!(fieldCollector);
-                template.SelectFields = fieldCollector.Fields;
-            }
-
-            fieldCollector = new FieldCollector();
-
-            SelectFunction!(fieldCollector);
-
-            SelectFields = fieldCollector.Fields;
-
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
@@ -403,10 +334,9 @@ namespace QueryLite {
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: parameters,
-                func: SelectFunction,
+                func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                fieldCollector: fieldCollector,
                 debugName: debugName
             );
             return result;
@@ -421,23 +351,6 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            FieldCollector fieldCollector;
-
-            SelectQueryTemplate<RESULT?>? template = this;
-
-            while(template.ParentUnion != null) {
-                template = template.ParentUnion;
-                fieldCollector = new FieldCollector();
-                template.SelectFunction!(fieldCollector);
-                template.SelectFields = fieldCollector.Fields;
-            }
-
-            fieldCollector = new FieldCollector();
-
-            SelectFunction!(fieldCollector);
-
-            SelectFields = fieldCollector.Fields;
-
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
@@ -447,10 +360,9 @@ namespace QueryLite {
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: parameters,
-                func: SelectFunction,
+                func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                fieldCollector: fieldCollector,
                 debugName: debugName
             );
             return result;
@@ -465,23 +377,6 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            FieldCollector fieldCollector;
-
-            SelectQueryTemplate<RESULT?>? template = this;
-
-            while(template.ParentUnion != null) {
-                template = template.ParentUnion;
-                fieldCollector = new FieldCollector();
-                template.SelectFunction!(fieldCollector);
-                template.SelectFields = fieldCollector.Fields;
-            }
-
-            fieldCollector = new FieldCollector();
-
-            SelectFunction!(fieldCollector);
-
-            SelectFields = fieldCollector.Fields;
-
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
@@ -492,10 +387,9 @@ namespace QueryLite {
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: parameters,
-                func: SelectFunction,
+                func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                fieldCollector: fieldCollector,
                 debugName: debugName
             );
             return result;
@@ -510,23 +404,6 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            FieldCollector fieldCollector;
-
-            SelectQueryTemplate<RESULT?>? template = this;
-
-            while(template.ParentUnion != null) {
-                template = template.ParentUnion;
-                fieldCollector = new FieldCollector();
-                template.SelectFunction!(fieldCollector);
-                template.SelectFields = fieldCollector.Fields;
-            }
-
-            fieldCollector = new FieldCollector();
-
-            SelectFunction!(fieldCollector);
-
-            SelectFields = fieldCollector.Fields;
-
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
@@ -537,10 +414,9 @@ namespace QueryLite {
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: parameters,
-                func: SelectFunction,
+                func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                fieldCollector: fieldCollector,
                 debugName: debugName
             );
             return result;

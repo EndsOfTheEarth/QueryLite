@@ -147,8 +147,6 @@ namespace QueryLite {
                 func: func,
                 sql: sql,
                 queryType: QueryType.Update,
-                selectFields: fieldCollector.Fields,
-                fieldCollector: fieldCollector,
                 debugName: debugName
             );
             return result;
@@ -208,8 +206,6 @@ namespace QueryLite {
                 func: func,
                 sql: sql,
                 queryType: QueryType.Update,
-                selectFields: fieldCollector.Fields,
-                fieldCollector: fieldCollector,
                 debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None
             );
