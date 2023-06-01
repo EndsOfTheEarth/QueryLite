@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
@@ -32,6 +33,18 @@ namespace QueryLite.Databases.PostgreSql {
             _parameterBuilder = null;
             _sql = null;
             _counter = 0;
+        }
+
+        void IResultRow.Reset() {
+            
+        }
+
+        void IResultRow.ReleaseReader() {
+            
+        }
+
+        void IResultRow.Reset(DbDataReader reader) {
+            
         }
 
         private VALUE Add<VALUE>(AColumn<VALUE> column) where VALUE : notnull {
@@ -403,10 +416,6 @@ namespace QueryLite.Databases.PostgreSql {
 
         public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> column) where ENUM : notnull, Enum {
             return Add(column);
-        }
-
-        void IResultRow.Reset() {
-            throw new NotImplementedException();
         }
     }
 }

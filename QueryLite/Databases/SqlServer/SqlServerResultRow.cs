@@ -29,7 +29,7 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerResultRow : IResultRow {
 
-        private readonly SqlDataReader _reader;
+        private SqlDataReader _reader;
         private int _ordinal = -1;
 
         public SqlServerResultRow(DbDataReader reader) {
@@ -37,6 +37,17 @@ namespace QueryLite.Databases.SqlServer {
         }
 
         void IResultRow.Reset() {
+            _ordinal = -1;
+        }
+
+        void IResultRow.ReleaseReader() {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            _reader = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        }
+
+        void IResultRow.Reset(DbDataReader reader) {
+            _reader = (SqlDataReader)reader;
             _ordinal = -1;
         }
 

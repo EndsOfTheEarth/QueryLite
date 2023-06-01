@@ -23,6 +23,7 @@
  **/
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 
 namespace QueryLite {
 
@@ -45,6 +46,14 @@ namespace QueryLite {
                 columns.Add((IColumn)field);
             }
             return columns;
+        }
+
+        void IResultRow.ReleaseReader() {
+
+        }
+
+        void IResultRow.Reset(DbDataReader reader) {
+
         }
 
         public string Get(Column<string> column) {
