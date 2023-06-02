@@ -71,6 +71,11 @@ namespace QueryLite {
         /// </summary>
         public static int StringBuilderCacheMaxCharacters { get; set; } = 20000;
 
+        /// <summary>
+        /// Enable caching of collector objects to help reduce memory allocation when generating SQL queries.
+        /// </summary>
+        public static bool EnableCollectorCaching { get; set; } = true;
+
         public delegate void QueryExecutingDelegate(QueryExecutingDetail queryDetail);
 
         /// <summary>

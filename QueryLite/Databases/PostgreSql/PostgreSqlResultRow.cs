@@ -29,7 +29,7 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlResultRow : IResultRow {
 
-        private readonly NpgsqlDataReader _reader;
+        private NpgsqlDataReader _reader;
         private int _ordinal = -1;
 
         public PostgreSqlResultRow(DbDataReader reader) {
@@ -38,6 +38,17 @@ namespace QueryLite.Databases.PostgreSql {
 
         void IResultRow.Reset() {
             _ordinal = -1;
+        }
+
+        internal void Reset(DbDataReader reader) {
+            _reader = (NpgsqlDataReader)reader;
+            _ordinal = -1;
+        }
+
+        internal void ReleaseReader() {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            _reader = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         public string Get(Column<string> column) {

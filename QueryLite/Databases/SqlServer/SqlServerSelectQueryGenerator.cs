@@ -35,8 +35,8 @@ namespace QueryLite.Databases.SqlServer {
         internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters) {
 
             //We need to start with the first query template
-            while(template.ParentUnion != null) {
-                template = template.ParentUnion;
+            while(template.Extras != null && template.Extras.ParentUnion != null) {
+                template = template.Extras.ParentUnion;
             }
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
@@ -63,18 +63,18 @@ namespace QueryLite.Databases.SqlServer {
                 GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
                 GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
 
-                if(template.ChildUnion != null) {
+                if(template.Extras != null && template.Extras.ChildUnion != null) {
 
-                    if(template.ChildUnionType == UnionType.Union) {
+                    if(template.Extras.ChildUnionType == UnionType.Union) {
                         sql.Append(" UNION ");
                     }
-                    else if(template.ChildUnionType == UnionType.UnionAll) {
+                    else if(template.Extras.ChildUnionType == UnionType.UnionAll) {
                         sql.Append(" UNION ALL ");
                     }
                     else {
-                        throw new Exception($"Unknown { nameof(template.ChildUnionType) } type. Value = '{ template.ChildUnionType }'");
+                        throw new Exception($"Unknown {nameof(template.Extras.ChildUnionType)} type. Value = '{template.Extras.ChildUnionType}'");
                     }
-                    template = template.ChildUnion;
+                    template = template.Extras.ChildUnion;
                 }
                 else {
                     break;
@@ -83,39 +83,58 @@ namespace QueryLite.Databases.SqlServer {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
+        [ThreadStatic]
+        private static SqlServerSelectFieldCollector? _cachedCollectorInstance;
+
         private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
+
+            if(template.SelectFunction == null && (template.Extras == null || template.Extras.NestedSelectFields == null || template.Extras.NestedSelectFields.Count == 0)) {
+                throw new Exception($"{nameof(template.SelectFunction)} and {nameof(template.Extras.NestedSelectFields)} cannot both be null or empty");
+            }
 
             sql.Append(' ');
 
-            bool setComma = false;
+            if(template.SelectFunction != null) {
 
-            foreach(IField field in template.SelectFields) {
+                if(Settings.EnableCollectorCaching) {
 
-                if(field is IColumn column) {
-
-                    if(setComma) {
-                        sql.Append(',');
+                    if(_cachedCollectorInstance == null) {
+                        _cachedCollectorInstance = new SqlServerSelectFieldCollector(database, parameters, useAlias: useAliases, sql);
                     }
                     else {
-                        setComma = true;
+                        _cachedCollectorInstance.Reset(database, parameters, useAlias: useAliases, sql);
                     }
-                    if(useAliases) {
-                        sql.Append(column.Table.Alias).Append('.');
-                    }
-                    SqlServerHelper.AppendColumnName(sql, column);
-                }
-                else if(field is IFunction function) {
-
-                    if(setComma) {
-                        sql.Append(',');
-                    }
-                    else {
-                        setComma = true;
-                    }
-                    sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    template.SelectFunction(_cachedCollectorInstance);
+                    _cachedCollectorInstance.Clear();
                 }
                 else {
-                    throw new Exception($"Unknown field type. Type = { field }");
+                    template.SelectFunction(new SqlServerSelectFieldCollector(database, parameters, useAlias: useAliases, sql));
+                }
+            }
+            else if(template.Extras != null) {
+
+                for(int index = 0; index < template.Extras.NestedSelectFields!.Count; index++) {
+
+                    if(index > 0) {
+                        sql.Append(',');
+                    }
+
+                    IField field = template.Extras.NestedSelectFields[index];
+
+                    if(field is IColumn column) {
+
+                        if(useAliases) {
+                            sql.Append(column.Table.Alias).Append('.');
+                        }
+                        SqlServerHelper.AppendColumnName(sql, column);
+                    }
+                    else if(field is IFunction function) {
+
+                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    }
+                    else {
+                        throw new Exception($"Unknown field type. Type = {field}");
+                    }
                 }
             }
         }
@@ -146,13 +165,13 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append(" AS ").Append(template.FromTable.Alias);
             }
 
-            if(template.Hints != null && template.Hints.Length > 0) {
+            if(template.Extras != null && template.Extras.Hints != null && template.Extras.Hints.Length > 0) {
 
                 sql.Append(" WITH(");
 
                 int hintCount = 0;
 
-                foreach(SqlServerTableHint hint in template.Hints) {
+                foreach(SqlServerTableHint hint in template.Extras.Hints) {
 
                     if(hintCount > 0) {
                         sql.Append(',');
@@ -172,11 +191,10 @@ namespace QueryLite.Databases.SqlServer {
 
             foreach(IJoin join in template.Joins) {
 
-                sql.Append(join.JoinType switch
-                {
+                sql.Append(join.JoinType switch {
                     JoinType.Join => " JOIN ",
                     JoinType.LeftJoin => " LEFT JOIN ",
-                    _ => throw new Exception($"Unknown join type. Type = { join.JoinType }")
+                    _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
                 });
 
                 string schemaName = database.SchemaMap(join.Table.SchemaName);
@@ -205,13 +223,13 @@ namespace QueryLite.Databases.SqlServer {
 
         private static void GenerateGroupByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
 
-            if(template.GroupByFields != null && template.GroupByFields.Length > 0) {
+            if(template.Extras != null && template.Extras.GroupByFields != null && template.Extras.GroupByFields.Length > 0) {
 
                 sql.Append(" GROUP BY ");
 
                 bool setComma = false;
 
-                foreach(ISelectable field in template.GroupByFields) {
+                foreach(ISelectable field in template.Extras.GroupByFields) {
 
                     if(field is IColumn column) {
 
@@ -227,7 +245,7 @@ namespace QueryLite.Databases.SqlServer {
                         SqlServerHelper.AppendColumnName(sql, column);
                     }
                     else {
-                        throw new Exception($"Unknown field type. Type = { field }");
+                        throw new Exception($"Unknown field type. Type = {field}");
                     }
                 }
             }
@@ -235,9 +253,9 @@ namespace QueryLite.Databases.SqlServer {
 
         private static void GenerateHavingClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
-            if(template.HavingCondition != null) {
+            if(template.Extras != null && template.Extras.HavingCondition != null) {
                 sql.Append(" HAVING ");
-                template.HavingCondition.GetSql(sql, database, useAlias: useAliases, parameters);
+                template.Extras.HavingCondition.GetSql(sql, database, useAlias: useAliases, parameters);
             }
         }
         private static void GenerateOrderByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
@@ -270,31 +288,30 @@ namespace QueryLite.Databases.SqlServer {
                         sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
                     }
                     else {
-                        throw new Exception($"Unknown field type. Type = { field }");
-                    }                    
-                    sql.Append(orderByColumn.OrderBy switch
-                    {
+                        throw new Exception($"Unknown field type. Type = {field}");
+                    }
+                    sql.Append(orderByColumn.OrderBy switch {
                         OrderBy.ASC => " ASC",
                         OrderBy.DESC => " DESC",
                         OrderBy.Default => "",
-                        _ => throw new Exception($"Unknown { nameof(OrderBy) } type. Type: '{ field.OrderBy}'")
+                        _ => throw new Exception($"Unknown {nameof(OrderBy)} type. Type: '{field.OrderBy}'")
                     });
                 }
             }
 
-            if(template.Options != null && template.Options.Length > 0) {
+            if(template.Extras != null && template.Extras.Options != null && template.Extras.Options.Length > 0) {
 
                 sql.Append(" OPTION (");
 
                 bool setComma = false;
 
-                if(!string.IsNullOrEmpty(template.OptionLabelName)) {
+                if(!string.IsNullOrEmpty(template.Extras.OptionLabelName)) {
 
-                    sql.Append("LABEL = '").Append(Helpers.EscapeForSql(template.OptionLabelName)).Append('\'');
+                    sql.Append("LABEL = '").Append(Helpers.EscapeForSql(template.Extras.OptionLabelName)).Append('\'');
                     setComma = true;
                 }
 
-                foreach(SqlServerQueryOption option in template.Options) {
+                foreach(SqlServerQueryOption option in template.Extras.Options) {
 
                     if(setComma) {
                         sql.Append(',');

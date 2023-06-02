@@ -21,16 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.PostgreSql.Collectors;
+using System;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlInsertQueryGenerator : IInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
+        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
-            
+
             sql.Append("INSERT INTO ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
@@ -44,9 +46,7 @@ namespace QueryLite.Databases.PostgreSql {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                StringBuilder paramSql = StringBuilderCache.Acquire();
-
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql: paramSql, database, CollectorMode.Insert);
+                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, database, CollectorMode.Insert);
 
                 sql.Append('(');
                 template.ValuesCollector!(valuesCollector);
@@ -54,10 +54,8 @@ namespace QueryLite.Databases.PostgreSql {
 
                 parameters = valuesCollector.Parameters;
 
-                sql.Append(paramSql);
+                sql.Append(valuesCollector.ParamSql);
                 sql.Append(')');
-
-                StringBuilderCache.Release(paramSql);
             }
             else {
 
@@ -73,24 +71,15 @@ namespace QueryLite.Databases.PostgreSql {
                 sql.Append(')');
             }
 
-            {
-                if(template.ReturningFields != null && template.ReturningFields.Count > 0) {
+            if(outputFunc != null) {
 
-                    sql.Append(" RETURNING ");
+                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: false);
 
-                    bool first = true;
+                sql.Append(" RETURNING ");
 
-                    foreach(IColumn column in template.ReturningFields) {
+                outputFunc(collector);
 
-                        if(!first) {
-                            sql.Append(',');
-                        }
-                        else {
-                            first = false;
-                        }
-                        PostgreSqlHelper.AppendColumnName(sql, column);
-                    }
-                }
+                PostgreSqlReturningCollectorCache.Release(collector);
             }
             return StringBuilderCache.ToStringAndRelease(sql);
         }

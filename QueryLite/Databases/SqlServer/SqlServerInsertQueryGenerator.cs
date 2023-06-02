@@ -21,13 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.SqlServer.Collectors;
+using System;
 using System.Text;
 
 namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerInsertQueryGenerator : IInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
+        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
@@ -44,9 +46,7 @@ namespace QueryLite.Databases.SqlServer {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                StringBuilder paramSql = StringBuilderCache.Acquire();
-
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql: paramSql, database, CollectorMode.Insert);
+                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, database, CollectorMode.Insert);
 
                 sql.Append('(');
                 
@@ -56,11 +56,9 @@ namespace QueryLite.Databases.SqlServer {
 
                 parameters = valuesCollector.Parameters;
 
-                GetReturningSyntax(template, sql);
+                GetReturningSyntax(template, sql, outputFunc);
 
-                sql.Append(" VALUES(").Append(paramSql).Append(')');
-
-                StringBuilderCache.Release(paramSql);
+                sql.Append(" VALUES(").Append(valuesCollector.ParamSql).Append(')');
             }
             else {
 
@@ -72,7 +70,7 @@ namespace QueryLite.Databases.SqlServer {
 
                 parameters = null;                
 
-                GetReturningSyntax(template, sql);
+                GetReturningSyntax(template, sql, outputFunc);
 
                 sql.Append(" VALUES(").Append(valuesCollector.ParamsSql).Append(')');
 
@@ -80,25 +78,17 @@ namespace QueryLite.Databases.SqlServer {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GetReturningSyntax(InsertQueryTemplate template, StringBuilder sql) {
+        private static void GetReturningSyntax<RESULT>(InsertQueryTemplate template, StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
 
-            if(template.ReturningFields != null && template.ReturningFields.Count > 0) {
+            if(outputFunc != null) {
 
-                sql.Append(" OUTPUT");
+                SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
 
-                bool first = true;
+                sql.Append(" OUTPUT ");
 
-                foreach(IColumn column in template.ReturningFields) {
+                outputFunc(collector);
 
-                    if(!first) {
-                        sql.Append(',');
-                    }
-                    else {
-                        first = false;
-                    }
-                    sql.Append(" INSERTED.");
-                    SqlServerHelper.AppendColumnName(sql, column);
-                }
+                SqlServerReturningCollectorCache.Release(collector);
             }
         }
     }

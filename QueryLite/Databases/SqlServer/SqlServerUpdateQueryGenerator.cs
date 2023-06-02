@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.SqlServer.Collectors;
 using System;
 using System.Text;
 
@@ -28,7 +29,7 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
+        string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
             
@@ -55,20 +56,15 @@ namespace QueryLite.Databases.SqlServer {
                 parameters = null;
             }
 
-            if(template.ReturningColumns?.Count > 0) {
+            if(outputFunc != null) {
+
+                SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
 
                 sql.Append(" OUTPUT ");
 
-                for(int index = 0; index < template.ReturningColumns.Count; index++) {
+                outputFunc(collector);
 
-                    IColumn column = template.ReturningColumns[index];
-
-                    if(index > 0) {
-                        sql.Append(',');
-                    }
-                    sql.Append(" INSERTED.");     //Note INSERTED returns the updated value
-                    SqlServerHelper.AppendColumnName(sql, column);
-                }
+                SqlServerReturningCollectorCache.Release(collector);
             }
 
             sql.Append(" FROM ");

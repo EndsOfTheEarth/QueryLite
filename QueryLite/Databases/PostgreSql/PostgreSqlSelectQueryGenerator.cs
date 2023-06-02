@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.SqlServer;
 using System;
 using System.Text;
 
@@ -35,8 +36,8 @@ namespace QueryLite.Databases.PostgreSql {
         internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters) {
 
             //We need to start with the first query template
-            while(template.ParentUnion != null) {
-                template = template.ParentUnion;
+            while(template.Extras != null && template.Extras.ParentUnion != null) {
+                template = template.Extras.ParentUnion;
             }
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
@@ -62,20 +63,20 @@ namespace QueryLite.Databases.PostgreSql {
                 GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
                 GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
                 GenerateLimitClause(sql, template);
-                GenerateForCaluse(sql, template, useAliases: useAliases);
+                GenerateForClause(sql, template, useAliases: useAliases);
 
-                if(template.ChildUnion != null) {
+                if(template.Extras != null && template.Extras.ChildUnion != null) {
 
-                    if(template.ChildUnionType == UnionType.Union) {
+                    if(template.Extras.ChildUnionType == UnionType.Union) {
                         sql.Append(" UNION ");
                     }
-                    else if(template.ChildUnionType == UnionType.UnionAll) {
+                    else if(template.Extras.ChildUnionType == UnionType.UnionAll) {
                         sql.Append(" UNION ALL ");
                     }
                     else {
-                        throw new Exception($"Unknown { nameof(template.ChildUnionType) } type. Value { template.ChildUnionType }");
+                        throw new Exception($"Unknown { nameof(template.Extras.ChildUnionType) } type. Value { template.Extras.ChildUnionType }");
                     }
-                    template = template.ChildUnion;
+                    template = template.Extras.ChildUnion;
                 }
                 else {
                     break;
@@ -84,39 +85,58 @@ namespace QueryLite.Databases.PostgreSql {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
+        [ThreadStatic]
+        private static PostgreSqlSelectFieldCollector? _cachedCollectorInstance;
+
         private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
+
+            if(template.SelectFunction == null && (template.Extras == null || template.Extras.NestedSelectFields == null || template.Extras.NestedSelectFields.Count == 0)) {
+                throw new Exception($"{nameof(template.SelectFunction)} and {nameof(template.Extras.NestedSelectFields)} cannot both be null or empty");
+            }
 
             sql.Append(' ');
 
-            bool isFirst = true;
+            if(template.SelectFunction != null) {
 
-            foreach(IField field in template.SelectFields) {
+                if(Settings.EnableCollectorCaching) {
 
-                if(field is IColumn column) {
-
-                    if(!isFirst) {
-                        sql.Append(',');
+                    if(_cachedCollectorInstance == null) {
+                        _cachedCollectorInstance = new PostgreSqlSelectFieldCollector(database, parameters, useAlias: useAliases, sql);
                     }
                     else {
-                        isFirst = false;
+                        _cachedCollectorInstance.Reset(database, parameters, useAlias: useAliases, sql);
                     }
-                    if(useAliases) {
-                        sql.Append(column.Table.Alias).Append('.');
-                    }
-                    PostgreSqlHelper.AppendColumnName(sql, column);
-                }
-                else if(field is IFunction function) {
-
-                    if(!isFirst) {
-                        sql.Append(',');
-                    }
-                    else {
-                        isFirst = false;
-                    }
-                    sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    template.SelectFunction(_cachedCollectorInstance);
+                    _cachedCollectorInstance.Clear();
                 }
                 else {
-                    throw new Exception($"Unknown field type. Type = { field }");
+                    template.SelectFunction(new PostgreSqlSelectFieldCollector(database, parameters, useAlias: useAliases, sql));
+                }
+            }
+            else if(template.Extras != null) {
+
+                for(int index = 0; index < template.Extras.NestedSelectFields!.Count; index++) {
+
+                    if(index > 0) {
+                        sql.Append(',');
+                    }
+
+                    IField field = template.Extras.NestedSelectFields[index];
+
+                    if(field is IColumn column) {
+
+                        if(useAliases) {
+                            sql.Append(column.Table.Alias).Append('.');
+                        }
+                        SqlServerHelper.AppendColumnName(sql, column);
+                    }
+                    else if(field is IFunction function) {
+
+                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                    }
+                    else {
+                        throw new Exception($"Unknown field type. Type = {field}");
+                    }
                 }
             }
         }
@@ -183,13 +203,13 @@ namespace QueryLite.Databases.PostgreSql {
 
         private static void GenerateGroupByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
 
-            if(template.GroupByFields != null && template.GroupByFields.Length > 0) {
+            if(template.Extras != null && template.Extras.GroupByFields != null && template.Extras.GroupByFields.Length > 0) {
 
                 sql.Append(" GROUP BY ");
 
                 bool isFirst = true;
 
-                foreach(ISelectable field in template.GroupByFields) {
+                foreach(ISelectable field in template.Extras.GroupByFields) {
 
                     if(field is IColumn column) {
 
@@ -213,9 +233,9 @@ namespace QueryLite.Databases.PostgreSql {
 
         private static void GenerateHavingClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
-            if(template.HavingCondition != null) {
+            if(template.Extras != null && template.Extras.HavingCondition != null) {
                 sql.Append(" HAVING ");
-                template.HavingCondition.GetSql(sql, database, useAlias: useAliases, parameters);
+                template.Extras.HavingCondition.GetSql(sql, database, useAlias: useAliases, parameters);
             }
         }
 
@@ -240,7 +260,7 @@ namespace QueryLite.Databases.PostgreSql {
 
                     if(field is IColumn column) {
 
-                        if(template.ParentUnion == null && useAliases) {  //Cannot alias in the order by column when this is a union query
+                        if((template.Extras == null || template.Extras.ParentUnion == null) && useAliases) {  //Cannot alias in the order by column when this is a union query
                             sql.Append(column.Table.Alias).Append('.');
                         }
                         PostgreSqlHelper.AppendColumnName(sql, column);
@@ -269,13 +289,13 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateForCaluse<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
+        private static void GenerateForClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
 
-            if (template.ForType != null) {
+            if (template.Extras != null && template.Extras.ForType != null) {
 
                 sql.Append(" FOR ");
 
-                switch (template.ForType.Value) {
+                switch (template.Extras.ForType.Value) {
                     case ForType.UPDATE:
                         sql.Append("UPDATE");
                         break;
@@ -289,15 +309,15 @@ namespace QueryLite.Databases.PostgreSql {
                         sql.Append("KEY SHARE");
                         break;
                     default:
-                        throw new Exception($"Unknown { nameof(template.ForType) } type { template.ForType }");
+                        throw new Exception($"Unknown { nameof(template.Extras.ForType) } type { template.Extras.ForType }");
                 }
 
-                if (template.OfTables != null && template.OfTables.Length > 0) {
+                if (template.Extras.OfTables != null && template.Extras.OfTables.Length > 0) {
 
                     sql.Append(" OF ");
 
                     bool isFirst = true;
-                    foreach (ITable table in template.OfTables) {
+                    foreach (ITable table in template.Extras.OfTables) {
 
                         if(!isFirst) {
                             sql.Append(',');
@@ -311,9 +331,9 @@ namespace QueryLite.Databases.PostgreSql {
                     }
                 }
 
-                if (template.WaitType != null) {
+                if (template.Extras.WaitType != null) {
 
-                    switch (template.WaitType.Value) {
+                    switch (template.Extras.WaitType.Value) {
                         case WaitType.WAIT:
                             //Do nothing as this is the default value
                             break;
@@ -324,7 +344,7 @@ namespace QueryLite.Databases.PostgreSql {
                             sql.Append(" SKIP LOCKED");
                             break;
                         default:
-                            throw new Exception($"Unknown { nameof(template.WaitType) } type { template.WaitType }");
+                            throw new Exception($"Unknown { nameof(template.Extras.WaitType) } type { template.Extras.WaitType }");
                     }
                 }
             }

@@ -33,8 +33,6 @@ namespace QueryLite {
         public ITable Table { get; }
         public Action<ISetValuesCollector>? ValuesCollector;
 
-        public IList<IColumn>? ReturningFields { get; private set; }
-
         public InsertQueryTemplate(ITable table) {
 
             ArgumentNullException.ThrowIfNull(table);
@@ -51,7 +49,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.InsertGenerator.GetSql(this, database, useParameters: Parameters.Off, out _);
+            return database.InsertGenerator.GetSql<bool>(this, database, useParameters: Parameters.Off, out _, outputFunc: null);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
@@ -65,9 +63,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
-
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
+            string sql = database.InsertGenerator.GetSql<bool>(this, database, useParameters, out IParametersBuilder? parameters, outputFunc: null);
 
             NonQueryResult result = QueryExecutor.ExecuteNonQuery(
                 database: database,
@@ -91,17 +87,9 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortInsert;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            func(fieldCollector);
-
-            ReturningFields = fieldCollector.GetFieldsAsColumns();
-
             IDatabase database = transaction.Database;
 
-            //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
-
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters, func);
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -111,8 +99,6 @@ namespace QueryLite {
                 func: func,
                 sql: sql,
                 queryType: QueryType.Insert,
-                selectFields: fieldCollector.Fields,
-                fieldCollector: fieldCollector,
                 debugName: debugName
             );
             return result;
@@ -129,9 +115,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
-
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
+            string sql = database.InsertGenerator.GetSql<bool>(this, database, useParameters, out IParametersBuilder? parameters, outputFunc: null);
 
             Task<NonQueryResult> result = QueryExecutor.ExecuteNonQueryAsync(
                 database: database,
@@ -156,17 +140,9 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortInsert;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            func(fieldCollector);
-
-            ReturningFields = fieldCollector.GetFieldsAsColumns();
-
             IDatabase database = transaction.Database;
 
-            //IParameters? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: ValueFields!.Count) : null;
-
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
+            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters, func);
 
             Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
                 database: database,
@@ -176,8 +152,6 @@ namespace QueryLite {
                 func: func,
                 sql: sql,
                 queryType: QueryType.Insert,
-                selectFields: fieldCollector.Fields,
-                fieldCollector: fieldCollector,
                 debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None
             );
