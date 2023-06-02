@@ -34,7 +34,6 @@ namespace QueryLite {
         public Action<ISetValuesCollector>? ValuesCollector;
         public IList<IJoin>? Joins { get; private set; }
         public ICondition? WhereCondition { get; private set; }
-        public IList<IColumn>? ReturningColumns { get; private set; }
 
         public UpdateQueryTemplate(ITable table) {
 
@@ -91,7 +90,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.UpdateGenerator.GetSql(this, database, Parameters.Off, out _);
+            return database.UpdateGenerator.GetSql<bool>(this, database, Parameters.Off, out _, outputFunc: null);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
@@ -105,7 +104,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
+            string sql = database.UpdateGenerator.GetSql<bool>(this, database, useParameters, out IParametersBuilder? parameters, outputFunc: null);
 
             NonQueryResult result = QueryExecutor.ExecuteNonQuery(
                 database: database,
@@ -129,15 +128,9 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortUpdate;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            func(fieldCollector);
-
-            ReturningColumns = fieldCollector.GetFieldsAsColumns();
-
             IDatabase database = transaction.Database;
 
-            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
+            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters, func);
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -163,7 +156,7 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
+            string sql = database.UpdateGenerator.GetSql<bool>(this, database, useParameters, out IParametersBuilder? parameters, outputFunc: null);
 
             Task<NonQueryResult> result = QueryExecutor.ExecuteNonQueryAsync(
                 database: database,
@@ -188,15 +181,9 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortUpdate;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            func(fieldCollector);
-
-            ReturningColumns = fieldCollector.GetFieldsAsColumns();
-
             IDatabase database = transaction.Database;
 
-            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters);
+            string sql = database.UpdateGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters, func);
 
             Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
                 database: database,

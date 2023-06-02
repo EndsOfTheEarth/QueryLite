@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.PostgreSql.Collectors;
 using System;
 using System.Text;
 
@@ -28,7 +29,7 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters) {
+        string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
             
@@ -102,20 +103,15 @@ namespace QueryLite.Databases.PostgreSql {
                 template.WhereCondition.GetSql(sql, database, useAlias: true, parameters);
             }
 
-            if(template.ReturningColumns != null && template.ReturningColumns.Count > 0) {
+            if(outputFunc != null) {
+
+                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: true);
 
                 sql.Append(" RETURNING ");
 
-                for(int index = 0; index < template.ReturningColumns.Count; index++) {
+                outputFunc(collector);
 
-                    IColumn column = template.ReturningColumns[index];
-
-                    if(index > 0) {
-                        sql.Append(',');
-                    }
-                    sql.Append(template.Table.Alias).Append('.');
-                    PostgreSqlHelper.AppendColumnName(sql, column);
-                }
+                PostgreSqlReturningCollectorCache.Release(collector);
             }
             return StringBuilderCache.ToStringAndRelease(sql);
         }

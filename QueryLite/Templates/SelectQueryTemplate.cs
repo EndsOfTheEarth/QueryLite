@@ -37,7 +37,7 @@ namespace QueryLite {
         internal string GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IUpdateQueryGenerator {
-        internal string GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters);
+        internal string GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IDeleteQueryGenerator {
         internal string GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
