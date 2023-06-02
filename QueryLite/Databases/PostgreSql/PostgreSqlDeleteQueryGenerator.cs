@@ -21,14 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.PostgreSql.Collectors;
 using System;
+using System.Reflection.Emit;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlDeleteQueryGenerator : IDeleteQueryGenerator {
 
-        string IDeleteQueryGenerator.GetSql(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
+        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT> outputFunc) {
 
             if(template.Joins != null) {
                 throw new Exception("Delete join syntax is not supported by PostgreSql");
@@ -52,22 +54,17 @@ namespace QueryLite.Databases.PostgreSql {
                 sql.Append(" WHERE ");
                 template.WhereCondition.GetSql(sql, database, useAlias: false, parameters);
             }
+            if(outputFunc != null) {
 
-            if(template.ReturningColumns?.Count > 0) {
+                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql);
 
                 sql.Append(" RETURNING ");
 
-                for(int index = 0; index < template.ReturningColumns.Count; index++) {
+                outputFunc(collector);
 
-                    IColumn column = template.ReturningColumns[index];
-
-                    if(index > 0) {
-                        sql.Append(',');
-                    }
-                    sql.Append(template.Table.Alias).Append('.');
-                    PostgreSqlHelper.AppendColumnName(sql, column);
-                }
+                PostgreSqlReturningCollectorCache.Release(collector);
             }
+            
             return StringBuilderCache.ToStringAndRelease(sql);
         }
     }

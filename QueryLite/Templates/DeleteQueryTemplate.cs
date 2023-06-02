@@ -33,7 +33,8 @@ namespace QueryLite {
         public ITable Table { get; }
         public IList<IJoin>? Joins { get; private set; }
         public ICondition? WhereCondition { get; private set; }
-        public IList<IColumn>? ReturningColumns { get; private set; }
+
+        //public IList<IColumn>? ReturningColumns { get; private set; }
 
         public DeleteQueryTemplate(ITable table) {
 
@@ -93,7 +94,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.DeleteGenerator.GetSql(this, database, parameters : null);
+            return database.DeleteGenerator.GetSql<bool>(this, database, parameters : null, outputFunc: null);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
@@ -109,7 +110,7 @@ namespace QueryLite {
 
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
-            string sql = database.DeleteGenerator.GetSql(this, database, parameters);
+            string sql = database.DeleteGenerator.GetSql<bool>(this, database, parameters, outputFunc: null);
 
             NonQueryResult result = QueryExecutor.ExecuteNonQuery(
                 database: database,
@@ -134,17 +135,11 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortDelete;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            func(fieldCollector);
-
-            ReturningColumns = fieldCollector.GetFieldsAsColumns();
-
             IDatabase database = transaction.Database;
 
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
-            string sql = database.DeleteGenerator.GetSql(this, database, parameters);
+            string sql = database.DeleteGenerator.GetSql(this, database, parameters, func);
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -172,7 +167,7 @@ namespace QueryLite {
 
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
-            string sql = database.DeleteGenerator.GetSql(this, database, parameters);
+            string sql = database.DeleteGenerator.GetSql<bool>(this, database, parameters, outputFunc: null);
 
             Task<NonQueryResult> result = QueryExecutor.ExecuteNonQueryAsync(
                 database: database,
@@ -197,17 +192,11 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortDelete;
             }
 
-            FieldCollector fieldCollector = new FieldCollector();
-
-            func(fieldCollector);
-
-            ReturningColumns = fieldCollector.GetFieldsAsColumns();
-
             IDatabase database = transaction.Database;
 
             IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
-            string sql = database.DeleteGenerator.GetSql(this, database, parameters);
+            string sql = database.DeleteGenerator.GetSql(this, database, parameters, func);
 
             Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
                 database: database,

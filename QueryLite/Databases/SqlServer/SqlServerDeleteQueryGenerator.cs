@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases.SqlServer.Collectors;
 using System;
 using System.Text;
 
@@ -28,7 +29,7 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerDeleteQueryGenerator : IDeleteQueryGenerator {
 
-        string IDeleteQueryGenerator.GetSql(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
+        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT> outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
@@ -41,7 +42,7 @@ namespace QueryLite.Databases.SqlServer {
 
                 sql.Append("DELETE ").Append(template.Table.Alias);
 
-                GenerateOutputCaluse(sql, template);
+                GenerateOutputCaluse(sql, outputFunc);
                 
                 sql.Append(" FROM ");
 
@@ -67,7 +68,7 @@ namespace QueryLite.Databases.SqlServer {
                 }
                 SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
-                GenerateOutputCaluse(sql, template);
+                GenerateOutputCaluse(sql, outputFunc);
             }
 
             if(template.Joins != null) {
@@ -99,22 +100,17 @@ namespace QueryLite.Databases.SqlServer {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GenerateOutputCaluse(StringBuilder sql, DeleteQueryTemplate template) {
+        private static void GenerateOutputCaluse<RESULT>(StringBuilder sql, Func<IResultRow, RESULT> outputFunc) {
 
-            if(template.ReturningColumns?.Count > 0) {
+            if(outputFunc != null) {
+
+                SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: true, sql);
 
                 sql.Append(" OUTPUT ");
 
-                for(int index = 0; index < template.ReturningColumns.Count; index++) {
+                outputFunc(collector);
 
-                    IColumn column = template.ReturningColumns[index];
-
-                    if(index > 0) {
-                        sql.Append(',');
-                    }
-                    sql.Append("DELETED.");
-                    SqlServerHelper.AppendColumnName(sql, column);
-                }
+                SqlServerReturningCollectorCache.Release(collector);
             }
         }
     }
