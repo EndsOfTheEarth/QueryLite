@@ -46,7 +46,9 @@ namespace QueryLite.Databases.SqlServer {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, database, CollectorMode.Insert);
+                StringBuilder paramSql = StringBuilderCache.Acquire();
+
+                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert);
 
                 sql.Append('(');
                 
@@ -58,7 +60,9 @@ namespace QueryLite.Databases.SqlServer {
 
                 GetReturningSyntax(template, sql, outputFunc);
 
-                sql.Append(" VALUES(").Append(valuesCollector.ParamSql).Append(')');
+                sql.Append(" VALUES(").Append(paramSql).Append(')');
+
+                StringBuilderCache.Release(paramSql);
             }
             else {
 

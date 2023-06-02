@@ -59,7 +59,7 @@ namespace QueryLite.Databases.SqlServer {
                 paramName = $"@{_counter}";
             }
 
-            _counter++;
+            
 
             if(_collectorMode == CollectorMode.Insert) {
 
@@ -67,6 +67,8 @@ namespace QueryLite.Databases.SqlServer {
                     _sql.Append(',');
                     _paramSql!.Append(',');
                 }
+
+                _counter++;
 
                 SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
 
@@ -82,6 +84,8 @@ namespace QueryLite.Databases.SqlServer {
                 if(_counter > 0) {
                     _sql.Append(',');
                 }
+
+                _counter++;
 
                 SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
                 _sql.Append('.');
@@ -104,7 +108,9 @@ namespace QueryLite.Databases.SqlServer {
                     _sql.Append(',');
                     _paramSql!.Append(',');
                 }
+
                 _counter++;
+
                 SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
                 _paramSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
@@ -113,6 +119,7 @@ namespace QueryLite.Databases.SqlServer {
                 if(_counter > 0) {
                     _sql.Append(',');
                 }
+
                 _counter++;
 
                 SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);

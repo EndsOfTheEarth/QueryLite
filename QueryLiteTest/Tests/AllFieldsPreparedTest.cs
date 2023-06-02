@@ -641,28 +641,28 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable table = AllTypesTable.Instance;
 
-            IPreparedInsertQuery<AllTypesInfo> insertQuery =
-                Prepare
-                .Insert<AllTypes>(table)
-                .Values(values => values
-                    .Set(table.Guid, (info) => info.Guid)
-                    .Set(table.String, (info) => info.String)
-                    .Set(table.SmallInt, (info) => info.SmallInt)
-                    .Set(table.Int, (info) => info.Int)
-                    .Set(table.BigInt, (info) => info.BigInt)
-                    .Set(table.Decimal, (info) => info.Decimal)
-                    .Set(table.Float, (info) => info.Float)
-                    .Set(table.Double, (info) => info.Double)
-                    .Set(table.Boolean, (info) => info.Boolean)
-                    .Set(table.Bytes, (info) => info.Bytes)
-                    .Set(table.DateTime, (info) => info.DateTime)
-                    .Set(table.DateTimeOffset, (info) => info.DateTimeOffset)
-                    .Set(table.Enum, (info) => info.Enum)
-                    .Set(table.DateOnly, (info) => info.DateOnly)
-                    .Set(table.TimeOnly, (info) => info.TimeOnly)
-                )
-                .Returning(inserted => new AllTypesInfo(inserted, table))
-                .Build();
+            //IPreparedInsertQuery<AllTypes, AllTypesInfo> insertQuery =
+            //    Prepare
+            //    .Insert<AllTypes>(table)
+            //    .Values(values => values
+            //        .Set(table.Guid, (info) => info.Guid)
+            //        .Set(table.String, (info) => info.String)
+            //        .Set(table.SmallInt, (info) => info.SmallInt)
+            //        .Set(table.Int, (info) => info.Int)
+            //        .Set(table.BigInt, (info) => info.BigInt)
+            //        .Set(table.Decimal, (info) => info.Decimal)
+            //        .Set(table.Float, (info) => info.Float)
+            //        .Set(table.Double, (info) => info.Double)
+            //        .Set(table.Boolean, (info) => info.Boolean)
+            //        .Set(table.Bytes, (info) => info.Bytes)
+            //        .Set(table.DateTime, (info) => info.DateTime)
+            //        .Set(table.DateTimeOffset, (info) => info.DateTimeOffset)
+            //        .Set(table.Enum, (info) => info.Enum)
+            //        .Set(table.DateOnly, (info) => info.DateOnly)
+            //        .Set(table.TimeOnly, (info) => info.TimeOnly)
+            //    )
+            //    .Returning(inserted => new AllTypesInfo(inserted, table))
+            //    .Build(TestDatabase.Database);
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {                
 

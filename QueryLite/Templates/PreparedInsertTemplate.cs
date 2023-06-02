@@ -21,21 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Databases.SqlServer;
 using QueryLite.Databases;
-using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Data;
-using System.Diagnostics.Metrics;
-using System.Data.Common;
+using QueryLite.Databases.SqlServer;
 using QueryLite.PreparedQuery;
-using System.Xml.Linq;
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Text;
 
 namespace QueryLite {
 
-    internal class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IIPreparedInsertReturning<PARAMETERS> {
+    internal class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IIPreparedInsertReturning<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
@@ -50,17 +46,20 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedInsertBuild<RESULT> Returning<RESULT>(Func<IResultRow, RESULT>? returning) {
+        public IPreparedInsertBuild<PARAMETERS, RESULT> Returning<RESULT>(Func<IResultRow, RESULT>? returning) {
             return new PreparedInsertTemplate<PARAMETERS, RESULT>(Table, SetValues!, returning);
         }
 
-        public IPreparedInsertQuery<PARAMETERS> Build() {
+        public IPreparedInsertQuery<PARAMETERS> Build(IDatabase database) {
 
-            new SqlServerInsertQueryGenerator().GetSql(this);
+
+            string sql = new SqlServerInsertQueryGenerator().GetSql(this, database, out List<ISetParameter<PARAMETERS>> insertParameters);
+
+            return new SqlServerPreparedInsertQuery<PARAMETERS>(sql, insertParameters);
         }
     }
 
-    internal class PreparedInsertTemplate<PARAMETERS, RESULT> : IPreparedInsertBuild<RESULT> {
+    internal class PreparedInsertTemplate<PARAMETERS, RESULT> : IPreparedInsertBuild<PARAMETERS, RESULT> {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
@@ -72,16 +71,9 @@ namespace QueryLite {
             Returning = returning;
         }
 
-        public IPreparedInsertQuery<RESULT> Build() {
-            
+        public IPreparedInsertQuery<PARAMETERS, RESULT> Build(IDatabase database) {
+            throw new NotImplementedException();
         }
-    }
-
-
-
-
-    public interface IPreparedInsertQuery<PARAMETERS> {
-
     }
 
     internal class SqlServerPreparedInsertQuery<PARAMETERS> : IPreparedInsertQuery<PARAMETERS> {
@@ -103,7 +95,7 @@ namespace QueryLite {
 
     internal sealed class SqlServerInsertQueryGenerator {
 
-        public string GetSql<PARAMETERS>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, Parameters useParameters, out List<ISetParameter<PARAMETERS>> parameters) {
+        public string GetSql<PARAMETERS>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
@@ -211,8 +203,8 @@ namespace QueryLite {
             else {
                 paramName = $"@{count}";
             }
-            
-            InsertParameters.Add(new SqlServerSetParameter<PARAMETERS>(name: paramName, (Func<PARAMETERS, object>) func, setParameterFunc));
+
+            InsertParameters.Add(new SqlServerSetParameter<PARAMETERS>(name: paramName, (Func<PARAMETERS, object>)func, setParameterFunc));
 
             if(_collectorMode == CollectorMode.Insert) {
 

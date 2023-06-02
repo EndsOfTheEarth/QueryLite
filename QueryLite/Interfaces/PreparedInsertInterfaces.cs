@@ -42,17 +42,17 @@ namespace QueryLite {
 
     public interface IIPreparedInsertReturning<PARAMETERS> : IPreparedInsertBuild<PARAMETERS> {
 
-        IPreparedInsertBuild<RESULT> Returning<RESULT>(Func<IResultRow, RESULT>? func);
+        IPreparedInsertBuild<PARAMETERS, RESULT> Returning<RESULT>(Func<IResultRow, RESULT>? func);
     }
 
     public interface IPreparedInsertBuild<PARAMETERS> {
 
-        IPreparedInsertQuery<PARAMETERS> Build();
+        IPreparedInsertQuery<PARAMETERS> Build(IDatabase database);
     }
 
     public interface IPreparedInsertBuild<PARAMETERS, RESULT> {
 
-        IPreparedInsertQuery<PARAMETERS, RESULT> Build();
+        IPreparedInsertQuery<PARAMETERS, RESULT> Build(IDatabase database);
     }
 
     public interface IPreparedInsertQuery<PARAMETERS> {
