@@ -111,8 +111,21 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
-            throw new NotImplementedException();
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
+                database: transaction.Database,
+                transaction: transaction,
+                cancellationToken: cancellationToken ?? CancellationToken.None,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,                
+                parameters: parameters,
+                setParameters: _insertParameters,
+                outputFunc: _outputFunc,
+                sql: _sql,
+                queryType: QueryType.Insert,
+                debugName: debugName
+            );
+            return result;
         }
     }
 
