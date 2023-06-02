@@ -23,56 +23,44 @@
  **/
 using QueryLite.Databases;
 using QueryLite.Databases.SqlServer;
+using QueryLite.Databases.SqlServer.Collectors;
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IIPreparedInsertReturning<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> {
+    internal class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
-        public List<IField>? ReturningFields;
 
         public PreparedInsertTemplate(ITable table) {
             Table = table;
         }
 
-        public IIPreparedInsertReturning<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values) {
+        public IPreparedInsertBuild<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values) {
             SetValues = values;
             return this;
         }
 
-        public IPreparedInsertBuild<PARAMETERS, RESULT> Returning<RESULT>(Func<IResultRow, RESULT>? returning) {
-            return new PreparedInsertTemplate<PARAMETERS, RESULT>(Table, SetValues!, returning);
-        }
-
         public IPreparedInsertQuery<PARAMETERS> Build(IDatabase database) {
 
-
-            string sql = new SqlServerInsertQueryGenerator().GetSql(this, database, out List<ISetParameter<PARAMETERS>> insertParameters);
+            string sql = new SqlServerInsertQueryGenerator().GetSql<PARAMETERS, bool>(this, database, out List<ISetParameter<PARAMETERS>> insertParameters, outputFunc: null);
 
             return new SqlServerPreparedInsertQuery<PARAMETERS>(sql, insertParameters);
         }
-    }
 
-    internal class PreparedInsertTemplate<PARAMETERS, RESULT> : IPreparedInsertBuild<PARAMETERS, RESULT> {
+        public IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> outputFunc, IDatabase database) {
 
-        public ITable Table { get; }
-        public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
-        public Func<IResultRow, RESULT>? Returning { get; }
+            string sql = new SqlServerInsertQueryGenerator().GetSql(this, database, out List<ISetParameter<PARAMETERS>> insertParameters, outputFunc: outputFunc);
 
-        public PreparedInsertTemplate(ITable table, Action<IPreparedSetValuesCollector<PARAMETERS>>? setValues, Func<IResultRow, RESULT>? returning) {
-            Table = table;
-            SetValues = setValues;
-            Returning = returning;
-        }
-
-        public IPreparedInsertQuery<PARAMETERS, RESULT> Build(IDatabase database) {
-            throw new NotImplementedException();
+            return new SqlServerPreparedInsertQuery<PARAMETERS, RESULT>(sql, insertParameters, outputFunc);
         }
     }
 
@@ -86,16 +74,52 @@ namespace QueryLite {
             _insertParameters = insertParameters;
         }
 
-        public void Execute() {
+        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+            throw new NotImplementedException();
+        }
 
+        public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+            throw new NotImplementedException();
+        }
+    }
 
+    internal class SqlServerPreparedInsertQuery<PARAMETERS, RESULT> : IPreparedInsertQuery<PARAMETERS, RESULT> {
+
+        private string _sql;
+        private List<ISetParameter<PARAMETERS>> _insertParameters;
+        private Func<IResultRow, RESULT> _outputFunc;
+
+        public SqlServerPreparedInsertQuery(string sql, List<ISetParameter<PARAMETERS>> insertParameters, Func<IResultRow, RESULT> outputFunc) {
+            _sql = sql;
+            _insertParameters = insertParameters;
+            _outputFunc = outputFunc;
+        }
+
+        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: _insertParameters,
+                outputFunc: _outputFunc,
+                sql: _sql,
+                queryType: QueryType.Insert,
+                debugName: debugName
+            );
+            return result;
+        }
+
+        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+            throw new NotImplementedException();
         }
     }
 
 
     internal sealed class SqlServerInsertQueryGenerator {
 
-        public string GetSql<PARAMETERS>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters) {
+        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
@@ -122,7 +146,7 @@ namespace QueryLite {
 
             parameters = valuesCollector.InsertParameters;
 
-            GetReturningSyntax(template, sql);
+            GetReturningSyntax(template, sql, outputFunc);
 
             sql.Append(" VALUES(").Append(paramSql).Append(')');
 
@@ -131,25 +155,17 @@ namespace QueryLite {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GetReturningSyntax<PARAMETERS>(PreparedInsertTemplate<PARAMETERS> template, StringBuilder sql) {
+        private static void GetReturningSyntax<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
 
-            if(template.ReturningFields != null && template.ReturningFields.Count > 0) {
+            if(outputFunc != null) {
 
-                sql.Append(" OUTPUT");
+                SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
 
-                bool first = true;
+                sql.Append(" OUTPUT ");
 
-                foreach(IColumn column in template.ReturningFields) {
+                outputFunc(collector);
 
-                    if(!first) {
-                        sql.Append(',');
-                    }
-                    else {
-                        first = false;
-                    }
-                    sql.Append(" INSERTED.");
-                    SqlServerHelper.AppendColumnName(sql, column);
-                }
+                SqlServerReturningCollectorCache.Release(collector);
             }
         }
     }
@@ -158,15 +174,15 @@ namespace QueryLite {
 
         DbParameter CreateParameter(PARAMETERS parameters);
     }
-    internal class SqlServerSetParameter<PARAMETERS> : ISetParameter<PARAMETERS> {
+    internal class SqlServerSetParameter<PARAMETERS, TYPE> : ISetParameter<PARAMETERS> {
 
-        public SqlServerSetParameter(string name, Func<PARAMETERS, object> getValueFunc, CreateParameterDelegate createParameter) {
+        public SqlServerSetParameter(string name, Func<PARAMETERS, TYPE> getValueFunc, CreateParameterDelegate createParameter) {
             Name = name;
             GetValueFunc = getValueFunc;
             _createParameter = createParameter;
         }
         public string Name { get; }
-        public Func<PARAMETERS, object> GetValueFunc { get; }
+        public Func<PARAMETERS, TYPE> GetValueFunc { get; }
         public CreateParameterDelegate _createParameter { get; }
 
         DbParameter ISetParameter<PARAMETERS>.CreateParameter(PARAMETERS parameters) {
@@ -191,7 +207,7 @@ namespace QueryLite {
             _collectorMode = mode;
         }
 
-        private IPreparedSetValuesCollector<PARAMETERS> AddParameter(IColumn column, object func, CreateParameterDelegate setParameterFunc) {
+        private IPreparedSetValuesCollector<PARAMETERS> AddParameter<TYPE>(IColumn column, Func<PARAMETERS, TYPE> func, CreateParameterDelegate setParameterFunc) {
 
             string paramName;
 
@@ -204,7 +220,7 @@ namespace QueryLite {
                 paramName = $"@{count}";
             }
 
-            InsertParameters.Add(new SqlServerSetParameter<PARAMETERS>(name: paramName, (Func<PARAMETERS, object>)func, setParameterFunc));
+            InsertParameters.Add(new SqlServerSetParameter<PARAMETERS, TYPE>(name: paramName, func, setParameterFunc));
 
             if(_collectorMode == CollectorMode.Insert) {
 

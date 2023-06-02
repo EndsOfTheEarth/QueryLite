@@ -30,24 +30,19 @@ namespace QueryLite {
     public static class Prepare {
 
         public static IPreparedInsertSet<PARAMETERS> Insert<PARAMETERS>(ITable table) {
-            throw new NotImplementedException();
+            return new PreparedInsertTemplate<PARAMETERS>(table);
         }
     }
 
-
     public interface IPreparedInsertSet<PARAMETERS> {
 
-        IIPreparedInsertReturning<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
-    }
-
-    public interface IIPreparedInsertReturning<PARAMETERS> : IPreparedInsertBuild<PARAMETERS> {
-
-        IPreparedInsertBuild<PARAMETERS, RESULT> Returning<RESULT>(Func<IResultRow, RESULT>? func);
+        IPreparedInsertBuild<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
     }
 
     public interface IPreparedInsertBuild<PARAMETERS> {
 
         IPreparedInsertQuery<PARAMETERS> Build(IDatabase database);
+        IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT>? returningFunc, IDatabase database);
     }
 
     public interface IPreparedInsertBuild<PARAMETERS, RESULT> {
@@ -57,14 +52,14 @@ namespace QueryLite {
 
     public interface IPreparedInsertQuery<PARAMETERS> {
 
-        //NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        //Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
     }
 
     public interface IPreparedInsertQuery<PARAMETERS, RESULT> {
 
-        //QueryResult<RESULT> Execute(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        //Task<QueryResult<RESULT>> ExecuteAsync(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
     }
 
     public interface IPreparedSetValuesCollector<PARAMETERS> {

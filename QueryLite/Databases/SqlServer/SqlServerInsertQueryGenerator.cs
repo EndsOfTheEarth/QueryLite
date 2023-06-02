@@ -58,7 +58,7 @@ namespace QueryLite.Databases.SqlServer {
 
                 parameters = valuesCollector.Parameters;
 
-                GetReturningSyntax(template, sql, outputFunc);
+                GetReturningSyntax(sql, outputFunc);
 
                 sql.Append(" VALUES(").Append(paramSql).Append(')');
 
@@ -74,7 +74,7 @@ namespace QueryLite.Databases.SqlServer {
 
                 parameters = null;                
 
-                GetReturningSyntax(template, sql, outputFunc);
+                GetReturningSyntax(sql, outputFunc);
 
                 sql.Append(" VALUES(").Append(valuesCollector.ParamsSql).Append(')');
 
@@ -82,7 +82,7 @@ namespace QueryLite.Databases.SqlServer {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GetReturningSyntax<RESULT>(InsertQueryTemplate template, StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+        private static void GetReturningSyntax<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
 
             if(outputFunc != null) {
 
