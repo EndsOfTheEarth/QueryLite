@@ -34,7 +34,7 @@ namespace QueryLite {
         internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters);
     }
     internal interface IInsertQueryGenerator {
-        internal string GetSql(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters);
+        internal string GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IUpdateQueryGenerator {
         internal string GetSql(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters);

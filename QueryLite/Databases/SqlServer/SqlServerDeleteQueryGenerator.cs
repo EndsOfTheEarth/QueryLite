@@ -29,7 +29,7 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerDeleteQueryGenerator : IDeleteQueryGenerator {
 
-        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT> outputFunc) {
+        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
@@ -100,7 +100,7 @@ namespace QueryLite.Databases.SqlServer {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GenerateOutputCaluse<RESULT>(StringBuilder sql, Func<IResultRow, RESULT> outputFunc) {
+        private static void GenerateOutputCaluse<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
 
             if(outputFunc != null) {
 

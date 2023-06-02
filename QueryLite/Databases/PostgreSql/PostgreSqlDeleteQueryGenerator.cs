@@ -56,7 +56,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
             if(outputFunc != null) {
 
-                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql);
+                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: true);
 
                 sql.Append(" RETURNING ");
 
