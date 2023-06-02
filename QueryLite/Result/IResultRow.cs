@@ -22,17 +22,12 @@
  * SOFTWARE.
  **/
 using System;
-using System.Data.Common;
 
 namespace QueryLite {
 
     public interface IResultRow {
 
         internal void Reset();
-
-        internal void ReleaseReader();
-
-        internal void Reset(DbDataReader reader);
 
         public string Get(Column<string> column);
         public string? Get(NullableColumn<string> column);

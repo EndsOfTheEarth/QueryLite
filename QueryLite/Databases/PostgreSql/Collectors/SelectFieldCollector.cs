@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using System;
-using System.Data.Common;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
@@ -59,15 +58,7 @@ namespace QueryLite.Databases.PostgreSql {
         }
 
         void IResultRow.Reset() {
-            
-        }
 
-        void IResultRow.ReleaseReader() {
-            
-        }
-
-        void IResultRow.Reset(DbDataReader reader) {
-            
         }
 
         private VALUE Add<VALUE>(AColumn<VALUE> column) where VALUE : notnull {

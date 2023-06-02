@@ -23,7 +23,7 @@ namespace QueryLite.Databases {
 
                     if(resultRow != null) {
                         SqlServerInstance = null;
-                        ((IResultRow)resultRow).Reset(reader);
+                        resultRow.Reset(reader);
                         return resultRow;
                     }
                 }
@@ -37,7 +37,7 @@ namespace QueryLite.Databases {
 
                     if(resultRow != null) {
                         PostgreSqlInstance = null;
-                        ((IResultRow)resultRow).Reset(reader);
+                        resultRow.Reset(reader);
                         return resultRow;
                     }
                 }
@@ -51,10 +51,12 @@ namespace QueryLite.Databases {
         public static void Release(DatabaseType databaseType, IResultRow resultRow) {
 
             if(databaseType == DatabaseType.SqlServer) {
-                SqlServerInstance = (SqlServerResultRow?)resultRow;
+                SqlServerInstance = (SqlServerResultRow)resultRow;
+                SqlServerInstance.ReleaseReader();
             }
             else if(databaseType == DatabaseType.PostgreSql) {
-                PostgreSqlInstance = (PostgreSqlResultRow?)resultRow;
+                PostgreSqlInstance = (PostgreSqlResultRow)resultRow;
+                PostgreSqlInstance.ReleaseReader();
             }
             else {
                 throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{databaseType}'");

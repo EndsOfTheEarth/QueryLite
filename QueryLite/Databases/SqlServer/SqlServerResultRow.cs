@@ -40,13 +40,13 @@ namespace QueryLite.Databases.SqlServer {
             _ordinal = -1;
         }
 
-        void IResultRow.ReleaseReader() {
+        internal void ReleaseReader() {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             _reader = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
-        void IResultRow.Reset(DbDataReader reader) {
+        internal void Reset(DbDataReader reader) {
             _reader = (SqlDataReader)reader;
             _ordinal = -1;
         }

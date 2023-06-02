@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using System;
-using System.Data.Common;
 using System.Text;
 
 namespace QueryLite.Databases.SqlServer {
@@ -58,15 +57,7 @@ namespace QueryLite.Databases.SqlServer {
             _counter = 0;
         }
 
-        void IResultRow.ReleaseReader() {
-
-        }
-
         void IResultRow.Reset() {
-
-        }
-
-        void IResultRow.Reset(DbDataReader reader) {
 
         }
 
@@ -78,6 +69,7 @@ namespace QueryLite.Databases.SqlServer {
             else {
                 _counter++;
             }
+
             if(_useAlias) {
                 _sql!.Append(column.Table.Alias).Append('.');
             }
