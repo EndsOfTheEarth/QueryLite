@@ -22,8 +22,6 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases;
-using QueryLite.Databases.PostgreSql;
-using QueryLite.Databases.SqlServer;
 using System;
 using System.Collections.Generic;
 using System.Data;

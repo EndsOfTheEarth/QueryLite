@@ -24,7 +24,6 @@
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,29 +49,39 @@ namespace QueryLite {
         internal string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters);
     }
 
+    internal class TemplateExtra<RESULT> {
+
+        public SelectQueryTemplate<RESULT>? ParentUnion { get; internal set; }
+        public SelectQueryTemplate<RESULT>? ChildUnion { get; internal set; }
+
+        public UnionType? ChildUnionType { get; internal set; }
+
+        public IList<IField>? NestedSelectFields { get; internal set; }
+
+        public SqlServerTableHint[]? Hints { get; internal set; }
+
+        public ISelectable[]? GroupByFields { get; internal set; }
+        public ICondition? HavingCondition { get; internal set; }
+
+        public ForType? ForType { get; internal set; } = null;
+        public ITable[]? OfTables { get; internal set; } = null;
+        public WaitType? WaitType { get; internal set; } = null;
+
+        public string? OptionLabelName { get; internal set; } = null;
+        public SqlServerQueryOption[]? Options { get; internal set; } = null;
+    }
     internal sealed class SelectQueryTemplate<RESULT> : IDistinct<RESULT>, ITop<RESULT>, IFrom<RESULT>, IHint<RESULT>, IJoin<RESULT>, IWhere<RESULT>, IGroupBy<RESULT>, IHaving<RESULT>, IOrderBy<RESULT>, IFor<RESULT>, IExecute<RESULT> {
 
         public Func<IResultRow, RESULT>? SelectFunction { get; }
-        public SelectQueryTemplate<RESULT>? ParentUnion { get; private set; }
-        public SelectQueryTemplate<RESULT>? ChildUnion { get; private set; }
-        public UnionType? ChildUnionType { get; private set; }
-        public IList<IField>? NestedSelectFields { get; private set; }
+
         public bool IsDistinct { get; private set; }
         public int? TopRows { get; private set; }
-        public ITable? FromTable { get; private set; }
-        public SqlServerTableHint[]? Hints { get; private set; }
+        public ITable? FromTable { get; private set; }        
         public IList<IJoin>? Joins { get; private set; }
-        public ICondition? WhereCondition { get; private set; }
-        public ISelectable[]? GroupByFields { get; private set; }
-        public ICondition? HavingCondition { get; private set; }
+        public ICondition? WhereCondition { get; private set; }        
         public IOrderByColumn[]? OrderByFields { get; private set; }
 
-        public ForType? ForType { get; private set; } = null;
-        public ITable[]? OfTables { get; private set; } = null;
-        public WaitType? WaitType { get; private set; } = null;
-
-        public string? OptionLabelName { get; private set; } = null;
-        public SqlServerQueryOption[]? Options { get; private set; } = null;
+        public TemplateExtra<RESULT>? Extras { get; private set; }
 
         public SelectQueryTemplate(Func<IResultRow, RESULT> selectFunction) {
 
@@ -84,7 +93,10 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(selectFields);
 
-            NestedSelectFields = selectFields;
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.NestedSelectFields = selectFields;
         }
         public ITop<RESULT> Distinct {
             get {
@@ -112,7 +124,10 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(hints);
 
-            Hints = hints;
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.Hints = hints;
             return this;
         }
 
@@ -123,7 +138,7 @@ namespace QueryLite {
             Join<RESULT> join = new Join<RESULT>(JoinType.Join, table, this);
 
             if(Joins == null) {
-                Joins = new List<IJoin>();
+                Joins = new List<IJoin>(1);
             }
             Joins.Add(join);
             return join;
@@ -135,7 +150,7 @@ namespace QueryLite {
             Join<RESULT> join = new Join<RESULT>(JoinType.LeftJoin, table, this);
 
             if(Joins == null) {
-                Joins = new List<IJoin>();
+                Joins = new List<IJoin>(1);
             }
             Joins.Add(join);
             return join;
@@ -149,7 +164,10 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(groupBy);
 
-            GroupByFields = groupBy;
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.GroupByFields = groupBy;
             return this;
         }
 
@@ -157,7 +175,10 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(condition);
 
-            HavingCondition = condition;
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.HavingCondition = condition;
             return this;
         }
 
@@ -173,9 +194,12 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(ofTables);
 
-            ForType = forType;
-            OfTables = ofTables;
-            WaitType = waitType;
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.ForType = forType;
+            Extras.OfTables = ofTables;
+            Extras.WaitType = waitType;
             return this;
         }
 
@@ -186,7 +210,11 @@ namespace QueryLite {
             if(options.Length == 0) {
                 throw new ArgumentException($"{nameof(options)} cannot be empty");
             }
-            Options = options;
+
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.Options = options;
             return this;
         }
 
@@ -198,8 +226,12 @@ namespace QueryLite {
             if(options.Length == 0) {
                 throw new ArgumentException($"{nameof(options)} cannot be empty");
             }
-            OptionLabelName = labelName;
-            Options = options;
+
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.OptionLabelName = labelName;
+            Extras.Options = options;
             return this;
         }
 
@@ -427,9 +459,14 @@ namespace QueryLite {
             ArgumentNullException.ThrowIfNull(selectFunc);
 
             SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
-            template.ParentUnion = this;
-            ChildUnion = template;
-            ChildUnionType = UnionType.Union;
+            template.Extras = new TemplateExtra<RESULT>();
+            template.Extras.ParentUnion = this;
+
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.ChildUnion = template;
+            Extras.ChildUnionType = UnionType.Union;
             return template;
         }
 
@@ -438,9 +475,14 @@ namespace QueryLite {
             ArgumentNullException.ThrowIfNull(selectFunc);
 
             SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
-            template.ParentUnion = this;
-            ChildUnion = template;
-            ChildUnionType = UnionType.UnionAll;
+            template.Extras = new TemplateExtra<RESULT>();
+            template.Extras.ParentUnion = this;
+
+            if(Extras == null) {
+                Extras = new TemplateExtra<RESULT>();
+            }
+            Extras.ChildUnion = template;
+            Extras.ChildUnionType = UnionType.UnionAll;
             return template;
         }
     }
