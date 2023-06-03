@@ -21,14 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Databases.SqlServer;
 using QueryLite.PreparedQuery;
-using System.Collections.Generic;
-using System.Text;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Text;
 
-namespace QueryLite.Databases {
+namespace QueryLite.Databases.SqlServer.Collectors {
 
     internal interface ISetParameter<PARAMETERS> {
 

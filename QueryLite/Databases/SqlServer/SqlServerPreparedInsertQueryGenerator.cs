@@ -26,7 +26,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer
+{
 
     internal sealed class SqlServerPreparedInsertQueryGenerator {
 

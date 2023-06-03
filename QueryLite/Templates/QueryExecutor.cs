@@ -22,6 +22,7 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases;
+using QueryLite.Databases.SqlServer.Collectors;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,7 +31,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace QueryLite {
+namespace QueryLite
+{
 
     public enum QueryType {
         Select,
