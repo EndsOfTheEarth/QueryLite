@@ -21,12 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Databases.PostgreSql;
+using QueryLite.Databases.PostgreSql.Collectors;
 using QueryLite.Databases.SqlServer;
 using System;
 using System.Data.Common;
 
-namespace QueryLite.Databases {
+namespace QueryLite.Databases
+{
 
     internal static class SelectCollectorCache {
 
@@ -34,7 +35,7 @@ namespace QueryLite.Databases {
         private static SqlServerResultRowCollector? SqlServerInstance;
 
         [ThreadStatic]
-        private static PostgreSqlResultRow? PostgreSqlInstance;
+        private static PostgreSqlResultRowCollector? PostgreSqlInstance;
 
         public static IResultRow Acquire(DatabaseType databaseType, DbDataReader reader) {
 
@@ -56,7 +57,7 @@ namespace QueryLite.Databases {
 
                 if(Settings.EnableCollectorCaching) {
 
-                    PostgreSqlResultRow? resultRow = PostgreSqlInstance;
+                    PostgreSqlResultRowCollector? resultRow = PostgreSqlInstance;
 
                     if(resultRow != null) {
                         PostgreSqlInstance = null;
@@ -64,7 +65,7 @@ namespace QueryLite.Databases {
                         return resultRow;
                     }
                 }
-                return new PostgreSqlResultRow(reader);
+                return new PostgreSqlResultRowCollector(reader);
             }
             else {
                 throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{databaseType}'");
@@ -78,7 +79,7 @@ namespace QueryLite.Databases {
                 SqlServerInstance.ReleaseReader();
             }
             else if(databaseType == DatabaseType.PostgreSql) {
-                PostgreSqlInstance = (PostgreSqlResultRow)resultRow;
+                PostgreSqlInstance = (PostgreSqlResultRowCollector)resultRow;
                 PostgreSqlInstance.ReleaseReader();
             }
             else {

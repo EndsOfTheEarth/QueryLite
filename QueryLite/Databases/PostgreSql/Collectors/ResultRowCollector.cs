@@ -21,18 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System.Data.Common;
-using System;
 using Npgsql;
+using System;
+using System.Data.Common;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql.Collectors {
 
-    internal sealed class PostgreSqlResultRow : IResultRow {
+    internal sealed class PostgreSqlResultRowCollector : IResultRow {
 
         private NpgsqlDataReader _reader;
         private int _ordinal = -1;
 
-        public PostgreSqlResultRow(DbDataReader reader) {
+        public PostgreSqlResultRowCollector(DbDataReader reader) {
             _reader = (NpgsqlDataReader)reader;
         }
 
@@ -293,7 +293,7 @@ namespace QueryLite.Databases.PostgreSql {
             if(_reader.IsDBNull(_ordinal)) {
                 return DateOnly.MinValue;
             }
-            DateTime value =  _reader.GetDateTime(_ordinal);
+            DateTime value = _reader.GetDateTime(_ordinal);
             return DateOnly.FromDateTime(value);
         }
         public DateOnly? Get(NullableColumn<DateOnly> column) {

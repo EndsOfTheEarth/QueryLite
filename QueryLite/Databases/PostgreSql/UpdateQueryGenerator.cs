@@ -25,7 +25,8 @@ using QueryLite.Databases.PostgreSql.Collectors;
 using System;
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql
+{
 
     internal sealed class PostgreSqlUpdateQueryGenerator : IUpdateQueryGenerator {
 

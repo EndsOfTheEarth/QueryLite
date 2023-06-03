@@ -27,7 +27,7 @@ using QueryLite.PreparedQuery;
 using System;
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql.Collectors {
 
     internal class PostgreSqlSetValuesParameterCollector : ISetValuesCollector {
 
@@ -60,14 +60,14 @@ namespace QueryLite.Databases.PostgreSql {
                 paramName = $"@{_counter}";
             }
 
-            _counter++;
-
             if(_collectorMode == CollectorMode.Insert) {
 
                 if(_counter > 0) {
                     _sql.Append(',');
                     _paramSql!.Append(',');
                 }
+
+                _counter++;
 
                 PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
 
@@ -83,6 +83,8 @@ namespace QueryLite.Databases.PostgreSql {
                 if(_counter > 0) {
                     _sql.Append(',');
                 }
+
+                _counter++;
 
                 PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
                 _sql.Append('=').Append(paramName);
@@ -103,7 +105,9 @@ namespace QueryLite.Databases.PostgreSql {
                     _sql.Append(',');
                     _paramSql!.Append(',');
                 }
+
                 _counter++;
+
                 PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
                 _paramSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
@@ -112,6 +116,7 @@ namespace QueryLite.Databases.PostgreSql {
                 if(_counter > 0) {
                     _sql.Append(',');
                 }
+
                 _counter++;
 
                 PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
