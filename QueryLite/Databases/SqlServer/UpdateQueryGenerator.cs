@@ -32,7 +32,7 @@ namespace QueryLite.Databases.SqlServer {
         string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
-            
+
             sql.Append("UPDATE ");
 
             sql.Append(template.Table.Alias);
@@ -44,7 +44,7 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append(" SET ");
                 template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
 
-                parameters = valuesCollector.Parameters;                
+                parameters = valuesCollector.Parameters;
             }
             else {
 

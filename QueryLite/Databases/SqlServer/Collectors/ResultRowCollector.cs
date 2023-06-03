@@ -27,12 +27,12 @@ using System.Data.SqlClient;
 
 namespace QueryLite.Databases.SqlServer {
 
-    internal sealed class SqlServerResultRow : IResultRow {
+    internal sealed class SqlServerResultRowCollector : IResultRow {
 
         private SqlDataReader _reader;
         private int _ordinal = -1;
 
-        public SqlServerResultRow(DbDataReader reader) {
+        public SqlServerResultRowCollector(DbDataReader reader) {
             _reader = (SqlDataReader)reader;
         }
 

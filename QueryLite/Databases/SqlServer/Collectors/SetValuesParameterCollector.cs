@@ -27,7 +27,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer.Collectors {
 
     internal sealed class SqlServerSetValuesParameterCollector : ISetValuesCollector {
 
@@ -58,8 +58,6 @@ namespace QueryLite.Databases.SqlServer {
             else {
                 paramName = $"@{_counter}";
             }
-
-            
 
             if(_collectorMode == CollectorMode.Insert) {
 
