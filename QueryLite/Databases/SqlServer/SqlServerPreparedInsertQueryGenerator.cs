@@ -23,13 +23,15 @@
  **/
 using QueryLite.Databases.SqlServer.Collectors;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer
+{
 
-    internal sealed class SqlServerInsertQueryGenerator : IInsertQueryGenerator {
+    internal sealed class SqlServerPreparedInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
@@ -44,45 +46,28 @@ namespace QueryLite.Databases.SqlServer {
 
             SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
-            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
+            StringBuilder paramSql = StringBuilderCache.Acquire();
 
-                StringBuilder paramSql = StringBuilderCache.Acquire();
+            PreparedSetValuesCollector<PARAMETERS> valuesCollector = new PreparedSetValuesCollector<PARAMETERS>(sql, paramSql: paramSql, database, CollectorMode.Insert);
 
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert);
+            sql.Append('(');
 
-                sql.Append('(');
-                
-                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
-                
-                sql.Append(')');
+            template.SetValues!(valuesCollector); //Note: This outputs sql to the sql string builder
 
-                parameters = valuesCollector.Parameters;
+            sql.Append(')');
 
-                GetReturningSyntax(sql, outputFunc);
+            parameters = valuesCollector.InsertParameters;
 
-                sql.Append(" VALUES(").Append(paramSql).Append(')');
+            GetReturningSyntax(template, sql, outputFunc);
 
-                StringBuilderCache.Release(paramSql);
-            }
-            else {
+            sql.Append(" VALUES(").Append(paramSql).Append(')');
 
-                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(sql, database, CollectorMode.Insert);
+            StringBuilderCache.Release(paramSql);
 
-                sql.Append('(');
-                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
-                sql.Append(')');
-
-                parameters = null;                
-
-                GetReturningSyntax(sql, outputFunc);
-
-                sql.Append(" VALUES(").Append(valuesCollector.ParamsSql).Append(')');
-
-            }
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GetReturningSyntax<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+        private static void GetReturningSyntax<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
 
             if(outputFunc != null) {
 

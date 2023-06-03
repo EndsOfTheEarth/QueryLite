@@ -46,7 +46,9 @@ namespace QueryLite.Databases.PostgreSql {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, database, CollectorMode.Insert);
+                StringBuilder paramSql = StringBuilderCache.Acquire();
+
+                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert);
 
                 sql.Append('(');
                 template.ValuesCollector!(valuesCollector);
@@ -54,8 +56,10 @@ namespace QueryLite.Databases.PostgreSql {
 
                 parameters = valuesCollector.Parameters;
 
-                sql.Append(valuesCollector.ParamSql);
+                sql.Append(paramSql);
                 sql.Append(')');
+
+                StringBuilderCache.Release(paramSql);
             }
             else {
 

@@ -23,21 +23,20 @@
  **/
 using QueryLite.Databases.PostgreSql.Collectors;
 using System;
-using System.Reflection.Emit;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlDeleteQueryGenerator : IDeleteQueryGenerator {
 
-        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT> outputFunc) {
+        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             if(template.Joins != null) {
                 throw new Exception("Delete join syntax is not supported by PostgreSql");
             }
 
             StringBuilder sql = StringBuilderCache.Acquire();
-            
+
             sql.Append("DELETE FROM ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
@@ -64,7 +63,6 @@ namespace QueryLite.Databases.PostgreSql {
 
                 PostgreSqlReturningCollectorCache.Release(collector);
             }
-            
             return StringBuilderCache.ToStringAndRelease(sql);
         }
     }

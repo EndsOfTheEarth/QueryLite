@@ -34,37 +34,45 @@ namespace QueryLite.Databases.SqlServer {
         public SqlServerParameters Parameters { get; } = new SqlServerParameters(initParams: 1);
 
         private readonly StringBuilder _sql;
-        public StringBuilder? ParamSql;
+        private StringBuilder? _paramSql;
 
         private readonly IDatabase _database;
         private readonly CollectorMode _collectorMode;
 
         private int _counter;
 
-        public SqlServerSetValuesParameterCollector(StringBuilder sql, IDatabase database, CollectorMode collectorMode) {
+        public SqlServerSetValuesParameterCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode collectorMode) {
             _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
-
-            if(_collectorMode == CollectorMode.Insert) {
-                ParamSql = new StringBuilder();
-            }
+            _paramSql = paramSql;
         }
 
         private ISetValuesCollector AddParameter(IColumn column, SqlDbType dbType, object? value) {
+
+            string paramName;
+
+            if(ParamNameCache.ParamNames.Length < _counter) {
+                paramName = ParamNameCache.ParamNames[_counter];
+            }
+            else {
+                paramName = $"@{_counter}";
+            }
+
+            
 
             if(_collectorMode == CollectorMode.Insert) {
 
                 if(_counter > 0) {
                     _sql.Append(',');
-                    ParamSql!.Append(',');
+                    _paramSql!.Append(',');
                 }
 
-                string paramName = $"@{_counter++}";
+                _counter++;
 
                 SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
 
-                ParamSql!.Append(paramName);
+                _paramSql!.Append(paramName);
 
                 if(value == null) {
                     value = DBNull.Value;
@@ -77,7 +85,7 @@ namespace QueryLite.Databases.SqlServer {
                     _sql.Append(',');
                 }
 
-                string paramName = $"@{_counter++}";
+                _counter++;
 
                 SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
                 _sql.Append('.');
@@ -98,17 +106,20 @@ namespace QueryLite.Databases.SqlServer {
 
                 if(_counter > 0) {
                     _sql.Append(',');
-                    ParamSql!.Append(',');
+                    _paramSql!.Append(',');
                 }
+
                 _counter++;
+
                 SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
-                ParamSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
+                _paramSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
 
                 if(_counter > 0) {
                     _sql.Append(',');
                 }
+
                 _counter++;
 
                 SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
