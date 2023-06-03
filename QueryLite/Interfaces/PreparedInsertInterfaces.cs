@@ -42,7 +42,7 @@ namespace QueryLite {
     public interface IPreparedInsertBuild<PARAMETERS> {
 
         IPreparedInsertQuery<PARAMETERS> Build(IDatabase database);
-        IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT>? returningFunc, IDatabase database);
+        IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc, IDatabase database);
     }
 
     public interface IPreparedInsertBuild<PARAMETERS, RESULT> {
@@ -52,8 +52,8 @@ namespace QueryLite {
 
     public interface IPreparedInsertQuery<PARAMETERS> {
 
-        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
     }
 
     public interface IPreparedInsertQuery<PARAMETERS, RESULT> {

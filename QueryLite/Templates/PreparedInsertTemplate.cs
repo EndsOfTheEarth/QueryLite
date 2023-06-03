@@ -28,14 +28,13 @@ using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> {
+    internal sealed class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
@@ -64,26 +63,48 @@ namespace QueryLite {
         }
     }
 
-    internal class SqlServerPreparedInsertQuery<PARAMETERS> : IPreparedInsertQuery<PARAMETERS> {
+    internal sealed class SqlServerPreparedInsertQuery<PARAMETERS> : IPreparedInsertQuery<PARAMETERS> {
 
-        private string _sql;
-        private List<ISetParameter<PARAMETERS>> _insertParameters;
+        private readonly string _sql;
+        private readonly List<ISetParameter<PARAMETERS>> _insertParameters;
 
         public SqlServerPreparedInsertQuery(string sql, List<ISetParameter<PARAMETERS>> insertParameters) {
             _sql = sql;
             _insertParameters = insertParameters;
         }
 
-        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
-            throw new NotImplementedException();
+        public NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            NonQueryResult result = PreparedQueryExecutor.ExecuteNonQuery(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: _insertParameters,
+                sql: _sql,
+                queryType: QueryType.Insert,
+                debugName: debugName
+            );
+            return result;
         }
 
-        public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
-            throw new NotImplementedException();
+        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+
+            NonQueryResult result = await PreparedQueryExecutor.ExecuteNonQueryAsync(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: _insertParameters,
+                sql: _sql,
+                queryType: QueryType.Insert,
+                debugName: debugName
+            );
+            return result;
         }
     }
 
-    internal class SqlServerPreparedInsertQuery<PARAMETERS, RESULT> : IPreparedInsertQuery<PARAMETERS, RESULT> {
+    internal sealed class SqlServerPreparedInsertQuery<PARAMETERS, RESULT> : IPreparedInsertQuery<PARAMETERS, RESULT> {
 
         private string _sql;
         private List<ISetParameter<PARAMETERS>> _insertParameters;
@@ -117,7 +138,7 @@ namespace QueryLite {
                 database: transaction.Database,
                 transaction: transaction,
                 cancellationToken: cancellationToken ?? CancellationToken.None,
-                timeout: timeout ?? TimeoutLevel.ShortInsert,                
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
                 parameters: parameters,
                 setParameters: _insertParameters,
                 outputFunc: _outputFunc,
@@ -187,7 +208,7 @@ namespace QueryLite {
 
         DbParameter CreateParameter(PARAMETERS parameters);
     }
-    internal class SqlServerSetParameter<PARAMETERS, TYPE> : ISetParameter<PARAMETERS> {
+    internal sealed class SqlServerSetParameter<PARAMETERS, TYPE> : ISetParameter<PARAMETERS> {
 
         public SqlServerSetParameter(string name, Func<PARAMETERS, TYPE> getValueFunc, CreateParameterDelegate createParameter) {
             Name = name;
@@ -203,7 +224,7 @@ namespace QueryLite {
         }
     }
 
-    internal class PreparedSetValuesCollector<PARAMETERS> : IPreparedSetValuesCollector<PARAMETERS> {
+    internal sealed class PreparedSetValuesCollector<PARAMETERS> : IPreparedSetValuesCollector<PARAMETERS> {
 
         public List<ISetParameter<PARAMETERS>> InsertParameters { get; } = new List<ISetParameter<PARAMETERS>>();
 
@@ -249,6 +270,7 @@ namespace QueryLite {
             }
             else if(_collectorMode == CollectorMode.Update) {
 
+                throw new NotImplementedException();
                 /*
                 if(_counter > 0) {
                     _sql.Append(',');
@@ -295,6 +317,7 @@ namespace QueryLite {
             }
             else if(_collectorMode == CollectorMode.Update) {
 
+                throw new NotImplementedException();
                 /*
                 if(_counter > 0) {
                     _sql.Append(',');

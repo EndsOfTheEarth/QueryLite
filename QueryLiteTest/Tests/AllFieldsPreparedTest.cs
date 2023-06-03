@@ -1,3 +1,4 @@
+using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
@@ -271,6 +272,59 @@ namespace QueryLiteTest.Tests {
                 Assert.IsTrue(boolValue == null);
                 Assert.IsFalse(boolValue != null);
             }
+        }
+
+        private static IPreparedInsertQuery<AllTypes> _insertQueryWithoutReturning =
+            Prepare
+            .Insert<AllTypes>(AllTypesTable.Instance)
+            .Values(values => values
+                .Set(AllTypesTable.Instance.Guid, (info) => info.Guid)
+                .Set(AllTypesTable.Instance.String, (info) => info.String)
+                .Set(AllTypesTable.Instance.SmallInt, (info) => info.SmallInt)
+                .Set(AllTypesTable.Instance.Int, (info) => info.Int)
+                .Set(AllTypesTable.Instance.BigInt, (info) => info.BigInt)
+                .Set(AllTypesTable.Instance.Decimal, (info) => info.Decimal)
+                .Set(AllTypesTable.Instance.Float, (info) => info.Float)
+                .Set(AllTypesTable.Instance.Double, (info) => info.Double)
+                .Set(AllTypesTable.Instance.Boolean, (info) => info.Boolean)
+                .Set(AllTypesTable.Instance.Bytes, (info) => info.Bytes)
+                .Set(AllTypesTable.Instance.DateTime, (info) => info.DateTime)
+                .Set(AllTypesTable.Instance.DateTimeOffset, (info) => info.DateTimeOffset)
+                .Set(AllTypesTable.Instance.Enum, (info) => info.Enum)
+                .Set(AllTypesTable.Instance.DateOnly, (info) => info.DateOnly)
+                .Set(AllTypesTable.Instance.TimeOnly, (info) => info.TimeOnly)
+            )
+            .Build(TestDatabase.Database);
+
+        [TestMethod]
+        public void TestInsertWithoutReturning() {
+
+            AllTypes allTypes1 = GetAllTypes1();
+
+            using Transaction transaction = new Transaction(TestDatabase.Database);
+
+            NonQueryResult insertResult = _insertQueryWithoutReturning.Execute(allTypes1, transaction);
+
+            Assert.AreEqual(insertResult.RowsEffected, 1);
+
+            transaction.Commit();
+
+            AllTypesTable table = AllTypesTable.Instance;
+
+            QueryResult<AllTypesInfo> queryResult = Query
+                .Select(
+                    row => new AllTypesInfo(row, table)
+                )
+                .From(table)
+                .Execute(TestDatabase.Database);
+
+            Assert.AreEqual(queryResult.Rows.Count, 1);
+            Assert.AreEqual(queryResult.RowsEffected, 0);
+
+            AllTypesInfo row = queryResult.Rows[0];
+            allTypes1.Id = row.Id;
+
+            AssertRow(row, allTypes1);
         }
 
         [TestMethod]
@@ -635,7 +689,7 @@ namespace QueryLiteTest.Tests {
             }
         }
 
-        private static IPreparedInsertQuery<AllTypes, AllTypesInfo> insertQuery1 =
+        private static IPreparedInsertQuery<AllTypes, AllTypesInfo> _insertQuery1 =
             Prepare
             .Insert<AllTypes>(AllTypesTable.Instance)
             .Values(values => values
@@ -656,7 +710,7 @@ namespace QueryLiteTest.Tests {
                 .Set(AllTypesTable.Instance.TimeOnly, (info) => info.TimeOnly)
             )
             .Build(
-                inserted => new AllTypesInfo(inserted, AllTypesTable.Instance),
+                returning => new AllTypesInfo(returning, AllTypesTable.Instance),
                 TestDatabase.Database
             );
 
@@ -666,7 +720,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<AllTypesInfo> result = insertQuery1
+                QueryResult<AllTypesInfo> result = _insertQuery1
                     .Execute(
                         parameters: allTypes,
                         transaction,
@@ -1238,7 +1292,7 @@ namespace QueryLiteTest.Tests {
                         .Set(table.TimeOnly, info => info.TimeOnly)
                     )
                 .Build(
-                    result => new AllTypesInfo(result, table),
+                    returning => new AllTypesInfo(returning, table),
                     TestDatabase.Database
                 );
 
