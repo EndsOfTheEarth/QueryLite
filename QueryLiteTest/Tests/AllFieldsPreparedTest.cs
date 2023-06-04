@@ -289,7 +289,7 @@ namespace QueryLiteTest.Tests {
                 .Set(AllTypesTable.Instance.DateOnly, (info) => info.DateOnly)
                 .Set(AllTypesTable.Instance.TimeOnly, (info) => info.TimeOnly)
             )
-            .Build(TestDatabase.Database);
+            .Build();
 
         [TestMethod]
         public void TestInsertWithoutReturning() {
@@ -704,8 +704,7 @@ namespace QueryLiteTest.Tests {
                 .Set(AllTypesTable.Instance.TimeOnly, (info) => info.TimeOnly)
             )
             .Build(
-                returning => new AllTypesInfo(returning, AllTypesTable.Instance),
-                TestDatabase.Database
+                returning => new AllTypesInfo(returning, AllTypesTable.Instance)
             );
 
         private void InsertWithQuery(AllTypes allTypes) {
@@ -802,8 +801,7 @@ namespace QueryLiteTest.Tests {
                     .Set(table.TimeOnly, info => info.TimeOnly)
                 )
                 .Build(
-                    returning => new AllTypesInfo(returning, table),
-                    TestDatabase.Database
+                    returning => new AllTypesInfo(returning, table)
                 );
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
@@ -1280,8 +1278,7 @@ namespace QueryLiteTest.Tests {
                         .Set(table.TimeOnly, info => info.TimeOnly)
                     )
                 .Build(
-                    returning => new AllTypesInfo(returning, table),
-                    TestDatabase.Database
+                    returning => new AllTypesInfo(returning, table)
                 );
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {

@@ -34,13 +34,13 @@ namespace QueryLite {
 
     public interface IPreparedInsertBuild<PARAMETERS> {
 
-        IPreparedInsertQuery<PARAMETERS> Build(IDatabase database);
-        IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc, IDatabase database);
+        IPreparedInsertQuery<PARAMETERS> Build();
+        IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc);
     }
 
     public interface IPreparedInsertBuild<PARAMETERS, RESULT> {
 
-        IPreparedInsertQuery<PARAMETERS, RESULT> Build(IDatabase database);
+        IPreparedInsertQuery<PARAMETERS, RESULT> Build();
     }
 
     public interface IPreparedInsertQuery<PARAMETERS> {

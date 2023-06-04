@@ -43,11 +43,11 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedInsertQuery<PARAMETERS> Build(IDatabase database) {
+        public IPreparedInsertQuery<PARAMETERS> Build() {
             return new PreparedInsertQuery<PARAMETERS>(this);
         }
 
-        public IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> outputFunc, IDatabase database) {
+        public IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> outputFunc) {
             return new PreparedInsertQuery<PARAMETERS, RESULT>(this, outputFunc);
         }
     }
