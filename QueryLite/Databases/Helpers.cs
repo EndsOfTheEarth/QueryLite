@@ -24,8 +24,32 @@
 using System;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace QueryLite.Databases {
+
+    public static class SqlHelper {
+
+        public static void AppendColumnName(StringBuilder sql, IColumn column) {
+
+            if(column.Enclose || column.ColumnName.Contains(' ')) {
+                sql.Append('[').Append(column.ColumnName).Append(']');
+            }
+            else {
+                sql.Append(column.ColumnName);
+            }
+        }
+
+        public static void AppendEnclose(StringBuilder sql, string value, bool forceEnclose) {
+
+            if(forceEnclose || value.Contains(' ')) {
+                sql.Append('[').Append(value).Append(']');
+            }
+            else {
+                sql.Append(value);
+            }
+        }
+    }
 
     /// <summary>
     /// This class is used to convert an integer to a generic enum type without causing the integer to be boxed

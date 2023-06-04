@@ -49,10 +49,10 @@ namespace QueryLite.Databases.SqlServer {
                 string schemaName = database.SchemaMap(template.Table.SchemaName);
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                    SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
                     sql.Append('.');
                 }
-                SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
+                SqlHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
                 sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
             }
@@ -63,10 +63,10 @@ namespace QueryLite.Databases.SqlServer {
                 string schemaName = database.SchemaMap(template.Table.SchemaName);
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                    SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
                     sql.Append('.');
                 }
-                SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
+                SqlHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
                 GenerateOutputClause(sql, outputFunc);
             }
@@ -84,10 +84,10 @@ namespace QueryLite.Databases.SqlServer {
                     string joinSchemaName = database.SchemaMap(join.Table.SchemaName);
 
                     if(!string.IsNullOrWhiteSpace(joinSchemaName)) {
-                        SqlServerHelper.AppendEnclose(sql, joinSchemaName, forceEnclose: false);
+                        SqlHelper.AppendEnclose(sql, joinSchemaName, forceEnclose: false);
                         sql.Append('.');
                     }
-                    SqlServerHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
+                    SqlHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
                     sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
                     join.Condition.GetSql(sql, database, useAlias: true, parameters);
                 }

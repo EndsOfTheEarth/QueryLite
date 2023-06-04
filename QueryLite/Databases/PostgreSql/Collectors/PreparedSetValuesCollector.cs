@@ -67,7 +67,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                     _paramSql!.Append(',');
                 }
 
-                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
 
                 _paramSql!.Append(paramName);
 
@@ -80,9 +80,9 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                     _sql.Append(',');
                 }
 
-                SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
+                SqlHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
                 _sql.Append('.');
-                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
                 _sql.Append('=').Append(paramName);
 
                 Parameters.ParameterList.Add(new SqlParameter(parameterName: paramName, value) { SqlDbType = dbType });
@@ -114,7 +114,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                     _paramSql!.Append(',');
                 }
 
-                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
 
                 _paramSql!.Append(function.GetSql(_database, useAlias: false, parameters: null));
 
@@ -127,9 +127,9 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                     _sql.Append(',');
                 }
 
-                SqlServerHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
+                SqlHelper.AppendEnclose(_sql, column.Table.Alias, forceEnclose: false);
                 _sql.Append('.');
-                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
                 _sql.Append('=').Append(paramName);
 
                 Parameters.ParameterList.Add(new SqlParameter(parameterName: paramName, value) { SqlDbType = dbType });

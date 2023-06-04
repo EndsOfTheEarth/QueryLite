@@ -36,10 +36,10 @@ namespace QueryLite.Databases.PostgreSql {
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                PostgreSqlHelper.AppendEncase(sql, schemaName, forceEnclose: false);
+                SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
                 sql.Append('.');
             }
-            PostgreSqlHelper.AppendEncase(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
+            SqlHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
             return StringBuilderCache.ToStringAndRelease(sql);
         }

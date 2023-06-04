@@ -39,11 +39,11 @@ namespace QueryLite.Databases.SqlServer {
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
                 sql.Append('.');
             }
 
-            SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
+            SqlHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
             StringBuilder paramSql = StringBuilderCache.Acquire();
 

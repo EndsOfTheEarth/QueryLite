@@ -103,7 +103,7 @@ namespace QueryLite.Databases.SqlServer {
                     if(useAliases) {
                         sql.Append(column.Table.Alias).Append('.');
                     }
-                    SqlServerHelper.AppendColumnName(sql, column);
+                    SqlHelper.AppendColumnName(sql, column);
                 }
                 else if(field is IFunction function) {
 
@@ -137,11 +137,11 @@ namespace QueryLite.Databases.SqlServer {
             string schemaName = database.SchemaMap(template.FromTable.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
                 sql.Append('.');
             }
 
-            SqlServerHelper.AppendEnclose(sql, template.FromTable.TableName, forceEnclose: template.FromTable.Enclose);
+            SqlHelper.AppendEnclose(sql, template.FromTable.TableName, forceEnclose: template.FromTable.Enclose);
 
             if(useAliases) {
                 sql.Append(" AS ").Append(template.FromTable.Alias);
@@ -184,10 +184,10 @@ namespace QueryLite.Databases.SqlServer {
                 string schemaName = database.SchemaMap(join.Table.SchemaName);
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlServerHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                    SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
                     sql.Append('.');
                 }
-                SqlServerHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
+                SqlHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
 
                 if(useAliases) {
                     sql.Append(" AS ").Append(join.Table.Alias);
@@ -226,7 +226,7 @@ namespace QueryLite.Databases.SqlServer {
                         if(useAliases) {
                             sql.Append(column.Table.Alias).Append('.');
                         }
-                        SqlServerHelper.AppendColumnName(sql, column);
+                        SqlHelper.AppendColumnName(sql, column);
                     }
                     else {
                         throw new Exception($"Unknown field type. Type = {field}");
@@ -266,7 +266,7 @@ namespace QueryLite.Databases.SqlServer {
                         if(useAliases) {
                             sql.Append(column.Table.Alias).Append('.');
                         }
-                        SqlServerHelper.AppendColumnName(sql, column);
+                        SqlHelper.AppendColumnName(sql, column);
                     }
                     else if(field is IFunction function) {
                         sql.Append(function.GetSql(database, useAlias: useAliases, parameters: null));

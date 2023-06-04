@@ -74,7 +74,7 @@ namespace QueryLite.Databases.SqlServer {
                 _sql!.Append(column.Table.Alias).Append('.');
             }
 
-            SqlServerHelper.AppendColumnName(_sql!, column);
+            SqlHelper.AppendColumnName(_sql!, column);
 
 #pragma warning disable CS8603 // Possible null reference return.
             return default;

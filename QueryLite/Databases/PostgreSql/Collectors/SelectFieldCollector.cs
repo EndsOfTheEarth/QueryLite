@@ -73,7 +73,7 @@ namespace QueryLite.Databases.PostgreSql {
                 _sql!.Append(column.Table.Alias).Append('.');
             }
 
-            PostgreSqlHelper.AppendColumnName(_sql!, column);
+            SqlHelper.AppendColumnName(_sql!, column);
 
 #pragma warning disable CS8603 // Possible null reference return.
             return default;
