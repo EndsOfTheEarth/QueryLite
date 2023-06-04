@@ -60,21 +60,21 @@ namespace QueryLite {
 
         internal JoinType JoinType { get; }
         internal ITable Table { get; }
-        internal APreparedConditionNew<PARAMETERS> Condition { get; }
+        internal APreparedCondition<PARAMETERS> Condition { get; }
     }
 
     public interface IPreparedJoinOn<PARAMETERS, RESULT> : IPreparedJoin<PARAMETERS> {
 
-        IPreparedJoin<PARAMETERS, RESULT> On(Func<APreparedConditionNew<PARAMETERS>, APreparedConditionNew<PARAMETERS>> on);
+        IPreparedJoin<PARAMETERS, RESULT> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on);
     }
     internal sealed class PreparedJoin<PARAMETERS, RESULT> : IPreparedJoinOn<PARAMETERS, RESULT> {
 
         public JoinType JoinType { get; private set; }
         public ITable Table { get; private set; }
 
-        private APreparedConditionNew<PARAMETERS>? _condition;
+        private APreparedCondition<PARAMETERS>? _condition;
 
-        public APreparedConditionNew<PARAMETERS> Condition {
+        public APreparedCondition<PARAMETERS> Condition {
             get { return _condition!; }
         }
 
@@ -85,8 +85,8 @@ namespace QueryLite {
             Table = table;
             Template = template;
         }
-        public IPreparedJoin<PARAMETERS, RESULT> On(Func<APreparedConditionNew<PARAMETERS>, APreparedConditionNew<PARAMETERS>> on) {
-            _condition = on(new EmptyPreparedConditionNew<PARAMETERS>());
+        public IPreparedJoin<PARAMETERS, RESULT> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on) {
+            _condition = on(new EmptyPreparedCondition<PARAMETERS>());
             return Template;
         }
     }
@@ -98,7 +98,7 @@ namespace QueryLite {
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
-        IPreparedGroupBy<PARAMETERS, RESULT> Where(Func<APreparedConditionNew<PARAMETERS>, APreparedConditionNew<PARAMETERS>>? condition);
+        IPreparedGroupBy<PARAMETERS, RESULT> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>>? condition);
     }
 
     public interface IPreparedGroupBy<PARAMETERS, RESULT> : IPreparedHaving<PARAMETERS, RESULT> {
@@ -118,7 +118,7 @@ namespace QueryLite {
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
-        IPreparedOrderBy<PARAMETERS, RESULT> Having(APreparedConditionNew<PARAMETERS> condition);
+        IPreparedOrderBy<PARAMETERS, RESULT> Having(APreparedCondition<PARAMETERS> condition);
     }
 
     public interface IPreparedOrderBy<PARAMETERS, RESULT> : IPreparedFor<PARAMETERS, RESULT> {

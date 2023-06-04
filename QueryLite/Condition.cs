@@ -31,34 +31,17 @@ namespace QueryLite {
 
         void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters);
 
-        //public static ICondition And(ICondition? conditionA, ICondition conditionB) {
-        //    return conditionA != null ? new AndOrCondition(conditionA, isAnd: true, conditionB) : conditionB;
-        //}
-        //public static ICondition Or(ICondition? conditionA, ICondition conditionB) {
-        //    return conditionA != null ? new AndOrCondition(conditionA, isAnd: false, conditionB) : conditionB;
-        //}
+        public static ICondition And(ICondition? conditionA, ICondition conditionB) {
+            return conditionA != null ? new AndOrCondition(conditionA, isAnd: true, conditionB) : conditionB;
+        }
+        public static ICondition Or(ICondition? conditionA, ICondition conditionB) {
+            return conditionA != null ? new AndOrCondition(conditionA, isAnd: false, conditionB) : conditionB;
+        }
         public static ICondition operator &(ICondition pConditionA, ICondition pConditionB) {
             return new AndOrCondition(pConditionA, isAnd: true, pConditionB);
         }
         public static ICondition operator |(ICondition pConditionA, ICondition pConditionB) {
             return new AndOrCondition(pConditionA, isAnd: false, pConditionB);
-        }
-    }
-
-
-    public interface IColumnCondition : ICondition {
-
-        IColumnCondition AND(IColumnCondition pConditionB) {
-            return new AndOrConditionColumnCondition(this, isAnd: true, pConditionB);
-        }
-        IColumnCondition OR(IColumnCondition pConditionB) {
-            return new AndOrConditionColumnCondition(this, isAnd: false, pConditionB);
-        }
-        public static IColumnCondition operator &(IColumnCondition pConditionA, IColumnCondition pConditionB) {
-            return new AndOrConditionColumnCondition(pConditionA, isAnd: true, pConditionB);
-        }
-        public static IColumnCondition operator |(IColumnCondition pConditionA, IColumnCondition pConditionB) {
-            return new AndOrConditionColumnCondition(pConditionA, isAnd: false, pConditionB);
         }
     }
 
@@ -86,13 +69,13 @@ namespace QueryLite {
     /*
      * These additional condition classes are used to allow conditions between columns to be used in the prepared query functionality but disallow conditions that have fixed values.
      */
-    internal sealed class AndOrConditionColumnCondition : IColumnCondition {
+    internal sealed class AndOrConditionColumnCondition : ICondition {
 
-        public IColumnCondition ConditionA { get; private set; }
+        public ICondition ConditionA { get; private set; }
         public bool IsAnd { get; private set; }
-        public IColumnCondition ConditionB { get; private set; }
+        public ICondition ConditionB { get; private set; }
 
-        public AndOrConditionColumnCondition(IColumnCondition conditionA, bool isAnd, IColumnCondition conditionB) {
+        public AndOrConditionColumnCondition(ICondition conditionA, bool isAnd, ICondition conditionB) {
             ConditionA = conditionA;
             IsAnd = isAnd;
             ConditionB = conditionB;
@@ -181,7 +164,7 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class NullNotNullCondition<TYPE> : IColumnCondition where TYPE : notnull {
+    internal sealed class NullNotNullCondition<TYPE> : ICondition where TYPE : notnull {
 
         private IColumn Left { get; }
         private bool IsNull { get; }
@@ -215,9 +198,9 @@ namespace QueryLite {
         public Operator Operator { get; private set; }
         public object Right { get; private set; }
 
-        public GenericCondition(IField left, Operator oPerator, object right) {
+        public GenericCondition(IField left, Operator @operator, object right) {
             Left = left;
-            Operator = oPerator;
+            Operator = @operator;
             Right = right;
         }
 
@@ -270,67 +253,6 @@ namespace QueryLite {
                     parameters.AddParameter(database, value.GetType(), value: value, out string paramName);
                     sql.Append(paramName);
                 }
-            }
-        }
-    }
-
-
-
-    /// <summary>
-    /// Column condition represents a condition that joins either columns or functions. It does not allow conditions with a fix value so that it can be used in prepared queries
-    /// </summary>
-    internal sealed class ColumnCondition : IColumnCondition {
-
-        public IField Left { get; private set; }
-        public Operator Operator { get; private set; }
-        public IField Right { get; private set; }
-
-        public ColumnCondition(IField left, Operator oPerator, IField right) {
-            Left = left;
-            Operator = oPerator;
-            Right = right;
-        }
-
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(Left is IColumn leftColumn) {
-
-                if(useAlias) {
-                    sql.Append(leftColumn.Table.Alias).Append('.');
-                }
-                sql.Append(leftColumn.ColumnName);
-            }
-            else if(Left is IFunction leftFunction) {
-                sql.Append(leftFunction.GetSql(database, useAlias: useAlias, parameters));
-            }
-            else {
-                throw new Exception($"Unsupported type: {Left.GetType()}");
-            }
-
-            sql.Append(Operator switch {
-                Operator.EQUALS => " = ",
-                Operator.NOT_EQUALS => " != ",
-                Operator.GREATER_THAN => " > ",
-                Operator.GREATER_THAN_OR_EQUAL => " >= ",
-                Operator.LESS_THAN => " < ",
-                Operator.LESS_THAN_OR_EQUAL => " <= ",
-                Operator.LIKE => " LIKE ",
-                Operator.NOT_LIKE => " NOT LIKE ",
-                _ => throw new Exception($"Unknown join operator. {nameof(Operator)} == {Operator}")
-            });
-
-            if(Right is IColumn rightColumn) {
-
-                if(useAlias) {
-                    sql.Append(rightColumn.Table.Alias).Append('.');
-                }
-                sql.Append(rightColumn.ColumnName);
-            }
-            else if(Right is IFunction rightFunction) {
-                sql.Append(rightFunction.GetSql(database, useAlias: useAlias, parameters));
-            }
-            else {
-                throw new Exception($"Unsupported type '{Right.GetType().FullName}'");
             }
         }
     }

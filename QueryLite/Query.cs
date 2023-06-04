@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
 
@@ -46,7 +45,17 @@ namespace QueryLite {
         /// </summary>
         /// <typeparam name="PARAMETERS"></typeparam>
         /// <returns></returns>
-        public static PreparedSelect<PARAMETERS> PrepareWithParameters<PARAMETERS>() => new PreparedSelect<PARAMETERS>();
+        public static IPreparedSelect<PARAMETERS> PrepareWithParameters<PARAMETERS>() => new PreparedSelect<PARAMETERS>();
+
+        public interface IPreparedSelect<PARAMETERS> {
+
+            IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
+        }
+
+        internal sealed class PreparedSelect<PARAMETERS> : IPreparedSelect<PARAMETERS> {
+
+            public IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc);
+        }
 
         /// <summary>
         /// Create a prepared insert

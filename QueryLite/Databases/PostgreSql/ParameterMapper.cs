@@ -28,7 +28,7 @@ using System;
 
 namespace QueryLite.Databases.SqlServer {
 
-    public sealed class PostgreSqlParameterMapper : IParameterMapper {
+    public sealed class PostgreSqlParameterMapper : IPreparedParameterMapper {
 
         public CreateParameterDelegate GetCreateParameterDelegate(Type type) {
 

@@ -23,7 +23,6 @@
  **/
 using Npgsql;
 using QueryLite.Databases.SqlServer;
-using QueryLite.PreparedQuery;
 using System;
 using System.Data.Common;
 
@@ -42,14 +41,14 @@ namespace QueryLite.Databases.PostgreSql {
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new PostgreSqlDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
         IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
-        IParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMapper();
+        IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMapper();
         IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new PostgreSqlPreparedInsertQueryGenerator();
 
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 
         public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 
-            ArgumentNullException.ThrowIfNullOrEmpty(connectionString, paramName: nameof(connectionString));
+            ArgumentException.ThrowIfNullOrEmpty(connectionString);
 
             Name = name ?? string.Empty;
             SchemaMap = schemaMap ?? ((schema) => schema);

@@ -41,14 +41,14 @@ namespace QueryLite.Databases.SqlServer {
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new SqlServerDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new SqlServerTruncateQueryGenerator();
         IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerPreparedSelectQueryGenerator();
-        IParameterMapper IInternalConnection.ParameterMapper { get; } = new SqlServerParameterMapper();
+        IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new SqlServerParameterMapper();
         IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new SqlServerPreparedInsertQueryGenerator();
 
         public DatabaseType DatabaseType => DatabaseType.SqlServer;
 
         public SqlServerDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 
-            ArgumentNullException.ThrowIfNullOrEmpty(connectionString, paramName: nameof(connectionString));
+            ArgumentException.ThrowIfNullOrEmpty(connectionString);
 
             Name = name ?? string.Empty;
             SchemaMap = schemaMap ?? ((schema) => schema);

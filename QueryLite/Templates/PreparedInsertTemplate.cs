@@ -52,7 +52,7 @@ namespace QueryLite {
         }
     }
 
-    internal class InsertSqlAndParameters<PARAMETERS> {
+    internal sealed class InsertSqlAndParameters<PARAMETERS> {
 
         public InsertSqlAndParameters(string sql, List<ISetParameter<PARAMETERS>> setParameters) {
             Sql = sql;

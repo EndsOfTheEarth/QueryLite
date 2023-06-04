@@ -1,7 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using QueryLite.PreparedQuery;
-using QueryLiteTestLogic;
-using System;
+using QueryLite.Databases;
 
 namespace QueryLiteTest.Tests {
 

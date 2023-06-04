@@ -23,6 +23,7 @@
  **/
 using System;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace QueryLite.Databases {
 
@@ -64,6 +65,120 @@ namespace QueryLite.Databases {
             for(int index = 0; index < ParamNames.Length; index++) {
                 ParamNames[index] = $"@{index}";
             }
+        }
+    }
+
+    public enum NumericType {
+        UShort,
+        Short,
+        Int,
+        UInt,
+        Long,
+        ULong,
+        Byte,
+        SByte
+    }
+
+    /// <summary>
+    /// This EnumHelper is used to convert generic ENUMs to number values quickly and without creating objects on the heap
+    /// </summary>
+    public static class EnumHelper {
+
+        public static NumericType GetNumericType<ENUM>() where ENUM : Enum {
+
+            Type underlyingType = Enum.GetUnderlyingType(typeof(ENUM));
+
+            NumericType type;
+
+            if(underlyingType == typeof(ushort)) {
+                type = NumericType.UShort;
+            }
+            else if(underlyingType == typeof(short)) {
+                type = NumericType.Short;
+            }
+            else if(underlyingType == typeof(uint)) {
+                type = NumericType.UInt;
+            }
+            else if(underlyingType == typeof(int)) {
+                type = NumericType.Int;
+            }
+            else if(underlyingType == typeof(ulong)) {
+                type = NumericType.ULong;
+            }
+            else if(underlyingType == typeof(long)) {
+                type = NumericType.Long;
+            }
+            else if(underlyingType == typeof(sbyte)) {
+                type = NumericType.SByte;
+            }
+            else if(underlyingType == typeof(byte)) {
+                type = NumericType.Byte;
+            }
+            else {
+                throw new ArgumentException($"Unknown {nameof(ENUM)} type. Type = {underlyingType.FullName}");
+            }
+            return type;
+        }
+
+        public static NumericType GetNumericType(Type enumType) {
+
+            Type underlyingType = Enum.GetUnderlyingType(enumType);
+
+            NumericType type;
+
+            if(underlyingType == typeof(ushort)) {
+                type = NumericType.UShort;
+            }
+            else if(underlyingType == typeof(short)) {
+                type = NumericType.Short;
+            }
+            else if(underlyingType == typeof(uint)) {
+                type = NumericType.UInt;
+            }
+            else if(underlyingType == typeof(int)) {
+                type = NumericType.Int;
+            }
+            else if(underlyingType == typeof(ulong)) {
+                type = NumericType.ULong;
+            }
+            else if(underlyingType == typeof(long)) {
+                type = NumericType.Long;
+            }
+            else if(underlyingType == typeof(sbyte)) {
+                type = NumericType.SByte;
+            }
+            else if(underlyingType == typeof(byte)) {
+                type = NumericType.Byte;
+            }
+            else {
+                throw new ArgumentException($"Unknown {nameof(enumType)} type. Type = {underlyingType.FullName}");
+            }
+            return type;
+        }
+
+        public static ushort UnsafeConvertToUShort<ENUM>(ENUM enumValue) where ENUM : Enum {
+            return Unsafe.As<ENUM, ushort>(ref enumValue);
+        }
+        public static short UnsafeConvertToShort<ENUM>(ENUM enumValue) where ENUM : Enum {
+            return Unsafe.As<ENUM, short>(ref enumValue);
+        }
+        public static uint UnsafeConvertToUInt<ENUM>(ENUM enumValue) where ENUM : Enum {
+            return Unsafe.As<ENUM, uint>(ref enumValue);
+        }
+        public static int UnsafeConvertToInt<ENUM>(ENUM enumValue) where ENUM : Enum {
+            return Unsafe.As<ENUM, int>(ref enumValue);
+        }
+        public static ulong UnsafeConvertToULong<ENUM>(ENUM enumValue) where ENUM : Enum {
+            return Unsafe.As<ENUM, ulong>(ref enumValue);
+        }
+        public static long UnsafeConvertToLong<ENUM>(ENUM enumValue) where ENUM : Enum {
+            return Unsafe.As<ENUM, long>(ref enumValue);
+        }
+        public static sbyte UnsafeConvertToSByte<ENUM>(ENUM enumValue) where ENUM : Enum {
+            return Unsafe.As<ENUM, sbyte>(ref enumValue);
+        }
+        public static byte UnsafeConvertToByte<ENUM>(ENUM enumValue) where ENUM : Enum {
+            return Unsafe.As<ENUM, byte>(ref enumValue);
         }
     }
 }

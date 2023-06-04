@@ -28,7 +28,7 @@ using System.Data.SqlClient;
 
 namespace QueryLite.Databases.SqlServer {
 
-    public sealed class SqlServerParameterMapper : IParameterMapper {
+    public sealed class SqlServerParameterMapper : IPreparedParameterMapper {
 
         public CreateParameterDelegate GetCreateParameterDelegate(Type type) {
 

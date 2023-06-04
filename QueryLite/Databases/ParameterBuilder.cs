@@ -27,6 +27,12 @@ using System.Data.Common;
 
 namespace QueryLite.Databases {
 
+    public interface IPreparedParameterMapper {
+        CreateParameterDelegate GetCreateParameterDelegate(Type type);
+    }
+
+    public delegate DbParameter CreateParameterDelegate(string name, object? value);
+
     public sealed class ParameterBuilder : IParametersBuilder {
 
         public IList<DbParameter> ParameterList { get; }

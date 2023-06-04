@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases;
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
@@ -47,9 +48,9 @@ namespace QueryLite {
         public ITable? FromTable { get; private set; }
         public SqlServerTableHint[]? Hints { get; private set; }
         public IList<IPreparedJoin<PARAMETERS>>? Joins { get; private set; }
-        public APreparedConditionNew<PARAMETERS>? WhereCondition { get; private set; }
+        public APreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
         public ISelectable[]? GroupByFields { get; private set; }
-        public APreparedConditionNew<PARAMETERS>? HavingCondition { get; private set; }
+        public APreparedCondition<PARAMETERS>? HavingCondition { get; private set; }
         public IOrderByColumn[]? OrderByFields { get; private set; }
 
         public ForType? ForType { get; private set; } = null;
@@ -125,10 +126,10 @@ namespace QueryLite {
             return join;
         }
 
-        public IPreparedGroupBy<PARAMETERS, RESULT> Where(Func<APreparedConditionNew<PARAMETERS>, APreparedConditionNew<PARAMETERS>>? condition) {
+        public IPreparedGroupBy<PARAMETERS, RESULT> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>>? condition) {
 
             if(condition != null) {
-                WhereCondition = condition(new EmptyPreparedConditionNew<PARAMETERS>());
+                WhereCondition = condition(new EmptyPreparedCondition<PARAMETERS>());
             }
             else {
                 WhereCondition = null;
@@ -144,7 +145,7 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedOrderBy<PARAMETERS, RESULT> Having(APreparedConditionNew<PARAMETERS> condition) {
+        public IPreparedOrderBy<PARAMETERS, RESULT> Having(APreparedCondition<PARAMETERS> condition) {
 
             ArgumentNullException.ThrowIfNull(condition);
 
@@ -234,6 +235,7 @@ namespace QueryLite {
         private readonly PreparedQueryDetail<PARAMETERS>?[] _queries;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
 
         public PreparedQuery(PreparedQueryTemplate<PARAMETERS, RESULT> template) {
+
             QueryTemplate = template;
 
             DatabaseType[] values = Enum.GetValues<DatabaseType>();
@@ -271,7 +273,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < paramCollector.Parameters.Count; index++) {
 
-                    IParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
+                    IPreparedQueryParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
 
                     CreateParameterDelegate createParameterFunction = database.ParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
 
@@ -286,8 +288,6 @@ namespace QueryLite {
         }
 
         public QueryResult<RESULT> Execute(PARAMETERS parameterValues, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
-
-            int dbTypeIndex = (int)database.DatabaseType;
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -315,8 +315,6 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            int dbTypeIndex = (int)database.DatabaseType;
-
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
@@ -340,8 +338,6 @@ namespace QueryLite {
         }
 
         public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
-
-            int dbTypeIndex = (int)database.DatabaseType;
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -370,8 +366,6 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            int dbTypeIndex = (int)database.DatabaseType;
-
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
@@ -399,8 +393,6 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            int dbTypeIndex = (int)database.DatabaseType;
-
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
@@ -424,8 +416,6 @@ namespace QueryLite {
         }
 
         public RESULT? SingleOrDefault(PARAMETERS parameterValues, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
-
-            int dbTypeIndex = (int)database.DatabaseType;
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -453,8 +443,6 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            int dbTypeIndex = (int)database.DatabaseType;
-
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
@@ -480,8 +468,6 @@ namespace QueryLite {
 
         public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
-            int dbTypeIndex = (int)database.DatabaseType;
-
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
             ArgumentNullException.ThrowIfNull(debugName);
@@ -506,7 +492,7 @@ namespace QueryLite {
         }
     }
 
-    internal class PreparedQueryDetail<PARAMETERS> {
+    internal sealed class PreparedQueryDetail<PARAMETERS> {
 
         public PreparedQueryDetail(string sql) {
             Sql = sql;
@@ -515,16 +501,16 @@ namespace QueryLite {
         public List<QueryParameter<PARAMETERS>> QueryParameters { get; } = new List<QueryParameter<PARAMETERS>>();
     }
 
-    public class QueryParameter<PARAMETERS> {
+    internal sealed class QueryParameter<PARAMETERS> {
 
-        public QueryParameter(IParameter<PARAMETERS> parameter, CreateParameterDelegate createParameterFunction) {
+        public QueryParameter(IPreparedQueryParameter<PARAMETERS> parameter, CreateParameterDelegate createParameterFunction) {
             Parameter = parameter;
             CreateParameterFunction = createParameterFunction;
         }
 
         public DbParameter CreateParameter(PARAMETERS parameters) => CreateParameterFunction(Parameter.Name, Parameter.GetValue(parameters));
 
-        public IParameter<PARAMETERS> Parameter { get; }
+        public IPreparedQueryParameter<PARAMETERS> Parameter { get; }
         public CreateParameterDelegate CreateParameterFunction { get; }
     }
 }
