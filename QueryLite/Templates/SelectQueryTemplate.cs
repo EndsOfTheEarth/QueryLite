@@ -144,7 +144,7 @@ namespace QueryLite {
             Join<RESULT> join = new Join<RESULT>(JoinType.Join, table, this);
 
             if(Joins == null) {
-                Joins = new List<IJoin>(1);
+                Joins = new List<IJoin>();
             }
             Joins.Add(join);
             return join;
@@ -156,7 +156,7 @@ namespace QueryLite {
             Join<RESULT> join = new Join<RESULT>(JoinType.LeftJoin, table, this);
 
             if(Joins == null) {
-                Joins = new List<IJoin>(1);
+                Joins = new List<IJoin>();
             }
             Joins.Add(join);
             return join;

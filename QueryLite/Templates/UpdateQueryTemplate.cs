@@ -52,7 +52,7 @@ namespace QueryLite {
             ArgumentNullException.ThrowIfNull(table);
 
             if(Joins == null) {
-                Joins = new List<IJoin>(1);
+                Joins = new List<IJoin>();
             }
             UpdateJoin join = new UpdateJoin(JoinType.Join, table, this);
             Joins.Add(join);
@@ -64,7 +64,7 @@ namespace QueryLite {
             ArgumentNullException.ThrowIfNull(table);
 
             if(Joins == null) {
-                Joins = new List<IJoin>(1);
+                Joins = new List<IJoin>();
             }
             UpdateJoin join = new UpdateJoin(JoinType.LeftJoin, table, this);
             Joins.Add(join);
@@ -85,7 +85,7 @@ namespace QueryLite {
             WhereCondition = condition;
             return this;
         }
-        
+
         public string GetSql(IDatabase database) {
 
             ArgumentNullException.ThrowIfNull(database);

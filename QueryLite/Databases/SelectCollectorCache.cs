@@ -26,8 +26,7 @@ using QueryLite.Databases.SqlServer;
 using System;
 using System.Data.Common;
 
-namespace QueryLite.Databases
-{
+namespace QueryLite.Databases {
 
     internal static class SelectCollectorCache {
 

@@ -64,7 +64,7 @@ namespace QueryLite.DbSchema {
             ConstraintName = constraintName;
         }
         public string ConstraintName { get; }
-        public List<string> ColumnNames { get; } = new List<string>(1);
+        public List<string> ColumnNames { get; } = new List<string>();
     }
 
     public sealed class DatabaseColumn {

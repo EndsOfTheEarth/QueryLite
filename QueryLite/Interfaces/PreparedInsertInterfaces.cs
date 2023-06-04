@@ -27,13 +27,6 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    public static class Prepare {
-
-        public static IPreparedInsertSet<PARAMETERS> Insert<PARAMETERS>(ITable table) {
-            return new PreparedInsertTemplate<PARAMETERS>(table);
-        }
-    }
-
     public interface IPreparedInsertSet<PARAMETERS> {
 
         IPreparedInsertBuild<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);

@@ -33,7 +33,7 @@ namespace QueryLite {
         /// Nested query
         /// </summary>
         public static IDistinct<FIELD> NestedSelect<FIELD>(FIELD field) where FIELD : IField {
-            return new SelectQueryTemplate<FIELD>(new List<IField>(1) { field });
+            return new SelectQueryTemplate<FIELD>(new List<IField>() { field });
         }
 
         /// <summary>
@@ -41,8 +41,22 @@ namespace QueryLite {
         /// </summary>
         public static IDistinct<RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new SelectQueryTemplate<RESULT>(selectFunc);
 
-
+        /// <summary>
+        /// Create a prepared select query
+        /// </summary>
+        /// <typeparam name="PARAMETERS"></typeparam>
+        /// <returns></returns>
         public static PreparedSelect<PARAMETERS> PrepareWithParameters<PARAMETERS>() => new PreparedSelect<PARAMETERS>();
+
+        /// <summary>
+        /// Create a prepared insert
+        /// </summary>
+        /// <typeparam name="PARAMETERS"></typeparam>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public static IPreparedInsertSet<PARAMETERS> PreparedInsert<PARAMETERS>(ITable table) {
+            return new PreparedInsertTemplate<PARAMETERS>(table);
+        }
 
         /// <summary>
         /// Sql insert query

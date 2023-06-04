@@ -51,10 +51,10 @@ namespace QueryLite {
 
         private readonly SelectQueryTemplate<RESULT> Template;
 
-        internal Join(JoinType joinType, ITable table, SelectQueryTemplate<RESULT> tempate) {
+        internal Join(JoinType joinType, ITable table, SelectQueryTemplate<RESULT> template) {
             JoinType = joinType;
             Table = table;
-            Template = tempate;
+            Template = template;
         }
         public IJoin<RESULT> On(ICondition on) {
             _condition = on;
@@ -201,7 +201,7 @@ namespace QueryLite {
     public interface IFor<RESULT> : IOption<RESULT> {
 
         /// <summary>
-        /// FOR caluse. PostgreSql only
+        /// FOR clause. PostgreSql only
         /// </summary>
         /// <param name="forType"></param>
         /// <param name="ofTables"></param>

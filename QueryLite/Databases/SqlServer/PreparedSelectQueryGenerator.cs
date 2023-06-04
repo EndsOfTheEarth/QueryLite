@@ -33,10 +33,6 @@ namespace QueryLite.Databases.SqlServer {
             return GetSql(template, database, parameters);
         }
 
-        //string IQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
-        //    return GetSql(template, database, parameters);
-        //}
-
         internal static string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
 
             //We need to start with the first query template
@@ -337,27 +333,4 @@ namespace QueryLite.Databases.SqlServer {
         }
 
     }
-
-    //public static class SqlServerHelper {
-
-    //    public static void AppendColumnName(StringBuilder sql, IColumn column) {
-
-    //        if(column.Enclose || column.ColumnName.Contains(' ')) {
-    //            sql.Append('[').Append(column.ColumnName).Append(']');
-    //        }
-    //        else {
-    //            sql.Append(column.ColumnName);
-    //        }
-    //    }
-
-    //    public static void AppendEnclose(StringBuilder sql, string value, bool forceEnclose) {
-
-    //        if(forceEnclose || value.Contains(' ')) {
-    //            sql.Append('[').Append(value).Append(']');
-    //        }
-    //        else {
-    //            sql.Append(value);
-    //        }
-    //    }
-    //}
 }

@@ -36,13 +36,13 @@ namespace QueryLite.Databases.SqlServer {
             bool useAlias = template.Joins?.Count != 0;
 
             //
-            //  Note: The OUPUT clase changes goes before the 'FROM' caluse when using aliasing and after the 'FROM' clause when not
+            //  Note: The OUPUT clause changes goes before the 'FROM' clause when using aliasing and after the 'FROM' clause when not
             //
             if(useAlias) {
 
                 sql.Append("DELETE ").Append(template.Table.Alias);
 
-                GenerateOutputCaluse(sql, outputFunc);
+                GenerateOutputClause(sql, outputFunc);
                 
                 sql.Append(" FROM ");
 
@@ -68,7 +68,7 @@ namespace QueryLite.Databases.SqlServer {
                 }
                 SqlServerHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
-                GenerateOutputCaluse(sql, outputFunc);
+                GenerateOutputClause(sql, outputFunc);
             }
 
             if(template.Joins != null) {
@@ -100,7 +100,7 @@ namespace QueryLite.Databases.SqlServer {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GenerateOutputCaluse<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+        private static void GenerateOutputClause<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
 
             if(outputFunc != null) {
 

@@ -31,7 +31,7 @@ namespace QueryLite {
         void IResultRow.Reset() {
             Fields.Clear();
         }
-        public List<IField> Fields { get; } = new List<IField>(1);
+        public List<IField> Fields { get; } = new List<IField>();
 
         public List<IColumn> GetFieldsAsColumns() {
 
@@ -439,7 +439,7 @@ namespace QueryLite {
 
         public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : notnull, Enum {
             Fields.Add(column);
-            return default(ENUM)!;
+            return default!;
         }
 
         public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : notnull, Enum {
@@ -449,7 +449,7 @@ namespace QueryLite {
 
         public ENUM GetEnum<ENUM>(Function<ENUM> column) where ENUM : notnull, Enum {
             Fields.Add(column);
-            return default(ENUM)!;
+            return default!;
         }
 
         public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> column) where ENUM : notnull, Enum {

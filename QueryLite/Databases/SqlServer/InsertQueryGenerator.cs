@@ -25,8 +25,7 @@ using QueryLite.Databases.SqlServer.Collectors;
 using System;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer
-{
+namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerInsertQueryGenerator : IInsertQueryGenerator {
 
@@ -52,9 +51,9 @@ namespace QueryLite.Databases.SqlServer
                 SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert);
 
                 sql.Append('(');
-                
+
                 template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
-                
+
                 sql.Append(')');
 
                 parameters = valuesCollector.Parameters;
@@ -73,7 +72,7 @@ namespace QueryLite.Databases.SqlServer
                 template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
                 sql.Append(')');
 
-                parameters = null;                
+                parameters = null;
 
                 GetReturningSyntax(sql, outputFunc);
 

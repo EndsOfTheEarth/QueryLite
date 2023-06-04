@@ -36,7 +36,7 @@ namespace QueryLite.Databases {
 
         public static StringBuilder Acquire(int capacity = 16) {
 
-            if(Settings.EnableStringBuilderCaching &&  capacity <= Settings.StringBuilderCacheMaxCharacters) {
+            if(Settings.EnableStringBuilderCaching && capacity <= Settings.StringBuilderCacheMaxCharacters) {
 
                 StringBuilder? builder = InstanceA;
 

@@ -34,8 +34,6 @@ namespace QueryLite {
         public IList<IJoin>? Joins { get; private set; }
         public ICondition? WhereCondition { get; private set; }
 
-        //public IList<IColumn>? ReturningColumns { get; private set; }
-
         public DeleteQueryTemplate(ITable table) {
 
             ArgumentNullException.ThrowIfNull(table);
@@ -55,7 +53,7 @@ namespace QueryLite {
             ArgumentNullException.ThrowIfNull(table);
 
             if(Joins == null) {
-                Joins = new List<IJoin>(1);
+                Joins = new List<IJoin>();
             }
             DeleteJoin join = new DeleteJoin(JoinType.Join, table, this);
             Joins.Add(join);
@@ -67,7 +65,7 @@ namespace QueryLite {
             ArgumentNullException.ThrowIfNull(table);
 
             if(Joins == null) {
-                Joins = new List<IJoin>(1);
+                Joins = new List<IJoin>();
             }
             DeleteJoin join = new DeleteJoin(JoinType.LeftJoin, table, this);
             Joins.Add(join);
