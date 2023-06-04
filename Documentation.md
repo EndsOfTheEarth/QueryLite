@@ -31,6 +31,7 @@
 - [Key Columns](#key-columns)
 - [Not Supported Data Types](#not-supported-data-types)
 - [Transaction Isolation Levels](#transaction-isolation-levels)
+- [Query Builder Caching](#query-builder-caching)
 - [Executing Custom SQL](#executing-custom-sql)
 - [Debugging](#debugging)
 - [Breakpoint Debugging](#breakpoint-debugging)
@@ -814,6 +815,24 @@ using(Transaction transaction = new Transaction(DB.Northwind, IsolationLevel.Rea
     ...
     transaction.Commit();
 }
+```
+
+
+## Query Builder Caching
+
+The query building process uses caching to reduce memory allocation. Objects like StringBuilder and collector classes are cached by default. Caching can be configured in the `Settings` class.
+
+Cached objects are stored for every thread that executes a query and are garbage collected when the thread is no longer referenced.
+
+```C#
+//Turns on StringBuilder caching
+Settings.EnableStringBuilderCaching = true;
+
+//Max allowed character length of cached StringBuilders
+Settings.StringBuilderCacheMaxCharacters = 5000;
+
+//Enable caching of collector classes
+Settings.EnableCollectorCaching = true;
 ```
 
 ## Executing Custom SQL
