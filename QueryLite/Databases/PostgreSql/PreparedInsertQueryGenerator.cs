@@ -23,13 +23,14 @@
  **/
 using QueryLite.Databases.PostgreSql.Collectors;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
 
-    internal sealed class PostgreSqlInsertQueryGenerator : IInsertQueryGenerator {
+    internal sealed class PostgreSqlPreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 
@@ -44,36 +45,21 @@ namespace QueryLite.Databases.PostgreSql {
 
             PostgreSqlHelper.AppendEncase(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
 
-            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
-
                 StringBuilder paramSql = StringBuilderCache.Acquire();
 
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert);
+                PostgreSqlPreparedSetValuesCollector<PARAMETERS> valuesCollector = new PostgreSqlPreparedSetValuesCollector<PARAMETERS>(sql, paramSql, database, CollectorMode.Insert);
 
                 sql.Append('(');
-                template.ValuesCollector!(valuesCollector);
+                template.SetValues!(valuesCollector);
                 sql.Append(") VALUES(");
 
-                parameters = valuesCollector.Parameters;
+                parameters = valuesCollector.InsertParameters;
 
                 sql.Append(paramSql);
                 sql.Append(')');
 
                 StringBuilderCache.Release(paramSql);
-            }
-            else {
 
-                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(sql, database, CollectorMode.Insert);
-
-                sql.Append('(');
-                template.ValuesCollector!(valuesCollector);
-                sql.Append(") VALUES(");
-
-                parameters = null;
-
-                sql.Append(valuesCollector.ParamsSql);
-                sql.Append(')');
-            }
 
             if(outputFunc != null) {
 

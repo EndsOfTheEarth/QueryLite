@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases;
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,11 @@ namespace QueryLite {
     internal interface IInsertQueryGenerator {
         internal string GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
     }
+
+    internal interface IPreparedInsertQueryGenerator {
+        internal string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters, Func<IResultRow, RESULT>? outputFunc);
+    }
+
     internal interface IUpdateQueryGenerator {
         internal string GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
     }

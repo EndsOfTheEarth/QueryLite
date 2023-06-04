@@ -26,10 +26,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer
-{
+namespace QueryLite.Databases.SqlServer {
 
-    internal sealed class SqlServerPreparedInsertQueryGenerator {
+    internal sealed class SqlServerPreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
 
         public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
@@ -48,7 +47,7 @@ namespace QueryLite.Databases.SqlServer
 
             StringBuilder paramSql = StringBuilderCache.Acquire();
 
-            PreparedSetValuesCollector<PARAMETERS> valuesCollector = new PreparedSetValuesCollector<PARAMETERS>(sql, paramSql: paramSql, database, CollectorMode.Insert);
+            SqlServerPreparedSetValuesCollector<PARAMETERS> valuesCollector = new SqlServerPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: paramSql, database, CollectorMode.Insert);
 
             sql.Append('(');
 
@@ -58,7 +57,7 @@ namespace QueryLite.Databases.SqlServer
 
             parameters = valuesCollector.InsertParameters;
 
-            GetReturningSyntax(template, sql, outputFunc);
+            GetReturningSyntax<PARAMETERS, RESULT>(sql, outputFunc);
 
             sql.Append(" VALUES(").Append(paramSql).Append(')');
 
@@ -67,7 +66,7 @@ namespace QueryLite.Databases.SqlServer
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GetReturningSyntax<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+        private static void GetReturningSyntax<PARAMETERS, RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
 
             if(outputFunc != null) {
 

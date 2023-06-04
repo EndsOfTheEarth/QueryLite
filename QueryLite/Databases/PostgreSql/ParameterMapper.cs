@@ -149,12 +149,12 @@ namespace QueryLite.Databases.SqlServer {
 
             else if(type == typeof(DateTimeOffset)) {
                 return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.TimestampTz) {
-                    Value = value
+                    Value = value != null ? new DateTimeOffset(((DateTimeOffset)value).UtcDateTime) : DBNull.Value
                 };
             }
             else if(type == typeof(DateTimeOffset?)) {
                 return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.TimestampTz) {
-                    Value = value ?? DBNull.Value
+                    Value = value != null ? new DateTimeOffset(((DateTimeOffset)value).UtcDateTime) : DBNull.Value
                 };
             }
 
@@ -228,49 +228,49 @@ namespace QueryLite.Databases.SqlServer {
 
                 if(integerType == NumericType.UShort) {
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                        Value = value ?? DBNull.Value
-                    };
+                            Value = value != null ? (short)value : DBNull.Value
+                        };
                 }
                 else if(integerType == NumericType.Short) {
 
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                        Value = value ?? DBNull.Value
+                        Value = value != null ? (short)value : DBNull.Value
                     };
                 }
                 else if(integerType == NumericType.UInt) {
 
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Integer) {
-                        Value = value ?? DBNull.Value
+                        Value = value != null ? (int)value : DBNull.Value
                     };
                 }
                 else if(integerType == NumericType.Int) {
 
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Integer) {
-                        Value = value ?? DBNull.Value
+                        Value = value != null ? (int)value : DBNull.Value
                     };
                 }
                 else if(integerType == NumericType.ULong) {
 
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bigint) {
-                        Value = value ?? DBNull.Value
+                        Value = value != null ? (long)value : DBNull.Value
                     };
                 }
                 else if(integerType == NumericType.Long) {
 
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bigint) {
-                        Value = value ?? DBNull.Value
+                        Value = value != null ? (long)value : DBNull.Value
                     };
                 }
                 else if(integerType == NumericType.SByte) {
 
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bit) {
-                        Value = value ?? DBNull.Value
+                        Value = value != null ? (short)value : DBNull.Value
                     };
                 }
                 else if(integerType == NumericType.Byte) {
 
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                        Value = value ?? DBNull.Value
+                        Value = value != null ? (short)value : DBNull.Value
                     };
                 }
                 else {

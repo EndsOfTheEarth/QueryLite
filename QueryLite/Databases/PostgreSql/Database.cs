@@ -43,6 +43,7 @@ namespace QueryLite.Databases.PostgreSql {
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
         IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
         IParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMapper();
+        IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new PostgreSqlPreparedInsertQueryGenerator();
 
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 

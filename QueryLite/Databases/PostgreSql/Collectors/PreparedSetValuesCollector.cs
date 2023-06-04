@@ -24,32 +24,11 @@
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer.Collectors {
+namespace QueryLite.Databases.PostgreSql.Collectors {
 
-    internal interface ISetParameter<PARAMETERS> {
-
-        DbParameter CreateParameter(PARAMETERS parameters);
-    }
-    internal sealed class SetParameter<PARAMETERS, TYPE> : ISetParameter<PARAMETERS> {
-
-        public SetParameter(string name, Func<PARAMETERS, TYPE> getValueFunc, CreateParameterDelegate createParameter) {
-            Name = name;
-            GetValueFunc = getValueFunc;
-            _createParameter = createParameter;
-        }
-        public string Name { get; }
-        public Func<PARAMETERS, TYPE> GetValueFunc { get; }
-        public CreateParameterDelegate _createParameter { get; }
-
-        DbParameter ISetParameter<PARAMETERS>.CreateParameter(PARAMETERS parameters) {
-            return _createParameter(name: Name, value: GetValueFunc(parameters));
-        }
-    }
-
-    internal sealed class PreparedSetValuesCollector<PARAMETERS> : IPreparedSetValuesCollector<PARAMETERS> {
+    internal sealed class PostgreSqlPreparedSetValuesCollector<PARAMETERS> : IPreparedSetValuesCollector<PARAMETERS> {
 
         public List<ISetParameter<PARAMETERS>> InsertParameters { get; } = new List<ISetParameter<PARAMETERS>>();
 
@@ -59,7 +38,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         private IDatabase _database;
         private CollectorMode _collectorMode;
 
-        public PreparedSetValuesCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode mode) {
+        public PostgreSqlPreparedSetValuesCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode mode) {
             _sql = sql;
             _paramSql = paramSql;
             _database = database;
@@ -88,7 +67,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                     _paramSql!.Append(',');
                 }
 
-                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
 
                 _paramSql!.Append(paramName);
 
@@ -135,7 +114,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                     _paramSql!.Append(',');
                 }
 
-                SqlServerHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                PostgreSqlHelper.AppendEncase(_sql, column.ColumnName, forceEnclose: false);
 
                 _paramSql!.Append(function.GetSql(_database, useAlias: false, parameters: null));
 
