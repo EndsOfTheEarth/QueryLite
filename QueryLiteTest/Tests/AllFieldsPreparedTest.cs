@@ -63,13 +63,11 @@ namespace QueryLiteTest.Tests {
                     .PrepareWithParameters<bool>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
-                    .Where(allTypesTable.Id.EQUALS<bool, IntKey<AllTypes>>(allTypesTable.Id))
+                    .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable.Id))
                     .Build();
             }
 
             {
-
-                Parameter<AllTypes, IntKey<AllTypes>> idParam = new Parameter<AllTypes, IntKey<AllTypes>>(allTypes => allTypes.Id);
 
                 _selectAllTypesQuery = Query
                    .PrepareWithParameters<AllTypes>()
@@ -77,7 +75,7 @@ namespace QueryLiteTest.Tests {
                        row => new AllTypesInfo(row, allTypesTable)
                    )
                    .From(allTypesTable)
-                   .Where(allTypesTable.Id.EQUALS(idParam))
+                   .Where(where => where.EQUALS(allTypesTable.Id, (info) => info.Id))
                    .Build();
             }
 
@@ -91,13 +89,11 @@ namespace QueryLiteTest.Tests {
             }
             {
 
-                Parameter<AllTypes, IntKey<AllTypes>> idParam = new Parameter<AllTypes, IntKey<AllTypes>>(allTypes => allTypes.Id);
-
                 _selectAllTypesCountQuery = Query
                     .PrepareWithParameters<AllTypes>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
-                    .Where(allTypesTable.Id.EQUALS(idParam))
+                    .Where(where => where.EQUALS(allTypesTable.Id, (info) => info.Id))
                     .Build();
             }
         }
@@ -1179,10 +1175,6 @@ namespace QueryLiteTest.Tests {
             AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
             AllTypesTable allTypesTable4 = AllTypesTable.Instance4;
 
-            Parameter<JoinQueryParams, IntKey<AllTypes>> idParam = new Parameter<JoinQueryParams, IntKey<AllTypes>>(parameters => parameters.Id);
-
-            Parameter<JoinQueryParams, IntKey<AllTypes>> allTypesIdParam = new Parameter<JoinQueryParams, IntKey<AllTypes>>(parameters => parameters.AllTypes.Id);
-
             IPreparedQueryExecute<JoinQueryParams, AllTypesInfoResult4> joinQuery1 = Query
                 .PrepareWithParameters<JoinQueryParams>()
                 .Select(
@@ -1195,10 +1187,10 @@ namespace QueryLiteTest.Tests {
                 )
                 .From(allTypesTable1)
                 .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
-                .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id & allTypesTable1.Id == allTypesTable2.Id)   //Duplicate conditions to test C# type checker
-                .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id & allTypesTable2.Id == allTypesTable3.Id)
-                .LeftJoin(allTypesTable4).On(allTypesTable4.Id.EQUALS(idParam))
-                .Where(allTypesTable1.Id.EQUALS(allTypesIdParam))
+                .Join(allTypesTable2).On(on => on.EQUALS(allTypesTable1.Id, allTypesTable2.Id) & on.EQUALS(allTypesTable1.Id, allTypesTable2.Id))   //Duplicate conditions to test C# type checker
+                .Join(allTypesTable3).On(on => on.EQUALS(allTypesTable2.Id, allTypesTable3.Id) & on.EQUALS(allTypesTable2.Id, allTypesTable3.Id))
+                .LeftJoin(allTypesTable4).On(on => on.EQUALS(allTypesTable4.Id, (info) => info.Id))
+                .Where(where => where.EQUALS(allTypesTable1.Id, (info) => info.AllTypes.Id))
                 .Option(labelName: "Label 1", SqlServerQueryOption.FORCE_ORDER)
                 .Build();
 
@@ -1235,8 +1227,6 @@ namespace QueryLiteTest.Tests {
             AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
             AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
 
-            Parameter<AllTypes, IntKey<AllTypes>> idParam = new Parameter<AllTypes, IntKey<AllTypes>>(allTypesParam => allTypesParam.Id);
-
             IPreparedQueryExecute<AllTypes, AllTypesInfoResult3> joinQuery = Query
                 .PrepareWithParameters<AllTypes>()
                 .Select(
@@ -1247,9 +1237,9 @@ namespace QueryLiteTest.Tests {
                     )
                 )
                 .From(allTypesTable1)
-                .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id)
-                .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
-                .Where(allTypesTable1.Id.EQUALS(idParam))
+                .Join(allTypesTable2).On(on => on.EQUALS(allTypesTable1.Id, allTypesTable2.Id))
+                .Join(allTypesTable3).On(on => on.EQUALS(allTypesTable2.Id, allTypesTable3.Id))
+                .Where(where => where.EQUALS(allTypesTable1.Id, info => info.Id))
                 .Build();
 
             QueryResult<AllTypesInfoResult3> result = await joinQuery.ExecuteAsync(parameterValues: allTypes, TestDatabase.Database, CancellationToken.None);

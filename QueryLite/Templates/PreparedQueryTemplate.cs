@@ -25,9 +25,9 @@ namespace QueryLite {
         public ITable? FromTable { get; private set; }
         public SqlServerTableHint[]? Hints { get; private set; }
         public IList<IPreparedJoin<PARAMETERS>>? Joins { get; private set; }
-        public IPreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
+        public APreparedConditionNew<PARAMETERS>? WhereCondition { get; private set; }
         public ISelectable[]? GroupByFields { get; private set; }
-        public IPreparedCondition<PARAMETERS>? HavingCondition { get; private set; }
+        public APreparedConditionNew<PARAMETERS>? HavingCondition { get; private set; }
         public IOrderByColumn[]? OrderByFields { get; private set; }
 
         public ForType? ForType { get; private set; } = null;
@@ -103,13 +103,14 @@ namespace QueryLite {
             return join;
         }
 
-        public IPreparedGroupBy<PARAMETERS, RESULT> Where(IPreparedCondition<PARAMETERS>? condition) {
-            WhereCondition = condition;
-            return this;
-        }
+        public IPreparedGroupBy<PARAMETERS, RESULT> Where(Func<APreparedConditionNew<PARAMETERS>, APreparedConditionNew<PARAMETERS>>? condition) {
 
-        public IPreparedGroupBy<PARAMETERS, RESULT> Where(IColumnCondition condition) {
-            WhereCondition = new PreparedConditionWrapper<PARAMETERS>(condition);
+            if(condition != null) {
+                WhereCondition = condition(new EmptyPreparedConditionNew<PARAMETERS>());
+            }
+            else {
+                WhereCondition = null;
+            }
             return this;
         }
 
@@ -121,7 +122,7 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedOrderBy<PARAMETERS, RESULT> Having(IPreparedCondition<PARAMETERS> condition) {
+        public IPreparedOrderBy<PARAMETERS, RESULT> Having(APreparedConditionNew<PARAMETERS> condition) {
 
             ArgumentNullException.ThrowIfNull(condition);
 
@@ -490,7 +491,6 @@ namespace QueryLite {
         }
         public string Sql { get; }
         public List<QueryParameter<PARAMETERS>> QueryParameters { get; } = new List<QueryParameter<PARAMETERS>>();
-
     }
 
     public class QueryParameter<PARAMETERS> {

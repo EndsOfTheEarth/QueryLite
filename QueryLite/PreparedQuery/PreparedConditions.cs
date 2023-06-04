@@ -21,253 +21,194 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace QueryLite.PreparedQuery {
 
-    public static class ColumnExtension {
+    public abstract class APreparedConditionNew<PARAMETERS> {
 
-        public static IPreparedCondition<PARAMETERS> EQUALS<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
-            return new PreparedParameterCondition<PARAMETERS>(column, "=", parameter);
+        public APreparedConditionNew<PARAMETERS> EQUALS<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+            return new PreparedConditionNew<PARAMETERS>(columnA, "=", columnB);
         }
-        public static IPreparedCondition<PARAMETERS> NOT_EQUALS<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
-            return new PreparedParameterCondition<PARAMETERS>(column, "!=", parameter);
-        }
-        public static IPreparedCondition IS_NULL<TYPE>(this Column<TYPE> column) where TYPE : notnull {
-            return new PreparedIsNullCondition(column, @operator: "IS NULL");
-        }
-        public static IPreparedCondition IS_NOT_NULL<TYPE>(this Column<TYPE> column) where TYPE : notnull {
-            return new PreparedIsNullCondition(column, @operator: "IS NOT NULL");
+        public APreparedConditionNew<PARAMETERS> EQUALS<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+            return new PreparedValueConditionNew<PARAMETERS, TYPE>(column, "=", func);
         }
 
-        public static IPreparedCondition<PARAMETERS> LESS_THAN<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
-            return new PreparedParameterCondition<PARAMETERS>(column, "<", parameter);
+        public APreparedConditionNew<PARAMETERS> NOT_EQUALS<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+            return new PreparedConditionNew<PARAMETERS>(columnA, "!=", columnB);
         }
-        public static IPreparedCondition<PARAMETERS> LESS_THAN_OR_EQUAL<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
-            return new PreparedParameterCondition<PARAMETERS>(column, "<=", parameter);
-        }
-
-        public static IPreparedCondition<PARAMETERS> GREATER_THAN<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
-            return new PreparedParameterCondition<PARAMETERS>(column, ">", parameter);
-        }
-        public static IPreparedCondition<PARAMETERS> GREATER_THAN_OR_EQUAL<PARAMETERS, TYPE>(this Column<TYPE> column, IParameter<PARAMETERS, TYPE> parameter) where TYPE : notnull {
-            return new PreparedParameterCondition<PARAMETERS>(column, ">=", parameter);
+        public APreparedConditionNew<PARAMETERS> NOT_EQUALS<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+            return new PreparedValueConditionNew<PARAMETERS, TYPE>(column, "!=", func);
         }
 
-        public static IPreparedCondition<PARAMETERS> EQUALS<PARAMETERS, TYPE>(this Column<TYPE> columnA, Column<TYPE> columnB) where TYPE : notnull {
-            return new PreparedColumnCondition<PARAMETERS>(columnA, "=", columnB);
+        public APreparedConditionNew<PARAMETERS> LESS_THAN<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+            return new PreparedConditionNew<PARAMETERS>(columnA, "<", columnB);
         }
-        public static IPreparedCondition<PARAMETERS> NOT_EQUALS<PARAMETERS, TYPE>(this Column<TYPE> columnA, Column<TYPE> columnB) where TYPE : notnull {
-            return new PreparedColumnCondition<PARAMETERS>(columnA, "!=", columnB);
+        public APreparedConditionNew<PARAMETERS> LESS_THAN<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+            return new PreparedValueConditionNew<PARAMETERS, TYPE>(column, "<", func);
         }
 
-        public static IPreparedCondition<PARAMETERS> EQUALS<PARAMETERS, TYPE>(this Column<TYPE> columnA, NullableColumn<TYPE> columnB) where TYPE : notnull {
-            return new PreparedColumnCondition<PARAMETERS>(columnA, "=", columnB);
+        public APreparedConditionNew<PARAMETERS> LESS_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+            return new PreparedConditionNew<PARAMETERS>(columnA, "<=", columnB);
         }
-        public static IPreparedCondition<PARAMETERS> NOT_EQUALS<PARAMETERS, TYPE>(this Column<TYPE> columnA, NullableColumn<TYPE> columnB) where TYPE : notnull {
-            return new PreparedColumnCondition<PARAMETERS>(columnA, "!=", columnB);
+        public APreparedConditionNew<PARAMETERS> LESS_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+            return new PreparedValueConditionNew<PARAMETERS, TYPE>(column, "<=", func);
+        }
+
+        public APreparedConditionNew<PARAMETERS> GREATER_THAN<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+            return new PreparedConditionNew<PARAMETERS>(columnA, ">", columnB);
+        }
+        public APreparedConditionNew<PARAMETERS> GREATER_THAN<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+            return new PreparedValueConditionNew<PARAMETERS, TYPE>(column, ">", func);
+        }
+
+        public APreparedConditionNew<PARAMETERS> GREATER_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+            return new PreparedConditionNew<PARAMETERS>(columnA, "<=", columnB);
+        }
+
+        public APreparedConditionNew<PARAMETERS> GREATER_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+            return new PreparedValueConditionNew<PARAMETERS, TYPE>(column, ">=", func);
+        }
+
+        public APreparedConditionNew<PARAMETERS> IS_NULL<TYPE>(AColumn<TYPE> column) where TYPE : notnull {
+            return new PreparedNullConditionNew<PARAMETERS>(column, isNull: true);
+        }
+        public APreparedConditionNew<PARAMETERS> IS_NOT_NULL<TYPE>(AColumn<TYPE> column) where TYPE : notnull {
+            return new PreparedNullConditionNew<PARAMETERS>(column, isNull: false);
+        }
+
+        public static APreparedConditionNew<PARAMETERS> operator &(APreparedConditionNew<PARAMETERS> conditionA, APreparedConditionNew<PARAMETERS> conditionB) {
+            return new PreparedAndOrConditionNew<PARAMETERS>(conditionA, isAnd: true, conditionB);
+        }
+        public static APreparedConditionNew<PARAMETERS> operator |(APreparedConditionNew<PARAMETERS> conditionA, APreparedConditionNew<PARAMETERS> conditionB) {
+            return new PreparedAndOrConditionNew<PARAMETERS>(conditionA, isAnd: false, conditionB);
+        }
+
+        internal abstract void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias);
+    }
+
+    internal sealed class EmptyPreparedConditionNew<PARAMETERS> : APreparedConditionNew<PARAMETERS> {
+
+        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+            throw new InvalidOperationException("An empty condition cannot be used in a query");
+        }
+    }
+
+    internal sealed class PreparedAndOrConditionNew<PARAMETERS> : APreparedConditionNew<PARAMETERS> {
+
+        private readonly APreparedConditionNew<PARAMETERS> _conditionA;
+        private readonly bool _isAnd;
+        private readonly APreparedConditionNew<PARAMETERS> _conditionB;
+
+        public PreparedAndOrConditionNew(APreparedConditionNew<PARAMETERS> conditionA, bool isAnd, APreparedConditionNew<PARAMETERS> conditionB) {
+            _conditionA = conditionA;
+            _isAnd = isAnd;
+            _conditionB = conditionB;
+        }
+
+        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+
+            _conditionA.GetSql(sql, database, paramCollector, useAlias: useAlias);
+
+            sql.Append(_isAnd ? " AND " : " OR ");
+
+            _conditionB.GetSql(sql, database, paramCollector, useAlias: useAlias);
+        }
+    }
+
+    internal sealed class PreparedConditionNew<PARAMETERS> : APreparedConditionNew<PARAMETERS> {
+
+        private readonly IColumn _columnA;
+        private readonly string _operator;
+        private readonly IColumn _columnB;
+
+        public PreparedConditionNew(IColumn columnA, string @operator, IColumn columnB) {
+            _columnA = columnA;
+            _operator = @operator;
+            _columnB = columnB;
+        }
+
+        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+
+            if(useAlias) {
+                sql.Append(_columnA.Table.Alias).Append('.');
+            }
+            sql.Append(_columnA.ColumnName);
+
+            sql.Append(_operator);
+
+            if(useAlias) {
+                sql.Append(_columnB.Table.Alias).Append('.');
+            }
+            sql.Append(_columnB.ColumnName);
+        }
+    }
+
+    internal sealed class PreparedValueConditionNew<PARAMETERS, TYPE> : APreparedConditionNew<PARAMETERS> {
+
+        private readonly IColumn _column;
+        private readonly string _operator;
+        private readonly Func<PARAMETERS, TYPE> _func;
+
+        public PreparedValueConditionNew(IColumn column, string @operator, Func<PARAMETERS, TYPE> func) {
+            _column = column;
+            _operator = @operator;
+            _func = func;
+        }
+
+        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+
+            if(useAlias) {
+                sql.Append(_column.Table.Alias).Append('.');
+            }
+            sql.Append(_column.ColumnName);
+
+            sql.Append(_operator);
+
+            string paramName = paramCollector.Add(new Parameter<PARAMETERS, TYPE>(_func));
+
+            sql.Append(paramName);
+        }
+    }
+
+    internal sealed class PreparedNullConditionNew<PARAMETERS> : APreparedConditionNew<PARAMETERS> {
+
+        private readonly IColumn _column;
+        private readonly bool _isNull;
+
+        public PreparedNullConditionNew(IColumn column, bool isNull) {
+            _column = column;
+            _isNull = isNull;
+        }
+
+        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+
+            if(useAlias) {
+                sql.Append(_column.Table.Alias).Append('.');
+            }
+            sql.Append(_column.ColumnName);
+
+            sql.Append(_isNull ? " IS NULL" : " IS NOT NULL");
         }
     }
 
     public interface IParameterCollector<PARAMETERS> {
 
-        public void Add(IParameter<PARAMETERS> parameter);
+        public string Add(IParameter<PARAMETERS> parameter);
     }
 
     public class ParameterCollector<PARAMETERS> : IParameterCollector<PARAMETERS> {
 
         public List<IParameter<PARAMETERS>> Parameters { get; } = new List<IParameter<PARAMETERS>>();
 
-        public void Add(IParameter<PARAMETERS> parameter) {
+        public string Add(IParameter<PARAMETERS> parameter) {
 
-            if(!Parameters.Contains(parameter)) {
-                parameter.Name = $"@{Parameters.Count}";
-                Parameters.Add(parameter);
-            }
-        }
-    }
+            parameter.Name = $"@{Parameters.Count}";
+            Parameters.Add(parameter);
 
-    public interface IPreparedCondition {
-
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias);
-
-        public IPreparedCondition<PARAMETERS> AND<PARAMETERS>(IPreparedCondition<PARAMETERS> condition) {
-            return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
-        }
-        public IPreparedCondition<PARAMETERS> OR<PARAMETERS>(IPreparedCondition<PARAMETERS> condition) {
-            return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
-        }
-
-        public IPreparedCondition<PARAMETERS> AND<PARAMETERS>(IPreparedCondition condition) {
-            return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
-        }
-        public IPreparedCondition<PARAMETERS> OR<PARAMETERS>(IPreparedCondition condition) {
-            return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
-        }
-    }
-    public interface IPreparedCondition<PARAMETERS> {
-
-        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias);
-
-        public IPreparedCondition<PARAMETERS> AND(IPreparedCondition<PARAMETERS> condition) {
-            return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
-        }
-        public IPreparedCondition<PARAMETERS> OR(IPreparedCondition<PARAMETERS> condition) {
-            return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
-        }
-
-        public IPreparedCondition<PARAMETERS> AND(IPreparedCondition condition) {
-            return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
-        }
-        public IPreparedCondition<PARAMETERS> OR(IPreparedCondition condition) {
-            return new PreparedAndOrCondition<PARAMETERS>(this, @operator: "AND", condition);
-        }
-    }
-
-    public class PreparedConditionWrapper<PARAMETERS> : IPreparedCondition<PARAMETERS> {
-
-        private IColumnCondition Condition { get; }
-
-        public PreparedConditionWrapper(IColumnCondition condition) {
-            Condition = condition;
-        }
-
-        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
-            Condition.GetSql(sql, database, useAlias: useAlias, parameters: null);
-        }
-    }
-    public class PreparedParameterCondition<PARAMETERS> : IPreparedCondition<PARAMETERS> {
-
-        public PreparedParameterCondition(IColumn column, string @operator, IParameter<PARAMETERS>? parameter) {
-            Column = column;
-            Operator = @operator;
-            Parameter = parameter;
-        }
-        public IColumn Column { get; }
-        public string Operator { get; }
-        public IParameter<PARAMETERS>? Parameter { get; }
-
-        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
-
-            if(Parameter != null) {
-                paramCollector.Add(Parameter);
-            }
-
-            if(useAlias) {
-                sql.Append(Column.Table.Alias).Append('.');
-            }
-            sql.Append(Column.ColumnName).Append(' ').Append(Operator);
-
-            if(Parameter != null) {
-                sql.Append(' ').Append(Parameter.Name!);
-            }
-        }
-    }
-
-    public class PreparedAndOrCondition<PARAMETERS> : IPreparedCondition<PARAMETERS> {
-
-        public PreparedAndOrCondition(IPreparedCondition<PARAMETERS> conditionA, string @operator, IPreparedCondition<PARAMETERS> conditionB) {
-            ConditionA1 = conditionA;
-            ConditionA2 = null;
-            Operator = @operator;
-            ConditionB1 = conditionB;
-            ConditionB2 = null;
-        }
-
-        public PreparedAndOrCondition(IPreparedCondition conditionA, string @operator, IPreparedCondition<PARAMETERS> conditionB) {
-            ConditionA1 = null;
-            ConditionA2 = conditionA;
-            Operator = @operator;
-            ConditionB1 = conditionB;
-            ConditionB2 = null;
-        }
-
-        public PreparedAndOrCondition(IPreparedCondition<PARAMETERS> conditionA, string @operator, IPreparedCondition conditionB) {
-            ConditionA1 = conditionA;
-            ConditionA2 = null;
-            Operator = @operator;
-            ConditionB1 = null;
-            ConditionB2 = conditionB;
-        }
-
-        public PreparedAndOrCondition(IPreparedCondition conditionA, string @operator, IPreparedCondition conditionB) {
-            ConditionA1 = null;
-            ConditionA2 = conditionA;
-            Operator = @operator;
-            ConditionB1 = null;
-            ConditionB2 = conditionB;
-        }
-
-
-        public IPreparedCondition<PARAMETERS>? ConditionA1 { get; }
-        public IPreparedCondition? ConditionA2 { get; }
-        public string Operator { get; }
-        public IPreparedCondition<PARAMETERS>? ConditionB1 { get; }
-        public IPreparedCondition? ConditionB2 { get; }
-
-        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
-
-            sql.Append('(');
-
-            if(ConditionA1 != null) {
-                ConditionA1.GetSql(sql, database, paramCollector, useAlias: useAlias);
-            }
-            else {
-                ConditionA2!.GetSql(sql, database, useAlias: useAlias);
-            }
-            sql.Append(' ').Append(Operator).Append(' ');
-
-            if(ConditionB1 != null) {
-                ConditionB1.GetSql(sql, database, paramCollector, useAlias: useAlias);
-            }
-            else {
-                ConditionB2!.GetSql(sql, database, useAlias: useAlias);
-            }
-            sql.Append(')');
-        }
-    }
-
-    public class PreparedIsNullCondition : IPreparedCondition {
-
-        public PreparedIsNullCondition(IColumn column, string @operator) {
-            Column = column;
-            Operator = @operator;
-        }
-        public IColumn Column { get; }
-        public string Operator { get; }
-
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias) {
-
-            if(useAlias) {
-                sql.Append(Column.Table.Alias).Append('.');
-            }
-            sql.Append(Column.ColumnName).Append(' ').Append(Operator);
-        }
-    }
-
-    public class PreparedColumnCondition<PARAMETERS> : IPreparedCondition<PARAMETERS> {
-
-        public PreparedColumnCondition(IColumn columnA, string @operator, IColumn columnB) {
-            ColumnA = columnA;
-            Operator = @operator;
-            ColumnB = columnB;
-        }
-        public IColumn ColumnA { get; }
-        public string Operator { get; }
-        public IColumn ColumnB { get; }
-
-        public void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
-
-            if(useAlias) {
-                sql.Append(ColumnA.Table.Alias).Append('.');
-            }
-            sql.Append(ColumnA.ColumnName).Append(' ').Append(Operator);
-
-            if(useAlias) {
-                sql.Append(ColumnB.Table.Alias).Append('.');
-            }
-            sql.Append(' ').Append(ColumnB.ColumnName);
+            return parameter.Name;
         }
     }
 }
