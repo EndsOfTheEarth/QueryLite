@@ -30,19 +30,43 @@ namespace QueryLite.Databases {
 
     public static class SqlHelper {
 
-        public static void AppendColumnName(StringBuilder sql, IColumn column) {
+        public static void AppendEncloseTableName(StringBuilder sql, ITable table) {
 
-            if(column.Enclose || column.ColumnName.Contains(' ')) {
-                sql.Append('[').Append(column.ColumnName).Append(']');
+            string value = table.TableName;
+
+            if(table.Enclose || value.Contains(' ')) {
+                sql.Append('[').Append(value).Append(']');
             }
             else {
-                sql.Append(column.ColumnName);
+                sql.Append(value);
             }
         }
 
-        public static void AppendEnclose(StringBuilder sql, string value, bool forceEnclose) {
+        public static void AppendEncloseColumnName(StringBuilder sql, IColumn column) {
 
-            if(forceEnclose || value.Contains(' ')) {
+            string value = column.ColumnName;
+
+            if(column.Enclose || value.Contains(' ')) {
+                sql.Append('[').Append(value).Append(']');
+            }
+            else {
+                sql.Append(value);
+            }
+        }
+
+        public static void AppendEncloseSchemaName(StringBuilder sql, string value) {
+
+            if(value.Contains(' ')) {
+                sql.Append('[').Append(value).Append(']');
+            }
+            else {
+                sql.Append(value);
+            }
+        }
+
+        public static void AppendEncloseAlias(StringBuilder sql, string value) {
+
+            if(value.Contains(' ')) {
                 sql.Append('[').Append(value).Append(']');
             }
             else {

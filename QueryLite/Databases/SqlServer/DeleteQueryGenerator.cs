@@ -49,10 +49,10 @@ namespace QueryLite.Databases.SqlServer {
                 string schemaName = database.SchemaMap(template.Table.SchemaName);
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
                     sql.Append('.');
                 }
-                SqlHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
+                SqlHelper.AppendEncloseTableName(sql, template.Table);
 
                 sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
             }
@@ -63,10 +63,10 @@ namespace QueryLite.Databases.SqlServer {
                 string schemaName = database.SchemaMap(template.Table.SchemaName);
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
                     sql.Append('.');
                 }
-                SqlHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
+                SqlHelper.AppendEncloseTableName(sql, template.Table);
 
                 GenerateOutputClause(sql, outputFunc);
             }
@@ -84,10 +84,10 @@ namespace QueryLite.Databases.SqlServer {
                     string joinSchemaName = database.SchemaMap(join.Table.SchemaName);
 
                     if(!string.IsNullOrWhiteSpace(joinSchemaName)) {
-                        SqlHelper.AppendEnclose(sql, joinSchemaName, forceEnclose: false);
+                        SqlHelper.AppendEncloseSchemaName(sql, joinSchemaName);
                         sql.Append('.');
                     }
-                    SqlHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
+                    SqlHelper.AppendEncloseTableName(sql, join.Table);
                     sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
                     join.Condition.GetSql(sql, database, useAlias: true, parameters);
                 }

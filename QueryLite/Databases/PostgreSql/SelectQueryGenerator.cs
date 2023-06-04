@@ -128,7 +128,7 @@ namespace QueryLite.Databases.PostgreSql {
                         if(useAliases) {
                             sql.Append(column.Table.Alias).Append('.');
                         }
-                        SqlHelper.AppendColumnName(sql, column);
+                        SqlHelper.AppendEncloseColumnName(sql, column);
                     }
                     else if(field is IFunction function) {
 
@@ -151,11 +151,11 @@ namespace QueryLite.Databases.PostgreSql {
             string schemaName = database.SchemaMap(template.FromTable.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
                 sql.Append('.');
             }
             
-            SqlHelper.AppendEnclose(sql, template.FromTable.TableName, forceEnclose: template.FromTable.Enclose);
+            SqlHelper.AppendEncloseTableName(sql, template.FromTable);
 
             if(useAliases) {
                 sql.Append(" AS ").Append(template.FromTable.Alias);
@@ -180,10 +180,10 @@ namespace QueryLite.Databases.PostgreSql {
                 string schemaName = database.SchemaMap(join.Table.SchemaName);
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
                     sql.Append('.');
                 }
-                SqlHelper.AppendEnclose(sql, join.Table.TableName, forceEnclose: join.Table.Enclose);
+                SqlHelper.AppendEncloseTableName(sql, join.Table);
 
                 if(useAliases) {
                     sql.Append(" AS ").Append(join.Table.Alias);
@@ -222,7 +222,7 @@ namespace QueryLite.Databases.PostgreSql {
                         if(useAliases) {
                             sql.Append(column.Table.Alias).Append('.');
                         }
-                        SqlHelper.AppendColumnName(sql, column);
+                        SqlHelper.AppendEncloseColumnName(sql, column);
                     }
                     else {
                         throw new Exception($"Unknown field type. Type = { field }");
@@ -263,7 +263,7 @@ namespace QueryLite.Databases.PostgreSql {
                         if((template.Extras == null || template.Extras.ParentUnion == null) && useAliases) {  //Cannot alias in the order by column when this is a union query
                             sql.Append(column.Table.Alias).Append('.');
                         }
-                        SqlHelper.AppendColumnName(sql, column);
+                        SqlHelper.AppendEncloseColumnName(sql, column);
                     }
                     else if(field is IFunction function) {
                         sql.Append(function.GetSql(database, useAlias: useAliases, parameters));

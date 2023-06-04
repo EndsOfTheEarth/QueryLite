@@ -36,10 +36,10 @@ namespace QueryLite.Databases.SqlServer {
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEnclose(sql, schemaName, forceEnclose: false);
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
                 sql.Append('.');
             }
-            SqlHelper.AppendEnclose(sql, template.Table.TableName, forceEnclose: template.Table.Enclose);
+            SqlHelper.AppendEncloseTableName(sql, template.Table);
             return StringBuilderCache.ToStringAndRelease(sql);
         }
     }

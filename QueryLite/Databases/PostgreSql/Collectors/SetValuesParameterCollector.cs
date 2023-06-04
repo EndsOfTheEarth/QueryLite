@@ -69,7 +69,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEncloseColumnName(_sql, column);
 
                 _paramSql!.Append(paramName);
 
@@ -86,7 +86,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEncloseColumnName(_sql, column);
                 _sql.Append('=').Append(paramName);
 
                 Parameters.ParameterList.Add(new NpgsqlParameter(parameterName: paramName, value) { NpgsqlDbType = dbType });
@@ -108,7 +108,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEncloseColumnName(_sql, column);
                 _paramSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
@@ -119,7 +119,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEncloseColumnName(_sql, column);
                 _sql.Append('=').Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
             }
             else {
@@ -431,7 +431,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 else {
                     _first = false;
                 }
-                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEncloseColumnName(_sql, column);
 
                 ParamsSql!.Append(value);
             }
@@ -443,7 +443,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 else {
                     _first = false;
                 }
-                SqlHelper.AppendEnclose(_sql, column.ColumnName, forceEnclose: false);
+                SqlHelper.AppendEncloseColumnName(_sql, column);
                 _sql.Append('=').Append(value);
             }
             else {
