@@ -503,7 +503,7 @@ namespace QueryLite
                 if(transaction == null) {
                     closeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -511,7 +511,7 @@ namespace QueryLite
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        dbConnection.Open();
+                        await dbConnection.OpenAsync(cancellationToken);
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
@@ -653,7 +653,7 @@ namespace QueryLite
                 if(transaction == null) {
                     closeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -661,7 +661,7 @@ namespace QueryLite
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        dbConnection.Open();
+                        await dbConnection.OpenAsync(cancellationToken);
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
@@ -797,7 +797,7 @@ namespace QueryLite
                 if(transaction == null) {
                     closeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -805,7 +805,7 @@ namespace QueryLite
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        dbConnection.Open();
+                        await dbConnection.OpenAsync(cancellationToken);
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
@@ -1347,7 +1347,7 @@ namespace QueryLite
                 if(transaction == null) {
                     closeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -1355,7 +1355,7 @@ namespace QueryLite
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        dbConnection.Open();
+                        await dbConnection.OpenAsync(cancellationToken);
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
@@ -1497,7 +1497,7 @@ namespace QueryLite
                 if(transaction == null) {
                     closeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -1505,7 +1505,7 @@ namespace QueryLite
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        dbConnection.Open();
+                        await dbConnection.OpenAsync(cancellationToken);
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
@@ -1639,7 +1639,7 @@ namespace QueryLite
                 if(transaction == null) {
                     closeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -1647,7 +1647,7 @@ namespace QueryLite
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        dbConnection.Open();
+                        await dbConnection.OpenAsync(cancellationToken);
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
@@ -1924,7 +1924,7 @@ namespace QueryLite
                 if(transaction == null) {
                     closeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -1932,7 +1932,7 @@ namespace QueryLite
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        dbConnection.Open();
+                        await dbConnection.OpenAsync(cancellationToken);
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
@@ -2175,6 +2175,7 @@ namespace QueryLite
         public static async Task<NonQueryResult> ExecuteNonQueryAsync<PARAMETERS>(
             IDatabase database,
             Transaction? transaction,
+            CancellationToken cancellationToken,
             QueryTimeout timeout,
             PARAMETERS parameters,
             List<ISetParameter<PARAMETERS>> setParameters,
@@ -2210,7 +2211,7 @@ namespace QueryLite
                 if(transaction == null) {
                     closeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -2218,7 +2219,7 @@ namespace QueryLite
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        dbConnection.Open();
+                        await dbConnection.OpenAsync(cancellationToken);
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
@@ -2302,6 +2303,5 @@ namespace QueryLite
                 }
             }
         }
-
     }
 }

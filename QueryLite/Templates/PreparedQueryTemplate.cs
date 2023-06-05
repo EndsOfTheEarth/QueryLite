@@ -337,7 +337,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -347,7 +347,7 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
+            return PreparedQueryExecutor.ExecuteAsync(
                 database: database,
                 paramValue: parameterValues,
                 transaction: null,
@@ -359,10 +359,9 @@ namespace QueryLite {
                 debugName: debugName,
                 cancellationToken: cancellationToken
             );
-            return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -374,7 +373,7 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
+            return PreparedQueryExecutor.ExecuteAsync(
                 database: database,
                 paramValue: parameterValues,
                 transaction: transaction,
@@ -386,7 +385,6 @@ namespace QueryLite {
                 debugName: debugName,
                 cancellationToken: cancellationToken
             );
-            return result;
         }
 
         public RESULT? SingleOrDefault(PARAMETERS parameterValues, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
@@ -439,7 +437,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -451,7 +449,7 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
+            return PreparedQueryExecutor.SingleOrDefaultAsync(
                 database: database,
                 paramValue: parameterValues,
                 transaction: transaction,
@@ -463,10 +461,9 @@ namespace QueryLite {
                 queryType: QueryType.Select,
                 debugName: debugName
             );
-            return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -476,7 +473,7 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
+            return PreparedQueryExecutor.SingleOrDefaultAsync(
                 database: database,
                 paramValue: parameterValues,
                 transaction: null,
@@ -488,7 +485,6 @@ namespace QueryLite {
                 queryType: QueryType.Select,
                 debugName: debugName
             );
-            return result;
         }
     }
 

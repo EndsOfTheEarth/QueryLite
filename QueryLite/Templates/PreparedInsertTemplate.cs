@@ -123,13 +123,14 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             InsertSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
-            NonQueryResult result = await PreparedQueryExecutor.ExecuteNonQueryAsync(
+            return PreparedQueryExecutor.ExecuteNonQueryAsync(
                 database: transaction.Database,
                 transaction: transaction,
+                cancellationToken: cancellationToken ?? CancellationToken.None,
                 timeout: timeout ?? TimeoutLevel.ShortInsert,
                 parameters: parameters,
                 setParameters: insertDetail.SetParameters,
@@ -137,7 +138,6 @@ namespace QueryLite {
                 queryType: QueryType.Insert,
                 debugName: debugName
             );
-            return result;
         }
     }
 
@@ -204,11 +204,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             InsertSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
-            QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
+            return PreparedQueryExecutor.ExecuteAsync(
                 database: transaction.Database,
                 transaction: transaction,
                 cancellationToken: cancellationToken ?? CancellationToken.None,
@@ -220,7 +220,6 @@ namespace QueryLite {
                 queryType: QueryType.Insert,
                 debugName: debugName
             );
-            return result;
         }
     }
 }
