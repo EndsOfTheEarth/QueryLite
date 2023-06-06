@@ -8,6 +8,12 @@ namespace Benchmarks {
 
             BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
 
+            //BenchmarkRunner.Run<SelectTenRowBenchmarks>();
+
+            //BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
+
+            //BenchmarkRunner.Run<SelectOneThousandRowBenchmarks>();
+
             //BenchmarkRunner.Run<InsertBenchmarks>();
 
             //new SelectSingleRowBenchmarks().QueryLite_Single_Row_Select();
