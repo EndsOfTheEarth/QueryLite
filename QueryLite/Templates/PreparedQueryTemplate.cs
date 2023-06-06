@@ -453,14 +453,14 @@ namespace QueryLite {
                 database: database,
                 paramValue: parameterValues,
                 transaction: transaction,
-                cancellationToken: cancellationToken ?? CancellationToken.None,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
                 func: QueryTemplate.SelectFunction!,
                 sql: queryDetail.Sql,
                 queryType: QueryType.Select,
                 debugName: debugName
-            );
+,
+                cancellationToken: cancellationToken ?? CancellationToken.None);
         }
 
         public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
@@ -477,14 +477,14 @@ namespace QueryLite {
                 database: database,
                 paramValue: parameterValues,
                 transaction: null,
-                cancellationToken: cancellationToken ?? CancellationToken.None,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
                 func: QueryTemplate.SelectFunction!,
                 sql: queryDetail.Sql,
                 queryType: QueryType.Select,
                 debugName: debugName
-            );
+,
+                cancellationToken: cancellationToken ?? CancellationToken.None);
         }
     }
 

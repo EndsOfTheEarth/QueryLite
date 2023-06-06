@@ -130,14 +130,14 @@ namespace QueryLite {
             return PreparedQueryExecutor.ExecuteNonQueryAsync(
                 database: transaction.Database,
                 transaction: transaction,
-                cancellationToken: cancellationToken ?? CancellationToken.None,
                 timeout: timeout ?? TimeoutLevel.ShortInsert,
                 parameters: parameters,
                 setParameters: insertDetail.SetParameters,
                 sql: insertDetail.Sql,
                 queryType: QueryType.Insert,
                 debugName: debugName
-            );
+,
+                cancellationToken: cancellationToken ?? CancellationToken.None);
         }
     }
 
@@ -211,7 +211,6 @@ namespace QueryLite {
             return PreparedQueryExecutor.ExecuteAsync(
                 database: transaction.Database,
                 transaction: transaction,
-                cancellationToken: cancellationToken ?? CancellationToken.None,
                 timeout: timeout ?? TimeoutLevel.ShortInsert,
                 parameters: parameters,
                 setParameters: insertDetail.SetParameters,
@@ -219,7 +218,8 @@ namespace QueryLite {
                 sql: insertDetail.Sql,
                 queryType: QueryType.Insert,
                 debugName: debugName
-            );
+,
+                cancellationToken: cancellationToken ?? CancellationToken.None);
         }
     }
 }

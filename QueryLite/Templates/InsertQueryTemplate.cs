@@ -168,6 +168,4 @@ namespace QueryLite {
             Value = value;
         }
     }
-
-
 }
