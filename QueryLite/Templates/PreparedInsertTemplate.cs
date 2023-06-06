@@ -87,7 +87,10 @@ namespace QueryLite {
             _insertDetails = new InsertSqlAndParameters<PARAMETERS>?[max + 1];
         }
 
-        public InsertSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
+        public void Initilize(IDatabase database) {
+            _ = GetInsertQuery(database);
+        }
+        private InsertSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
@@ -167,7 +170,10 @@ namespace QueryLite {
             _insertDetails = new InsertSqlAndParameters<PARAMETERS>?[max + 1];
         }
 
-        public InsertSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
+        public void Initilize(IDatabase database) {
+            _ = GetInsertQuery(database);
+        }
+        private InsertSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
