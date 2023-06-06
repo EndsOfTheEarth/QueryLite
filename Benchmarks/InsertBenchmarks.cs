@@ -8,13 +8,13 @@ namespace Benchmarks {
     [MemoryDiagnoser]
     public class InsertBenchmarks {
 
-        private IPreparedInsertQuery<InsertBenchmarks> preparedInsertQuery;
+        private IPreparedInsertQuery<InsertBenchmarks> _preparedInsertQuery;
 
         public InsertBenchmarks() {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            preparedInsertQuery = Query
+            _preparedInsertQuery = Query
                 .PreparedInsert<InsertBenchmarks>(table)
                 .Values(values => values
                     .Set(table.Row_guid, info => info._guid)
@@ -23,7 +23,7 @@ namespace Benchmarks {
                 )
                 .Build();
 
-            preparedInsertQuery.Initilize(Databases.TestDatabase);
+            _preparedInsertQuery.Initilize(Databases.TestDatabase);
         }
 
         [IterationSetup]
@@ -88,7 +88,7 @@ namespace Benchmarks {
 
             using QueryLite.Transaction transaction = new Transaction(Databases.TestDatabase);
 
-            NonQueryResult result = preparedInsertQuery.Execute(parameters: this, transaction);
+            NonQueryResult result = _preparedInsertQuery.Execute(parameters: this, transaction);
 
             transaction.Commit();
         }

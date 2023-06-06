@@ -6,7 +6,11 @@
 
     public sealed class Test01 {
 
-        public Test01(IntKey<ITest01> id, Guid row_guid, string message, DateTime date) {
+        public Test01() {
+
+        }
+
+        public Test01(int id, Guid row_guid, string message, DateTime date) {
             Id = id;
             Row_guid = row_guid;
             Message = message;
@@ -19,7 +23,7 @@
             Message = row.Get(table.Message);
             Date = row.Get(table.Date);
         }
-        public IntKey<ITest01> Id { get; set; }
+        public int Id { get; set; }
         public Guid Row_guid { get; set; }
         public string Message { get; set; } = string.Empty;
         public DateTime Date { get; set; }
