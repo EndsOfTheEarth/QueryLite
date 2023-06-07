@@ -45,26 +45,19 @@ namespace QueryLite {
         /// </summary>
         /// <typeparam name="PARAMETERS"></typeparam>
         /// <returns></returns>
-        public static IPreparedSelect<PARAMETERS> PrepareWithParameters<PARAMETERS>() => new PreparedSelect<PARAMETERS>();
+        public static IPreparedOption<PARAMETERS> PrepareWithParameters<PARAMETERS>() => new PreparedOption<PARAMETERS>();
 
-        public interface IPreparedSelect<PARAMETERS> {
+        public interface IPreparedOption<PARAMETERS> {
 
             IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
+            IPreparedInsertSet<PARAMETERS> Insert(ITable table);
         }
 
-        internal sealed class PreparedSelect<PARAMETERS> : IPreparedSelect<PARAMETERS> {
+        internal sealed class PreparedOption<PARAMETERS> : IPreparedOption<PARAMETERS> {
 
             public IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc);
-        }
 
-        /// <summary>
-        /// Create a prepared insert
-        /// </summary>
-        /// <typeparam name="PARAMETERS"></typeparam>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        public static IPreparedInsertSet<PARAMETERS> PreparedInsert<PARAMETERS>(ITable table) {
-            return new PreparedInsertTemplate<PARAMETERS>(table);
+            public IPreparedInsertSet<PARAMETERS> Insert(ITable table) => new PreparedInsertTemplate<PARAMETERS>(table);
         }
 
         /// <summary>

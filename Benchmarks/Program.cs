@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
 
 namespace Benchmarks {
 
@@ -6,11 +7,13 @@ namespace Benchmarks {
 
         static void Main(string[] args) {
 
-            BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
+            //BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectTenRowBenchmarks>();
 
-            //BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
+            //new SelectTenRowBenchmarks().QueryLite_Ten_Row_Prepared_Select();
+
+            BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectOneThousandRowBenchmarks>();
 

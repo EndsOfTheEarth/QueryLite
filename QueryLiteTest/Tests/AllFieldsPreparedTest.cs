@@ -271,7 +271,8 @@ namespace QueryLiteTest.Tests {
         }
 
         private static IPreparedInsertQuery<AllTypes> _insertQueryWithoutReturning = Query
-            .PreparedInsert<AllTypes>(AllTypesTable.Instance)
+            .PrepareWithParameters<AllTypes>()
+            .Insert(AllTypesTable.Instance)
             .Values(values => values
                 .Set(AllTypesTable.Instance.Guid, (info) => info.Guid)
                 .Set(AllTypesTable.Instance.String, (info) => info.String)
@@ -685,7 +686,8 @@ namespace QueryLiteTest.Tests {
         }
 
         private static IPreparedInsertQuery<AllTypes, AllTypesInfo> _insertQuery1 = Query
-            .PreparedInsert<AllTypes>(AllTypesTable.Instance)
+            .PrepareWithParameters<AllTypes>()
+            .Insert(AllTypesTable.Instance)
             .Values(values => values
                 .Set(AllTypesTable.Instance.Guid, (info) => info.Guid)
                 .Set(AllTypesTable.Instance.String, (info) => info.String)
@@ -782,7 +784,8 @@ namespace QueryLiteTest.Tests {
             AllTypesTable table = AllTypesTable.Instance;
 
             IPreparedInsertQuery<AllTypes, AllTypesInfo> insertQuery = Query
-                .PreparedInsert<AllTypes>(table)
+                .PrepareWithParameters<AllTypes>()
+                .Insert(table)
                 .Values(values => values
                     .Set(table.Guid, info => info.Guid)
                     .Set(table.String, info => info.String)
@@ -1259,7 +1262,8 @@ namespace QueryLiteTest.Tests {
             AllTypesTable table = AllTypesTable.Instance;
 
             IPreparedInsertQuery<AllTypes, AllTypesInfo> insertQuery = Query
-                .PreparedInsert<AllTypes>(table)
+                .PrepareWithParameters<AllTypes>()
+                .Insert(table)
                 .Values(values => values
                     .Set(table.Guid, info => info.Guid)
                         .Set(table.String, info => info.String)
