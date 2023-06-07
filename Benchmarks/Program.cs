@@ -1,11 +1,20 @@
 ﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 
-namespace Benchmarks {
+namespace Benchmarks
+{
 
     internal class Program {
 
         static void Main(string[] args) {
+
+            BenchmarkRunner.Run<DeleteSingleRowBenchmarks>();
+            //BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
+
+            //new UpdateSingleRowBenchmarks().Setup();
+            //new UpdateSingleRowBenchmarks().Ado_Single_Row_Update();
+            //new UpdateSingleRowBenchmarks().Dapper_Single_Row_Update();
+            //new UpdateSingleRowBenchmarks().QueryLite_Single_Row_Dynamic_Update();
 
             //BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
 
@@ -13,7 +22,7 @@ namespace Benchmarks {
 
             //new SelectTenRowBenchmarks().QueryLite_Ten_Row_Prepared_Select();
 
-            BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
+            //BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectOneThousandRowBenchmarks>();
 

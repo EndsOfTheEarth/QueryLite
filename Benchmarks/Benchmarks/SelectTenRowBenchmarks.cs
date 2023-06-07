@@ -7,19 +7,19 @@ using QueryLite;
 namespace Benchmarks {
 
     [MemoryDiagnoser]
-    public class SelectOneThousandRowBenchmarks {
+    public class SelectTenRowBenchmarks {
 
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        private IPreparedQueryExecute<SelectOneThousandRowBenchmarks, Test01> _preparedSelectQuery;
+        private IPreparedQueryExecute<SelectTenRowBenchmarks, Test01> _preparedSelectQuery;
 
-        public SelectOneThousandRowBenchmarks() {
+        public SelectTenRowBenchmarks() {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
             _preparedSelectQuery = Query
-                .PrepareWithParameters<SelectOneThousandRowBenchmarks>()
+                .PrepareWithParameters<SelectTenRowBenchmarks>()
                 .Select(
                     row => new Test01(table, row)
                 )
@@ -34,11 +34,11 @@ namespace Benchmarks {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            using(QueryLite.Transaction transaction = new QueryLite.Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
-                for(int index = 0; index < 1000; index++) {
+                for(int index = 0; index < 10; index++) {
 
                     NonQueryResult result = Query
                         .Insert(table)
@@ -54,7 +54,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void Ado_One_Thousand_Row_Select() {
+        public void Ado_Ten_Row_Select() {
 
             using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
@@ -82,7 +82,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void Dapper_One_Thousand_Row_Select() {
+        public void Dapper_Ten_Row_Select() {
 
             using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
@@ -93,13 +93,13 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void QueryLite_One_Thousand_Row_Prepared_Select() {
+        public void QueryLite_Ten_Row_Prepared_Select() {
 
             QueryResult<Test01> result = _preparedSelectQuery.Execute(parameterValues: this, Databases.TestDatabase);
         }
 
         [Benchmark]
-        public void QueryLite_One_Thousand_Row_Dynamic_Select() {
+        public void QueryLite_Ten_Row_Dynamic_Select() {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 

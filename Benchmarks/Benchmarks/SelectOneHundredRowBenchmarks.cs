@@ -34,7 +34,7 @@ namespace Benchmarks {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            using(QueryLite.Transaction transaction = new QueryLite.Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 

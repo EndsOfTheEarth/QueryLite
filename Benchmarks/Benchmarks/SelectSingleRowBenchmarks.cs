@@ -36,7 +36,7 @@ namespace Benchmarks {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            using(QueryLite.Transaction transaction = new QueryLite.Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -70,7 +70,7 @@ namespace Benchmarks {
 
             reader.Read();
 
-            Classes.Test01 test01 = new Classes.Test01(
+            Test01 test01 = new Test01(
                 id: reader.GetInt32(0),
                 row_guid: reader.GetGuid(1),
                 message: reader.GetString(2),

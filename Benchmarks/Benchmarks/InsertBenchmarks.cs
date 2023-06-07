@@ -32,7 +32,7 @@ namespace Benchmarks {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            using(QueryLite.Transaction transaction = new QueryLite.Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -87,7 +87,7 @@ namespace Benchmarks {
         [Benchmark]
         public void QueryLite_Single_Compiled_Insert() {
 
-            using QueryLite.Transaction transaction = new Transaction(Databases.TestDatabase);
+            using Transaction transaction = new Transaction(Databases.TestDatabase);
 
             NonQueryResult result = _preparedInsertQuery.Execute(parameters: this, transaction);
 
@@ -99,7 +99,7 @@ namespace Benchmarks {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            using QueryLite.Transaction transaction = new Transaction(Databases.TestDatabase);
+            using Transaction transaction = new Transaction(Databases.TestDatabase);
 
             NonQueryResult result = Query
                 .Insert(table)
