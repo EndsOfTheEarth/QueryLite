@@ -54,12 +54,12 @@ namespace QueryLite {
 
     internal sealed class InsertSqlAndParameters<PARAMETERS> {
 
-        public InsertSqlAndParameters(string sql, List<ISetParameter<PARAMETERS>> setParameters) {
+        public InsertSqlAndParameters(string sql, PreparedParameterList<PARAMETERS> setParameters) {
             Sql = sql;
             SetParameters = setParameters;
         }
         public string Sql { get; }
-        public List<ISetParameter<PARAMETERS>> SetParameters { get; }
+        public PreparedParameterList<PARAMETERS> SetParameters { get; }
     }
 
     internal sealed class PreparedInsertQuery<PARAMETERS> : IPreparedInsertQuery<PARAMETERS> {
@@ -98,7 +98,7 @@ namespace QueryLite {
 
             if(_insertDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, bool>(_template, database, out List<ISetParameter<PARAMETERS>> insertParameters, outputFunc: null);
+                string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, bool>(_template, database, out PreparedParameterList<PARAMETERS> insertParameters, outputFunc: null);
 
                 insertDetail = new InsertSqlAndParameters<PARAMETERS>(sql, insertParameters);
                 _insertDetails[dbTypeIndex] = insertDetail;
@@ -181,7 +181,7 @@ namespace QueryLite {
 
             if(_insertDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, RESULT>(_template, database, out List<ISetParameter<PARAMETERS>> insertParameters, outputFunc: _outputFunc);
+                string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, RESULT>(_template, database, out PreparedParameterList<PARAMETERS> insertParameters, outputFunc: _outputFunc);
 
                 insertDetail = new InsertSqlAndParameters<PARAMETERS>(sql, insertParameters);
                 _insertDetails[dbTypeIndex] = insertDetail;

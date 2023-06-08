@@ -265,20 +265,12 @@ namespace QueryLite {
 
             if(_queries[dbTypeIndex] == null) {
 
-                ParameterCollector<PARAMETERS> paramCollector = new ParameterCollector<PARAMETERS>();
+                PreparedParameterList<PARAMETERS> parameters = new PreparedParameterList<PARAMETERS>();
 
-                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, paramCollector);
+                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, parameters);
 
-                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql);
+                queryDetail = new PreparedQueryDetail<PARAMETERS>(sql, parameters);
 
-                for(int index = 0; index < paramCollector.Parameters.Count; index++) {
-
-                    IPreparedQueryParameter<PARAMETERS> parameter = paramCollector.Parameters[index];
-
-                    CreateParameterDelegate createParameterFunction = database.ParameterMapper.GetCreateParameterDelegate(parameter.GetValueType());
-
-                    queryDetail.QueryParameters.Add(new QueryParameter<PARAMETERS>(parameter, createParameterFunction));
-                }
                 _queries[dbTypeIndex] = queryDetail;
             }
             else {
@@ -490,23 +482,24 @@ namespace QueryLite {
 
     internal sealed class PreparedQueryDetail<PARAMETERS> {
 
-        public PreparedQueryDetail(string sql) {
+        public PreparedQueryDetail(string sql, PreparedParameterList<PARAMETERS> queryParameters) {
             Sql = sql;
+            QueryParameters = queryParameters;
         }
         public string Sql { get; }
-        public List<QueryParameter<PARAMETERS>> QueryParameters { get; } = new List<QueryParameter<PARAMETERS>>();
+        public PreparedParameterList<PARAMETERS> QueryParameters { get; }
     }
 
-    internal sealed class QueryParameter<PARAMETERS> {
+    //internal sealed class QueryParameter<PARAMETERS> {
 
-        public QueryParameter(IPreparedQueryParameter<PARAMETERS> parameter, CreateParameterDelegate createParameterFunction) {
-            Parameter = parameter;
-            CreateParameterFunction = createParameterFunction;
-        }
+    //    public QueryParameter(ISetParameter<PARAMETERS> parameter, CreateParameterDelegate createParameterFunction) {
+    //        Parameter = parameter;
+    //        CreateParameterFunction = createParameterFunction;
+    //    }
 
-        public DbParameter CreateParameter(PARAMETERS parameters) => CreateParameterFunction(Parameter.Name, Parameter.GetValue(parameters));
+    //    public DbParameter CreateParameter(PARAMETERS parameters) => CreateParameterFunction(Parameter.Name, Parameter.GetValue(parameters));
 
-        public IPreparedQueryParameter<PARAMETERS> Parameter { get; }
-        public CreateParameterDelegate CreateParameterFunction { get; }
-    }
+    //    public ISetParameter<PARAMETERS> Parameter { get; }
+    //    public CreateParameterDelegate CreateParameterFunction { get; }
+    //}
 }

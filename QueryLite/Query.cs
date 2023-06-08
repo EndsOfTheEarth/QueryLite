@@ -51,6 +51,7 @@ namespace QueryLite {
 
             IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
             IPreparedInsertSet<PARAMETERS> Insert(ITable table);
+            IPreparedUpdateSet<PARAMETERS> Update(ITable table);
         }
 
         internal sealed class PreparedOption<PARAMETERS> : IPreparedOption<PARAMETERS> {
@@ -58,6 +59,8 @@ namespace QueryLite {
             public IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc);
 
             public IPreparedInsertSet<PARAMETERS> Insert(ITable table) => new PreparedInsertTemplate<PARAMETERS>(table);
+
+            public IPreparedUpdateSet<PARAMETERS> Update(ITable table) => new PreparedUpdateTemplate<PARAMETERS>(table);
         }
 
         /// <summary>

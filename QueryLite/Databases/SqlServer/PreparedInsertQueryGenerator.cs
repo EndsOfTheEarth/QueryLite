@@ -30,7 +30,7 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerPreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
 
-        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters, Func<IResultRow, RESULT>? outputFunc) {
+        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
@@ -55,7 +55,7 @@ namespace QueryLite.Databases.SqlServer {
 
             sql.Append(')');
 
-            parameters = valuesCollector.InsertParameters;
+            parameters = valuesCollector.Parameters;
 
             GetReturningSyntax<PARAMETERS, RESULT>(sql, outputFunc);
 
