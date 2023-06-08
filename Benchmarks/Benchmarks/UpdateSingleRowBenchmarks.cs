@@ -12,22 +12,23 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        //private IPreparedQueryExecute<UpdateSingleRowBenchmarks, Test01> _preparedUpdateQuery;
+        private IPreparedUpdateQuery<UpdateSingleRowBenchmarks> _preparedUpdateQuery;
 
         public UpdateSingleRowBenchmarks() {
 
-            //Tables.Test01Table table = Tables.Test01Table.Instance;
+            Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            //_preparedUpdateQuery = Query
-            //    .PrepareWithParameters<UpdateSingleRowBenchmarks>()
-            //    .Select(
-            //        row => new Test01(table, row)
-            //    )
-            //    .From(table)
-            //    .Where(where => where.EQUALS(table.Row_guid, info => info._guid))
-            //    .Build();
+            _preparedUpdateQuery = Query
+                .Prepare<UpdateSingleRowBenchmarks>()
+                .Update(table)
+                .Values(values => values
+                    .Set(table.Message, info => "New Message")
+                    .Set(table.Date, info => DateTime.Now)
+                )
+                .Where(where => where.EQUALS(table.Row_guid, info => info._guid))
+                .Build();
 
-            //_preparedUpdateQuery.Initialize(Databases.TestDatabase);
+            _preparedUpdateQuery.Initialize(Databases.TestDatabase);
         }
 
         [IterationSetup]
@@ -92,11 +93,15 @@ namespace Benchmarks {
             transaction.Commit();
         }
 
-        //[Benchmark]
-        //public void QueryLite_Single_Row_Prepared_Select() {
+        [Benchmark]
+        public void QueryLite_Single_Row_Prepared_Update() {
 
-        //    QueryResult<Test01> result = _preparedSelectQuery.Execute(parameterValues: this, Databases.TestDatabase);
-        //}
+            using Transaction transaction = new Transaction(Databases.TestDatabase);
+
+            NonQueryResult result = _preparedUpdateQuery.Execute(parameters: this, transaction);
+
+            transaction.Commit();
+        }
 
         [Benchmark]
         public void QueryLite_Single_Row_Dynamic_Update() {

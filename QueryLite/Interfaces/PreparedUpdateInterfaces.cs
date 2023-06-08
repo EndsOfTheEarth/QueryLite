@@ -105,24 +105,11 @@ namespace QueryLite {
 
         IPreparedUpdateQuery<PARAMETERS> Build();
         IPreparedUpdateQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc);
-
-        /// <summary>
-        /// Get update sql
-        /// </summary>
-        /// <param name="database"></param>
-        /// <returns></returns>
-        //string GetSql(IDatabase database);
-
-        //NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        //QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-
-        //Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        //Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
     }
 
     public interface IPreparedUpdateQuery<PARAMETERS> {
 
-        void Initilize(IDatabase database);
+        void Initialize(IDatabase database);
 
         NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
@@ -130,7 +117,7 @@ namespace QueryLite {
 
     public interface IPreparedUpdateQuery<PARAMETERS, RESULT> {
 
-        void Initilize(IDatabase database);
+        void Initialize(IDatabase database);
 
         QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");

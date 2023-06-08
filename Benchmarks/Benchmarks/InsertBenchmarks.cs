@@ -24,7 +24,7 @@ namespace Benchmarks {
                 )
                 .Build();
 
-            _preparedInsertQuery.Initilize(Databases.TestDatabase);
+            _preparedInsertQuery.Initialize(Databases.TestDatabase);
         }
 
         [IterationSetup]

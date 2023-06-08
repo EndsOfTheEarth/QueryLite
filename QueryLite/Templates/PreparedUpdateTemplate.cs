@@ -137,7 +137,7 @@ namespace QueryLite {
             _updateDetails = new UpdateSqlAndParameters<PARAMETERS>?[max + 1];
         }
 
-        public void Initilize(IDatabase database) {
+        public void Initialize(IDatabase database) {
             _ = GetUpdateQuery(database);
         }
         private UpdateSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {
@@ -220,7 +220,7 @@ namespace QueryLite {
             _updateDetails = new UpdateSqlAndParameters<PARAMETERS>?[max + 1];
         }
 
-        public void Initilize(IDatabase database) {
+        public void Initialize(IDatabase database) {
             _ = GetUpdateQuery(database);
         }
         private UpdateSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {

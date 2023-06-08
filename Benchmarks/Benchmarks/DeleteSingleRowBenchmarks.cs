@@ -53,7 +53,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void Ado_Single_Row_Update() {
+        public void Ado_Single_Row_Delete() {
 
             using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
@@ -78,7 +78,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void Dapper_Single_Row_Update() {
+        public void Dapper_Single_Row_Delete() {
 
             using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
@@ -95,13 +95,13 @@ namespace Benchmarks {
         }
 
         //[Benchmark]
-        //public void QueryLite_Single_Row_Prepared_Select() {
+        //public void QueryLite_Single_Row_Prepared_Delete() {
 
         //    QueryResult<Test01> result = _preparedSelectQuery.Execute(parameterValues: this, Databases.TestDatabase);
         //}
 
         [Benchmark]
-        public void QueryLite_Single_Row_Dynamic_Update() {
+        public void QueryLite_Single_Row_Dynamic_Delete() {
 
             Tables.Test01Table table = Tables.Test01Table.Instance;
 

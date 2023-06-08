@@ -87,7 +87,7 @@ namespace QueryLite {
             _insertDetails = new InsertSqlAndParameters<PARAMETERS>?[max + 1];
         }
 
-        public void Initilize(IDatabase database) {
+        public void Initialize(IDatabase database) {
             _ = GetInsertQuery(database);
         }
         private InsertSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
