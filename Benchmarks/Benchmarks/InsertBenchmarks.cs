@@ -15,7 +15,7 @@ namespace Benchmarks {
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
             _preparedInsertQuery = Query
-                .PrepareWithParameters<InsertBenchmarks>()
+                .Prepare<InsertBenchmarks>()
                 .Insert(table)
                 .Values(values => values
                     .Set(table.Row_guid, info => info._guid)

@@ -45,7 +45,7 @@ namespace QueryLite {
         /// </summary>
         /// <typeparam name="PARAMETERS"></typeparam>
         /// <returns></returns>
-        public static IPreparedOption<PARAMETERS> PrepareWithParameters<PARAMETERS>() => new PreparedOption<PARAMETERS>();
+        public static IPreparedOption<PARAMETERS> Prepare<PARAMETERS>() => new PreparedOption<PARAMETERS>();
 
         public interface IPreparedOption<PARAMETERS> {
 

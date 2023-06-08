@@ -25,7 +25,7 @@ namespace QueryLiteTest.Tests {
                 COUNT_ALL count = COUNT_ALL.Instance;
 
                 IPreparedQueryExecute<bool, int> query = Query
-                    .PrepareWithParameters<bool>()
+                    .Prepare<bool>()
                     .Select(
                         row => row.Get(count)
                     )
@@ -115,7 +115,7 @@ namespace QueryLiteTest.Tests {
 
             {
                 IPreparedQueryExecute<bool, AllTypesInfo> query = Query
-                    .PrepareWithParameters<bool>()
+                    .Prepare<bool>()
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )

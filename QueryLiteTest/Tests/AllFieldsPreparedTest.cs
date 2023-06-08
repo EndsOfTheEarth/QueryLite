@@ -60,7 +60,7 @@ namespace QueryLiteTest.Tests {
             {
 
                 query1 = Query
-                    .PrepareWithParameters<bool>()
+                    .Prepare<bool>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
                     .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable.Id))
@@ -70,7 +70,7 @@ namespace QueryLiteTest.Tests {
             {
 
                 _selectAllTypesQuery = Query
-                   .PrepareWithParameters<AllTypes>()
+                   .Prepare<AllTypes>()
                    .Select(
                        row => new AllTypesInfo(row, allTypesTable)
                    )
@@ -82,7 +82,7 @@ namespace QueryLiteTest.Tests {
             {
 
                 _selectAllCountQuery = Query
-                    .PrepareWithParameters<bool>()
+                    .Prepare<bool>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
                     .Build();
@@ -90,7 +90,7 @@ namespace QueryLiteTest.Tests {
             {
 
                 _selectAllTypesCountQuery = Query
-                    .PrepareWithParameters<AllTypes>()
+                    .Prepare<AllTypes>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
                     .Where(where => where.EQUALS(allTypesTable.Id, (info) => info.Id))
@@ -271,7 +271,7 @@ namespace QueryLiteTest.Tests {
         }
 
         private static IPreparedInsertQuery<AllTypes> _insertQueryWithoutReturning = Query
-            .PrepareWithParameters<AllTypes>()
+            .Prepare<AllTypes>()
             .Insert(AllTypesTable.Instance)
             .Values(values => values
                 .Set(AllTypesTable.Instance.Guid, (info) => info.Guid)
@@ -686,7 +686,7 @@ namespace QueryLiteTest.Tests {
         }
 
         private static IPreparedInsertQuery<AllTypes, AllTypesInfo> _insertQuery1 = Query
-            .PrepareWithParameters<AllTypes>()
+            .Prepare<AllTypes>()
             .Insert(AllTypesTable.Instance)
             .Values(values => values
                 .Set(AllTypesTable.Instance.Guid, (info) => info.Guid)
@@ -784,7 +784,7 @@ namespace QueryLiteTest.Tests {
             AllTypesTable table = AllTypesTable.Instance;
 
             IPreparedInsertQuery<AllTypes, AllTypesInfo> insertQuery = Query
-                .PrepareWithParameters<AllTypes>()
+                .Prepare<AllTypes>()
                 .Insert(table)
                 .Values(values => values
                     .Set(table.Guid, info => info.Guid)
@@ -1175,7 +1175,7 @@ namespace QueryLiteTest.Tests {
             AllTypesTable allTypesTable4 = AllTypesTable.Instance4;
 
             IPreparedQueryExecute<JoinQueryParams, AllTypesInfoResult4> joinQuery1 = Query
-                .PrepareWithParameters<JoinQueryParams>()
+                .Prepare<JoinQueryParams>()
                 .Select(
                     row => new AllTypesInfoResult4(
                         allTypesRow1: new AllTypesInfo(row, allTypesTable1),
@@ -1227,7 +1227,7 @@ namespace QueryLiteTest.Tests {
             AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
 
             IPreparedQueryExecute<AllTypes, AllTypesInfoResult3> joinQuery = Query
-                .PrepareWithParameters<AllTypes>()
+                .Prepare<AllTypes>()
                 .Select(
                     row => new AllTypesInfoResult3(
                         allTypesRow1: new AllTypesInfo(row, allTypesTable1),
@@ -1262,7 +1262,7 @@ namespace QueryLiteTest.Tests {
             AllTypesTable table = AllTypesTable.Instance;
 
             IPreparedInsertQuery<AllTypes, AllTypesInfo> insertQuery = Query
-                .PrepareWithParameters<AllTypes>()
+                .Prepare<AllTypes>()
                 .Insert(table)
                 .Values(values => values
                     .Set(table.Guid, info => info.Guid)
