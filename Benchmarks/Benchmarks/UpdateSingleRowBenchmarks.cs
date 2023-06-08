@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Benchmarks.Classes;
 using Dapper;
 using Npgsql;
 using QueryLite;
@@ -13,22 +12,22 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        private IPreparedQueryExecute<UpdateSingleRowBenchmarks, Test01> _preparedSelectQuery;
+        //private IPreparedQueryExecute<UpdateSingleRowBenchmarks, Test01> _preparedUpdateQuery;
 
         public UpdateSingleRowBenchmarks() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            //Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            _preparedSelectQuery = Query
-                .PrepareWithParameters<UpdateSingleRowBenchmarks>()
-                .Select(
-                    row => new Test01(table, row)
-                )
-                .From(table)
-                .Where(where => where.EQUALS(table.Row_guid, info => info._guid))
-                .Build();
+            //_preparedUpdateQuery = Query
+            //    .PrepareWithParameters<UpdateSingleRowBenchmarks>()
+            //    .Select(
+            //        row => new Test01(table, row)
+            //    )
+            //    .From(table)
+            //    .Where(where => where.EQUALS(table.Row_guid, info => info._guid))
+            //    .Build();
 
-            _preparedSelectQuery.Initialize(Databases.TestDatabase);
+            //_preparedUpdateQuery.Initialize(Databases.TestDatabase);
         }
 
         [IterationSetup]
@@ -115,7 +114,7 @@ namespace Benchmarks {
                 .Where(table.Row_guid == _guid)
                 .Execute(transaction);
 
-            transaction.Commit();            
+            transaction.Commit();
         }
     }
 }
