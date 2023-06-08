@@ -44,6 +44,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
 
             SqlHelper.AppendEncloseTableName(sql, template.Table);
+
             sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
 
             {

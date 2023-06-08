@@ -178,12 +178,12 @@ namespace QueryLite.PreparedQuery {
             SqlHelper.AppendEncloseColumnName(sql, _column);
 
             sql.Append(_operator switch {
-                Operator.EQUALS => " = ",
-                Operator.NOT_EQUALS => " != ",
-                Operator.GREATER_THAN => " > ",
-                Operator.GREATER_THAN_OR_EQUAL => " >= ",
-                Operator.LESS_THAN => " < ",
-                Operator.LESS_THAN_OR_EQUAL => " <= ",
+                Operator.EQUALS => "=",
+                Operator.NOT_EQUALS => "!=",
+                Operator.GREATER_THAN => ">",
+                Operator.GREATER_THAN_OR_EQUAL => ">=",
+                Operator.LESS_THAN => "<",
+                Operator.LESS_THAN_OR_EQUAL => "<=",
                 //Operator.LIKE => " LIKE ",
                 //Operator.NOT_LIKE => " NOT LIKE ",
                 _ => throw new Exception($"Unsupported join operator. {nameof(Operator)} == {_operator}")
