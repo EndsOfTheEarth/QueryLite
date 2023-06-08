@@ -42,8 +42,7 @@ namespace QueryLite.Databases.SqlServer {
         IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerPreparedSelectQueryGenerator();
         IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new SqlServerParameterMapper();
         IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new SqlServerPreparedInsertQueryGenerator();
-
-        IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator => throw new NotImplementedException();
+        IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator => new SqlServerPreparedUpdateQueryGenerator();
 
         public DatabaseType DatabaseType => DatabaseType.SqlServer;
 

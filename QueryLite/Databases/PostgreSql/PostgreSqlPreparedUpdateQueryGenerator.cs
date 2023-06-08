@@ -28,7 +28,7 @@ using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {
 
-    internal sealed class PreparedUpdateQueryGenerator : IPreparedUpdateQueryGenerator {
+    internal sealed class PostgreSqlPreparedUpdateQueryGenerator : IPreparedUpdateQueryGenerator {
 
         string IPreparedUpdateQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
