@@ -895,7 +895,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<QueryParameter<PARAMETERS>> parameters,
+            PreparedParameterList<PARAMETERS> parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -1037,7 +1037,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<QueryParameter<PARAMETERS>> parameters,
+            PreparedParameterList<PARAMETERS> parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -1184,7 +1184,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<QueryParameter<PARAMETERS>> parameters,
+            PreparedParameterList<PARAMETERS> parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -1332,7 +1332,7 @@ namespace QueryLite {
             PARAMETERS paramValue,
             Transaction? transaction,
             QueryTimeout timeout,
-            IList<QueryParameter<PARAMETERS>> parameters,
+            PreparedParameterList<PARAMETERS> parameters,
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
@@ -1477,7 +1477,7 @@ namespace QueryLite {
             Transaction? transaction,
             QueryTimeout timeout,
             PARAMETERS parameters,
-            List<ISetParameter<PARAMETERS>> setParameters,
+            PreparedParameterList<PARAMETERS> setParameters,
             Func<IResultRow, RESULT> outputFunc,
             string sql,
             QueryType queryType,
@@ -1538,7 +1538,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    ISetParameter<PARAMETERS> param = setParameters[index];
+                    IPerparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -1623,7 +1623,7 @@ namespace QueryLite {
             Transaction? transaction,
             QueryTimeout timeout,
             PARAMETERS parameters,
-            List<ISetParameter<PARAMETERS>> setParameters,
+            PreparedParameterList<PARAMETERS> setParameters,
             Func<IResultRow, RESULT> outputFunc,
             string sql,
             QueryType queryType,
@@ -1685,7 +1685,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    ISetParameter<PARAMETERS> param = setParameters[index];
+                    IPerparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -1770,7 +1770,7 @@ namespace QueryLite {
             Transaction? transaction,
             QueryTimeout timeout,
             PARAMETERS parameters,
-            List<ISetParameter<PARAMETERS>> setParameters,
+            PreparedParameterList<PARAMETERS> setParameters,
             string sql,
             QueryType queryType,
             string debugName) {
@@ -1830,7 +1830,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    ISetParameter<PARAMETERS> param = setParameters[index];
+                    IPerparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -1901,7 +1901,7 @@ namespace QueryLite {
             Transaction? transaction,
             QueryTimeout timeout,
             PARAMETERS parameters,
-            List<ISetParameter<PARAMETERS>> setParameters,
+            PreparedParameterList<PARAMETERS> setParameters,
             string sql,
             QueryType queryType,
             string debugName,
@@ -1962,7 +1962,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    ISetParameter<PARAMETERS> param = setParameters[index];
+                    IPerparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }

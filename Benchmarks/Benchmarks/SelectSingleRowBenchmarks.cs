@@ -20,7 +20,7 @@ namespace Benchmarks {
             Tables.Test01Table table = Tables.Test01Table.Instance;
 
             _preparedSelectQuery = Query
-                .PrepareWithParameters<SelectSingleRowBenchmarks>()
+                .Prepare<SelectSingleRowBenchmarks>()
                 .Select(
                     row => new Test01(table, row)
                 )

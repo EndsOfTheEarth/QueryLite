@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -86,12 +87,12 @@ namespace QueryLite.PreparedQuery {
             return new PreparedAndOrCondition<PARAMETERS>(conditionA, isAnd: false, conditionB);
         }
 
-        internal abstract void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias);
+        internal abstract void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias);
     }
 
     internal sealed class EmptyPreparedCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
 
-        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
             throw new InvalidOperationException("An empty condition cannot be used in a query");
         }
     }
@@ -108,13 +109,13 @@ namespace QueryLite.PreparedQuery {
             _conditionB = conditionB;
         }
 
-        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
 
-            _conditionA.GetSql(sql, database, paramCollector, useAlias: useAlias);
+            _conditionA.GetSql(sql, database, parameters, useAlias: useAlias);
 
             sql.Append(_isAnd ? " AND " : " OR ");
 
-            _conditionB.GetSql(sql, database, paramCollector, useAlias: useAlias);
+            _conditionB.GetSql(sql, database, parameters, useAlias: useAlias);
         }
     }
 
@@ -130,7 +131,7 @@ namespace QueryLite.PreparedQuery {
             _columnB = columnB;
         }
 
-        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
 
             if(useAlias) {
                 sql.Append(_columnA.Table.Alias).Append('.');
@@ -168,26 +169,29 @@ namespace QueryLite.PreparedQuery {
             _func = func;
         }
 
-        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
 
             if(useAlias) {
-                sql.Append(_column.Table.Alias).Append('.');
+                SqlHelper.AppendEncloseAlias(sql, _column.Table.Alias);
+                sql.Append('.');
             }
-            sql.Append(_column.ColumnName);
+            SqlHelper.AppendEncloseColumnName(sql, _column);
 
             sql.Append(_operator switch {
-                Operator.EQUALS => " = ",
-                Operator.NOT_EQUALS => " != ",
-                Operator.GREATER_THAN => " > ",
-                Operator.GREATER_THAN_OR_EQUAL => " >= ",
-                Operator.LESS_THAN => " < ",
-                Operator.LESS_THAN_OR_EQUAL => " <= ",
+                Operator.EQUALS => "=",
+                Operator.NOT_EQUALS => "!=",
+                Operator.GREATER_THAN => ">",
+                Operator.GREATER_THAN_OR_EQUAL => ">=",
+                Operator.LESS_THAN => "<",
+                Operator.LESS_THAN_OR_EQUAL => "<=",
                 //Operator.LIKE => " LIKE ",
                 //Operator.NOT_LIKE => " NOT LIKE ",
                 _ => throw new Exception($"Unsupported join operator. {nameof(Operator)} == {_operator}")
             });
 
-            string paramName = paramCollector.Add(new PreparedQueryParameter<PARAMETERS, TYPE>(_func));
+            string paramName = parameters.GetNextParameterName();
+            
+            parameters.Add(new PreparedParameter<PARAMETERS, TYPE>(name: paramName, _func, database.ParameterMapper.GetCreateParameterDelegate(_column.Type)));
 
             sql.Append(paramName);
         }
@@ -203,7 +207,7 @@ namespace QueryLite.PreparedQuery {
             _isNull = isNull;
         }
 
-        internal override void GetSql(StringBuilder sql, IDatabase database, IParameterCollector<PARAMETERS> paramCollector, bool useAlias) {
+        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
 
             if(useAlias) {
                 sql.Append(_column.Table.Alias).Append('.');
@@ -211,24 +215,6 @@ namespace QueryLite.PreparedQuery {
             sql.Append(_column.ColumnName);
 
             sql.Append(_isNull ? " IS NULL" : " IS NOT NULL");
-        }
-    }
-
-    internal interface IParameterCollector<PARAMETERS> {
-
-        public string Add(IPreparedQueryParameter<PARAMETERS> parameter);
-    }
-
-    internal sealed class ParameterCollector<PARAMETERS> : IParameterCollector<PARAMETERS> {
-
-        public List<IPreparedQueryParameter<PARAMETERS>> Parameters { get; } = new List<IPreparedQueryParameter<PARAMETERS>>();
-
-        public string Add(IPreparedQueryParameter<PARAMETERS> parameter) {
-
-            parameter.Name = $"@{Parameters.Count}";
-            Parameters.Add(parameter);
-
-            return parameter.Name;
         }
     }
 }

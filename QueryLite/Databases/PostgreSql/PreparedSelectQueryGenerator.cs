@@ -29,11 +29,11 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlPreparedSelectQueryGenerator : IPreparedQueryGenerator {
 
-        string IPreparedQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
+        string IPreparedQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
             return GetSql(template, database, parameters);
         }
 
-        internal static string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
+        internal static string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
 
             //We need to start with the first query template
             while(template.ParentUnion != null) {
@@ -85,7 +85,7 @@ namespace QueryLite.Databases.PostgreSql {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
+        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
 
             sql.Append(' ');
 
@@ -143,7 +143,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateJoins<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
+        private static void GenerateJoins<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
 
             if(template.Joins == null) {
                 return;
@@ -176,7 +176,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateWhereClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
+        private static void GenerateWhereClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
 
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
@@ -214,7 +214,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateHavingClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
+        private static void GenerateHavingClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
 
             if(template.HavingCondition != null) {
                 sql.Append(" HAVING ");
@@ -222,7 +222,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, IParameterCollector<PARAMETERS> parameters) {
+        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
 
             if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
 

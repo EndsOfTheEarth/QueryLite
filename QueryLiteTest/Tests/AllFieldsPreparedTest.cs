@@ -60,7 +60,7 @@ namespace QueryLiteTest.Tests {
             {
 
                 query1 = Query
-                    .PrepareWithParameters<bool>()
+                    .Prepare<bool>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
                     .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable.Id))
@@ -70,7 +70,7 @@ namespace QueryLiteTest.Tests {
             {
 
                 _selectAllTypesQuery = Query
-                   .PrepareWithParameters<AllTypes>()
+                   .Prepare<AllTypes>()
                    .Select(
                        row => new AllTypesInfo(row, allTypesTable)
                    )
@@ -82,7 +82,7 @@ namespace QueryLiteTest.Tests {
             {
 
                 _selectAllCountQuery = Query
-                    .PrepareWithParameters<bool>()
+                    .Prepare<bool>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
                     .Build();
@@ -90,7 +90,7 @@ namespace QueryLiteTest.Tests {
             {
 
                 _selectAllTypesCountQuery = Query
-                    .PrepareWithParameters<AllTypes>()
+                    .Prepare<AllTypes>()
                     .Select(row => row.Get(count))
                     .From(allTypesTable)
                     .Where(where => where.EQUALS(allTypesTable.Id, (info) => info.Id))
@@ -271,7 +271,7 @@ namespace QueryLiteTest.Tests {
         }
 
         private static IPreparedInsertQuery<AllTypes> _insertQueryWithoutReturning = Query
-            .PrepareWithParameters<AllTypes>()
+            .Prepare<AllTypes>()
             .Insert(AllTypesTable.Instance)
             .Values(values => values
                 .Set(AllTypesTable.Instance.Guid, (info) => info.Guid)
@@ -686,7 +686,7 @@ namespace QueryLiteTest.Tests {
         }
 
         private static IPreparedInsertQuery<AllTypes, AllTypesInfo> _insertQuery1 = Query
-            .PrepareWithParameters<AllTypes>()
+            .Prepare<AllTypes>()
             .Insert(AllTypesTable.Instance)
             .Values(values => values
                 .Set(AllTypesTable.Instance.Guid, (info) => info.Guid)
@@ -784,7 +784,7 @@ namespace QueryLiteTest.Tests {
             AllTypesTable table = AllTypesTable.Instance;
 
             IPreparedInsertQuery<AllTypes, AllTypesInfo> insertQuery = Query
-                .PrepareWithParameters<AllTypes>()
+                .Prepare<AllTypes>()
                 .Insert(table)
                 .Values(values => values
                     .Set(table.Guid, info => info.Guid)
@@ -853,35 +853,36 @@ namespace QueryLiteTest.Tests {
                 timeOnly: new TimeOnly(hour: 12, minute: 14, second: 55, millisecond: 130, microsecond: 999)
             );
 
+            AllTypesTable table = AllTypesTable.Instance;
+
+            IPreparedUpdateQuery<AllTypes, AllTypesInfo> updateQuery = Query
+                .Prepare<AllTypes>()
+                .Update(table)
+                .Values(values => values
+                    .Set(table.Guid, info => info.Guid)
+                    .Set(table.String, info => info.String)
+                    .Set(table.SmallInt, info => info.SmallInt)
+                    .Set(table.Int, info => info.Int)
+                    .Set(table.BigInt, info => info.BigInt)
+                    .Set(table.Decimal, info => info.Decimal)
+                    .Set(table.Float, info => info.Float)
+                    .Set(table.Double, info => info.Double)
+                    .Set(table.Boolean, info => info.Boolean)
+                    .Set(table.Bytes, info => info.Bytes)
+                    .Set(table.DateTime, info => info.DateTime)
+                    .Set(table.DateTimeOffset, info => info.DateTimeOffset)
+                    .Set(table.Enum, info => info.Enum)
+                    .Set(table.DateOnly, info => info.DateOnly)
+                    .Set(table.TimeOnly, info => info.TimeOnly)
+                )
+                .Where(where => where.EQUALS(table.Id, info => info.Id))
+                .Build(
+                    returning => new AllTypesInfo(returning, table)
+                 );
+
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                AllTypesTable table = AllTypesTable.Instance;
-
-                QueryResult<AllTypesInfo> result = Query
-                    .Update(table)
-                    .Values(values => values
-                        .Set(table.Guid, allTypes.Guid)
-                        .Set(table.String, allTypes.String)
-                        .Set(table.SmallInt, allTypes.SmallInt)
-                        .Set(table.Int, allTypes.Int)
-                        .Set(table.BigInt, allTypes.BigInt)
-                        .Set(table.Decimal, allTypes.Decimal)
-                        .Set(table.Float, allTypes.Float)
-                        .Set(table.Double, allTypes.Double)
-                        .Set(table.Boolean, allTypes.Boolean)
-                        .Set(table.Bytes, allTypes.Bytes)
-                        .Set(table.DateTime, allTypes.DateTime)
-                        .Set(table.DateTimeOffset, allTypes.DateTimeOffset)
-                        .Set(table.Enum, allTypes.Enum)
-                        .Set(table.DateOnly, allTypes.DateOnly)
-                        .Set(table.TimeOnly, allTypes.TimeOnly)
-                    )
-                    .Where(table.Id == allTypes.Id)
-                    .Execute(
-                        result => new AllTypesInfo(result, table),
-                        transaction,
-                        TimeoutLevel.ShortUpdate
-                    );
+                QueryResult<AllTypesInfo> result = updateQuery.Execute(parameters: allTypes, transaction, TimeoutLevel.ShortUpdate);
 
                 Assert.AreEqual(result.RowsEffected, 1);
                 Assert.AreEqual(result.Rows.Count, 1);
@@ -916,36 +917,36 @@ namespace QueryLiteTest.Tests {
                 timeOnly: new TimeOnly(hour: 1, minute: 4, second: 5, millisecond: 30, microsecond: 100)
             );
 
+            AllTypesTable table = AllTypesTable.Instance;
+
+            IPreparedUpdateQuery<AllTypes, AllTypesInfo> updateQuery = Query
+                .Prepare<AllTypes>()
+                .Update(table)
+                .Values(values => values
+                    .Set(table.Guid, info => info.Guid)
+                    .Set(table.String, info => info.String)
+                    .Set(table.SmallInt, info => info.SmallInt)
+                    .Set(table.Int, info => info.Int)
+                    .Set(table.BigInt, info => info.BigInt)
+                    .Set(table.Decimal, info => info.Decimal)
+                    .Set(table.Float, info => info.Float)
+                    .Set(table.Double, info => info.Double)
+                    .Set(table.Boolean, info => info.Boolean)
+                    .Set(table.Bytes, info => info.Bytes)
+                    .Set(table.DateTime, info => info.DateTime)
+                    .Set(table.DateTimeOffset, info => info.DateTimeOffset)
+                    .Set(table.Enum, info => info.Enum)
+                    .Set(table.DateOnly, info => info.DateOnly)
+                    .Set(table.TimeOnly, info => info.TimeOnly)
+                )
+                .Where(where => where.EQUALS(table.Id, info => info.Id))
+                .Build(
+                    returning => new AllTypesInfo(returning, table)
+                 );
+
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                AllTypesTable table = AllTypesTable.Instance;
-
-                QueryResult<AllTypesInfo> result = await Query
-                    .Update(table)
-                    .Values(values => values
-                        .Set(table.Guid, allTypes.Guid)
-                        .Set(table.String, allTypes.String)
-                        .Set(table.SmallInt, allTypes.SmallInt)
-                        .Set(table.Int, allTypes.Int)
-                        .Set(table.BigInt, allTypes.BigInt)
-                        .Set(table.Decimal, allTypes.Decimal)
-                        .Set(table.Float, allTypes.Float)
-                        .Set(table.Double, allTypes.Double)
-                        .Set(table.Boolean, allTypes.Boolean)
-                        .Set(table.Bytes, allTypes.Bytes)
-                        .Set(table.DateTime, allTypes.DateTime)
-                        .Set(table.DateTimeOffset, allTypes.DateTimeOffset)
-                        .Set(table.Enum, allTypes.Enum)
-                        .Set(table.DateOnly, allTypes.DateOnly)
-                        .Set(table.TimeOnly, allTypes.TimeOnly)
-                    )
-                    .Where(table.Id == allTypes.Id)
-                    .ExecuteAsync(
-                        result => new AllTypesInfo(result, table),
-                        transaction,
-                        cancellationToken: null,
-                        TimeoutLevel.ShortUpdate
-                    );
+                QueryResult<AllTypesInfo> result = await updateQuery.ExecuteAsync(parameters: allTypes, transaction, cancellationToken: null, timeout: TimeoutLevel.ShortUpdate);
 
                 Assert.AreEqual(result.RowsEffected, 1);
                 Assert.AreEqual(result.Rows.Count, 1);
@@ -1175,7 +1176,7 @@ namespace QueryLiteTest.Tests {
             AllTypesTable allTypesTable4 = AllTypesTable.Instance4;
 
             IPreparedQueryExecute<JoinQueryParams, AllTypesInfoResult4> joinQuery1 = Query
-                .PrepareWithParameters<JoinQueryParams>()
+                .Prepare<JoinQueryParams>()
                 .Select(
                     row => new AllTypesInfoResult4(
                         allTypesRow1: new AllTypesInfo(row, allTypesTable1),
@@ -1227,7 +1228,7 @@ namespace QueryLiteTest.Tests {
             AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
 
             IPreparedQueryExecute<AllTypes, AllTypesInfoResult3> joinQuery = Query
-                .PrepareWithParameters<AllTypes>()
+                .Prepare<AllTypes>()
                 .Select(
                     row => new AllTypesInfoResult3(
                         allTypesRow1: new AllTypesInfo(row, allTypesTable1),
@@ -1262,7 +1263,7 @@ namespace QueryLiteTest.Tests {
             AllTypesTable table = AllTypesTable.Instance;
 
             IPreparedInsertQuery<AllTypes, AllTypesInfo> insertQuery = Query
-                .PrepareWithParameters<AllTypes>()
+                .Prepare<AllTypes>()
                 .Insert(table)
                 .Values(values => values
                     .Set(table.Guid, info => info.Guid)
@@ -1335,34 +1336,36 @@ namespace QueryLiteTest.Tests {
                 timeOnly: new TimeOnly(hour: 9, minute: 59, second: 1, millisecond: 770, microsecond: 11)
             );
 
+            AllTypesTable table = AllTypesTable.Instance;
+
+            IPreparedUpdateQuery<AllTypes, AllTypesInfo> updateQuery = Query
+                .Prepare<AllTypes>()
+                .Update(table)
+                .Values(values => values
+                    .Set(table.Guid, info => info.Guid)
+                    .Set(table.String, info => info.String)
+                    .Set(table.SmallInt, info => info.SmallInt)
+                    .Set(table.Int, info => info.Int)
+                    .Set(table.BigInt, info => info.BigInt)
+                    .Set(table.Decimal, info => info.Decimal)
+                    .Set(table.Float, info => info.Float)
+                    .Set(table.Double, info => info.Double)
+                    .Set(table.Boolean, info => info.Boolean)
+                    .Set(table.Bytes, info => info.Bytes)
+                    .Set(table.DateTime, info => info.DateTime)
+                    .Set(table.DateTimeOffset, info => info.DateTimeOffset)
+                    .Set(table.Enum, info => info.Enum)
+                    .Set(table.DateOnly, info => info.DateOnly)
+                    .Set(table.TimeOnly, info => info.TimeOnly)
+                )
+                .Where(where => where.EQUALS(table.Id, info => info.Id))
+                .Build(
+                    returning => new AllTypesInfo(returning, table)
+                );
+
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                AllTypesTable table = AllTypesTable.Instance;
-
-                QueryResult<AllTypesInfo> result = Query
-                    .Update(table)
-                    .Values(values => values
-                        .Set(table.Guid, newAllTypes.Guid)
-                        .Set(table.String, newAllTypes.String)
-                        .Set(table.SmallInt, newAllTypes.SmallInt)
-                        .Set(table.Int, newAllTypes.Int)
-                        .Set(table.BigInt, newAllTypes.BigInt)
-                        .Set(table.Decimal, newAllTypes.Decimal)
-                        .Set(table.Float, newAllTypes.Float)
-                        .Set(table.Double, newAllTypes.Double)
-                        .Set(table.Boolean, newAllTypes.Boolean)
-                        .Set(table.Bytes, newAllTypes.Bytes)
-                        .Set(table.DateTime, newAllTypes.DateTime)
-                        .Set(table.DateTimeOffset, newAllTypes.DateTimeOffset)
-                        .Set(table.Enum, newAllTypes.Enum)
-                        .Set(table.DateOnly, newAllTypes.DateOnly)
-                        .Set(table.TimeOnly, newAllTypes.TimeOnly)
-                    )
-                    .Where(table.Id == newAllTypes.Id)
-                    .Execute(
-                        updated => new AllTypesInfo(updated, table),
-                        transaction
-                    );
+                QueryResult<AllTypesInfo> result = updateQuery.Execute(parameters: newAllTypes, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
                 Assert.AreEqual(result.Rows.Count, 1);

@@ -25,30 +25,30 @@ using System;
 
 namespace QueryLite.PreparedQuery {    
 
-    internal interface IPreparedQueryParameter<PARAMETERS> {
+    //internal interface IPreparedQueryParameter<PARAMETERS> {
 
-        string Name { get; set; }
-        Type GetValueType();
-        object? GetValue(PARAMETERS parameters);
-    }
+    //    string Name { get; set; }
+    //    Type GetValueType();
+    //    object? GetValue(PARAMETERS parameters);
+    //}
 
-    internal interface IPreparedQueryParameter<PARAMETERS, TYPE> : IPreparedQueryParameter<PARAMETERS> {
+    //internal interface IPreparedQueryParameter<PARAMETERS, TYPE> : IPreparedQueryParameter<PARAMETERS> {
 
-    }
+    //}
 
-    internal sealed class PreparedQueryParameter<PARAMETERS, TYPE> : IPreparedQueryParameter<PARAMETERS, TYPE> {
+    //internal sealed class PreparedQueryParameter<PARAMETERS, TYPE> : IPreparedQueryParameter<PARAMETERS, TYPE> {
 
-        public string Name { get; set; } = string.Empty;
+    //    public string Name { get; set; } = string.Empty;
 
-        public Type GetValueType() => typeof(TYPE);
+    //    public Type GetValueType() => typeof(TYPE);
 
-        private Func<PARAMETERS, TYPE> _getValueFunc;
+    //    private Func<PARAMETERS, TYPE> _getValueFunc;
 
-        public PreparedQueryParameter(Func<PARAMETERS, TYPE> function) {
-            _getValueFunc = (parameters) => function(parameters);
-        }
-        public object? GetValue(PARAMETERS parameters) {
-            return _getValueFunc(parameters);
-        }
-    }
+    //    public PreparedQueryParameter(Func<PARAMETERS, TYPE> function) {
+    //        _getValueFunc = (parameters) => function(parameters);
+    //    }
+    //    public object? GetValue(PARAMETERS parameters) {
+    //        return _getValueFunc(parameters);
+    //    }
+    //}
 }

@@ -30,7 +30,7 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlPreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
 
-        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out List<ISetParameter<PARAMETERS>> parameters, Func<IResultRow, RESULT>? outputFunc) {
+        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 
@@ -45,20 +45,20 @@ namespace QueryLite.Databases.PostgreSql {
 
             SqlHelper.AppendEncloseTableName(sql, template.Table);
 
-                StringBuilder paramSql = StringBuilderCache.Acquire();
+            StringBuilder paramSql = StringBuilderCache.Acquire();
 
-                PostgreSqlPreparedSetValuesCollector<PARAMETERS> valuesCollector = new PostgreSqlPreparedSetValuesCollector<PARAMETERS>(sql, paramSql, database, CollectorMode.Insert);
+            PostgreSqlPreparedSetValuesCollector<PARAMETERS> valuesCollector = new PostgreSqlPreparedSetValuesCollector<PARAMETERS>(sql, paramSql, database, CollectorMode.Insert);
 
-                sql.Append('(');
-                template.SetValues!(valuesCollector);
-                sql.Append(") VALUES(");
+            sql.Append('(');
+            template.SetValues!(valuesCollector);
+            sql.Append(") VALUES(");
 
-                parameters = valuesCollector.InsertParameters;
+            parameters = valuesCollector.Parameters;
 
-                sql.Append(paramSql);
-                sql.Append(')');
+            sql.Append(paramSql);
+            sql.Append(')');
 
-                StringBuilderCache.Release(paramSql);
+            StringBuilderCache.Release(paramSql);
 
 
             if(outputFunc != null) {
