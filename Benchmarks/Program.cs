@@ -7,15 +7,13 @@ namespace Benchmarks {
         static void Main(string[] args) {
 
             //BenchmarkRunner.Run<DeleteSingleRowBenchmarks>();
-            BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
+            //BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectTenRowBenchmarks>();
 
-            //new SelectTenRowBenchmarks().QueryLite_Ten_Row_Prepared_Select();
-
-            //BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
+            BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectOneThousandRowBenchmarks>();
 

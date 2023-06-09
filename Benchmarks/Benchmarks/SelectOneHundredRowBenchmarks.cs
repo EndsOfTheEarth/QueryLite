@@ -53,62 +53,75 @@ namespace Benchmarks {
             }
         }
 
+        private int _iterations = 2000;
+
         [Benchmark]
         public void Ado_One_Hundred_Row_Select() {
 
-            using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+            for(int index = 0; index < _iterations; index++) {
 
-            connection.Open();
+                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
-            using NpgsqlCommand command = connection.CreateCommand();
+                connection.Open();
 
-            command.CommandText = "SELECT id,row_guid,message,date FROM Test01";
+                using NpgsqlCommand command = connection.CreateCommand();
 
-            using NpgsqlDataReader reader = command.ExecuteReader();
+                command.CommandText = "SELECT id,row_guid,message,date FROM Test01";
 
-            List<Test01> list = new List<Test01>();
+                using NpgsqlDataReader reader = command.ExecuteReader();
 
-            while(reader.Read()) {
+                List<Test01> list = new List<Test01>();
 
-                list.Add(
-                    new Test01(
-                        id: reader.GetInt32(0),
-                        row_guid: reader.GetGuid(1),
-                        message: reader.GetString(2),
-                        date: reader.GetDateTime(3)
-                    )
-                );
+                while(reader.Read()) {
+
+                    list.Add(
+                        new Test01(
+                            id: reader.GetInt32(0),
+                            row_guid: reader.GetGuid(1),
+                            message: reader.GetString(2),
+                            date: reader.GetDateTime(3)
+                        )
+                    );
+                }
             }
         }
 
         [Benchmark]
         public void Dapper_One_Hundred_Row_Select() {
 
-            using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+            for(int index = 0; index < _iterations; index++) {
 
-            connection.Open();
+                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
-            IEnumerable<Test01> result = connection.Query<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01");
+                connection.Open();
 
+                IEnumerable<Test01> result = connection.Query<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01");
+            }
         }
 
         [Benchmark]
         public void QueryLite_One_Hundred_Row_Prepared_Select() {
 
-            QueryResult<Test01> result = _preparedSelectQuery.Execute(parameterValues: this, Databases.TestDatabase);
+            for(int index = 0; index < _iterations; index++) {
+
+                QueryResult<Test01> result = _preparedSelectQuery.Execute(parameterValues: this, Databases.TestDatabase);
+            }
         }
 
         [Benchmark]
         public void QueryLite_One_Hundred_Row_Dynamic_Select() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            for(int index = 0; index < _iterations; index++) {
 
-            QueryResult<Test01> result = Query
-                .Select(
-                    row => new Test01(table, row)
-                )
-                .From(table)
-                .Execute(Databases.TestDatabase);
+                Tables.Test01Table table = Tables.Test01Table.Instance;
+
+                QueryResult<Test01> result = Query
+                    .Select(
+                        row => new Test01(table, row)
+                    )
+                    .From(table)
+                    .Execute(Databases.TestDatabase);
+            }
         }
     }
 }
