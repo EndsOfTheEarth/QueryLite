@@ -19,9 +19,10 @@
 - [Nested Query](#nested-query)
 - [Insert Query](#insert-query)
 - [Update Query](#update-query)
-- [Update Join Query](#update-join-query)
+   - [Update Join Query](#update-join-query)
 - [Delete Query](#delete-query)
-- [Delete Join Query (MSSQL Only)](#delete-join-query)
+   - [Delete Join Query (MSSQL Only)](#delete-join-query)
+   - [Delete Using Query (PostgreSql Only)](#delete-using-query)
 - [Truncate Query](#truncate-query)
 - [Supported Operators](#supported-operators)
 - [String Like Condition](#string-like-condition)
@@ -545,6 +546,8 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
 **Please Note: Join syntax is only supported by Sql Server. An exception will be thrown if this is executed on a PostgreSql database.**
 
+The equivalent syntax for PostgreSql is the 'Delete Using' syntax.
+
 ```C#
 using(Transaction transaction = new Transaction(DB.Northwind)) {
 
@@ -555,6 +558,28 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
         .Delete(orderTable)
         .Join(customersTable).On(orderTable.CustomerID == customersTable.CustomerID)
         .Where(customersTable.Region.IsNull)
+        .Execute(transaction);
+
+    transaction.Commit();
+}
+```
+
+## Delete Using Query
+
+**Please Note: Delete using syntax is only supported by PostgreSql. An exception will be thrown if this is executed on an Sql Server database.**
+
+The equivalent syntax for Sql Server is the 'Delete Join' syntax.
+
+```C#
+using(Transaction transaction = new Transaction(DB.Northwind)) {
+
+    OrdersTable orderTable = OrdersTable.Instance;
+    CustomersTable customersTable = CustomersTable.Instance;
+
+    NonQueryResult result = Query
+        .Delete(orderTable)
+        .Using(customersTable)
+        .Where(orderTable.CustomerID == customersTable.CustomerID & customersTable.Region.IsNull)
         .Execute(transaction);
 
     transaction.Commit();
