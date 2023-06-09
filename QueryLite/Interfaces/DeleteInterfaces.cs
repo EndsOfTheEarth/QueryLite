@@ -27,6 +27,15 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
+    public interface IDeleteUsing : IDeleteJoin {
+
+        /// <summary>
+        /// Delete using syntax. Please Note: This syntax is only supported by PostgreSql
+        /// </summary>
+        /// <param name="tables"></param>
+        /// <returns></returns>
+        IDeleteWhere Using(params ITable[] tables);
+    }
     public interface IDeleteJoin : IDeleteWhere {
 
         /// <summary>

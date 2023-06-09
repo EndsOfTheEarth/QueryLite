@@ -28,9 +28,10 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal sealed class DeleteQueryTemplate : IDeleteJoin, IDeleteWhere, IDeleteExecute {
+    internal sealed class DeleteQueryTemplate : IDeleteUsing, IDeleteJoin, IDeleteWhere, IDeleteExecute {
 
         public ITable Table { get; }
+        public IList<ITable>? Usings { get; private set; }
         public IList<IJoin>? Joins { get; private set; }
         public ICondition? WhereCondition { get; private set; }
 
@@ -46,6 +47,16 @@ namespace QueryLite {
 
             Table = table;
             WhereCondition = whereCondition;
+        }
+        public IDeleteWhere Using(params ITable[] tables) {
+
+            ArgumentNullException.ThrowIfNull(tables);
+
+            if(tables.Length == 0) {
+                throw new ArgumentException($"{nameof(tables)} must not be empty");
+            }
+            Usings = new List<ITable>(tables);
+            return this;
         }
 
         public IDeleteJoinOn Join(ITable table) {

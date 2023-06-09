@@ -49,9 +49,30 @@ namespace QueryLite.Databases.PostgreSql {
             SqlHelper.AppendEncloseTableName(sql, template.Table);
             sql.Append(" AS ").Append(template.Table.Alias);
 
+            bool useAliases = template.Usings != null;
+
+            if(template.Usings != null && template.Usings.Count > 0) {
+
+                sql.Append(" USING ");
+
+                for(int index = 0; index < template.Usings.Count; index++) {
+
+                    if(index > 0) {
+                        sql.Append(',');
+                    }
+                    ITable usingTable = template.Usings[index];
+
+                    SqlHelper.AppendEncloseTableName(sql, usingTable);
+
+                    sql.Append(' ');
+
+                    SqlHelper.AppendEncloseAlias(sql, usingTable.Alias);
+                }
+            }
+
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, useAlias: false, parameters);
+                template.WhereCondition.GetSql(sql, database, useAlias: useAliases, parameters);
             }
             if(outputFunc != null) {
 

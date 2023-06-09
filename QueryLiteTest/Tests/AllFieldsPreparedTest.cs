@@ -182,7 +182,11 @@ namespace QueryLiteTest.Tests {
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
                 Settings.UseParameters = true;
-                await BasicInsertAndDeleteJoinQueriesAsync();
+                await BasicInsertAndDeleteJoinQueriesSqlServerAsync();
+            }
+            else if(TestDatabase.Database.DatabaseType == DatabaseType.PostgreSql) {
+                Settings.UseParameters = true;
+                await BasicInsertAndDeleteJoinQueriesPostgreSqlAsync();
             }
         }
 
@@ -597,7 +601,7 @@ namespace QueryLiteTest.Tests {
             InsertWithQueryAndRollback(GetAllTypes1());
         }
 
-        private async Task BasicInsertAndDeleteJoinQueriesAsync() {
+        private async Task BasicInsertAndDeleteJoinQueriesSqlServerAsync() {
 
             AllTypes allTypes1 = GetAllTypes1();
             AllTypes allTypes2 = GetAllTypes1();
@@ -658,6 +662,86 @@ namespace QueryLiteTest.Tests {
                     .Delete(allTypesTable)
                     .Join(allTypesTable2).On(allTypesTable.Id == allTypesTable2.Id)
                     .Where(allTypesTable.Id == allTypes3.Id)
+                    .ExecuteAsync(
+                        deleted => new AllTypesInfo(deleted, allTypesTable),
+                        transaction
+                    );
+
+                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(result.Rows.Count, 1);
+
+                AssertRow(result.Rows[0], allTypes3);
+
+                transaction.Commit();
+            }
+
+            {
+
+                QueryResult<int> result = await _selectAllCountQuery.ExecuteAsync(parameterValues: true, TestDatabase.Database, CancellationToken.None);
+
+                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(result.RowsEffected, 0);
+
+                int? countValue = result.Rows[0];
+
+                Assert.IsNotNull(countValue);
+                Assert.AreEqual(countValue!.Value, 0);
+            }
+        }
+
+        private async Task BasicInsertAndDeleteJoinQueriesPostgreSqlAsync() {
+
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
+
+            await InsertWithQueryAsync(allTypes1);
+            await InsertWithQueryAsync(allTypes2);
+            await InsertWithQueryAsync(allTypes3);
+
+            AllTypesTable allTypesTable = AllTypesTable.Instance;
+            AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
+
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                NonQueryResult result = await Query
+                    .Delete(allTypesTable)
+                    .Using(allTypesTable2)
+                    .Where(allTypesTable.Id == allTypesTable2.Id &  allTypesTable.Id == allTypes1.Id)
+                    .ExecuteAsync(transaction);
+
+                Assert.AreEqual(result.RowsEffected, 1);
+
+                result = await Query
+                    .Delete(allTypesTable)
+                    .Using(allTypesTable2)
+                    .Where(allTypesTable.Id == allTypesTable2.Id & allTypesTable.Id == allTypes2.Id)
+                    .ExecuteAsync(transaction);
+
+                Assert.AreEqual(result.RowsEffected, 1);
+
+                transaction.Commit();
+            }
+
+            {
+
+                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameterValues: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
+
+                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(result.RowsEffected, 0);
+
+                int? countValue = result.Rows[0];
+
+                Assert.IsNotNull(countValue);
+                Assert.AreEqual(countValue!.Value, 1);  //There should be one record left
+            }
+
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                QueryResult<AllTypesInfo> result = await Query
+                    .Delete(allTypesTable)
+                    .Using(allTypesTable2)
+                    .Where(allTypesTable.Id == allTypesTable2.Id &  allTypesTable.Id == allTypes3.Id)
                     .ExecuteAsync(
                         deleted => new AllTypesInfo(deleted, allTypesTable),
                         transaction

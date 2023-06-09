@@ -31,6 +31,10 @@ namespace QueryLite.Databases.SqlServer {
 
         string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
+            if(template.Usings != null) {
+                throw new Exception("Using syntax is not supported by Sql Server");
+            }
+
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
             bool useAlias = template.Joins?.Count != 0;
