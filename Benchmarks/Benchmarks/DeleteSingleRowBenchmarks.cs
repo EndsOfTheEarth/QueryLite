@@ -12,22 +12,19 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        //private IPreparedQueryExecute<DeleteSingleRowBenchmarks, Test01> _preparedDeleteQuery;
+        private IPreparedDeleteQuery<Guid> _preparedDeleteQuery;
 
         public DeleteSingleRowBenchmarks() {
 
-            //Tables.Test01Table table = Tables.Test01Table.Instance;
+            Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            //_preparedDeleteQuery = Query
-            //    .PrepareWithParameters<DeleteSingleRowBenchmarks>()
-            //    .Select(
-            //        row => new Test01(table, row)
-            //    )
-            //    .From(table)
-            //    .Where(where => where.EQUALS(table.Row_guid, info => info._guid))
-            //    .Build();
+            _preparedDeleteQuery = Query
+                .Prepare<Guid>()
+                .Delete(table)
+                .Where(where => where.EQUALS(table.Row_guid, guid => guid))
+                .Build();
 
-            //_preparedDeleteQuery.Initialize(Databases.TestDatabase);
+            _preparedDeleteQuery.Initialize(Databases.TestDatabase);
         }
 
         [IterationSetup]
@@ -52,70 +49,91 @@ namespace Benchmarks {
             }
         }
 
+        private int _iterations = 2000;
+
         [Benchmark]
         public void Ado_Single_Row_Delete() {
 
-            using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+            for(int index = 0; index < _iterations; index++) {
 
-            connection.Open();
+                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
-            using NpgsqlTransaction transaction = connection.BeginTransaction();
+                connection.Open();
 
-            using NpgsqlCommand command = connection.CreateCommand();
+                using NpgsqlTransaction transaction = connection.BeginTransaction();
 
-            command.Transaction = transaction;
+                using NpgsqlCommand command = connection.CreateCommand();
 
-            command.CommandText = "DELETE FROM Test01 WHERE row_guid=@0";
+                command.Transaction = transaction;
 
-            command.Parameters.Add(new NpgsqlParameter(parameterName: "@0", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = _guid });
+                command.CommandText = "DELETE FROM Test01 WHERE row_guid=@0";
 
-            int rows = command.ExecuteNonQuery();
+                command.Parameters.Add(new NpgsqlParameter(parameterName: "@0", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = _guid });
 
-            if(rows != 1) {
-                throw new Exception();
+                int rows = command.ExecuteNonQuery();
+
+                if(rows != 1) {
+                    throw new Exception();
+                }
+                transaction.Rollback(); //Roll back so we can run iterations
             }
-            transaction.Commit();
         }
 
         [Benchmark]
         public void Dapper_Single_Row_Delete() {
 
-            using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+            for(int index = 0; index < _iterations; index++) {
 
-            connection.Open();
+                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
-            using NpgsqlTransaction transaction = connection.BeginTransaction();
+                connection.Open();
 
-            int rows = connection.Execute(sql: "DELETE FROM Test01 WHERE row_guid=@row_guid", new { row_guid = _guid }, transaction: transaction);
+                using NpgsqlTransaction transaction = connection.BeginTransaction();
 
-            if(rows != 1) {
-                throw new Exception();
+                int rows = connection.Execute(sql: "DELETE FROM Test01 WHERE row_guid=@row_guid", new { row_guid = _guid }, transaction: transaction);
+
+                if(rows != 1) {
+                    throw new Exception();
+                }
+                transaction.Rollback(); //Roll back so we can run iterations
             }
-            transaction.Commit();
         }
 
-        //[Benchmark]
-        //public void QueryLite_Single_Row_Prepared_Delete() {
+        [Benchmark]
+        public void QueryLite_Single_Row_Prepared_Delete() {
 
-        //    QueryResult<Test01> result = _preparedSelectQuery.Execute(parameterValues: this, Databases.TestDatabase);
-        //}
+            for(int index = 0; index < _iterations; index++) {
+
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
+
+                NonQueryResult result = _preparedDeleteQuery.Execute(parameters: _guid, transaction);
+
+                if(result.RowsEffected != 1) {
+                    throw new Exception();
+                }
+                transaction.Rollback(); //Roll back so we can run iterations
+            }
+        }
 
         [Benchmark]
         public void QueryLite_Single_Row_Dynamic_Delete() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            for(int index = 0; index < _iterations; index++) {
 
-            using Transaction transaction = new Transaction(Databases.TestDatabase);
+                Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            NonQueryResult result = Query
-                .Delete(table)
-                .Where(table.Row_guid == _guid)
-                .Execute(transaction);
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
 
-            if(result.RowsEffected != 1) {
-                throw new Exception();
+                NonQueryResult result = Query
+                    .Delete(table)
+                    .Where(table.Row_guid == _guid)
+                    .Execute(transaction);
+
+                if(result.RowsEffected != 1) {
+                    throw new Exception();
+                }
+                transaction.Rollback(); //Roll back so we can run iterations
             }
-            transaction.Commit();
         }
     }
 }
