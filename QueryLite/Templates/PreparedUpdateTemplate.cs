@@ -159,7 +159,7 @@ namespace QueryLite {
             return updateDetail;
         }
 
-        public NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -176,7 +176,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -242,7 +242,7 @@ namespace QueryLite {
             return updateDetail;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -260,7 +260,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -276,6 +276,76 @@ namespace QueryLite {
                 debugName: debugName
 ,
                 cancellationToken: cancellationToken ?? CancellationToken.None);
+        }
+
+        public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
+
+            return PreparedQueryExecutor.SingleOrDefault(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: insertDetail.SetParameters,
+                outputFunc: _outputFunc,
+                sql: insertDetail.Sql,
+                queryType: QueryType.Insert,
+                debugName: debugName
+            );
+        }
+
+        public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
+
+            return PreparedQueryExecutor.SingleOrDefault(
+                database: database,
+                transaction: null,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: insertDetail.SetParameters,
+                outputFunc: _outputFunc,
+                sql: insertDetail.Sql,
+                queryType: QueryType.Insert,
+                debugName: debugName
+            );
+        }
+
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
+
+            return PreparedQueryExecutor.SingleOrDefaultAsync(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: insertDetail.SetParameters,
+                outputFunc: _outputFunc,
+                sql: insertDetail.Sql,
+                queryType: QueryType.Insert,
+                debugName: debugName,
+                cancellationToken: cancellationToken ?? CancellationToken.None
+            );
+        }
+
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
+
+            return PreparedQueryExecutor.SingleOrDefaultAsync(
+                database: database,
+                transaction: null,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: insertDetail.SetParameters,
+                outputFunc: _outputFunc,
+                sql: insertDetail.Sql,
+                queryType: QueryType.Insert,
+                debugName: debugName,
+                cancellationToken: cancellationToken ?? CancellationToken.None
+            );
         }
     }
 }

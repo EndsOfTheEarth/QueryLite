@@ -25,10 +25,11 @@ using QueryLite.Databases;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace QueryLite {
 
-    internal sealed class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> {
+    internal sealed class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> where PARAMETERS : notnull {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
@@ -51,21 +52,11 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class InsertSqlAndParameters<PARAMETERS> {
-
-        public InsertSqlAndParameters(string sql, PreparedParameterList<PARAMETERS> setParameters) {
-            Sql = sql;
-            SetParameters = setParameters;
-        }
-        public string Sql { get; }
-        public PreparedParameterList<PARAMETERS> SetParameters { get; }
-    }
-
-    internal sealed class PreparedInsertQuery<PARAMETERS> : IPreparedInsertQuery<PARAMETERS> {
+    internal sealed class PreparedInsertQuery<PARAMETERS> : IPreparedInsertQuery<PARAMETERS> where PARAMETERS : notnull {
 
         private readonly PreparedInsertTemplate<PARAMETERS> _template;
 
-        private readonly InsertSqlAndParameters<PARAMETERS>?[] _insertDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _insertDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
 
         public PreparedInsertQuery(PreparedInsertTemplate<PARAMETERS> template) {
 
@@ -83,23 +74,23 @@ namespace QueryLite {
                     max = valueAsInt;
                 }
             }
-            _insertDetails = new InsertSqlAndParameters<PARAMETERS>?[max + 1];
+            _insertDetails = new PreparedSqlAndParameters<PARAMETERS>?[max + 1];
         }
 
         public void Initialize(IDatabase database) {
             _ = GetInsertQuery(database);
         }
-        private InsertSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
+        private PreparedSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
-            InsertSqlAndParameters<PARAMETERS> insertDetail;
+            PreparedSqlAndParameters<PARAMETERS> insertDetail;
 
             if(_insertDetails[dbTypeIndex] == null) {
 
                 string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, bool>(_template, database, out PreparedParameterList<PARAMETERS> insertParameters, outputFunc: null);
 
-                insertDetail = new InsertSqlAndParameters<PARAMETERS>(sql, insertParameters);
+                insertDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, insertParameters);
                 _insertDetails[dbTypeIndex] = insertDetail;
             }
             else {
@@ -108,9 +99,9 @@ namespace QueryLite {
             return insertDetail;
         }
 
-        public NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
 
-            InsertSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
             NonQueryResult result = PreparedQueryExecutor.ExecuteNonQuery(
                 database: transaction.Database,
@@ -125,9 +116,9 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
-            InsertSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
             return PreparedQueryExecutor.ExecuteNonQueryAsync(
                 database: transaction.Database,
@@ -143,10 +134,10 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class PreparedInsertQuery<PARAMETERS, RESULT> : IPreparedInsertQuery<PARAMETERS, RESULT> {
+    internal sealed class PreparedInsertQuery<PARAMETERS, RESULT> : IPreparedInsertQuery<PARAMETERS, RESULT> where PARAMETERS : notnull {
 
         private readonly PreparedInsertTemplate<PARAMETERS> _template;
-        private readonly InsertSqlAndParameters<PARAMETERS>?[] _insertDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _insertDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
         private Func<IResultRow, RESULT> _outputFunc;
 
         public PreparedInsertQuery(PreparedInsertTemplate<PARAMETERS> template, Func<IResultRow, RESULT> outputFunc) {
@@ -166,23 +157,23 @@ namespace QueryLite {
                     max = valueAsInt;
                 }
             }
-            _insertDetails = new InsertSqlAndParameters<PARAMETERS>?[max + 1];
+            _insertDetails = new PreparedSqlAndParameters<PARAMETERS>?[max + 1];
         }
 
         public void Initialize(IDatabase database) {
             _ = GetInsertQuery(database);
         }
-        private InsertSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
+        private PreparedSqlAndParameters<PARAMETERS> GetInsertQuery(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
-            InsertSqlAndParameters<PARAMETERS> insertDetail;
+            PreparedSqlAndParameters<PARAMETERS> insertDetail;
 
             if(_insertDetails[dbTypeIndex] == null) {
 
                 string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, RESULT>(_template, database, out PreparedParameterList<PARAMETERS> insertParameters, outputFunc: _outputFunc);
 
-                insertDetail = new InsertSqlAndParameters<PARAMETERS>(sql, insertParameters);
+                insertDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, insertParameters);
                 _insertDetails[dbTypeIndex] = insertDetail;
             }
             else {
@@ -191,9 +182,9 @@ namespace QueryLite {
             return insertDetail;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
 
-            InsertSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
             QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
                 database: transaction.Database,
@@ -209,9 +200,9 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
-            InsertSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
             return PreparedQueryExecutor.ExecuteAsync(
                 database: transaction.Database,
@@ -225,6 +216,76 @@ namespace QueryLite {
                 debugName: debugName
 ,
                 cancellationToken: cancellationToken ?? CancellationToken.None);
+        }
+
+        public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
+
+            return PreparedQueryExecutor.SingleOrDefault(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: insertDetail.SetParameters,
+                outputFunc: _outputFunc,
+                sql: insertDetail.Sql,
+                queryType: QueryType.Insert,
+                debugName: debugName
+            );
+        }
+
+        public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(database);
+
+            return PreparedQueryExecutor.SingleOrDefault(
+                database: database,
+                transaction: null,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: insertDetail.SetParameters,
+                outputFunc: _outputFunc,
+                sql: insertDetail.Sql,
+                queryType: QueryType.Insert,
+                debugName: debugName
+            );
+        }
+
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
+
+            return PreparedQueryExecutor.SingleOrDefaultAsync(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: insertDetail.SetParameters,
+                outputFunc: _outputFunc,
+                sql: insertDetail.Sql,
+                queryType: QueryType.Insert,
+                debugName: debugName,
+                cancellationToken: cancellationToken ?? CancellationToken.None
+            );
+        }
+
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+
+            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(database);
+
+            return PreparedQueryExecutor.SingleOrDefaultAsync(
+                database: database,
+                transaction: null,
+                timeout: timeout ?? TimeoutLevel.ShortInsert,
+                parameters: parameters,
+                setParameters: insertDetail.SetParameters,
+                outputFunc: _outputFunc,
+                sql: insertDetail.Sql,
+                queryType: QueryType.Insert,
+                debugName: debugName,
+                cancellationToken: cancellationToken ?? CancellationToken.None
+            );
         }
     }
 }
