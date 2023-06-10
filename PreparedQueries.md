@@ -39,6 +39,12 @@ Cons:
 * Some query features are not supported as they are dynamic in nature
     * e.g. In list `IN(@0, @1, @2)` as the number of items in the list can change between executions
 
+## Syntax Not Supported By Prepared Queries
+
+The following syntax is currently not supported by prepared queries:
+ * Nested queries
+ * `WHERE column IN(....)` expressions
+ * Functions that contain parameters e.g. `SELECT LEN(@0)`
 
 # What Query Type Is Best?
 
@@ -157,11 +163,26 @@ Running the query `SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 
 ## The Prepare Clause
 
-TODO:
+To begin a Prepared query you must first call the `Query.Prepare<>()` method. This has a generic argument called `PARAMETERS` which defines type of object that can be used to set parameters within the query.
 
-## Prepared Conditions
+Here is an example using the three parameter values 'GivenName', 'Surname' and 'Id' in the `WHERE` clause:
 
-TODO:
+```C#
+var query = Query
+    .Prepare<Person>()  //Define the query 'PARAMETERS' type as 'Person'
+    .Select(row => table.Id)
+    .From(table)
+    .Where(where =>
+        where.EQUALS(table.GivenName, person => person.GivenName) &  //Use the Person parameter in each condition
+        where.EQUALS(table.Surname, person => person.Surname) &
+        where.NOT_EQUALS(table.Id, person => person.Id)
+    )
+    .Build();
+
+Person person = new Person() { Id = 25, GivenName = "Glen", Surname = "Smith" };
+
+var result = query.Execute(parameters: person, _database);  //Provide the person class when executing query
+```
 
 ## Prepared Select Query Example
 
