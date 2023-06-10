@@ -76,8 +76,11 @@ foreach(var row in result.Rows) {
 
 ## Dynamic And Prepared Queries
 
-Query lite implements both dynamic queries and prepared queries. Prepared queries have performace and memory allocation near identical to direct ado.net but they are syntactically more complicated. Generally dynamic queries should be used as they are syntactically simpler and are competitive with Dapper performance / memory allocation.
+Query lite implements both dynamic and prepared queries. Prepared queries allocate less memory on the heap during query execution. This gives them very similar performance (And garbage collector load) to lower level ado.net code. The downside is that prepared queries have multiple generic constraints which make them syntactically more complicated.
 
+On the other hand, dynamic queries are syntactically simpler but have a higher memory allocation during query execution. This is due to dynamically building the sql query on every execution. The additional memory allocation make dynamic query performance / memory allocation more similar to libaraies like Dapper.
+
+[Prepared Query Documentation is found here](PreparedQueries.md)
 
 ## What main problem(s) does Query Lite solve?
 
@@ -98,7 +101,7 @@ Query Lite solves this problem by using type safe column types. The type of the 
 
 Schema differences between the code and the database often cause runtime failures. These can be difficult and time consuming to identify. One use case is where someone creates a new testing environment but forgets to run an sql upgrade script or fails to notice the script failed halfway.
 
-Query Lite addresses this problem with a runtime schema validator. This compares the schema with the database and outputs any differences. These include missing columns, incorrect data types and nullability differences.
+Query Lite addresses this problem with a runtime schema validator. This compares the code schema with the database and outputs any differences. These include missing columns, incorrect data types and nullability differences.
 
 The schema validation could be made available from a webservice endpoint. For example: `https://localhost/ValidateSchema`. Another option is to log the schema validation at startup.
 
