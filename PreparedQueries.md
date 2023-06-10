@@ -153,3 +153,207 @@ Running the query `SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 |             Dapper_One_Thousand_Row_Select | 807.4 ms | 1.85 ms | 1.73 ms | 27000.0000 | 8000.0000 | 431.11 MB | 2000 queries |
 | QueryLite_One_Thousand_Row_Prepared_Select | 474.1 ms | 1.51 ms | 1.26 ms | 17000.0000 | 8000.0000 | 277.99 MB | 2000 queries |
 |  QueryLite_One_Thousand_Row_Dynamic_Select | 477.5 ms | 1.75 ms | 1.55 ms | 17000.0000 | 8000.0000 | 278.82 MB | 2000 queries |
+
+
+
+## Prepared Select Query Example
+
+
+```C#
+public sealed class ProductCostHandler {
+
+    /*
+     *  The prepared query is defined to receive a parameter of type 'IntKey<IProduct>' on every call
+     *  to execute query and return 'rows' of the type 'ProductCostHistory'
+     */
+    private static IPreparedQueryExecute<IntKey<IProduct>, ProductCostHistory> _loadCostHistoryQuery;
+
+    static ProductCostHandler() {
+
+        /*
+         * Create the prepared query is the static constructor
+         */
+        ProductTable productTable = ProductTable.Instance;
+        ProductCostHistoryTable costHistoryTable = ProductCostHistoryTable.Instance;
+
+        _loadCostHistoryQuery = Query
+            .Prepare<IntKey<IProduct>>()        //This line defines that IntKey<IProduct> is a query parameter type.
+            .Select(
+                row => new ProductCostHistory(
+                    productID: row.Get(productTable.ProductID),
+                    startDate: row.Get(costHistoryTable.StartDate),
+                    endDate: row.Get(costHistoryTable.EndDate),
+                    standardCost: row.Get(costHistoryTable.StandardCost),
+                    modifiedDate: row.Get(costHistoryTable.ModifiedDate)
+                )
+            )
+            .From(productTable)
+            .Join(costHistoryTable).On(on => on.EQUALS(productTable.ProductID, costHistoryTable.ProductID))
+            .Where(where => where.EQUALS(productTable.ProductID, id => id))    //The function id => id returns the provided 'IntKey<IProduct>' for the underlying sql parameter
+            .OrderBy(costHistoryTable.StartDate, costHistoryTable.EndDate)
+            .Build();
+    }
+
+    private readonly IDatabase _database;
+
+    public ProductCostHandler(IDatabase database) {
+        _database = database;
+    }
+
+    public async Task<IList<ProductCostHistory>> LoadProductCostHistory(IntKey<IProduct> productId, CancellationToken cancellationToken) {
+
+        /*
+         *  Execute the prepared query and passing 'productId' in as a parameter
+         */
+        QueryResult<ProductCostHistory> result = await _loadCostHistoryQuery.ExecuteAsync(parameters: productId, _database, cancellationToken);
+
+        return result.Rows;
+    }
+}
+```
+
+## Prepared Insert Query Example
+
+```C#
+public class AddProductHandler {
+
+    private sealed static IPreparedInsertQuery<Product, IntKey<IProduct>> _insertProductQuery;
+
+    /*
+     * Create prepared insert query in the static constructor
+     */
+    static AddProductHandler() {
+
+        ProductTable table = ProductTable.Instance;
+
+        _insertProductQuery = Query
+            .Prepare<Product>() //Product is the defined parameter object that is used to populate the sql values
+            .Insert(table)
+            .Values(values => values
+                .Set(table.Name, p => p.Name)
+                .Set(table.ProductNumber, p => p.ProductNumber)
+                .Set(table.MakeFlag, p => p.MakeFlag)
+                .Set(table.FinishedGoodsFlag, p => p.FinishedGoodsFlag)
+                .Set(table.Color, p => p.Color)
+                .Set(table.SafetyStockLevel, p => p.SafetyStockLevel)
+                .Set(table.ReorderPoint, p => p.ReorderPoint)
+                .Set(table.StandardCost, p => p.StandardCost)
+                .Set(table.ListPrice, p => p.ListPrice)
+                .Set(table.Size, p => p.Size)
+                .Set(table.SizeUnitMeasureCode, p => p.SizeUnitMeasureCode)
+                .Set(table.WeightUnitMeasureCode, p => p.WeightUnitMeasureCode)
+                .Set(table.Weight, p => p.Weight)
+                .Set(table.DaysToManufacture, p => p.DaysToManufacture)
+                .Set(table.ProductLine, p => p.ProductLine)
+                .Set(table.Class, p => p.Class)
+                .Set(table.Style, p => p.Style)
+                .Set(table.ProductSubcategoryID, p => p.ProductSubcategoryID)
+                .Set(table.ProductModelID, p => p.ProductModelID)
+                .Set(table.SellStartDate, p => p.SellStartDate)
+                .Set(table.SellEndDate, p => p.SellEndDate)
+                .Set(table.DiscontinuedDate, p => p.DiscontinuedDate)
+                .Set(table.Rowguid, p => p.Rowguid)
+                .Set(table.ModifiedDate, p => p.ModifiedDate)
+            )
+            .Build(
+                inserted => inserted.Get(table.ProductID)    //Return auto generated id
+            );
+    }
+
+    private readonly IDatabase _database;
+
+    public AddProductHandler(IDatabase database) {
+        _database = database;
+    }
+
+    public async Task<IntKey<IProduct>> AddProduct(Product product, CancellationToken cancellationToken) {
+        
+        /*
+         *  Execute the prepared query and passing 'product' in as a parameter
+         */
+        using Transaction transaction = new Transaction(_database);
+
+        QueryResult<IntKey<IProduct>> result = await _insertProductQuery.ExecuteAsync(parameters: product, transaction, cancellationToken);
+
+        transaction.Commit();
+
+        IntKey<IProduct> productId = result.Rows[0];
+
+        return productId;
+    }
+}
+```
+
+## Prepared Update Query Example
+
+```C#
+public class UpdateProductHandler {
+
+    private static IPreparedUpdateQuery<Product> _updateProductQuery;
+
+    /*
+        * Create prepared update query in the static constructor
+        */
+    static UpdateProductHandler() {
+
+        ProductTable table = ProductTable.Instance;
+
+        _updateProductQuery = Query
+            .Prepare<Product>() // Product is the defined parameter object that is used to populate the sql values
+            .Update(table)
+            .Values(values => values
+                .Set(table.Name, p => p.Name)
+                .Set(table.ProductNumber, p => p.ProductNumber)
+                .Set(table.MakeFlag, p => p.MakeFlag)
+                .Set(table.FinishedGoodsFlag, p => p.FinishedGoodsFlag)
+                .Set(table.Color, p => p.Color)
+                .Set(table.SafetyStockLevel, p => p.SafetyStockLevel)
+                .Set(table.ReorderPoint, p => p.ReorderPoint)
+                .Set(table.StandardCost, p => p.StandardCost)
+                .Set(table.ListPrice, p => p.ListPrice)
+                .Set(table.Size, p => p.Size)
+                .Set(table.SizeUnitMeasureCode, p => p.SizeUnitMeasureCode)
+                .Set(table.WeightUnitMeasureCode, p => p.WeightUnitMeasureCode)
+                .Set(table.Weight, p => p.Weight)
+                .Set(table.DaysToManufacture, p => p.DaysToManufacture)
+                .Set(table.ProductLine, p => p.ProductLine)
+                .Set(table.Class, p => p.Class)
+                .Set(table.Style, p => p.Style)
+                .Set(table.ProductSubcategoryID, p => p.ProductSubcategoryID)
+                .Set(table.ProductModelID, p => p.ProductModelID)
+                .Set(table.SellStartDate, p => p.SellStartDate)
+                .Set(table.SellEndDate, p => p.SellEndDate)
+                .Set(table.DiscontinuedDate, p => p.DiscontinuedDate)
+                .Set(table.Rowguid, p => p.Rowguid)
+                .Set(table.ModifiedDate, p => p.ModifiedDate)
+            )
+            .Where(where => where.EQUALS(table.ProductID, p => p.ProductID))
+            .Build();
+    }
+
+    private readonly IDatabase _database;
+
+    public UpdateProductHandler(IDatabase database) {
+        _database = database;
+    }
+
+    public async Task UpdateProduct(Product product, CancellationToken cancellationToken) {
+
+        using Transaction transaction = new Transaction(_database);
+
+        NonQueryResult result = await _updateProductQuery.ExecuteAsync(parameters: product, transaction, cancellationToken);
+
+        if(result.RowsEffected != 1) {
+            throw new Exception($"Expected {nameof(result.RowsEffected)} == 1. Actual value == {result.RowsEffected}");
+        }
+        transaction.Commit();
+    }
+}
+```
+## The Prepare Clause
+
+TODO:
+
+## Prepared Conditions
+
+TODO:
