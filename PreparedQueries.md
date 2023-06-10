@@ -2,33 +2,32 @@
 
 Query lite has two types of queries, `dynamic` and `prepared`.
 
-Prepared queries generate their sql query string once and reused that object on every execution. Whereas dynamic queries will generate a new sql query on every execution.
+Prepared queries generate their sql query string once and reuse that object for every execution. Whereas dynamic queries generate a new sql query for every execution.
 
-These are the pros and cons of the two query types
+These are the pros and cons of the two query types:
 
 ## Dynamic Queries
 
 Pros:
 
 * Simpiler C# syntax
-    * Type safe queries
 * Allow for dynanic condtions
-    * i.e. The `WHERE` clause can change between executions
-* Supports query features that are dynamic in nature
+    * i.e. The `WHERE` clause can change between executions. Good for filtering and reporting queries that have customizable `WHERE` clause criteria.
+* Supports sql query features that are dynamic in nature
     * e.g. in list `IN(@0,@1,@3....)` (As the number of items in the list can change)
-* High performance loading results when returning a list of objects
-    * Equivalent to a direct ado.net query (That loads to a list)
+* High performance loading results
+    * Equivalent to a direct ado.net query
 
 Cons:
 
-* More memory allocations
-    - Generating the sql query on each execution requires additional memory allocations compared to using a static sql string
+* Allocates more memory per query
+    - The sql query is generated for every execution and this means more memory allocation
+    - Note: Select query memory allocation is still generally competitive with Dapper and EF core. Total memory allocations per query can be lower when more than one row is returned, depending on the query complexity and columns selected.
 
 ## Prepared Queries
 
 Pros:
 
-* Type safe queries
 * High performance
     * Very similar cpu and memory allocation as using direct ado.net queries
 
