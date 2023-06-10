@@ -217,12 +217,25 @@ namespace QueryLite {
 
         public IPreparedQueryExecute<PARAMETERS, RESULT> Build() {
 
-            FieldCollector fieldCollector = new FieldCollector();
+            PreparedQueryTemplate<PARAMETERS, RESULT> template = this;
 
-            SelectFunction!(fieldCollector);
+            while(template.ParentUnion != null) {
+                template = template.ParentUnion;
+            }
 
-            SelectFields = fieldCollector.Fields;
+            while(true) {
 
+                FieldCollector fieldCollector = new FieldCollector();
+
+                template.SelectFunction!(fieldCollector);
+
+                template.SelectFields = fieldCollector.Fields;
+
+                if(template.ChildUnion == null) {
+                    break;
+                }
+                template = template.ChildUnion;
+            }
             return new PreparedQuery<PARAMETERS, RESULT>(this);
         }
     }
