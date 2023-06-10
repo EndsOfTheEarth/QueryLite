@@ -55,6 +55,12 @@ These are the main features:
 * Supports select, insert, update, delete and truncate queries
   * Syntax - select, distinct, top, from join, left join, table hints, where, group by, order by, returning
 
+## Prepared Queries
+
+Please note that the examples on this page are using `dynamic queries`.
+
+Documentation for prepared queries is located here => [Prepared Query Documentation](PreparedQueries.md)
+
 ## Select Query
 
 Here is a basic example of a query that selects 3 columns and orders by the shippers id
