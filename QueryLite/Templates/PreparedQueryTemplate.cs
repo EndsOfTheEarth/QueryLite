@@ -25,7 +25,6 @@ using QueryLite.Databases;
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -279,7 +278,7 @@ namespace QueryLite {
             return queryDetail;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameterValues, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -291,7 +290,7 @@ namespace QueryLite {
 
             QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
                 database: database,
-                paramValue: parameterValues,
+                paramValue: parameters,
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -303,7 +302,7 @@ namespace QueryLite {
             return result;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameterValues, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -317,7 +316,7 @@ namespace QueryLite {
 
             QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
                 database: database,
-                paramValue: parameterValues,
+                paramValue: parameters,
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -329,7 +328,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -341,7 +340,7 @@ namespace QueryLite {
 
             return PreparedQueryExecutor.ExecuteAsync(
                 database: database,
-                paramValue: parameterValues,
+                paramValue: parameters,
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -353,7 +352,7 @@ namespace QueryLite {
             );
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -367,7 +366,7 @@ namespace QueryLite {
 
             return PreparedQueryExecutor.ExecuteAsync(
                 database: database,
-                paramValue: parameterValues,
+                paramValue: parameters,
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -379,7 +378,7 @@ namespace QueryLite {
             );
         }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameterValues, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -393,7 +392,7 @@ namespace QueryLite {
 
             RESULT? result = PreparedQueryExecutor.SingleOrDefault(
                 database: database,
-                paramValue: parameterValues,
+                paramValue: parameters,
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -405,7 +404,7 @@ namespace QueryLite {
             return result;
         }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameterValues, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+        public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -417,7 +416,7 @@ namespace QueryLite {
 
             RESULT? result = PreparedQueryExecutor.SingleOrDefault(
                 database: database,
-                paramValue: parameterValues,
+                paramValue: parameters,
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -429,7 +428,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -443,7 +442,7 @@ namespace QueryLite {
 
             return PreparedQueryExecutor.SingleOrDefaultAsync(
                 database: database,
-                paramValue: parameterValues,
+                paramValue: parameters,
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -455,7 +454,7 @@ namespace QueryLite {
                 cancellationToken: cancellationToken ?? CancellationToken.None);
         }
 
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameterValues, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -467,7 +466,7 @@ namespace QueryLite {
 
             return PreparedQueryExecutor.SingleOrDefaultAsync(
                 database: database,
-                paramValue: parameterValues,
+                paramValue: parameters,
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: queryDetail.QueryParameters,
@@ -489,17 +488,4 @@ namespace QueryLite {
         public string Sql { get; }
         public PreparedParameterList<PARAMETERS> QueryParameters { get; }
     }
-
-    //internal sealed class QueryParameter<PARAMETERS> {
-
-    //    public QueryParameter(ISetParameter<PARAMETERS> parameter, CreateParameterDelegate createParameterFunction) {
-    //        Parameter = parameter;
-    //        CreateParameterFunction = createParameterFunction;
-    //    }
-
-    //    public DbParameter CreateParameter(PARAMETERS parameters) => CreateParameterFunction(Parameter.Name, Parameter.GetValue(parameters));
-
-    //    public ISetParameter<PARAMETERS> Parameter { get; }
-    //    public CreateParameterDelegate CreateParameterFunction { get; }
-    //}
 }

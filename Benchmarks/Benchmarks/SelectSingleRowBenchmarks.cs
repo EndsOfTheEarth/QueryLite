@@ -104,7 +104,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                QueryResult<Test01> result = _preparedSelectQuery.Execute(parameterValues: this, Databases.TestDatabase);
+                QueryResult<Test01> result = _preparedSelectQuery.Execute(parameters: this, Databases.TestDatabase);
             }
         }
 

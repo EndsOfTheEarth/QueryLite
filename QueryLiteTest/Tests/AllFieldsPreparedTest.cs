@@ -32,7 +32,7 @@ namespace QueryLiteTest.Tests {
 
                 _deleteAllQuery.Execute(parameters: true, transaction);
 
-                QueryResult<int> result = query1!.Execute(parameterValues: true, transaction);
+                QueryResult<int> result = query1!.Execute(parameters: true, transaction);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -475,7 +475,7 @@ namespace QueryLiteTest.Tests {
 
         private void AssertRowExists(AllTypes allTypes) {
 
-            QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameterValues: allTypes, TestDatabase.Database);
+            QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameters: allTypes, TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 1);
 
@@ -484,7 +484,7 @@ namespace QueryLiteTest.Tests {
 
         private async Task AssertRowExistsAsync(AllTypes allTypes) {
 
-            QueryResult<AllTypesInfo> result = await _selectAllTypesQuery!.ExecuteAsync(parameterValues: allTypes, TestDatabase.Database, cancellationToken: CancellationToken.None);
+            QueryResult<AllTypesInfo> result = await _selectAllTypesQuery!.ExecuteAsync(parameters: allTypes, TestDatabase.Database, cancellationToken: CancellationToken.None);
 
             Assert.AreEqual(result.Rows.Count, 1);
 
@@ -494,7 +494,7 @@ namespace QueryLiteTest.Tests {
         private void AssertRowExists(AllTypes allTypes, Transaction transaction) {
 
 
-            QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameterValues: allTypes, transaction);
+            QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameters: allTypes, transaction);
 
             Assert.AreEqual(result.Rows.Count, 1);
 
@@ -503,7 +503,7 @@ namespace QueryLiteTest.Tests {
 
         private void AssertRowDoesNotExists(AllTypes allTypes) {
 
-            QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameterValues: allTypes, TestDatabase.Database);
+            QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameters: allTypes, TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 0);
         }
@@ -511,7 +511,7 @@ namespace QueryLiteTest.Tests {
         private void AssertRowDoesNotExists(AllTypes allTypes, Transaction transaction) {
 
 
-            QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameterValues: allTypes, transaction);
+            QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameters: allTypes, transaction);
 
             Assert.AreEqual(result.Rows.Count, 0);
         }
@@ -665,7 +665,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameterValues: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
+                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -690,7 +690,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = await _selectAllCountQuery.ExecuteAsync(parameterValues: true, TestDatabase.Database, CancellationToken.None);
+                QueryResult<int> result = await _selectAllCountQuery.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -744,7 +744,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameterValues: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
+                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -776,7 +776,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = await _selectAllCountQuery.ExecuteAsync(parameterValues: true, TestDatabase.Database, CancellationToken.None);
+                QueryResult<int> result = await _selectAllCountQuery.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -853,7 +853,7 @@ namespace QueryLiteTest.Tests {
                 transaction.Commit();
             }
 
-            QueryResult<int> result = _selectAllCountQuery!.Execute(parameterValues: true, TestDatabase.Database);
+            QueryResult<int> result = _selectAllCountQuery!.Execute(parameters: true, TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 1);
 
@@ -873,7 +873,7 @@ namespace QueryLiteTest.Tests {
                 transaction.Commit();
             }
 
-            QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameterValues: true, TestDatabase.Database, CancellationToken.None);
+            QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
             Assert.AreEqual(result.Rows.Count, 1);
 
@@ -1087,7 +1087,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = _selectAllTypesCountQuery!.Execute(parameterValues: allTypes, TestDatabase.Database);
+                QueryResult<int> result = _selectAllTypesCountQuery!.Execute(parameters: allTypes, TestDatabase.Database);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -1129,7 +1129,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = _selectAllTypesCountQuery!.Execute(parameterValues: allTypes, TestDatabase.Database);
+                QueryResult<int> result = _selectAllTypesCountQuery!.Execute(parameters: allTypes, TestDatabase.Database);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -1167,7 +1167,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = await _selectAllTypesCountQuery!.ExecuteAsync(parameterValues: allTypes, TestDatabase.Database, CancellationToken.None);
+                QueryResult<int> result = await _selectAllTypesCountQuery!.ExecuteAsync(parameters: allTypes, TestDatabase.Database, CancellationToken.None);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -1209,7 +1209,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = await _selectAllTypesCountQuery!.ExecuteAsync(parameterValues: allTypes, TestDatabase.Database, CancellationToken.None);
+                QueryResult<int> result = await _selectAllTypesCountQuery!.ExecuteAsync(parameters: allTypes, TestDatabase.Database, CancellationToken.None);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -1224,7 +1224,7 @@ namespace QueryLiteTest.Tests {
 
         private int GetNumberOfRows() {
 
-            QueryResult<int> result = _selectAllCountQuery!.Execute(parameterValues: true, TestDatabase.Database);
+            QueryResult<int> result = _selectAllCountQuery!.Execute(parameters: true, TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);
@@ -1237,7 +1237,7 @@ namespace QueryLiteTest.Tests {
 
         private async Task<int> GetNumberOfRowsAsync() {
 
-            QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameterValues: true, TestDatabase.Database, CancellationToken.None);
+            QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);
@@ -1302,7 +1302,7 @@ namespace QueryLiteTest.Tests {
                 .Option(labelName: "Label 1", SqlServerQueryOption.FORCE_ORDER)
                 .Build();
 
-            QueryResult<AllTypesInfoResult4> result = joinQuery1.Execute(parameterValues: joinQueryParams, TestDatabase.Database);
+            QueryResult<AllTypesInfoResult4> result = joinQuery1.Execute(parameters: joinQueryParams, TestDatabase.Database);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);
@@ -1350,7 +1350,7 @@ namespace QueryLiteTest.Tests {
                 .Where(where => where.EQUALS(allTypesTable1.Id, info => info.Id))
                 .Build();
 
-            QueryResult<AllTypesInfoResult3> result = await joinQuery.ExecuteAsync(parameterValues: allTypes, TestDatabase.Database, CancellationToken.None);
+            QueryResult<AllTypesInfoResult3> result = await joinQuery.ExecuteAsync(parameters: allTypes, TestDatabase.Database, CancellationToken.None);
 
             Assert.AreEqual(result.Rows.Count, 1);
             Assert.AreEqual(result.RowsEffected, 0);

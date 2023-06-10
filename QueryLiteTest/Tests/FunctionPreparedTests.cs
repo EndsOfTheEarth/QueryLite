@@ -32,7 +32,7 @@ namespace QueryLiteTest.Tests {
                     .From(allTypesTable)
                     .Build();
 
-                QueryResult<int> result = query.Execute(parameterValues: true, transaction);
+                QueryResult<int> result = query.Execute(parameters: true, transaction);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -123,7 +123,7 @@ namespace QueryLiteTest.Tests {
                     .OrderBy(table.Id.ASC)
                     .Build();
 
-                QueryResult<AllTypesInfo> result = query.Execute(parameterValues: true, TestDatabase.Database);
+                QueryResult<AllTypesInfo> result = query.Execute(parameters: true, TestDatabase.Database);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
