@@ -36,16 +36,16 @@ Cons:
 
 * Syntax is more difficult to understand and can look a bit messey for complicated queries
     * The C# generics required to make prepared queries type safe add complexity to the syntax
+    * C# currently does not support generic parameters for custom operators. This means condition syntax (e.g. the `WHERE` clause) cannot use operators like `==` and `!=`
 * Some query features are not supported
     * e.g. In list `IN(@0, @1, @2)` as the number of items in the list can change between executions
 
 
 # What Query Type Is Best?
 
-Generally dynamic queries are a better choice as the C# syntax is easier to write and understand. In general a dynamic query will have equivalent or better performance to Dapper when returning a list of objects as the result. Query Lite is generally more memory efficient in loading result classes than dapper and that often balances out the initial overhead of dynamically generating a query.
+Generally, dynamic queries are a better choice as the C# syntax is easier to write and understand. In general a dynamic query will have equivalent or better performance to Dapper when returning a list of objects as the result. Query Lite is more memory efficient in loading result classes than dapper and that often balances out the initial overhead of dynamically generating a query.
 
-If a query is on the 'hot path' and you want to minimise memory allocations then use a prepared query. Each query execution will use CPU and memory resources near equlivant to writing a direct ado.net query.
-
+If a query is on the 'hot path' and you want to minimise memory allocations then use a prepared query. As a general rule, prepared queries will use almost the equivalent CPU and memory allocation as a direct ado.net query.
 
 ## Benchmarks
 
@@ -91,6 +91,19 @@ public void Ado_Ten_Row_Select() {
             );
         }
     }
+}
+public sealed class Test01 {
+
+    public Test01(int id, Guid row_guid, string message, DateTime date) {
+        Id = id;
+        Row_guid = row_guid;
+        Message = message;
+        Date = date;
+    }
+    public int Id { get; set; }
+    public Guid Row_guid { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public DateTime Date { get; set; }
 }
 ```
 

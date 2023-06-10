@@ -1,6 +1,8 @@
 # Query Lite
 
-Query Lite is a typesafe .net sql query library for Sql Server and PostgreSql.
+Query Lite is a typesafe .net sql query library for Sql Server and PostgreSql
+
+In essence it is typesafe a `string less` sql query builder.
 
 It is designed to achieve three main goals:
 
@@ -10,15 +12,20 @@ It is designed to achieve three main goals:
     - Check for missing tables, missing columns, column type and nullablility differences
 3. Debuggable
     - Show detailed information about sql queries during and after execution
+4. Performance
+    - `Prepared` queries are near equivalent performance and memory allocation to direct ado.net code
+    - `Dynamic` queries are near equivalent performance and memory allocation to Dapper (Often with significantly lower memory allocation)
 
 ## Documentation
 [Documentation is found here](Documentation.md)
+
+[Prepared Query Documentation is found here](PreparedQueries.md)
 
 ## Nuget Package
 
 [QueryLite.net Nuget Package](https://www.nuget.org/packages/QueryLite.net/)
 
-## Example Select Query
+## Example Select Query (Dynamic)
 ``` C#
 using QueryLite;
 using Northwind.Tables;
@@ -57,6 +64,7 @@ foreach(var row in result.Rows) {
   - Designed to work with nullable reference types and .net 7.0
 * Sql Select, insert, update, delete and truncate queries
 * Supports sql syntax e.g. Join, Left Join, Where, Order By, Group By, Union and Nested Queries
+* Does not do any client side filtering like linq to sql
 * Debugging features that show sql queries being executed
   - Events Like - QueryExecuting, QueryPerformed
   - Query results contain the executed sql
@@ -65,6 +73,11 @@ foreach(var row in result.Rows) {
 * Table definition validator
 * Supports both Sql Server and PostgreSql
 * Schema description attributes to allow documentation generation
+
+## Dynamic And Prepared Queries
+
+Query lite implements both dynamic queries and prepared queries. Prepared queries have performace and memory allocation near identical to direct ado.net but they are syntactically more complicated. Generally dynamic queries should be used as they are syntactically simpler and are competitive with Dapper performance / memory allocation.
+
 
 ## What main problem(s) does Query Lite solve?
 
@@ -99,7 +112,7 @@ Also the query result classes has a property that stores the sql query.
 
 Schema documentation is difficult to maintain. Query Lite is able to generate schema documentation using the code table and column description attributes. This allows for the human readable descriptions to be stored and maintained in code.
 
-## Example Insert Query
+## Example Insert Query (Dynamic)
 ``` C#
 using QueryLite;
 using Northwind.Tables;
@@ -142,7 +155,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 }
 ```
 
-## Example Update Query
+## Example Update Query (Dynamic)
 
 ``` C#
 using QueryLite;
@@ -167,7 +180,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 }
 ```
 
-## Example Delete Query
+## Example Delete Query (Dynamic)
 
 ``` C#
 using QueryLite;
