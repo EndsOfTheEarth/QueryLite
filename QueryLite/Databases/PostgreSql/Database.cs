@@ -38,14 +38,20 @@ namespace QueryLite.Databases.PostgreSql {
         IQueryGenerator IInternalConnection.QueryGenerator { get; } = new PostgreSqlSelectQueryGenerator();
         IInsertQueryGenerator IInternalConnection.InsertGenerator { get; } = new PostgreSqlInsertQueryGenerator();
         IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new PostgreSqlUpdateQueryGenerator();
-        IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator { get; } = new PostgreSqlPreparedUpdateQueryGenerator();
+        
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new PostgreSqlDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
-        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
+        
         IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMapper();
+
+        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
+        IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator { get; } = new PostgreSqlPreparedUpdateQueryGenerator();
         IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new PostgreSqlPreparedInsertQueryGenerator();
+        IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new PostgreSqlPreparedDeleteQueryGenerator();
 
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
+
+        
 
         public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 

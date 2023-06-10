@@ -65,6 +65,7 @@ namespace QueryLite {
         internal IPreparedInsertQueryGenerator PreparedInsertGenerator { get; }
         internal IUpdateQueryGenerator UpdateGenerator { get; }
         internal IPreparedUpdateQueryGenerator PreparedUpdateGenerator { get; }
+        internal IPreparedDeleteQueryGenerator PreparedDeleteQueryGenerator { get; }
         internal IDeleteQueryGenerator DeleteGenerator { get; }
         internal ITruncateQueryGenerator TruncateGenerator { get; }
         internal IPreparedQueryGenerator PreparedQueryGenerator { get; }

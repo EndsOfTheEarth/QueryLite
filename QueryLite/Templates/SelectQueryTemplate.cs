@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases;
-using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -49,6 +48,9 @@ namespace QueryLite {
     }
     internal interface IDeleteQueryGenerator {
         internal string GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
+    }
+    internal interface IPreparedDeleteQueryGenerator {
+        internal string GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) where PARAMETERS : notnull;
     }
     internal interface ITruncateQueryGenerator {
         internal string GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters);
@@ -85,9 +87,9 @@ namespace QueryLite {
 
         public bool IsDistinct { get; private set; }
         public int? TopRows { get; private set; }
-        public ITable? FromTable { get; private set; }        
+        public ITable? FromTable { get; private set; }
         public IList<IJoin>? Joins { get; private set; }
-        public ICondition? WhereCondition { get; private set; }        
+        public ICondition? WhereCondition { get; private set; }
         public IOrderByColumn[]? OrderByFields { get; private set; }
 
         public TemplateExtra<RESULT>? Extras { get; private set; }

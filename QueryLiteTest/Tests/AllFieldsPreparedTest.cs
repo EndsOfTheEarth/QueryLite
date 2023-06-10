@@ -1,9 +1,7 @@
-using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.DbSchema;
-using QueryLite.PreparedQuery;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
@@ -19,18 +17,20 @@ namespace QueryLiteTest.Tests {
     [TestClass]
     public sealed class AllFieldsPreparedTest {
 
+        private static IPreparedDeleteQuery<bool> _deleteAllQuery = Query
+                .Prepare<bool>()
+                .Delete(AllTypesTable.Instance)
+                .NoWhereCondition()
+                .Build();
+
         [TestInitialize]
         public void ClearTable() {
 
             InitQueries();
 
-            AllTypesTable allTypesTable = AllTypesTable.Instance;
-
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                Query.Delete(allTypesTable)
-                    .NoWhereCondition()
-                    .Execute(transaction);
+                _deleteAllQuery.Execute(parameters: true, transaction);
 
                 QueryResult<int> result = query1!.Execute(parameterValues: true, transaction);
 
@@ -50,6 +50,11 @@ namespace QueryLiteTest.Tests {
         private IPreparedQueryExecute<AllTypes, AllTypesInfo>? _selectAllTypesQuery;
         private IPreparedQueryExecute<bool, int>? _selectAllCountQuery;
         private IPreparedQueryExecute<AllTypes, int>? _selectAllTypesCountQuery;
+
+        private IPreparedDeleteQuery<AllTypes>? _deleteQuery1;
+        private IPreparedDeleteQuery<AllTypes>? _deleteQuery2;
+        private IPreparedDeleteQuery<AllTypes>? _deleteQuery3;
+        private IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo>? _deleteQuery4;
 
         public void InitQueries() {
 
@@ -96,6 +101,36 @@ namespace QueryLiteTest.Tests {
                     .Where(where => where.EQUALS(allTypesTable.Id, (info) => info.Id))
                     .Build();
             }
+
+            AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
+
+            _deleteQuery1 = Query
+                .Prepare<AllTypes>()
+                .Delete(allTypesTable)
+                .Join(allTypesTable2).On(on => on.EQUALS(allTypesTable.Id, allTypesTable2.Id))
+                .Where(where => where.EQUALS(allTypesTable.Id, info => info.Id))
+                .Build();
+
+            _deleteQuery2 = Query
+                .Prepare<AllTypes>()
+                .Delete(allTypesTable)
+                .LeftJoin(allTypesTable2).On(on => on.EQUALS(allTypesTable.Id, _ => IntKey<AllTypes>.ValueOf(int.MaxValue)))    //Left join with an id that does not exist
+                .Where(where => where.EQUALS(allTypesTable.Id, info => info.Id) & where.IS_NOT_NULL(allTypesTable2.Id))  //Is not null should return zero rows
+                .Build();
+
+            _deleteQuery3 = Query
+                .Prepare<AllTypes>()
+                .Delete(allTypesTable)
+                .LeftJoin(allTypesTable2).On(on => on.EQUALS(allTypesTable.Id, _ => IntKey<AllTypes>.ValueOf(int.MaxValue)))    //Left join with an id that does not exist
+                .Where(where => where.EQUALS(allTypesTable.Id, info => info.Id) & where.IS_NULL(allTypesTable2.Id))
+                .Build();
+
+            _deleteQuery4 = Query
+                .Prepare<IntKey<AllTypes>>()
+                .Delete(allTypesTable)
+                .Join(allTypesTable2).On(on => on.EQUALS(allTypesTable.Id, allTypesTable2.Id))
+                .Where(where => where.EQUALS(allTypesTable.Id, id => id))
+                .Build(deleted => new AllTypesInfo(deleted, allTypesTable));
         }
 
         [TestCleanup]
@@ -611,32 +646,17 @@ namespace QueryLiteTest.Tests {
             await InsertWithQueryAsync(allTypes2);
             await InsertWithQueryAsync(allTypes3);
 
-            AllTypesTable allTypesTable = AllTypesTable.Instance;
-            AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
-
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                NonQueryResult result = await Query
-                    .Delete(allTypesTable)
-                    .Join(allTypesTable2).On(allTypesTable.Id == allTypesTable2.Id)
-                    .Where(allTypesTable.Id == allTypes1.Id)
-                    .ExecuteAsync(transaction);
+                NonQueryResult result = await _deleteQuery1!.ExecuteAsync(parameters: allTypes1, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
-                result = await Query
-                    .Delete(allTypesTable)
-                    .LeftJoin(allTypesTable2).On(allTypesTable.Id == IntKey<AllTypes>.ValueOf(int.MaxValue))    //Left join with an id that does not exist
-                    .Where(allTypesTable.Id == allTypes2.Id & allTypesTable2.Id.IsNotNull)  //Is not null should return zero rows
-                    .ExecuteAsync(transaction);
+                result = await _deleteQuery2!.ExecuteAsync(parameters: allTypes2, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 0);
 
-                result = await Query
-                    .Delete(allTypesTable)
-                    .LeftJoin(allTypesTable2).On(allTypesTable.Id == IntKey<AllTypes>.ValueOf(int.MaxValue))    //Left join with an id that does not exist
-                    .Where(allTypesTable.Id == allTypes2.Id & allTypesTable2.Id.IsNull)
-                    .ExecuteAsync(transaction);
+                result = await _deleteQuery3!.ExecuteAsync(parameters: allTypes2, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
@@ -658,14 +678,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<AllTypesInfo> result = await Query
-                    .Delete(allTypesTable)
-                    .Join(allTypesTable2).On(allTypesTable.Id == allTypesTable2.Id)
-                    .Where(allTypesTable.Id == allTypes3.Id)
-                    .ExecuteAsync(
-                        deleted => new AllTypesInfo(deleted, allTypesTable),
-                        transaction
-                    );
+                QueryResult<AllTypesInfo> result = await _deleteQuery4!.ExecuteAsync(parameters: allTypes3.Id, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
                 Assert.AreEqual(result.Rows.Count, 1);
@@ -704,19 +717,25 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                NonQueryResult result = await Query
+                IPreparedDeleteQuery<AllTypes> deleteQuery5 = Query
+                    .Prepare<AllTypes>()
                     .Delete(allTypesTable)
                     .Using(allTypesTable2)
-                    .Where(allTypesTable.Id == allTypesTable2.Id &  allTypesTable.Id == allTypes1.Id)
-                    .ExecuteAsync(transaction);
+                    .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable2.Id) & where.EQUALS(allTypesTable.Id, info => info.Id))
+                    .Build();
+
+                NonQueryResult result = await deleteQuery5.ExecuteAsync(parameters: allTypes1, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
-                result = await Query
+                IPreparedDeleteQuery<AllTypes> deleteQuery6 = Query
+                    .Prepare<AllTypes>()
                     .Delete(allTypesTable)
                     .Using(allTypesTable2)
-                    .Where(allTypesTable.Id == allTypesTable2.Id & allTypesTable.Id == allTypes2.Id)
-                    .ExecuteAsync(transaction);
+                    .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable2.Id) & where.EQUALS(allTypesTable.Id, info => info.Id))
+                    .Build();
+
+                result = await deleteQuery6.ExecuteAsync(parameters: allTypes2, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
@@ -738,14 +757,14 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<AllTypesInfo> result = await Query
+                IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo> deleteQuery7 = Query
+                    .Prepare<IntKey<AllTypes>>()
                     .Delete(allTypesTable)
                     .Using(allTypesTable2)
-                    .Where(allTypesTable.Id == allTypesTable2.Id &  allTypesTable.Id == allTypes3.Id)
-                    .ExecuteAsync(
-                        deleted => new AllTypesInfo(deleted, allTypesTable),
-                        transaction
-                    );
+                    .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable2.Id) & where.EQUALS(allTypesTable.Id, id => id))
+                    .Build(deleted => new AllTypesInfo(deleted, allTypesTable));
+
+                QueryResult<AllTypesInfo> result = await deleteQuery7.ExecuteAsync(parameters: allTypes3.Id, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
                 Assert.AreEqual(result.Rows.Count, 1);
@@ -1053,10 +1072,13 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                NonQueryResult result = Query
+                IPreparedDeleteQuery<AllTypes> deleteQuery8 = Query
+                    .Prepare<AllTypes>()
                     .Delete(allTypesTable)
-                    .Where(allTypesTable.Id == allTypes.Id)
-                    .Execute(transaction, timeout: TimeoutLevel.ShortDelete);
+                    .Where(where => where.EQUALS(allTypesTable.Id, info => info.Id))
+                    .Build();
+
+                NonQueryResult result = deleteQuery8.Execute(parameters: allTypes, transaction, timeout: TimeoutLevel.ShortDelete);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
@@ -1088,14 +1110,13 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<AllTypesInfo> result = Query
+                IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo> deleteQuery9 = Query
+                    .Prepare<IntKey<AllTypes>>()
                     .Delete(allTypesTable)
-                    .Where(allTypesTable.Id == allTypes.Id)
-                    .Execute(
-                        result => new AllTypesInfo(result, allTypesTable),
-                        transaction,
-                        TimeoutLevel.ShortDelete
-                    );
+                    .Where(where => where.EQUALS(allTypesTable.Id, id => id))
+                    .Build(deleted => new AllTypesInfo(deleted, allTypesTable));
+
+                QueryResult<AllTypesInfo> result = deleteQuery9.Execute(parameters: allTypes.Id, transaction, TimeoutLevel.ShortDelete);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
@@ -1131,10 +1152,13 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                NonQueryResult result = await Query
+                IPreparedDeleteQuery<IntKey<AllTypes>> deleteQuery10 = Query
+                    .Prepare<IntKey<AllTypes>>()
                     .Delete(allTypesTable)
-                    .Where(allTypesTable.Id == allTypes.Id)
-                    .ExecuteAsync(transaction);
+                    .Where(where => where.EQUALS(allTypesTable.Id, id => id))
+                    .Build();
+
+                NonQueryResult result = await deleteQuery10.ExecuteAsync(parameters: allTypes.Id, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
@@ -1166,13 +1190,13 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<AllTypesInfo> result = await Query
+                IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo> deleteQuery10 = Query
+                    .Prepare<IntKey<AllTypes>>()
                     .Delete(allTypesTable)
-                    .Where(allTypesTable.Id == allTypes.Id)
-                    .ExecuteAsync(
-                        result => new AllTypesInfo(result, allTypesTable),
-                        transaction
-                    );
+                    .Where(where => where.EQUALS(allTypesTable.Id, id => id))
+                    .Build(deleted => new AllTypesInfo(deleted, allTypesTable));
+
+                QueryResult<AllTypesInfo> result = await deleteQuery10.ExecuteAsync(parameters: allTypes.Id, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
@@ -1472,10 +1496,13 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                NonQueryResult result = Query
+                IPreparedDeleteQuery<IntKey<AllTypes>> deleteQuery11 = Query
+                    .Prepare<IntKey<AllTypes>>()
                     .Delete(allTypesTable)
-                    .Where(allTypesTable.Id == allTypes.Id)
-                    .Execute(transaction, TimeoutLevel.ShortDelete);
+                    .Where(where => where.EQUALS(allTypesTable.Id, id => id))
+                    .Build();
+
+                NonQueryResult result = deleteQuery11.Execute(parameters: allTypes.Id, transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
