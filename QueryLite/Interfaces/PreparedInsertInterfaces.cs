@@ -53,7 +53,7 @@ namespace QueryLite {
 
     public interface IPreparedInsertQuery<PARAMETERS, RESULT> {
 
-        void Initilize(IDatabase database);
+        void Initialize(IDatabase database);
 
         QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
