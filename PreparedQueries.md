@@ -33,18 +33,18 @@ Pros:
 
 Cons:
 
-* Syntax is more difficult to understand and can look a bit messey for complicated queries
-    * The C# generics required to make prepared queries type safe add complexity to the syntax
+* Syntax is more complicated
+    * The language generic constraints required to make prepared queries type safe add complexity to the syntax
     * C# currently does not support generic parameters for custom operators. This means condition syntax (e.g. the `WHERE` clause) cannot use operators like `==` and `!=`
-* Some query features are not supported
+* Some query features are not supported as they are dynamic in nature
     * e.g. In list `IN(@0, @1, @2)` as the number of items in the list can change between executions
 
 
 # What Query Type Is Best?
 
-Generally, dynamic queries are a better choice as the C# syntax is easier to write and understand. In general a dynamic query will have equivalent or better performance to Dapper when returning a list of objects as the result. Query Lite is more memory efficient in loading result classes than dapper and that often balances out the initial overhead of dynamically generating a query.
+Dynamic queries are a good choice as the C# syntax is easier to read and understand. In general a dynamic queries have good performance.
 
-If a query is on the 'hot path' and you want to minimise memory allocations then use a prepared query. As a general rule, prepared queries will use almost the equivalent CPU and memory allocation as a direct ado.net query.
+Prepared queries have performance and memory allocation characteristics near equivalent to direct ado.net. So, if a query is on the 'hot path' and memory allocation pressure on the garbage collector is an issue, then use a prepared query.
 
 ## Benchmarks
 
