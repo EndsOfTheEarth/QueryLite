@@ -155,6 +155,13 @@ Running the query `SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 |  QueryLite_One_Thousand_Row_Dynamic_Select | 477.5 ms | 1.75 ms | 1.55 ms | 17000.0000 | 8000.0000 | 278.82 MB | 2000 queries |
 
 
+## The Prepare Clause
+
+TODO:
+
+## Prepared Conditions
+
+TODO:
 
 ## Prepared Select Query Example
 
@@ -166,7 +173,7 @@ public sealed class ProductCostHandler {
      *  The prepared query is defined to receive a parameter of type 'IntKey<IProduct>' on every call
      *  to execute query and return 'rows' of the type 'ProductCostHistory'
      */
-    private static IPreparedQueryExecute<IntKey<IProduct>, ProductCostHistory> _loadCostHistoryQuery;
+    private readonly static IPreparedQueryExecute<IntKey<IProduct>, ProductCostHistory> _loadCostHistoryQuery;
 
     static ProductCostHandler() {
 
@@ -215,9 +222,9 @@ public sealed class ProductCostHandler {
 ## Prepared Insert Query Example
 
 ```C#
-public class AddProductHandler {
+public sealed class AddProductHandler {
 
-    private sealed static IPreparedInsertQuery<Product, IntKey<IProduct>> _insertProductQuery;
+    private readonly static IPreparedInsertQuery<Product, IntKey<IProduct>> _insertProductQuery;
 
     /*
      * Create prepared insert query in the static constructor
@@ -289,11 +296,11 @@ public class AddProductHandler {
 ```C#
 public class UpdateProductHandler {
 
-    private static IPreparedUpdateQuery<Product> _updateProductQuery;
+    private readonly static IPreparedUpdateQuery<Product> _updateProductQuery;
 
     /*
-        * Create prepared update query in the static constructor
-        */
+     * Create prepared update query in the static constructor
+     */
     static UpdateProductHandler() {
 
         ProductTable table = ProductTable.Instance;
@@ -350,10 +357,41 @@ public class UpdateProductHandler {
     }
 }
 ```
-## The Prepare Clause
 
-TODO:
+## Prepared Delete Query Example
 
-## Prepared Conditions
+```C#
+public sealed class DeleteProductHandler {
 
-TODO:
+    private readonly static IPreparedDeleteQuery<IntKey<IProduct>> _deleteProductQuery;
+
+    static DeleteProductHandler() {
+
+        ProductTable table = ProductTable.Instance;
+
+        _deleteProductQuery = Query
+            .Prepare<IntKey<IProduct>>()
+            .Delete(table)
+            .Where(where => where.EQUALS(table.ProductID, productId => productId))
+            .Build();
+    }
+
+    private readonly IDatabase _database;
+
+    public DeleteProductHandler(IDatabase database) {
+        _database = database;
+    }
+
+    public async Task DeleteProduct(IntKey<IProduct> productId, CancellationToken cancellationToken) {
+
+        using Transaction transaction = new Transaction(_database);
+
+        NonQueryResult result = await _deleteProductQuery.ExecuteAsync(parameters: productId, transaction, cancellationToken);
+
+        if(result.RowsEffected != 1) {
+            throw new Exception($"Expected {nameof(result.RowsEffected)} == 1. Actual value == {result.RowsEffected}");
+        }
+        transaction.Commit();
+    }
+}
+```
