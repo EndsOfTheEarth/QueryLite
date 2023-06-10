@@ -25,100 +25,85 @@ using QueryLite.Databases;
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace QueryLite {
 
-    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>, IPreparedUpdateJoin<PARAMETERS>, IPreparedUpdateWhere<PARAMETERS>, IPreparedUpdateBuild<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteUsing<PARAMETERS>, IPreparedDeleteJoin<PARAMETERS>, IPreparedDeleteWhere<PARAMETERS>, IPreparedDeleteBuild<PARAMETERS> where PARAMETERS : notnull {
 
         public ITable Table { get; }
-        public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
-        public IList<PreparedUpdateJoin<PARAMETERS>>? Joins { get; private set; }
+        public IList<ITable>? Usings { get; private set; }
+        public IList<PreparedDeleteJoin<PARAMETERS>>? Joins { get; private set; }
         public APreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
 
-        public PreparedUpdateTemplate(ITable table) {
+        public PreparedDeleteQueryTemplate(ITable table) {
 
             ArgumentNullException.ThrowIfNull(table);
 
             Table = table;
         }
 
-        public IPreparedUpdateJoin<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values) {
-
-            ArgumentNullException.ThrowIfNull(values);
-            SetValues = values;
+        public IPreparedDeleteWhere<PARAMETERS> Using(params ITable[] tables) {
+            ArgumentNullException.ThrowIfNull(tables);
+            Usings = new List<ITable>(tables);
             return this;
         }
 
-        public IPreparedUpdateJoinOn<PARAMETERS> Join(ITable table) {
+        public IPreparedDeleteJoinOn<PARAMETERS> Join(ITable table) {
 
             ArgumentNullException.ThrowIfNull(table);
 
+            PreparedDeleteJoin<PARAMETERS> join = new PreparedDeleteJoin<PARAMETERS>(JoinType.Join, table, this);
+
             if(Joins == null) {
-                Joins = new List<PreparedUpdateJoin<PARAMETERS>>();
+                Joins = new List<PreparedDeleteJoin<PARAMETERS>>();
             }
-
-            PreparedUpdateJoin<PARAMETERS> join = new PreparedUpdateJoin<PARAMETERS>(JoinType.Join, table, this);
-
             Joins.Add(join);
             return join;
         }
 
-        public IPreparedUpdateJoinOn<PARAMETERS> LeftJoin(ITable table) {
+        public IPreparedDeleteJoinOn<PARAMETERS> LeftJoin(ITable table) {
 
             ArgumentNullException.ThrowIfNull(table);
 
+            PreparedDeleteJoin<PARAMETERS> join = new PreparedDeleteJoin<PARAMETERS>(JoinType.LeftJoin, table, this);
+
             if(Joins == null) {
-                Joins = new List<PreparedUpdateJoin<PARAMETERS>>();
+                Joins = new List<PreparedDeleteJoin<PARAMETERS>>();
             }
-
-            PreparedUpdateJoin<PARAMETERS> join = new PreparedUpdateJoin<PARAMETERS>(JoinType.LeftJoin, table, this);
-
             Joins.Add(join);
             return join;
         }
 
-        public IPreparedUpdateBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {
+        public IPreparedDeleteBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {
 
             ArgumentNullException.ThrowIfNull(condition);
-
             WhereCondition = condition(new EmptyPreparedCondition<PARAMETERS>());
             return this;
         }
 
-        public IPreparedUpdateBuild<PARAMETERS> NoWhereCondition() {
-
+        public IPreparedDeleteBuild<PARAMETERS> NoWhereCondition() {
             WhereCondition = null;
             return this;
         }
 
-        public IPreparedUpdateQuery<PARAMETERS> Build() {
-            return new PreparedUpdateQuery<PARAMETERS>(this);
+        public IPreparedDeleteQuery<PARAMETERS> Build() {
+            return new PreparedDeleteQuery<PARAMETERS>(this);
         }
 
-        public IPreparedUpdateQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc) {
-            return new PreparedUpdateQuery<PARAMETERS, RESULT>(this, returningFunc);
+        public IPreparedDeleteQuery<PARAMETERS, RETURNING> Build<RETURNING>(Func<IResultRow, RETURNING> func) {
+            return new PreparedDeleteQuery<PARAMETERS, RETURNING>(this, func);
         }
     }
 
-    internal sealed class PreparedSqlAndParameters<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedDeleteQuery<PARAMETERS> : IPreparedDeleteQuery<PARAMETERS> where PARAMETERS : notnull {
 
-        public PreparedSqlAndParameters(string sql, PreparedParameterList<PARAMETERS> setParameters) {
-            Sql = sql;
-            SetParameters = setParameters;
-        }
-        public string Sql { get; }
-        public PreparedParameterList<PARAMETERS> SetParameters { get; }
-    }
+        private readonly PreparedDeleteQueryTemplate<PARAMETERS> _template;
+        
+        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _deleteDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
 
-    internal sealed class PreparedUpdateQuery<PARAMETERS> : IPreparedUpdateQuery<PARAMETERS> where PARAMETERS : notnull {
-
-        private readonly PreparedUpdateTemplate<PARAMETERS> _template;
-
-        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
-
-        public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template) {
+        public PreparedDeleteQuery(PreparedDeleteQueryTemplate<PARAMETERS> template) {
 
             _template = template;
 
@@ -134,34 +119,34 @@ namespace QueryLite {
                     max = valueAsInt;
                 }
             }
-            _updateDetails = new PreparedSqlAndParameters<PARAMETERS>?[max + 1];
+            _deleteDetails = new PreparedSqlAndParameters<PARAMETERS>?[max + 1];
         }
 
         public void Initialize(IDatabase database) {
-            _ = GetUpdateQuery(database);
+            _ = GetDeleteQuery(database);
         }
-        private PreparedSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {
+        private PreparedSqlAndParameters<PARAMETERS> GetDeleteQuery(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
             PreparedSqlAndParameters<PARAMETERS> updateDetail;
 
-            if(_updateDetails[dbTypeIndex] == null) {
+            if(_deleteDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedUpdateGenerator.GetSql<PARAMETERS, bool>(_template, database, out PreparedParameterList<PARAMETERS> parameters, outputFunc: null);
+                string sql = database.PreparedDeleteQueryGenerator.GetSql<PARAMETERS, bool>(_template, database, out PreparedParameterList<PARAMETERS> parameters, outputFunc: null);
 
                 updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, parameters);
-                _updateDetails[dbTypeIndex] = updateDetail;
+                _deleteDetails[dbTypeIndex] = updateDetail;
             }
             else {
-                updateDetail = _updateDetails[dbTypeIndex]!;
+                updateDetail = _deleteDetails[dbTypeIndex]!;
             }
             return updateDetail;
         }
 
         public NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
-            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
+            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
             NonQueryResult result = PreparedQueryExecutor.ExecuteNonQuery(
                 database: transaction.Database,
@@ -178,7 +163,7 @@ namespace QueryLite {
 
         public Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
-            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
+            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
             return PreparedQueryExecutor.ExecuteNonQueryAsync(
                 database: transaction.Database,
@@ -194,13 +179,13 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class PreparedUpdateQuery<PARAMETERS, RESULT> : IPreparedUpdateQuery<PARAMETERS, RESULT> where PARAMETERS : notnull {
+    internal sealed class PreparedDeleteQuery<PARAMETERS, RETURNING> : IPreparedDeleteQuery<PARAMETERS, RETURNING> where PARAMETERS : notnull {
 
-        private readonly PreparedUpdateTemplate<PARAMETERS> _template;
+        private readonly PreparedDeleteQueryTemplate<PARAMETERS> _template;
         private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
-        private Func<IResultRow, RESULT> _outputFunc;
+        private Func<IResultRow, RETURNING> _outputFunc;
 
-        public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template, Func<IResultRow, RESULT> outputFunc) {
+        public PreparedDeleteQuery(PreparedDeleteQueryTemplate<PARAMETERS> template, Func<IResultRow, RETURNING> outputFunc) {
 
             _template = template;
             _outputFunc = outputFunc;
@@ -221,9 +206,9 @@ namespace QueryLite {
         }
 
         public void Initialize(IDatabase database) {
-            _ = GetUpdateQuery(database);
+            _ = GetDeleteQuery(database);
         }
-        private PreparedSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {
+        private PreparedSqlAndParameters<PARAMETERS> GetDeleteQuery(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
 
@@ -231,7 +216,7 @@ namespace QueryLite {
 
             if(_updateDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedUpdateGenerator.GetSql<PARAMETERS, RESULT>(_template, database, out PreparedParameterList<PARAMETERS> UpdateParameters, outputFunc: _outputFunc);
+                string sql = database.PreparedDeleteQueryGenerator.GetSql(_template, database, out PreparedParameterList<PARAMETERS> UpdateParameters, outputFunc: _outputFunc);
 
                 updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, UpdateParameters);
                 _updateDetails[dbTypeIndex] = updateDetail;
@@ -242,11 +227,11 @@ namespace QueryLite {
             return updateDetail;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public QueryResult<RETURNING> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
-            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
+            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
-            QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
+            QueryResult<RETURNING> result = PreparedQueryExecutor.Execute(
                 database: transaction.Database,
                 transaction: transaction,
                 timeout: timeout ?? TimeoutLevel.ShortUpdate,
@@ -260,9 +245,9 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public Task<QueryResult<RETURNING>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
-            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
+            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
             return PreparedQueryExecutor.ExecuteAsync(
                 database: transaction.Database,
@@ -273,8 +258,7 @@ namespace QueryLite {
                 outputFunc: _outputFunc,
                 sql: UpdateDetail.Sql,
                 queryType: QueryType.Update,
-                debugName: debugName
-,
+                debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None);
         }
     }

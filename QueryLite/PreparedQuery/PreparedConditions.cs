@@ -23,7 +23,7 @@
  **/
 using QueryLite.Databases;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace QueryLite.PreparedQuery {
@@ -42,6 +42,13 @@ namespace QueryLite.PreparedQuery {
         }
         public APreparedCondition<PARAMETERS> NOT_EQUALS<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
             return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.NOT_EQUALS, func);
+        }
+
+        public APreparedCondition<PARAMETERS> EQUALS_NON_TYPE_SAFE<TYPE>(AColumn<TYPE> columnA, IColumn columnB) where TYPE : notnull {
+            return new PreparedCondition<PARAMETERS>(columnA, Operator.EQUALS, columnB);
+        }
+        public APreparedCondition<PARAMETERS> NOT_EQUALS_NON_TYPE_SAFE<TYPE>(AColumn<TYPE> columnA, IColumn columnB) where TYPE : notnull {
+            return new PreparedCondition<PARAMETERS>(columnA, Operator.NOT_EQUALS, columnB);
         }
 
         public APreparedCondition<PARAMETERS> LESS_THAN<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
@@ -88,12 +95,30 @@ namespace QueryLite.PreparedQuery {
         }
 
         internal abstract void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) {
+            return base.Equals(obj);
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() {
+            return base.GetHashCode();
+        }
     }
 
     internal sealed class EmptyPreparedCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
 
         internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
             throw new InvalidOperationException("An empty condition cannot be used in a query");
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) {
+            return base.Equals(obj);
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() {
+            return base.GetHashCode();
         }
     }
 
@@ -116,6 +141,15 @@ namespace QueryLite.PreparedQuery {
             sql.Append(_isAnd ? " AND " : " OR ");
 
             _conditionB.GetSql(sql, database, parameters, useAlias: useAlias);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) {
+            return base.Equals(obj);
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() {
+            return base.GetHashCode();
         }
     }
 
@@ -190,7 +224,7 @@ namespace QueryLite.PreparedQuery {
             });
 
             string paramName = parameters.GetNextParameterName();
-            
+
             parameters.Add(new PreparedParameter<PARAMETERS, TYPE>(name: paramName, _func, database.ParameterMapper.GetCreateParameterDelegate(_column.Type)));
 
             sql.Append(paramName);

@@ -39,10 +39,12 @@ namespace QueryLite.Databases.SqlServer {
         IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new SqlServerUpdateQueryGenerator();
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new SqlServerDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new SqlServerTruncateQueryGenerator();
-        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerPreparedSelectQueryGenerator();
         IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new SqlServerParameterMapper();
+
+        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerPreparedSelectQueryGenerator();
         IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new SqlServerPreparedInsertQueryGenerator();
         IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator => new SqlServerPreparedUpdateQueryGenerator();
+        IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new PreparedDeleteQueryGenerator();
 
         public DatabaseType DatabaseType => DatabaseType.SqlServer;
 
