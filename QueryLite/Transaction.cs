@@ -139,7 +139,7 @@ namespace QueryLite {
         }
 
         /// <summary>
-        /// Dispose transation. Will roll back transaction if it is not yet committed.
+        /// Dispose transaction. Will roll back transaction if it is not yet committed.
         /// </summary>
         public void Dispose() {
 

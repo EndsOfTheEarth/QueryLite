@@ -16,11 +16,11 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            using(Transaction transation = new Transaction(TestDatabase.Database)) {
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 Query.Delete(allTypesTable)
                     .NoWhereCondition()
-                    .Execute(transation, TimeoutLevel.ShortDelete);
+                    .Execute(transaction, TimeoutLevel.ShortDelete);
 
                 COUNT_ALL count = COUNT_ALL.Instance;
 
@@ -31,7 +31,7 @@ namespace QueryLiteTest.Tests {
                         }
                     )
                     .From(allTypesTable)
-                    .Execute(transation);
+                    .Execute(transaction);
 
                 Assert.AreEqual(result.Rows.Count, 1);
                 Assert.AreEqual(result.RowsEffected, 0);
@@ -41,7 +41,7 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(countValue, 0);
 
-                transation.Commit();
+                transaction.Commit();
             }
         }
 
