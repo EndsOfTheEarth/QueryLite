@@ -23,7 +23,6 @@
  **/
 using QueryLite.Databases.SqlServer.Collectors;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace QueryLite.Databases.SqlServer {

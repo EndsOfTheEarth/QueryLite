@@ -45,9 +45,9 @@ namespace QueryLite {
         /// </summary>
         /// <typeparam name="PARAMETERS"></typeparam>
         /// <returns></returns>
-        public static IPreparedOption<PARAMETERS> Prepare<PARAMETERS>() where PARAMETERS : notnull => new PreparedOption<PARAMETERS>();
+        public static IPreparedOption<PARAMETERS> Prepare<PARAMETERS>() => new PreparedOption<PARAMETERS>();
 
-        public interface IPreparedOption<PARAMETERS> where PARAMETERS : notnull {
+        public interface IPreparedOption<PARAMETERS> {
 
             IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
             IPreparedInsertSet<PARAMETERS> Insert(ITable table);
@@ -55,7 +55,7 @@ namespace QueryLite {
             IPreparedDeleteUsing<PARAMETERS> Delete(ITable table);
         }
 
-        internal sealed class PreparedOption<PARAMETERS> : IPreparedOption<PARAMETERS> where PARAMETERS : notnull {
+        internal sealed class PreparedOption<PARAMETERS> : IPreparedOption<PARAMETERS> {
 
             public IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc);
 

@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>, IPreparedUpdateJoin<PARAMETERS>, IPreparedUpdateWhere<PARAMETERS>, IPreparedUpdateBuild<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>, IPreparedUpdateJoin<PARAMETERS>, IPreparedUpdateWhere<PARAMETERS>, IPreparedUpdateBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
@@ -102,7 +102,7 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class PreparedSqlAndParameters<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedSqlAndParameters<PARAMETERS> {
 
         public PreparedSqlAndParameters(string sql, PreparedParameterList<PARAMETERS> setParameters) {
             Sql = sql;
@@ -112,7 +112,7 @@ namespace QueryLite {
         public PreparedParameterList<PARAMETERS> SetParameters { get; }
     }
 
-    internal sealed class PreparedUpdateQuery<PARAMETERS> : IPreparedUpdateQuery<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedUpdateQuery<PARAMETERS> : IPreparedUpdateQuery<PARAMETERS> {
 
         private readonly PreparedUpdateTemplate<PARAMETERS> _template;
 
@@ -194,7 +194,7 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class PreparedUpdateQuery<PARAMETERS, RESULT> : IPreparedUpdateQuery<PARAMETERS, RESULT> where PARAMETERS : notnull {
+    internal sealed class PreparedUpdateQuery<PARAMETERS, RESULT> : IPreparedUpdateQuery<PARAMETERS, RESULT> {
 
         private readonly PreparedUpdateTemplate<PARAMETERS> _template;
         private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)

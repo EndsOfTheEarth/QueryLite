@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Databases.SqlServer;
 using System;
 using System.Text;
 
@@ -74,7 +73,7 @@ namespace QueryLite.Databases.PostgreSql {
                         sql.Append(" UNION ALL ");
                     }
                     else {
-                        throw new Exception($"Unknown { nameof(template.Extras.ChildUnionType) } type. Value { template.Extras.ChildUnionType }");
+                        throw new Exception($"Unknown {nameof(template.Extras.ChildUnionType)} type. Value {template.Extras.ChildUnionType}");
                     }
                     template = template.Extras.ChildUnion;
                 }
@@ -154,7 +153,7 @@ namespace QueryLite.Databases.PostgreSql {
                 SqlHelper.AppendEncloseSchemaName(sql, schemaName);
                 sql.Append('.');
             }
-            
+
             SqlHelper.AppendEncloseTableName(sql, template.FromTable);
 
             if(useAliases) {
@@ -170,11 +169,10 @@ namespace QueryLite.Databases.PostgreSql {
 
             foreach(IJoin join in template.Joins) {
 
-                sql.Append(join.JoinType switch
-                {
+                sql.Append(join.JoinType switch {
                     JoinType.Join => " JOIN ",
                     JoinType.LeftJoin => " LEFT JOIN ",
-                    _ => throw new Exception($"Unknown join type. Type = { join.JoinType }")
+                    _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
                 });
 
                 string schemaName = database.SchemaMap(join.Table.SchemaName);
@@ -225,7 +223,7 @@ namespace QueryLite.Databases.PostgreSql {
                         SqlHelper.AppendEncloseColumnName(sql, column);
                     }
                     else {
-                        throw new Exception($"Unknown field type. Type = { field }");
+                        throw new Exception($"Unknown field type. Type = {field}");
                     }
                 }
             }
@@ -269,33 +267,32 @@ namespace QueryLite.Databases.PostgreSql {
                         sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
                     }
                     else {
-                        throw new Exception($"Unknown field type. Type = { field }");
+                        throw new Exception($"Unknown field type. Type = {field}");
                     }
 
-                    sql.Append(orderByColumn.OrderBy switch
-                    {
+                    sql.Append(orderByColumn.OrderBy switch {
                         OrderBy.ASC => " ASC",
                         OrderBy.DESC => " DESC",
                         OrderBy.Default => "",
-                        _ => throw new Exception($"Unknown { nameof(OrderBy) } type. Type: '{ field.OrderBy }'")
+                        _ => throw new Exception($"Unknown {nameof(OrderBy)} type. Type: '{field.OrderBy}'")
                     });
                 }
             }
         }
         private static void GenerateLimitClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template) {
 
-            if (template.TopRows != null) {
+            if(template.TopRows != null) {
                 sql.Append(" LIMIT ").Append(template.TopRows.Value);
             }
         }
 
         private static void GenerateForClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
 
-            if (template.Extras != null && template.Extras.ForType != null) {
+            if(template.Extras != null && template.Extras.ForType != null) {
 
                 sql.Append(" FOR ");
 
-                switch (template.Extras.ForType.Value) {
+                switch(template.Extras.ForType.Value) {
                     case ForType.UPDATE:
                         sql.Append("UPDATE");
                         break;
@@ -309,15 +306,15 @@ namespace QueryLite.Databases.PostgreSql {
                         sql.Append("KEY SHARE");
                         break;
                     default:
-                        throw new Exception($"Unknown { nameof(template.Extras.ForType) } type { template.Extras.ForType }");
+                        throw new Exception($"Unknown {nameof(template.Extras.ForType)} type {template.Extras.ForType}");
                 }
 
-                if (template.Extras.OfTables != null && template.Extras.OfTables.Length > 0) {
+                if(template.Extras.OfTables != null && template.Extras.OfTables.Length > 0) {
 
                     sql.Append(" OF ");
 
                     bool isFirst = true;
-                    foreach (ITable table in template.Extras.OfTables) {
+                    foreach(ITable table in template.Extras.OfTables) {
 
                         if(!isFirst) {
                             sql.Append(',');
@@ -331,9 +328,9 @@ namespace QueryLite.Databases.PostgreSql {
                     }
                 }
 
-                if (template.Extras.WaitType != null) {
+                if(template.Extras.WaitType != null) {
 
-                    switch (template.Extras.WaitType.Value) {
+                    switch(template.Extras.WaitType.Value) {
                         case WaitType.WAIT:
                             //Do nothing as this is the default value
                             break;
@@ -344,7 +341,7 @@ namespace QueryLite.Databases.PostgreSql {
                             sql.Append(" SKIP LOCKED");
                             break;
                         default:
-                            throw new Exception($"Unknown { nameof(template.Extras.WaitType) } type { template.Extras.WaitType }");
+                            throw new Exception($"Unknown {nameof(template.Extras.WaitType)} type {template.Extras.WaitType}");
                     }
                 }
             }

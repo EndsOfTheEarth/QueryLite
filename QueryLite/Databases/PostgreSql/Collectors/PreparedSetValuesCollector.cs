@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql.Collectors {
@@ -70,9 +69,8 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                     _sql.Append(',');
                 }
 
-                //SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
-                //_sql.Append('.');
                 SqlHelper.AppendEncloseColumnName(_sql, column);
+
                 _sql.Append('=').Append(paramName);
 
             }
@@ -103,11 +101,9 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                     _sql.Append(',');
                 }
 
-                //SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
-                //_sql.Append('.');
                 SqlHelper.AppendEncloseColumnName(_sql, column);
-                _sql.Append('=');
-                _sql.Append(function.GetSql(_database, useAlias: false, parameters: null));
+
+                _sql.Append('=').Append(function.GetSql(_database, useAlias: false, parameters: null));
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");

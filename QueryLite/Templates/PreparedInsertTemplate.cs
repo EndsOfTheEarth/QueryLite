@@ -29,7 +29,7 @@ using System.Transactions;
 
 namespace QueryLite {
 
-    internal sealed class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedInsertTemplate<PARAMETERS> : IPreparedInsertSet<PARAMETERS>, IPreparedInsertBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
@@ -52,7 +52,7 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class PreparedInsertQuery<PARAMETERS> : IPreparedInsertQuery<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedInsertQuery<PARAMETERS> : IPreparedInsertQuery<PARAMETERS> {
 
         private readonly PreparedInsertTemplate<PARAMETERS> _template;
 
@@ -134,7 +134,7 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class PreparedInsertQuery<PARAMETERS, RESULT> : IPreparedInsertQuery<PARAMETERS, RESULT> where PARAMETERS : notnull {
+    internal sealed class PreparedInsertQuery<PARAMETERS, RESULT> : IPreparedInsertQuery<PARAMETERS, RESULT> {
 
         private readonly PreparedInsertTemplate<PARAMETERS> _template;
         private readonly PreparedSqlAndParameters<PARAMETERS>?[] _insertDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)

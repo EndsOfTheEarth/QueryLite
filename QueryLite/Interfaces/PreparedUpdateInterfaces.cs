@@ -28,12 +28,12 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    public interface IPreparedUpdateSet<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedUpdateSet<PARAMETERS> {
 
         IPreparedUpdateJoin<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
     }
 
-    public interface IPreparedUpdateJoin<PARAMETERS> : IPreparedUpdateWhere<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedUpdateJoin<PARAMETERS> : IPreparedUpdateWhere<PARAMETERS> {
 
         /// <summary>
         /// Join table clause
@@ -50,7 +50,7 @@ namespace QueryLite {
         IPreparedUpdateJoinOn<PARAMETERS> LeftJoin(ITable table);
     }
 
-    public interface IPreparedUpdateJoinOn<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedUpdateJoinOn<PARAMETERS> {
 
         // <summary>
         /// Join condition
@@ -60,7 +60,7 @@ namespace QueryLite {
         IPreparedUpdateJoin<PARAMETERS> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on);
     }
 
-    internal sealed class PreparedUpdateJoin<PARAMETERS> : IPreparedUpdateJoinOn<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedUpdateJoin<PARAMETERS> : IPreparedUpdateJoinOn<PARAMETERS> {
 
         public JoinType JoinType { get; private set; }
         public ITable Table { get; private set; }
@@ -85,7 +85,7 @@ namespace QueryLite {
         }
     }
 
-    public interface IPreparedUpdateWhere<PARAMETERS> : IPreparedUpdateSet<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedUpdateWhere<PARAMETERS> : IPreparedUpdateSet<PARAMETERS> {
 
         /// <summary>
         /// Where clause
@@ -101,7 +101,7 @@ namespace QueryLite {
         public IPreparedUpdateBuild<PARAMETERS> NoWhereCondition();
     }
 
-    public interface IPreparedUpdateBuild<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedUpdateBuild<PARAMETERS> {
 
         IPreparedUpdateQuery<PARAMETERS> Build();
         IPreparedUpdateQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc);

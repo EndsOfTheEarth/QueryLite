@@ -67,6 +67,7 @@ namespace QueryLite {
 
         IPreparedJoin<PARAMETERS, RESULT> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on);
     }
+
     internal sealed class PreparedJoin<PARAMETERS, RESULT> : IPreparedJoinOn<PARAMETERS, RESULT> {
 
         public JoinType JoinType { get; private set; }

@@ -30,7 +30,7 @@ using System.Threading;
 
 namespace QueryLite {
 
-    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteUsing<PARAMETERS>, IPreparedDeleteJoin<PARAMETERS>, IPreparedDeleteWhere<PARAMETERS>, IPreparedDeleteBuild<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteUsing<PARAMETERS>, IPreparedDeleteJoin<PARAMETERS>, IPreparedDeleteWhere<PARAMETERS>, IPreparedDeleteBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public IList<ITable>? Usings { get; private set; }
@@ -97,7 +97,7 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class PreparedDeleteQuery<PARAMETERS> : IPreparedDeleteQuery<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedDeleteQuery<PARAMETERS> : IPreparedDeleteQuery<PARAMETERS> {
 
         private readonly PreparedDeleteQueryTemplate<PARAMETERS> _template;
         
@@ -179,11 +179,11 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class PreparedDeleteQuery<PARAMETERS, RESULT> : IPreparedDeleteQuery<PARAMETERS, RESULT> where PARAMETERS : notnull {
+    internal sealed class PreparedDeleteQuery<PARAMETERS, RESULT> : IPreparedDeleteQuery<PARAMETERS, RESULT> {
 
         private readonly PreparedDeleteQueryTemplate<PARAMETERS> _template;
         private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
-        private Func<IResultRow, RESULT> _outputFunc;
+        private readonly Func<IResultRow, RESULT> _outputFunc;
 
         public PreparedDeleteQuery(PreparedDeleteQueryTemplate<PARAMETERS> template, Func<IResultRow, RESULT> outputFunc) {
 

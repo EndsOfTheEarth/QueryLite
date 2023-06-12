@@ -28,7 +28,7 @@ using System.Threading;
 
 namespace QueryLite {
 
-    public interface IPreparedDeleteUsing<PARAMETERS> : IPreparedDeleteJoin<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedDeleteUsing<PARAMETERS> : IPreparedDeleteJoin<PARAMETERS> {
 
         /// <summary>
         /// Delete using syntax. Please Note: This syntax is only supported by PostgreSql
@@ -37,7 +37,7 @@ namespace QueryLite {
         /// <returns></returns>
         IPreparedDeleteWhere<PARAMETERS> Using(params ITable[] tables);
     }
-    public interface IPreparedDeleteJoin<PARAMETERS> : IPreparedDeleteWhere<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedDeleteJoin<PARAMETERS> : IPreparedDeleteWhere<PARAMETERS> {
 
         /// <summary>
         /// Delete join syntax. Please Note: This syntax is only supported on Sql Server
@@ -53,7 +53,7 @@ namespace QueryLite {
         /// <returns></returns>
         IPreparedDeleteJoinOn<PARAMETERS> LeftJoin(ITable table);
     }
-    public interface IPreparedDeleteJoinOn<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedDeleteJoinOn<PARAMETERS> {
 
         /// <summary>
         /// Join condition
@@ -63,7 +63,7 @@ namespace QueryLite {
         IPreparedDeleteJoin<PARAMETERS> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on);
     }
 
-    public interface IPreparedDeleteWhere<PARAMETERS> where PARAMETERS : notnull {
+    public interface IPreparedDeleteWhere<PARAMETERS> {
 
         /// <summary>
         /// Where clause
@@ -79,7 +79,7 @@ namespace QueryLite {
         public IPreparedDeleteBuild<PARAMETERS> NoWhereCondition();
     }
 
-    internal sealed class PreparedDeleteJoin<PARAMETERS> : IPreparedDeleteJoinOn<PARAMETERS> where PARAMETERS : notnull {
+    internal sealed class PreparedDeleteJoin<PARAMETERS> : IPreparedDeleteJoinOn<PARAMETERS> {
 
         public JoinType JoinType { get; private set; }
         public ITable Table { get; private set; }

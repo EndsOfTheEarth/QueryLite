@@ -44,13 +44,13 @@ namespace QueryLite {
         internal string GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IPreparedUpdateQueryGenerator {
-        internal string GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) where PARAMETERS : notnull;
+        internal string GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IDeleteQueryGenerator {
         internal string GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IPreparedDeleteQueryGenerator {
-        internal string GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) where PARAMETERS : notnull;
+        internal string GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface ITruncateQueryGenerator {
         internal string GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters);

@@ -23,7 +23,6 @@
  **/
 using Npgsql;
 using NpgsqlTypes;
-using QueryLite.PreparedQuery;
 using System;
 
 namespace QueryLite.Databases.SqlServer {
@@ -194,7 +193,6 @@ namespace QueryLite.Databases.SqlServer {
                 };
             }
 
-
             else if(type.IsAssignableTo(typeof(IInt16Type))) {
 
                 return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
@@ -228,8 +226,8 @@ namespace QueryLite.Databases.SqlServer {
 
                 if(integerType == NumericType.UShort) {
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                            Value = value != null ? (short)value : DBNull.Value
-                        };
+                        Value = value != null ? (short)value : DBNull.Value
+                    };
                 }
                 else if(integerType == NumericType.Short) {
 
