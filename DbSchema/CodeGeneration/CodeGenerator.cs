@@ -219,7 +219,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             if(useIdentifiers && referencedTable != null) {
 
-                isKeyColumn = true;                
+                isKeyColumn = true;
 
                 string keyName = $"I{GetTableName(referencedTable, includePostFix: false)}";
 

@@ -23,7 +23,6 @@
  **/
 using Npgsql;
 using NpgsqlTypes;
-using QueryLite.PreparedQuery;
 using System;
 using System.Text;
 

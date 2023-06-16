@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System;
-using QueryLite.DbSchema.Tables.PostgreSql;
-using System.Collections.Generic;
 using QueryLite.DbSchema.Tables;
+using QueryLite.DbSchema.Tables.PostgreSql;
+using System;
+using System.Collections.Generic;
 
 namespace QueryLite.DbSchema {
 
@@ -139,13 +139,13 @@ namespace QueryLite.DbSchema {
                 .Where(
                     tableConstraints.Constraint_type == "PRIMARY KEY" &
                     keyColumnUsage.Ordinal_position.IsNotNull
-                    //&
-                    //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                    //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                //&
+                //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
+                //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
                 )
                 .OrderBy(keyColumnUsage.Ordinal_position)
                 .Execute(database, TimeoutLevel.ShortSelect);
-            
+
             foreach(var row in result.Rows) {
 
                 DatabaseTable table = dbTableLookup[new TableKey(row.Table_schema, row.Table_name)];
@@ -301,9 +301,9 @@ namespace QueryLite.DbSchema {
                     .From(columnsTable)
                     .Where(
                         column_Obj_Description.IsNotNull
-                        //&
-                        //columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                        //columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                    //&
+                    //columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
+                    //columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
                     )
                     .Execute(database);
 

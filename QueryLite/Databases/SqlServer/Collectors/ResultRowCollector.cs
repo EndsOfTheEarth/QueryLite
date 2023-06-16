@@ -21,8 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System.Data.Common;
 using System;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace QueryLite.Databases.SqlServer {

@@ -38,10 +38,10 @@ namespace QueryLite.Databases.PostgreSql {
         IQueryGenerator IInternalConnection.QueryGenerator { get; } = new PostgreSqlSelectQueryGenerator();
         IInsertQueryGenerator IInternalConnection.InsertGenerator { get; } = new PostgreSqlInsertQueryGenerator();
         IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new PostgreSqlUpdateQueryGenerator();
-        
+
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new PostgreSqlDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
-        
+
         IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMapper();
 
         IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
@@ -51,7 +51,7 @@ namespace QueryLite.Databases.PostgreSql {
 
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 
-        
+
 
         public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 

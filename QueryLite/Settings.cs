@@ -113,7 +113,7 @@ namespace QueryLite {
 
 
                 QueryPerformed?.Invoke(
-                    new QueryDetail(                        
+                    new QueryDetail(
                         database: database,
                         sql: sql,
                         rows: rows,
@@ -183,9 +183,9 @@ namespace QueryLite {
     }
 
     public class QueryDetail {
-        
+
         public QueryDetail(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
-            
+
             Database = database;
             Sql = sql;
             Rows = rows;

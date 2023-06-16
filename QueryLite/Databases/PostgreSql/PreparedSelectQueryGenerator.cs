@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.PreparedQuery;
 using System;
 using System.Text;
 
@@ -74,7 +73,7 @@ namespace QueryLite.Databases.PostgreSql {
                         sql.Append(" UNION ALL ");
                     }
                     else {
-                        throw new Exception($"Unknown { nameof(template.ChildUnionType) } type. Value { template.ChildUnionType }");
+                        throw new Exception($"Unknown {nameof(template.ChildUnionType)} type. Value {template.ChildUnionType}");
                     }
                     template = template.ChildUnion;
                 }
@@ -117,7 +116,7 @@ namespace QueryLite.Databases.PostgreSql {
                     sql.Append(function.GetSql(database, useAlias: useAliases, parameters: null));
                 }
                 else {
-                    throw new Exception($"Unknown field type. Type = { field }");
+                    throw new Exception($"Unknown field type. Type = {field}");
                 }
             }
         }
@@ -135,7 +134,7 @@ namespace QueryLite.Databases.PostgreSql {
                 SqlHelper.AppendEncloseSchemaName(sql, schemaName);
                 sql.Append('.');
             }
-            
+
             SqlHelper.AppendEncloseTableName(sql, template.FromTable);
 
             if(useAliases) {
@@ -153,11 +152,10 @@ namespace QueryLite.Databases.PostgreSql {
 
                 IPreparedJoin<PARAMETERS> join = template.Joins[index];
 
-                sql.Append(join.JoinType switch
-                {
+                sql.Append(join.JoinType switch {
                     JoinType.Join => " JOIN ",
                     JoinType.LeftJoin => " LEFT JOIN ",
-                    _ => throw new Exception($"Unknown join type. Type = { join.JoinType }")
+                    _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
                 });
 
                 string schemaName = database.SchemaMap(join.Table.SchemaName);
@@ -208,7 +206,7 @@ namespace QueryLite.Databases.PostgreSql {
                         SqlHelper.AppendEncloseColumnName(sql, column);
                     }
                     else {
-                        throw new Exception($"Unknown field type. Type = { field }");
+                        throw new Exception($"Unknown field type. Type = {field}");
                     }
                 }
             }
@@ -252,33 +250,32 @@ namespace QueryLite.Databases.PostgreSql {
                         sql.Append(function.GetSql(database, useAlias: useAliases, null));
                     }
                     else {
-                        throw new Exception($"Unknown field type. Type = { field }");
+                        throw new Exception($"Unknown field type. Type = {field}");
                     }
 
-                    sql.Append(orderByColumn.OrderBy switch
-                    {
+                    sql.Append(orderByColumn.OrderBy switch {
                         OrderBy.ASC => " ASC",
                         OrderBy.DESC => " DESC",
                         OrderBy.Default => "",
-                        _ => throw new Exception($"Unknown { nameof(OrderBy) } type. Type: '{ field.OrderBy }'")
+                        _ => throw new Exception($"Unknown {nameof(OrderBy)} type. Type: '{field.OrderBy}'")
                     });
                 }
             }
         }
         private static void GenerateLimitClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template) {
 
-            if (template.TopRows != null) {
+            if(template.TopRows != null) {
                 sql.Append(" LIMIT ").Append(template.TopRows.Value);
             }
         }
 
         private static void GenerateForCaluse<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases) {
 
-            if (template.ForType != null) {
+            if(template.ForType != null) {
 
                 sql.Append(" FOR ");
 
-                switch (template.ForType.Value) {
+                switch(template.ForType.Value) {
                     case ForType.UPDATE:
                         sql.Append("UPDATE");
                         break;
@@ -292,15 +289,15 @@ namespace QueryLite.Databases.PostgreSql {
                         sql.Append("KEY SHARE");
                         break;
                     default:
-                        throw new Exception($"Unknown { nameof(template.ForType) } type { template.ForType }");
+                        throw new Exception($"Unknown {nameof(template.ForType)} type {template.ForType}");
                 }
 
-                if (template.OfTables != null && template.OfTables.Length > 0) {
+                if(template.OfTables != null && template.OfTables.Length > 0) {
 
                     sql.Append(" OF ");
 
                     bool isFirst = true;
-                    foreach (ITable table in template.OfTables) {
+                    foreach(ITable table in template.OfTables) {
 
                         if(!isFirst) {
                             sql.Append(',');
@@ -314,9 +311,9 @@ namespace QueryLite.Databases.PostgreSql {
                     }
                 }
 
-                if (template.WaitType != null) {
+                if(template.WaitType != null) {
 
-                    switch (template.WaitType.Value) {
+                    switch(template.WaitType.Value) {
                         case WaitType.WAIT:
                             //Do nothing as this is the default value
                             break;
@@ -327,7 +324,7 @@ namespace QueryLite.Databases.PostgreSql {
                             sql.Append(" SKIP LOCKED");
                             break;
                         default:
-                            throw new Exception($"Unknown { nameof(template.WaitType) } type { template.WaitType }");
+                            throw new Exception($"Unknown {nameof(template.WaitType)} type {template.WaitType}");
                     }
                 }
             }

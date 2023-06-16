@@ -1,7 +1,6 @@
 ﻿namespace QueryLiteTest.Tables {
 
     using QueryLite;
-    using System;
 
     public interface IParent { }
 

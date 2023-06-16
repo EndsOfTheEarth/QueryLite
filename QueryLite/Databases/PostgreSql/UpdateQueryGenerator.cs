@@ -25,15 +25,14 @@ using QueryLite.Databases.PostgreSql.Collectors;
 using System;
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql
-{
+namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlUpdateQueryGenerator : IUpdateQueryGenerator {
 
         string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
-            
+
             sql.Append("UPDATE ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);

@@ -45,7 +45,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
         public CodeBuilder Indent(int indent) {
 
             if(indent < 0 || indent > 100) {
-                throw new Exception($"{ nameof(indent) } must be >= 0 and <= 100");
+                throw new Exception($"{nameof(indent)} must be >= 0 and <= 100");
             }
 
             for(int index = 0; index < indent; index++) {
@@ -57,7 +57,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             mText.Append(pValue);
             return this;
         }
-        
+
         public CodeBuilder EndLine() {
             mText.Append(Environment.NewLine);
             return this;

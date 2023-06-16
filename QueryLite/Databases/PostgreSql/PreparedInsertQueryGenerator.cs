@@ -23,7 +23,6 @@
  **/
 using QueryLite.Databases.PostgreSql.Collectors;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {

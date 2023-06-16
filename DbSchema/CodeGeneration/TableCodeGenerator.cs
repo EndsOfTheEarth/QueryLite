@@ -75,7 +75,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             code.EndLine();
 
-            if(settings.IncludeDescriptions) {                
+            if(settings.IncludeDescriptions) {
                 code.Indent(1).Append("[Description(\"").Append(CodeHelper.ExcapeCSharpString(table.Description)).Append("\")]").EndLine();
             }
             code.Indent(1).Append($"public sealed class {tableClassName} : ATable {{").EndLine().EndLine();
@@ -104,7 +104,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     code.EndLine();
                 }
 
-                if(settings.IncludeDescriptions) {                    
+                if(settings.IncludeDescriptions) {
                     code.Indent(2).Append("[Description(\"").Append(CodeHelper.ExcapeCSharpString(column.Description)).Append("\")]").EndLine();
                 }
 
@@ -159,7 +159,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     code.Indent(3).Append($"new ForeignKey(this, constraintName: \"{foreignKey.ConstraintName}\")");
 
                     foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
-                        
+
                         string foreignKeyColumnName = prefix.GetColumnName(reference.ForeignKeyColumn.ColumnName.Value, className: tableClassName);
 
                         TablePrefix primaryKeyTablePrefix = new TablePrefix(reference.PrimaryKeyColumn.Table);
@@ -178,7 +178,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string encloseTableName = SqlKeyWordLookup.IsKeyWord(table.TableName.Value) ? ", enclose: true" : "";
 
-            code.Indent(2).Append($"private {tableClassName}() : base(tableName:\"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}) {{").EndLine().EndLine(); 
+            code.Indent(2).Append($"private {tableClassName}() : base(tableName:\"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}) {{").EndLine().EndLine();
 
             foreach(string line in lines) {
                 code.Indent(3).Append(line).EndLine();

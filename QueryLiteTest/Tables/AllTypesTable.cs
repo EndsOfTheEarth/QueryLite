@@ -1,9 +1,9 @@
 ﻿
 namespace QueryLiteTest.Tables {
 
-    using System;
     using QueryLite;
     using QueryLiteTestLogic;
+    using System;
 
     public sealed class AllTypesTable : ATable {
 

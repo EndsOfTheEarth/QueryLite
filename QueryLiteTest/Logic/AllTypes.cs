@@ -1,8 +1,8 @@
 ﻿
 namespace QueryLiteTestLogic {
 
-    using System;
     using QueryLite;
+    using System;
 
     public enum AllTypesEnum {
         A = 1,

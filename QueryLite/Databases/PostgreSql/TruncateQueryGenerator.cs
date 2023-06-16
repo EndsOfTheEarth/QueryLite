@@ -30,7 +30,7 @@ namespace QueryLite.Databases.PostgreSql {
         string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
-            
+
             sql.Append("TRUNCATE TABLE ");
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);

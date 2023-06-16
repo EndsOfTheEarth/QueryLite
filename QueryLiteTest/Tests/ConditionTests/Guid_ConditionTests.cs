@@ -1,5 +1,4 @@
-﻿using MessagePack.Formatters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLiteTest.Tables;

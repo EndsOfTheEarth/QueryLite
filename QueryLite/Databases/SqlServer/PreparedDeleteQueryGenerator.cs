@@ -49,7 +49,7 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append("DELETE ").Append(template.Table.Alias);
 
                 GenerateOutputClause(sql, outputFunc);
-                
+
                 sql.Append(" FROM ");
 
                 string schemaName = database.SchemaMap(template.Table.SchemaName);
@@ -82,7 +82,7 @@ namespace QueryLite.Databases.SqlServer {
                 for(int index = 0; index < template.Joins.Count; index++) {
 
                     PreparedDeleteJoin<PARAMETERS> join = template.Joins[index];
-                
+
                     sql.Append(join.JoinType switch {
                         JoinType.Join => " JOIN ",
                         JoinType.LeftJoin => " LEFT JOIN ",

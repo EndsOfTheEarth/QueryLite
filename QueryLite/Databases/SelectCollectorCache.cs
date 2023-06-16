@@ -49,7 +49,7 @@ namespace QueryLite.Databases {
                         resultRow.Reset(reader);
                         return resultRow;
                     }
-                }                
+                }
                 return new SqlServerResultRowCollector(reader);
             }
             else if(databaseType == DatabaseType.PostgreSql) {

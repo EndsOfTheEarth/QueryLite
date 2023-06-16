@@ -25,8 +25,8 @@ using QueryLite.Databases;
 using QueryLite.PreparedQuery;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace QueryLite {
 
@@ -100,7 +100,7 @@ namespace QueryLite {
     internal sealed class PreparedDeleteQuery<PARAMETERS> : IPreparedDeleteQuery<PARAMETERS> {
 
         private readonly PreparedDeleteQueryTemplate<PARAMETERS> _template;
-        
+
         private readonly PreparedSqlAndParameters<PARAMETERS>?[] _deleteDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
 
         public PreparedDeleteQuery(PreparedDeleteQueryTemplate<PARAMETERS> template) {

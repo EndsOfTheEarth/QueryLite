@@ -1,7 +1,7 @@
 ﻿namespace Benchmarks.Tables {
 
-    using System;
     using QueryLite;
+    using System;
 
     public sealed class Test01Table : ATable {
 

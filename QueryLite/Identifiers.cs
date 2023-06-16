@@ -33,27 +33,27 @@ namespace QueryLite {
     }
 
     public interface IGuidType {
-        
+
         Guid Value { get; }
     }
     public interface IStringType {
-        
+
         string Value { get; }
     }
     public interface IInt16Type {
-        
+
         short Value { get; }
     }
     public interface IInt32Type {
-    
+
         int Value { get; }
     }
     public interface IInt64Type {
-    
+
         long Value { get; }
     }
     public interface IBoolType {
-    
+
         bool Value { get; }
     }
 
@@ -519,7 +519,7 @@ namespace QueryLite {
         public Bit(bool value) {
             Value = value;
         }
-        
+
         public static Bit ValueOf(bool value) => value ? TRUE : FALSE;
 
         public override string ToString() {

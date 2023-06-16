@@ -112,7 +112,7 @@ namespace QueryLite {
         /// <returns></returns>
         string GetSql(IDatabase database);
 
-        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null,  Parameters useParameters = Parameters.Default, string debugName = "");
+        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
         Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");

@@ -41,7 +41,7 @@ namespace QueryLite {
         public static IDistinct<RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new SelectQueryTemplate<RESULT>(selectFunc);
 
         /// <summary>
-        /// Create a prepared select query
+        /// Create a prepared query
         /// </summary>
         /// <typeparam name="PARAMETERS"></typeparam>
         /// <returns></returns>

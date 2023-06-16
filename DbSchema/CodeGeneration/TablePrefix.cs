@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System.Text;
 using System;
+using System.Text;
 
 namespace QueryLite.DbSchema.CodeGeneration {
-    
+
     /// <summary>
     /// This class determines if all the columns of a particular table share a common prefix
     /// </summary>

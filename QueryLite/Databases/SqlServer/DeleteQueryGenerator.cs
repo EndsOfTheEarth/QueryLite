@@ -47,7 +47,7 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append("DELETE ").Append(template.Table.Alias);
 
                 GenerateOutputClause(sql, outputFunc);
-                
+
                 sql.Append(" FROM ");
 
                 string schemaName = database.SchemaMap(template.Table.SchemaName);

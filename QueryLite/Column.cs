@@ -28,7 +28,7 @@ using System.Diagnostics;
 namespace QueryLite {
 
     public interface ISelectable {
-        
+
     }
 
     public interface ISelectable<TYPE> where TYPE : notnull {
@@ -180,7 +180,7 @@ namespace QueryLite {
             return new InNotInCondition<TYPE>(this, isIn: false, list: list);
         }
 
-        public ICondition In<FIELD>(IExecute<FIELD> query) where FIELD : ISelectable<TYPE>{
+        public ICondition In<FIELD>(IExecute<FIELD> query) where FIELD : ISelectable<TYPE> {
             return new InNotInNestedQueryCondition<TYPE, FIELD>(this, isIn: true, nestedQuery: query);
         }
         public ICondition NotIn<FIELD>(IExecute<FIELD> query) where FIELD : ISelectable<TYPE> {
@@ -255,7 +255,7 @@ namespace QueryLite {
             Expression = expression;
         }
     }
-    
+
     /// <summary>
     /// Represents a non-nullable table column
     /// </summary>

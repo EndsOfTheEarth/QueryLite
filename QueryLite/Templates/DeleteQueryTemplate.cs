@@ -103,7 +103,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.DeleteGenerator.GetSql<bool>(this, database, parameters : null, outputFunc: null);
+            return database.DeleteGenerator.GetSql<bool>(this, database, parameters: null, outputFunc: null);
         }
 
         public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {

@@ -205,7 +205,7 @@ namespace QueryLite.Databases.SqlServer {
 
         public static string ToSqlString(long value) => value != 0 ? value.ToString() : "0";
 
-        public static string ToSqlString(string value) => value.Length > 0 ? $"'{Helpers.EscapeForSql(value)}'" :"''";
+        public static string ToSqlString(string value) => value.Length > 0 ? $"'{Helpers.EscapeForSql(value)}'" : "''";
 
         public static string ToSqlString(IGuidType value) => ToSqlString(value.Value);
 

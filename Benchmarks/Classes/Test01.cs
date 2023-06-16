@@ -1,8 +1,8 @@
 ﻿namespace Benchmarks.Classes {
 
-    using System;
-    using QueryLite;
     using Benchmarks.Tables;
+    using QueryLite;
+    using System;
 
     public sealed class Test01 {
 

@@ -64,7 +64,7 @@ namespace QueryLiteTest.Tests {
             Settings.UseParameters = true;
             InsertWithSetFunctions();
         }
-            
+
         private void InsertWithSetFunctions() {
 
             if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
@@ -249,7 +249,7 @@ namespace QueryLiteTest.Tests {
                 id: IntKey<AllTypes>.NotSet,
                 guid: Guid.NewGuid(),
                 @string: Guid.NewGuid().ToString(),
-                smallInt: (short)(7261),
+                smallInt: 7261,
                 @int: 846218432,
                 bigInt: 94377682378523423,
                 @decimal: 743.534234m,

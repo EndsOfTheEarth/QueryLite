@@ -21,8 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System.Linq;
 using System;
+using System.Linq;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
@@ -32,11 +32,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             CodeBuilder classCode = new CodeBuilder();
 
-            classCode.Append($"namespace { settings.Namespaces.ClassNamespace } {{").EndLine().EndLine();
+            classCode.Append($"namespace {settings.Namespaces.ClassNamespace} {{").EndLine().EndLine();
             classCode.Indent(1).Append("using System;").EndLine();
             classCode.Indent(1).Append("using QueryLite;").EndLine();
 
-            classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace };").EndLine();
+            classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
             if(settings.IncludeMessagePackAttributes) {
                 classCode.Indent(1).Append("using MessagePack;").EndLine();
@@ -49,11 +49,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string className = CodeHelper.GetTableName(table, includePostFix: false);
 
-            if(settings.IncludeMessagePackAttributes) {                
+            if(settings.IncludeMessagePackAttributes) {
                 classCode.Indent(1).Append("[MessagePackObject]").EndLine();
             }
 
-            classCode.Indent(1).Append($"public sealed class { className } {{").EndLine().EndLine();
+            classCode.Indent(1).Append($"public sealed class {className} {{").EndLine().EndLine();
 
             classCode.Indent(2).Append("public ").Append(className).Append("(");
 
@@ -78,9 +78,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     paramName = "_" + paramName;
                 }
 
-                classCode.Append($"{ columnTypeName }{ nullable } { paramName }");
+                classCode.Append($"{columnTypeName}{nullable} {paramName}");
 
-                constructor.Indent(3).Append($"{ columnName } = { paramName };").EndLine();
+                constructor.Indent(3).Append($"{columnName} = {paramName};").EndLine();
             }
 
             classCode.Append(") {").EndLine();
@@ -99,7 +99,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             foreach(DatabaseColumn column in table.Columns) {
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
                 constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{prefix.GetColumnName(column.ColumnName.Value, className: null)});").EndLine();
-            }            
+            }
             classCode.Append(constructor2.ToString());
             classCode.Indent(2).Append("}").EndLine();
 
@@ -117,14 +117,14 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     classCode.EndLine();
                 }
                 if(settings.IncludeMessagePackAttributes) {
-                    classCode.Indent(2).Append($"[Key({ count })]").EndLine();                    
+                    classCode.Indent(2).Append($"[Key({count})]").EndLine();
                 }
 
                 if(settings.IncludeJsonAttributes) {
                     classCode.Indent(2).Append($"[JsonPropertyName(\"{columnName}\")]").EndLine();
                 }
 
-                classCode.Indent(2).Append($"public { columnTypeName }{ (column.IsNullable ? "?" : "") } { columnName } {{ get; set; }}");
+                classCode.Indent(2).Append($"public {columnTypeName}{(column.IsNullable ? "?" : "")} {columnName} {{ get; set; }}");
 
                 if(!column.IsNullable && (!dotNetType.IsPrimitive) && !isKeyColumn) {
 

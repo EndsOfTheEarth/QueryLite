@@ -504,7 +504,7 @@ namespace QueryLite {
             }
 
             if(validationSettings.ValidateForeignKeys) {
-                ValidateForeignKeys( table, dbTable, tableValidation);
+                ValidateForeignKeys(table, dbTable, tableValidation);
             }
         }
 
@@ -512,7 +512,7 @@ namespace QueryLite {
 
             DatabasePrimaryKey? dbPrimaryKey = dbTable.PrimaryKey;
             PrimaryKey? codePrimaryKey = table.PrimaryKey;
-            
+
             if(dbPrimaryKey != null && codePrimaryKey == null) {
                 tableValidation.Add($"Code table is missing primary key definition");
             }
@@ -562,7 +562,7 @@ namespace QueryLite {
                             break;
                         }
                         matchingForeignKey = codeForeignKey;
-                    }   
+                    }
                 }
                 if(matchingForeignKey == null) {
                     tableValidation.Add($"The foreign key '{dbForeignKey.ConstraintName}' is not defined in code");
@@ -618,7 +618,7 @@ namespace QueryLite {
                 if(!matchFound) {
                     tableValidation.Add($"The foreign key '{codeForeignKey.ConstraintName}' is defined in code but does not exist in the database");
                 }
-             }
+            }
         }
 
         private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, IDatabase database, List<ITable> tables, ValidationResult validationResult) {
@@ -633,7 +633,7 @@ namespace QueryLite {
                     throw new Exception($"Table schema name and table name are not unique. Table: {codeTable.SchemaName}.{codeTable.TableName}");
                 }
             }
-            
+
             foreach(DatabaseTable dbTable in dbSchema.Tables) {
 
                 if(string.Compare(dbTable.Schema.Value, "pg_catalog", ignoreCase: true) == 0 || string.Compare(dbTable.Schema.Value, "information_schema", ignoreCase: true) == 0) {
