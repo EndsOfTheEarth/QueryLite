@@ -45,8 +45,8 @@ namespace QueryLite.CodeGeneratorUI {
             cboDatabaseType.SelectedItem = cboDatabaseType.Items[1];
         }
 
-        private void Form1_Load(object sender, EventArgs e) {
-            splitContainer.Enabled = false;
+        private void MainForm_Load(object sender, EventArgs e) {
+            SetControlStates();
         }
 
         private void BtnLoad_Click(object sender, EventArgs e) {
@@ -61,7 +61,7 @@ namespace QueryLite.CodeGeneratorUI {
             txtNamespace.Clear();
             txtPrefix.Clear();
 
-            splitContainer.Enabled = false;
+            SetControlStates();
 
             if(cboDatabaseType.SelectedItem is DatabaseTypeItem item) {
 
@@ -76,9 +76,14 @@ namespace QueryLite.CodeGeneratorUI {
                 }
                 Cursor.Current = Cursors.WaitCursor;
                 LoadTables();
-                splitContainer.Enabled = true;
+                SetControlStates();
                 Cursor.Current = Cursor.Current;
             }
+        }
+
+        private void SetControlStates() {
+
+            btnOutputAllToFile.Enabled = _database != null;
         }
 
         private IDatabase? _database = null;

@@ -48,6 +48,8 @@ namespace QueryLite.CodeGeneratorUI {
         /// </summary>
         private void InitializeComponent() {
             splitContainer = new System.Windows.Forms.SplitContainer();
+            BtnCollapseAll = new System.Windows.Forms.Button();
+            BtnExpandAll = new System.Windows.Forms.Button();
             tvwTables = new System.Windows.Forms.TreeView();
             numNumberOfInstanceProperties = new System.Windows.Forms.NumericUpDown();
             lblNumberOfInstanceProperties = new System.Windows.Forms.Label();
@@ -73,8 +75,6 @@ namespace QueryLite.CodeGeneratorUI {
             grpConnection = new System.Windows.Forms.GroupBox();
             lblExample = new System.Windows.Forms.Label();
             txtExampleConnectionString = new System.Windows.Forms.TextBox();
-            BtnExpandAll = new System.Windows.Forms.Button();
-            BtnCollapseAll = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
             splitContainer.Panel1.SuspendLayout();
             splitContainer.Panel2.SuspendLayout();
@@ -117,6 +117,28 @@ namespace QueryLite.CodeGeneratorUI {
             splitContainer.SplitterDistance = 317;
             splitContainer.SplitterWidth = 6;
             splitContainer.TabIndex = 1;
+            // 
+            // BtnCollapseAll
+            // 
+            BtnCollapseAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            BtnCollapseAll.Location = new System.Drawing.Point(122, 870);
+            BtnCollapseAll.Name = "BtnCollapseAll";
+            BtnCollapseAll.Size = new System.Drawing.Size(112, 38);
+            BtnCollapseAll.TabIndex = 2;
+            BtnCollapseAll.Text = "Collapse All";
+            BtnCollapseAll.UseVisualStyleBackColor = true;
+            BtnCollapseAll.Click += BtnCollapseAll_Click;
+            // 
+            // BtnExpandAll
+            // 
+            BtnExpandAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            BtnExpandAll.Location = new System.Drawing.Point(6, 869);
+            BtnExpandAll.Name = "BtnExpandAll";
+            BtnExpandAll.Size = new System.Drawing.Size(112, 38);
+            BtnExpandAll.TabIndex = 1;
+            BtnExpandAll.Text = "Expand All";
+            BtnExpandAll.UseVisualStyleBackColor = true;
+            BtnExpandAll.Click += BtnExpandAll_Click;
             // 
             // tvwTables
             // 
@@ -280,7 +302,7 @@ namespace QueryLite.CodeGeneratorUI {
             // btnClose
             // 
             btnClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnClose.Location = new System.Drawing.Point(1181, 867);
+            btnClose.Location = new System.Drawing.Point(1179, 867);
             btnClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             btnClose.Name = "btnClose";
             btnClose.Size = new System.Drawing.Size(107, 38);
@@ -299,7 +321,7 @@ namespace QueryLite.CodeGeneratorUI {
             txtCode.Name = "txtCode";
             txtCode.ReadOnly = true;
             txtCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            txtCode.Size = new System.Drawing.Size(1283, 769);
+            txtCode.Size = new System.Drawing.Size(1281, 769);
             txtCode.TabIndex = 11;
             txtCode.WordWrap = false;
             // 
@@ -407,32 +429,10 @@ namespace QueryLite.CodeGeneratorUI {
             txtExampleConnectionString.Size = new System.Drawing.Size(821, 31);
             txtExampleConnectionString.TabIndex = 6;
             // 
-            // BtnExpandAll
-            // 
-            BtnExpandAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            BtnExpandAll.Location = new System.Drawing.Point(6, 869);
-            BtnExpandAll.Name = "BtnExpandAll";
-            BtnExpandAll.Size = new System.Drawing.Size(112, 38);
-            BtnExpandAll.TabIndex = 1;
-            BtnExpandAll.Text = "Expand All";
-            BtnExpandAll.UseVisualStyleBackColor = true;
-            BtnExpandAll.Click += BtnExpandAll_Click;
-            // 
-            // BtnCollapseAll
-            // 
-            BtnCollapseAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            BtnCollapseAll.Location = new System.Drawing.Point(122, 870);
-            BtnCollapseAll.Name = "BtnCollapseAll";
-            BtnCollapseAll.Size = new System.Drawing.Size(112, 38);
-            BtnCollapseAll.TabIndex = 2;
-            BtnCollapseAll.Text = "Collapse All";
-            BtnCollapseAll.UseVisualStyleBackColor = true;
-            BtnCollapseAll.Click += BtnCollapseAll_Click;
-            // 
             // MainForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(1623, 1067);
             Controls.Add(grpConnection);
             Controls.Add(splitContainer);
@@ -440,7 +440,7 @@ namespace QueryLite.CodeGeneratorUI {
             Name = "MainForm";
             SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             Text = "Query Lite Code Generator";
-            Load += Form1_Load;
+            Load += MainForm_Load;
             splitContainer.Panel1.ResumeLayout(false);
             splitContainer.Panel2.ResumeLayout(false);
             splitContainer.Panel2.PerformLayout();
