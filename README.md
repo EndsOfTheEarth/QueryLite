@@ -17,9 +17,9 @@ It is designed to achieve these main goals:
     - `Dynamic` queries are near equivalent performance and memory allocation to Dapper (Often with significantly lower memory allocation)
 
 ## Documentation
-[Documentation is found here](Documentation.md)
+**[Documentation is found here](Documentation.md)**
 
-[Prepared Query Documentation is found here](PreparedQueries.md)
+[Additional - Prepared Query Documentation is found here](PreparedQueries.md)
 
 ## Nuget Package
 
