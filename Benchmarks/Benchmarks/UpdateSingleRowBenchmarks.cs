@@ -53,73 +53,87 @@ namespace Benchmarks {
             }
         }
 
+        private int _iterations = 2000;
+
         [Benchmark]
         public void Ado_Single_Row_Update() {
 
-            using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+            for(int index = 0; index < _iterations; index++) {
 
-            connection.Open();
+                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
-            using NpgsqlTransaction transaction = connection.BeginTransaction();
+                connection.Open();
 
-            using NpgsqlCommand command = connection.CreateCommand();
+                using NpgsqlTransaction transaction = connection.BeginTransaction();
 
-            command.Transaction = transaction;
+                using NpgsqlCommand command = connection.CreateCommand();
 
-            command.CommandText = "UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0";
+                command.Transaction = transaction;
 
-            command.Parameters.Add(new NpgsqlParameter(parameterName: "@0", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = _guid });
-            command.Parameters.Add(new NpgsqlParameter(parameterName: "@1", NpgsqlTypes.NpgsqlDbType.Varchar) { Value = "New Message" });
-            command.Parameters.Add(new NpgsqlParameter(parameterName: "@2", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = DateTime.Now });
+                command.CommandText = "UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0";
 
-            int rows = command.ExecuteNonQuery();
+                command.Parameters.Add(new NpgsqlParameter(parameterName: "@0", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = _guid });
+                command.Parameters.Add(new NpgsqlParameter(parameterName: "@1", NpgsqlTypes.NpgsqlDbType.Varchar) { Value = "New Message" });
+                command.Parameters.Add(new NpgsqlParameter(parameterName: "@2", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = DateTime.Now });
 
-            transaction.Commit();
+                int rows = command.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
         }
 
         [Benchmark]
         public void Dapper_Single_Row_Update() {
 
-            using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+            for(int index = 0; index < _iterations; index++) {
 
-            connection.Open();
+                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
-            using NpgsqlTransaction transaction = connection.BeginTransaction();
+                connection.Open();
 
-            var parameters = new { message = "New Message", date = DateTime.Now, row_guid = _guid };
+                using NpgsqlTransaction transaction = connection.BeginTransaction();
 
-            int rows = connection.Execute(sql: "UPDATE Test01 SET message=@message,date=@date WHERE row_guid=@row_guid", parameters, transaction: transaction);
+                var parameters = new { message = "New Message", date = DateTime.Now, row_guid = _guid };
 
-            transaction.Commit();
+                int rows = connection.Execute(sql: "UPDATE Test01 SET message=@message,date=@date WHERE row_guid=@row_guid", parameters, transaction: transaction);
+
+                transaction.Commit();
+            }
         }
 
         [Benchmark]
         public void QueryLite_Single_Row_Prepared_Update() {
 
-            using Transaction transaction = new Transaction(Databases.TestDatabase);
+            for(int index = 0; index < _iterations; index++) {
 
-            NonQueryResult result = _preparedUpdateQuery.Execute(parameters: this, transaction);
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
 
-            transaction.Commit();
+                NonQueryResult result = _preparedUpdateQuery.Execute(parameters: this, transaction);
+
+                transaction.Commit();
+            }
         }
 
         [Benchmark]
         public void QueryLite_Single_Row_Dynamic_Update() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            for(int index = 0; index < _iterations; index++) {
 
-            using Transaction transaction = new Transaction(Databases.TestDatabase);
+                Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            NonQueryResult result = Query
-                .Update(table)
-                .Values(values => values
-                    .Set(table.Message, "New Message")
-                    .Set(table.Date, DateTime.Now)
-                )
-                .Where(table.Row_guid == _guid)
-                .Execute(transaction);
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
 
-            transaction.Commit();
+                NonQueryResult result = Query
+                    .Update(table)
+                    .Values(values => values
+                        .Set(table.Message, "New Message")
+                        .Set(table.Date, DateTime.Now)
+                    )
+                    .Where(table.Row_guid == _guid)
+                    .Execute(transaction);
+
+                transaction.Commit();
+            }
         }
     }
 }

@@ -44,73 +44,87 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
+        private int _iterations = 2000;
+
         [Benchmark]
         public void Ado_Single_Insert() {
 
-            using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+            for(int index = 0; index < _iterations; index++) {
 
-            connection.Open();
+                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
-            using NpgsqlTransaction transaction = connection.BeginTransaction();
+                connection.Open();
 
-            using NpgsqlCommand command = connection.CreateCommand();
+                using NpgsqlTransaction transaction = connection.BeginTransaction();
 
-            command.CommandText = "INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)";
+                using NpgsqlCommand command = connection.CreateCommand();
 
-            command.Transaction = transaction;
+                command.CommandText = "INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)";
 
-            command.Parameters.Add(new NpgsqlParameter(parameterName: "@0", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = _guid });
-            command.Parameters.Add(new NpgsqlParameter(parameterName: "@1", NpgsqlTypes.NpgsqlDbType.Varchar) { Value = _message });
-            command.Parameters.Add(new NpgsqlParameter(parameterName: "@2", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = _date });
+                command.Transaction = transaction;
 
-            int rows = command.ExecuteNonQuery();
+                command.Parameters.Add(new NpgsqlParameter(parameterName: "@0", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = _guid });
+                command.Parameters.Add(new NpgsqlParameter(parameterName: "@1", NpgsqlTypes.NpgsqlDbType.Varchar) { Value = _message });
+                command.Parameters.Add(new NpgsqlParameter(parameterName: "@2", NpgsqlTypes.NpgsqlDbType.Timestamp) { Value = _date });
 
-            transaction.Commit();
+                int rows = command.ExecuteNonQuery();
+
+                transaction.Commit();
+            }
         }
 
         [Benchmark]
         public void Dapper_Single_Insert() {
 
-            using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+            for(int index = 0; index < _iterations; index++) {
 
-            connection.Open();
+                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
-            using NpgsqlTransaction transaction = connection.BeginTransaction();
+                connection.Open();
 
-            var parameters = new { A = _guid, B = _message, C = _date };
+                using NpgsqlTransaction transaction = connection.BeginTransaction();
 
-            int rows = connection.Execute(sql: "INSERT INTO Test01 (row_guid,message,date) VALUES(@A, @B, @C)", parameters, transaction: transaction);
+                var parameters = new { A = _guid, B = _message, C = _date };
 
-            transaction.Commit();
+                int rows = connection.Execute(sql: "INSERT INTO Test01 (row_guid,message,date) VALUES(@A, @B, @C)", parameters, transaction: transaction);
+
+                transaction.Commit();
+            }
         }
 
         [Benchmark]
         public void QueryLite_Single_Compiled_Insert() {
 
-            using Transaction transaction = new Transaction(Databases.TestDatabase);
+            for(int index = 0; index < _iterations; index++) {
 
-            NonQueryResult result = _preparedInsertQuery.Execute(parameters: this, transaction);
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
 
-            transaction.Commit();
+                NonQueryResult result = _preparedInsertQuery.Execute(parameters: this, transaction);
+
+                transaction.Commit();
+            }
         }
 
         [Benchmark]
         public void QueryLite_Single_Dynamic_Insert() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            for(int index = 0; index < _iterations; index++) {
 
-            using Transaction transaction = new Transaction(Databases.TestDatabase);
+                Tables.Test01Table table = Tables.Test01Table.Instance;
 
-            NonQueryResult result = Query
-                .Insert(table)
-                .Values(values => values
-                    .Set(table.Row_guid, _guid)
-                    .Set(table.Message, _message)
-                    .Set(table.Date, _date)
-                )
-                .Execute(transaction);
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
 
-            transaction.Commit();
+                NonQueryResult result = Query
+                    .Insert(table)
+                    .Values(values => values
+                        .Set(table.Row_guid, _guid)
+                        .Set(table.Message, _message)
+                        .Set(table.Date, _date)
+                    )
+                    .Execute(transaction);
+
+                transaction.Commit();
+            }
         }
     }
 }
