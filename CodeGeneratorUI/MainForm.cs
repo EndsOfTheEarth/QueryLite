@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using Npgsql;
 using QueryLite.Databases.PostgreSql;
 using QueryLite.Databases.SqlServer;
 using QueryLite.DbSchema;
@@ -28,6 +29,7 @@ using QueryLite.DbSchema.CodeGeneration;
 using QueryLite.DbSchema.Tables;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Windows.Forms;
 
@@ -66,10 +68,16 @@ namespace QueryLite.CodeGeneratorUI {
             if(cboDatabaseType.SelectedItem is DatabaseTypeItem item) {
 
                 if(item.DatabaseType == DatabaseType.PostgreSql) {
-                    _database = new PostgreSqlDatabase(name: "", connectionString: txtConnectionString.Text);
+
+                    NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder(txtConnectionString.Text);
+
+                    _database = new PostgreSqlDatabase(name: builder.Database ?? string.Empty, connectionString: txtConnectionString.Text);
                 }
                 else if(item.DatabaseType == DatabaseType.SqlServer) {
-                    _database = new SqlServerDatabase(name: "", connectionString: txtConnectionString.Text);
+
+                    SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(txtConnectionString.Text);
+
+                    _database = new SqlServerDatabase(name: builder.InitialCatalog, connectionString: txtConnectionString.Text);
                 }
                 else {
                     throw new Exception($"Unknown database type. Value = '{item.DatabaseType}'");
