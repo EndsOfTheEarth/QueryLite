@@ -1,8 +1,6 @@
 # Query Lite
 
-Query Lite is a typesafe .net sql query library for Sql Server and PostgreSql.
-
-In essence it is a `typesafe` `string less` `sql query builder`.
+Query Lite is a typesafe .net sql query library for Sql Server and PostgreSql. In essence it is a `typesafe` `string less` `sql query builder`.
 
 ## Example Select Query (Dynamic)
 ``` C#
