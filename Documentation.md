@@ -3,6 +3,7 @@
 ## Index
 
 - [Introduction](#introduction)
+- [Prepared Queries](#prepared-queries)
 - [Select Query](#select-query)
 - [Defining A Database](#defining-a-database)
 - [Database Support](#database-support)
@@ -57,9 +58,9 @@ These are the main features:
 
 ## Prepared Queries
 
-Please note that the examples on this page are using `dynamic queries`.
+Please note that the examples in this document are using `dynamic queries` but the documentation applies to both dynamic and prepared queries apart from the differences in C# query syntax.
 
-Documentation for prepared queries is located here => [Prepared Query Documentation](PreparedQueries.md)
+Specific documentation and examples for prepared queries is located here => [Prepared Query Documentation](PreparedQueries.md)
 
 ## Select Query
 
