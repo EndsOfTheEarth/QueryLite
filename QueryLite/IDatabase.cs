@@ -27,7 +27,11 @@ using System.Data.Common;
 
 namespace QueryLite {
 
+    /// <summary>
+    /// Represents a database
+    /// </summary>
     public interface IDatabase : IInternalConnection {
+
         /// <summary>
         /// Descriptive name of database
         /// </summary>
@@ -48,9 +52,6 @@ namespace QueryLite {
         /// </summary>
         /// <returns></returns>
         DbConnection GetNewConnection();
-        public string ConvertToSql(object value);
-        public IParametersBuilder CreateParameters(int initParams);
-        string? GetCSharpCodeSet(Type dotNetType);
     }
 
     public enum DatabaseType {
@@ -58,6 +59,9 @@ namespace QueryLite {
         PostgreSql = 1
     }
 
+    /// <summary>
+    /// Internal properties and methods that help with the generation of sql queries
+    /// </summary>
     public interface IInternalConnection {
 
         internal IQueryGenerator QueryGenerator { get; }
@@ -70,5 +74,15 @@ namespace QueryLite {
         internal ITruncateQueryGenerator TruncateGenerator { get; }
         internal IPreparedQueryGenerator PreparedQueryGenerator { get; }
         internal IPreparedParameterMapper ParameterMapper { get; }
+
+        /// <summary>
+        /// Converts object into sql value. Use
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        string ConvertToSql(object value);
+
+        internal IParametersBuilder CreateParameters(int initParams);
+        string? GetCSharpCodeSet(Type dotNetType);
     }
 }

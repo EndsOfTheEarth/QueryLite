@@ -1,6 +1,6 @@
 # Query Lite
 
-Query Lite is a typesafe .net sql query library for Sql Server and PostgreSql
+Query Lite is a typesafe .net sql query library for Sql Server and PostgreSql.
 
 In essence it is a `typesafe` `string less` `sql query builder`.
 
@@ -15,6 +15,12 @@ It is designed to achieve these main goals:
 4. Performance
     - `Prepared` queries are near equivalent performance and memory allocation to direct ado.net code
     - `Dynamic` queries are near equivalent performance and memory allocation to Dapper (Often with significantly lower memory allocation)
+
+## Project State
+
+Query Lite is part of a set of personal projects exploring the optimal design for a query library. The library uses less abstraction for simplicity and performance reasons but the downside is that it has more direct dependencies on Sql Server and PostgreSql.
+
+**Please Note: Query Lite has not been used in a production environment as of yet and I consider the code to be a beta version. So any testing and feedback is appreciated.**
 
 ## Documentation
 **[Documentation is found here](Documentation.md)**
@@ -410,10 +416,10 @@ SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 ```
 |                               Method |     Mean |   Error |  StdDev | Allocated |
 |------------------------------------- |---------:|--------:|--------:|----------:|
-|                Ado_Single_Row_Select | <div style="color:lime">122.7 ms</div> | 2.43 ms | 3.79 ms | <div style="color:lime">3.13 MB</div> |
-|             Dapper_Single_Row_Select | <div style="color:lime">123.9 ms</div> | 2.41 ms | 2.96 ms | <div style="color:red">3.88 MB</div> |
-| QueryLite_Single_Row_Prepared_Select | <div style="color:lime">121.2 ms</div> | 2.23 ms | 1.98 ms | <div style="color:lime">3.16 MB</div> |
-|  QueryLite_Single_Row_Dynamic_Select | <div style="color:lime">123.4 ms</div> | 1.25 ms | 1.10 ms | <div style="color:red">4.23 MB</div> |
+|                Ado_Single_Row_Select | 122.7 ms | 2.43 ms | 3.79 ms | 3.13 MB |
+|             Dapper_Single_Row_Select | 123.9 ms | 2.41 ms | 2.96 ms | 3.88 MB |
+| QueryLite_Single_Row_Prepared_Select | 121.2 ms | 2.23 ms | 1.98 ms | 3.16 MB |
+|  QueryLite_Single_Row_Dynamic_Select | 123.4 ms | 1.25 ms | 1.10 ms | 4.23 MB |
 
 ### Select Ten Rows To List (2000 Sequential Iterations)
 
@@ -422,10 +428,10 @@ SELECT id,row_guid,message,date FROM Test01
 ```
 |                            Method |     Mean |   Error |  StdDev |   Median | Allocated |
 |---------------------------------- |---------:|--------:|--------:|---------:|----------:|
-|                Ado_Ten_Row_Select | <div style="color:lime">107.3 ms</div> | 2.11 ms | 2.67 ms | 105.8 ms | <div style="color:lime">5.22 MB</div> |
-|             Dapper_Ten_Row_Select | <div style="color:lime">115.4 ms</div> | 2.29 ms | 3.05 ms | 114.5 ms | <div style="color:red">7.31 MB</div> |
-| QueryLite_Ten_Row_Prepared_Select | <div style="color:lime">109.4 ms</div> | 2.15 ms | 3.35 ms | 107.6 ms | <div style="color:lime">5.25 MB</div> |
-|  QueryLite_Ten_Row_Dynamic_Select | <div style="color:lime">110.0 ms</div> | 1.66 ms | 1.56 ms | 109.5 ms | <div style="color:red">6.09 MB</div> |
+|                Ado_Ten_Row_Select | 107.3 ms | 2.11 ms | 2.67 ms | 105.8 ms | 5.22 MB |
+|             Dapper_Ten_Row_Select | 115.4 ms | 2.29 ms | 3.05 ms | 114.5 ms | 7.31 MB |
+| QueryLite_Ten_Row_Prepared_Select | 109.4 ms | 2.15 ms | 3.35 ms | 107.6 ms | 5.25 MB |
+|  QueryLite_Ten_Row_Dynamic_Select | 110.0 ms | 1.66 ms | 1.56 ms | 109.5 ms | 6.09 MB |
 
 
 ### Select One Hundred Rows To List (2000 Sequential Iterations)
@@ -435,10 +441,10 @@ SELECT id,row_guid,message,date FROM Test01
 ```
 |                                    Method |     Mean |   Error |  StdDev |      Gen0 |      Gen1 | Allocated |
 |------------------------------------------ |---------:|--------:|--------:|----------:|----------:|----------:|
-|                Ado_One_Hundred_Row_Select | <div style="color:lime">152.4 ms</div> | 1.30 ms | 1.22 ms | 1000.0000 | 1000.0000 |  <div style="color:lime">30.75 MB</div> |
-|             Dapper_One_Hundred_Row_Select | <div style="color:red">199.8 ms</div> | 0.96 ms | 0.80 ms | 2000.0000 | 1000.0000 | <div style="color:red">46.57 MB</div> |
-| QueryLite_One_Hundred_Row_Prepared_Select | <div style="color:lime">157.5 ms</div> | 0.51 ms | 0.45 ms | 1000.0000 | 1000.0000 |  <div style="color:lime">30.78 MB</div> |
-|  QueryLite_One_Hundred_Row_Dynamic_Select | <div style="color:lime">161.0 ms</div> | 1.72 ms | 1.53 ms | 1000.0000 | 1000.0000 |  <div style="color:lime">31.62 MB</div> |
+|                Ado_One_Hundred_Row_Select | 152.4 ms | 1.30 ms | 1.22 ms | 1000.0000 | 1000.0000 |  30.75 MB |
+|             Dapper_One_Hundred_Row_Select | 199.8 ms | 0.96 ms | 0.80 ms | 2000.0000 | 1000.0000 | 46.57 MB |
+| QueryLite_One_Hundred_Row_Prepared_Select | 157.5 ms | 0.51 ms | 0.45 ms | 1000.0000 | 1000.0000 |  30.78 MB |
+|  QueryLite_One_Hundred_Row_Dynamic_Select | 161.0 ms | 1.72 ms | 1.53 ms | 1000.0000 | 1000.0000 |  31.62 MB |
 
 
 ### Select One Thousand Rows To List (2000 Sequential Iterations)
@@ -449,10 +455,10 @@ SELECT id,row_guid,message,date FROM Test01
 
 |                                     Method |     Mean |   Error |  StdDev |       Gen0 |      Gen1 | Allocated |
 |------------------------------------------- |---------:|--------:|--------:|-----------:|----------:|----------:|
-|                Ado_One_Thousand_Row_Select | <div style="color:lime">474.1 ms</div> | 1.18 ms | 1.10 ms | 17000.0000 | 5000.0000 | <div style="color:lime">277.95 MB<div> |
-|             Dapper_One_Thousand_Row_Select | <div style="color:red">807.4 ms</div> | 1.85 ms | 1.73 ms | 27000.0000 | 8000.0000 | <div style="color:red">431.11 MB<div> |
-| QueryLite_One_Thousand_Row_Prepared_Select | <div style="color:lime">474.1 ms</div> | 1.51 ms | 1.26 ms | 17000.0000 | 8000.0000 | <div style="color:lime">277.99 MB<div> |
-|  QueryLite_One_Thousand_Row_Dynamic_Select | <div style="color:lime">477.5 ms</div> | 1.75 ms | 1.55 ms | 17000.0000 | 8000.0000 | <div style="color:lime">278.82 MB<div> |
+|                Ado_One_Thousand_Row_Select | 474.1 ms | 1.18 ms | 1.10 ms | 17000.0000 | 5000.0000 | 277.95 MB |
+|             Dapper_One_Thousand_Row_Select | 807.4 ms | 1.85 ms | 1.73 ms | 27000.0000 | 8000.0000 | 431.11 MB |
+| QueryLite_One_Thousand_Row_Prepared_Select | 474.1 ms | 1.51 ms | 1.26 ms | 17000.0000 | 8000.0000 | 277.99 MB |
+|  QueryLite_One_Thousand_Row_Dynamic_Select | 477.5 ms | 1.75 ms | 1.55 ms | 17000.0000 | 8000.0000 | 278.82 MB |
 
 ### Insert Single Row (2000 Sequential Iterations)
 
@@ -462,10 +468,10 @@ INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)
 
 |                           Method |     Mean |   Error |  StdDev |   Median | Allocated |
 |--------------------------------- |---------:|--------:|--------:|---------:|----------:|
-|                Ado_Single_Insert | <div style="color:lime">266.1 ms</div> | 2.22 ms | 1.73 ms | 265.7 ms | <div style="color:lime">3.43 MB<div> |
-|             Dapper_Single_Insert | <div style="color:lime">275.1 ms</div> | 5.49 ms | 8.71 ms | 270.0 ms | <div style="color:lime">3.56 MB<div> |
-| QueryLite_Single_Compiled_Insert | <div style="color:lime">269.0 ms</div> | 1.50 ms | 1.33 ms | 268.6 ms | <div style="color:lime">3.56 MB<div> |
-|  QueryLite_Single_Dynamic_Insert | <div style="color:lime">271.3 ms</div> | 2.26 ms | 2.11 ms | 271.1 ms | <div style="color:red">4.73 MB</div> |
+|                Ado_Single_Insert | 266.1 ms | 2.22 ms | 1.73 ms | 265.7 ms | 3.43 MB |
+|             Dapper_Single_Insert | 275.1 ms | 5.49 ms | 8.71 ms | 270.0 ms | 3.56 MB |
+| QueryLite_Single_Compiled_Insert | 269.0 ms | 1.50 ms | 1.33 ms | 268.6 ms | 3.56 MB |
+|  QueryLite_Single_Dynamic_Insert | 271.3 ms | 2.26 ms | 2.11 ms | 271.1 ms | 4.73 MB |
 
 
 ### Update Single Row (2000 Sequential Iterations)
@@ -475,10 +481,10 @@ UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 ```
 |                               Method |     Mean |   Error |  StdDev | Allocated |
 |------------------------------------- |---------:|--------:|--------:|----------:|
-|                Ado_Single_Row_Update | <div style="color:lime">297.7 ms</div> | 4.46 ms | 3.73 ms | <div style="color:lime">3.42 MB</div> |
-|             Dapper_Single_Row_Update | <div style="color:lime">299.0 ms</div> | 1.73 ms | 1.53 ms | <div style="color:lime">3.62 MB</div> |
-| QueryLite_Single_Row_Prepared_Update | <div style="color:red">332.4 ms</div> | 2.90 ms | 2.72 ms | <div style="color:lime">3.65 MB</div> |
-|  QueryLite_Single_Row_Dynamic_Update | <div style="color:red">336.4 ms</div> | 2.57 ms | 2.28 ms | <div style="color:red">5.04 MB</div> |
+|                Ado_Single_Row_Update | 297.7 ms | 4.46 ms | 3.73 ms | 3.42 MB |
+|             Dapper_Single_Row_Update | 299.0 ms | 1.73 ms | 1.53 ms | 3.62 MB |
+| QueryLite_Single_Row_Prepared_Update | 332.4 ms | 2.90 ms | 2.72 ms | 3.65 MB |
+|  QueryLite_Single_Row_Dynamic_Update | 336.4 ms | 2.57 ms | 2.28 ms | 5.04 MB |
 
 ### Delete Single Row (2000 Sequential Iterations)
 
@@ -487,7 +493,7 @@ DELETE FROM Test01 WHERE row_guid=@0
 ```
 |                               Method |     Mean |   Error |  StdDev | Allocated |
 |------------------------------------- |---------:|--------:|--------:|----------:|
-|                Ado_Single_Row_Delete | <div style="color:lime">172.8 ms</div> | 1.20 ms | 1.00 ms | <div style="color:lime">2.55 MB</div> |
-|             Dapper_Single_Row_Delete | <div style="color:lime">175.4 ms</div> | 0.80 ms | 0.63 ms | <div style="color:lime">2.76 MB</div> |
-| QueryLite_Single_Row_Prepared_Delete | <div style="color:lime">176.3 ms</div> | 1.00 ms | 0.83 ms | <div style="color:lime">2.70 MB</div> |
-|  QueryLite_Single_Row_Dynamic_Delete | <div style="color:lime">179.4 ms</div> | 1.90 ms | 1.68 ms | <div style="color:red">3.36 MB</div> |
+|                Ado_Single_Row_Delete | 172.8 ms | 1.20 ms | 1.00 ms | 2.55 MB |
+|             Dapper_Single_Row_Delete | 175.4 ms | 0.80 ms | 0.63 ms | 2.76 MB |
+| QueryLite_Single_Row_Prepared_Delete | 176.3 ms | 1.00 ms | 0.83 ms | 2.70 MB |
+|  QueryLite_Single_Row_Dynamic_Delete | 179.4 ms | 1.90 ms | 1.68 ms | 3.36 MB |
