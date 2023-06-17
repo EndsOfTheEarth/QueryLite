@@ -4,33 +4,6 @@ Query Lite is a typesafe .net sql query library for Sql Server and PostgreSql.
 
 In essence it is a `typesafe` `string less` `sql query builder`.
 
-It is designed to achieve these main goals:
-
-1. Typesafe database queries and schema
-    - Queries, joins, 'where' conditions, column types and column nullability are enforced by the compiler
-2. Runtime validation between code schema and database schema
-    - Check for missing tables, missing columns, column type and nullablility differences
-3. Debuggable
-    - Show detailed information about sql queries during and after execution
-4. Performance
-    - `Prepared` queries are near equivalent performance and memory allocation to direct ado.net code
-    - `Dynamic` queries are near equivalent performance and memory allocation to Dapper (Often with significantly lower memory allocation)
-
-## Project State
-
-Query Lite is part of a set of personal projects exploring the optimal design for a query library. The library uses less abstraction for simplicity and performance reasons but the downside is that it has more direct dependencies on Sql Server and PostgreSql.
-
-**Please Note: Query Lite has not been used in a production environment as of yet and I consider the code to be a beta version. So any testing and feedback is appreciated.**
-
-## Documentation
-**[Documentation is found here](Documentation.md)**
-
-[Additional - Prepared Query Documentation is found here](PreparedQueries.md)
-
-## Nuget Package
-
-[QueryLite.net Nuget Package](https://www.nuget.org/packages/QueryLite.net/)
-
 ## Example Select Query (Dynamic)
 ``` C#
 using QueryLite;
@@ -63,6 +36,35 @@ foreach(var row in result.Rows) {
     string companyName = row.CompanyName;
 }
 ```
+
+## Design Goals
+
+It is designed to achieve these main goals:
+
+1. Typesafe database queries and schema
+    - Queries, joins, 'where' conditions, column types and column nullability are enforced by the compiler
+2. Runtime validation between code schema and database schema
+    - Check for missing tables, missing columns, column type and nullablility differences
+3. Debuggable
+    - Show detailed information about sql queries during and after execution
+4. Performance
+    - `Prepared` queries are near equivalent performance and memory allocation to direct ado.net code
+    - `Dynamic` queries are near equivalent performance and memory allocation to Dapper (Often with significantly lower memory allocation)
+
+## Project State
+
+Query Lite is part of a set of personal projects exploring the optimal design for a query library. The library uses less abstraction for simplicity and performance reasons but the downside is that it has more direct dependencies on Sql Server and PostgreSql.
+
+**Please Note: Query Lite has not been used in a production environment as of yet and I consider the code to be a beta version. So any testing and feedback is appreciated.**
+
+## Documentation
+**[Documentation is found here](Documentation.md)**
+
+[Additional - Prepared Query Documentation is found here](PreparedQueries.md)
+
+## Nuget Package
+
+[QueryLite.net Nuget Package](https://www.nuget.org/packages/QueryLite.net/)
 
 ## Core features
 
