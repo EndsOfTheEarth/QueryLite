@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>Enable</Nullable>
-    <AssemblyVersion>0.9.0</AssemblyVersion>
-    <FileVersion>0.9.0</FileVersion>
-    <Version>0.9.0</Version>
+    <AssemblyVersion>0.9.1</AssemblyVersion>
+    <FileVersion>0.9.1</FileVersion>
+    <Version>0.9.1</Version>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageId>QueryLite.net</PackageId>
     <Title>Query Lite</Title>
