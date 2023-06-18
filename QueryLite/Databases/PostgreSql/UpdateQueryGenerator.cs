@@ -42,12 +42,17 @@ namespace QueryLite.Databases.PostgreSql {
                 sql.Append('.');
             }
 
+            bool useAlias = template.Joins != null;
+
             SqlHelper.AppendEncloseTableName(sql, template.Table);
-            sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
+
+            if(useAlias) {
+                sql.Append(" AS ").Append(template.Table.Alias);
+            }
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql: null, database, CollectorMode.Update);
+                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql: null, database, CollectorMode.Update, useAlias: useAlias);
 
                 sql.Append(" SET ");
 
@@ -66,16 +71,16 @@ namespace QueryLite.Databases.PostgreSql {
                 parameters = null;
             }
 
-            sql.Append(" FROM ");
-
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
-                sql.Append('.');
-            }
-            SqlHelper.AppendEncloseTableName(sql, template.Table);
-            sql.Append(' ');
-
             if(template.Joins != null) {
+
+                sql.Append(" FROM ");
+
+                if(!string.IsNullOrWhiteSpace(schemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                    sql.Append('.');
+                }
+                SqlHelper.AppendEncloseTableName(sql, template.Table);
+                sql.Append(' ');
 
                 foreach(IJoin join in template.Joins) {
 
@@ -94,18 +99,18 @@ namespace QueryLite.Databases.PostgreSql {
                     }
                     SqlHelper.AppendEncloseTableName(sql, join.Table);
                     sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
-                    join.Condition.GetSql(sql, database, useAlias: true, parameters);
+                    join.Condition.GetSql(sql, database, useAlias: useAlias, parameters);
                 }
             }
 
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, useAlias: true, parameters);
+                template.WhereCondition.GetSql(sql, database, useAlias: useAlias, parameters);
             }
 
             if(outputFunc != null) {
 
-                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: true);
+                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: useAlias);
 
                 sql.Append(" RETURNING ");
 

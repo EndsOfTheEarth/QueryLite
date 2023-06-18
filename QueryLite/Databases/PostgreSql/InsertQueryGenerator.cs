@@ -48,7 +48,7 @@ namespace QueryLite.Databases.PostgreSql {
 
                 StringBuilder paramSql = StringBuilderCache.Acquire();
 
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert);
+                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert, useAlias: false);
 
                 sql.Append('(');
                 template.ValuesCollector!(valuesCollector);

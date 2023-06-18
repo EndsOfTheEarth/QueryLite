@@ -46,7 +46,7 @@ namespace QueryLite.Databases.SqlServer {
 
             StringBuilder paramSql = StringBuilderCache.Acquire();
 
-            SqlServerPreparedSetValuesCollector<PARAMETERS> valuesCollector = new SqlServerPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: paramSql, database, CollectorMode.Insert);
+            SqlServerPreparedSetValuesCollector<PARAMETERS> valuesCollector = new SqlServerPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: paramSql, database, CollectorMode.Insert, useAlias: false);
 
             sql.Append('(');
 

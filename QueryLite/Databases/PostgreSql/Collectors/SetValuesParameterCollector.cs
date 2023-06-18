@@ -37,15 +37,17 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
         private readonly IDatabase _database;
         private readonly CollectorMode _collectorMode;
+        private readonly bool _useAlias;
 
         private int _counter;
 
-        public PostgreSqlSetValuesParameterCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode collectorMode) {
+        public PostgreSqlSetValuesParameterCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode collectorMode, bool useAlias) {
 
             _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
             _paramSql = paramSql;
+            _useAlias = useAlias;
         }
 
         private ISetValuesCollector AddParameter(IColumn column, NpgsqlDbType dbType, object? value) {
@@ -108,7 +110,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 _counter++;
 
                 SqlHelper.AppendEncloseColumnName(_sql, column);
-                _paramSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
+                _paramSql!.Append(function.GetSql(_database, useAlias: _useAlias, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
 
@@ -119,7 +121,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 _counter++;
 
                 SqlHelper.AppendEncloseColumnName(_sql, column);
-                _sql.Append('=').Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
+                _sql.Append('=').Append(function.GetSql(_database, useAlias: _useAlias, parameters: Parameters));
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");

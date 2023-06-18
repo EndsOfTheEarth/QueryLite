@@ -479,12 +479,13 @@ INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)
 ```SQL
 UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 ```
+
 |                               Method |     Mean |   Error |  StdDev | Allocated |
 |------------------------------------- |---------:|--------:|--------:|----------:|
-|                Ado_Single_Row_Update | 297.7 ms | 4.46 ms | 3.73 ms | 3.42 MB |
-|             Dapper_Single_Row_Update | 299.0 ms | 1.73 ms | 1.53 ms | 3.62 MB |
-| QueryLite_Single_Row_Prepared_Update | 332.4 ms | 2.90 ms | 2.72 ms | 3.65 MB |
-|  QueryLite_Single_Row_Dynamic_Update | 336.4 ms | 2.57 ms | 2.28 ms | 5.04 MB |
+|                Ado_Single_Row_Update | 300.2 ms | 0.64 ms | 0.50 ms |   3.43 MB |
+|             Dapper_Single_Row_Update | 306.6 ms | 1.04 ms | 0.93 ms |   3.63 MB |
+| QueryLite_Single_Row_Prepared_Update | 306.6 ms | 1.00 ms | 0.88 ms |   3.56 MB |
+|  QueryLite_Single_Row_Dynamic_Update | 310.1 ms | 1.43 ms | 1.27 ms |   4.85 MB |
 
 ### Delete Single Row (2000 Sequential Iterations)
 

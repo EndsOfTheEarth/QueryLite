@@ -36,13 +36,16 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         private IDatabase _database;
         private CollectorMode _collectorMode;
 
+        private bool _useAlias;
+
         private int _counter = 0;
 
-        public SqlServerPreparedSetValuesCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode mode) {
+        public SqlServerPreparedSetValuesCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode mode, bool useAlias) {
             _sql = sql;
             _paramSql = paramSql;
             _database = database;
             _collectorMode = mode;
+            _useAlias = useAlias;
         }
 
         private IPreparedSetValuesCollector<PARAMETERS> AddParameter<TYPE>(IColumn column, Func<PARAMETERS, TYPE> func, CreateParameterDelegate setParameterFunc) {
@@ -69,8 +72,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                     _sql.Append(',');
                 }
 
-                SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
-                _sql.Append('.');
+                if(_useAlias) {
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    _sql.Append('.');
+                }
                 SqlHelper.AppendEncloseColumnName(_sql, column);
                 _sql.Append('=').Append(paramName);
             }
@@ -92,7 +97,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
                 SqlHelper.AppendEncloseColumnName(_sql, column);
 
-                _paramSql!.Append(function.GetSql(_database, useAlias: false, parameters: null));
+                _paramSql!.Append(function.GetSql(_database, useAlias: _useAlias, parameters: null));
 
             }
             else if(_collectorMode == CollectorMode.Update) {
@@ -101,11 +106,12 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                 if(_counter > 0) {
                     _sql.Append(',');
                 }
-
-                SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
-                _sql.Append('.');
+                if(_useAlias) {
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    _sql.Append('.');
+                }
                 SqlHelper.AppendEncloseColumnName(_sql, column);
-                _sql.Append('=').Append(function.GetSql(_database, useAlias: false, parameters: null));
+                _sql.Append('=').Append(function.GetSql(_database, useAlias: _useAlias, parameters: null));
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");

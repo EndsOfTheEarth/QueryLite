@@ -35,10 +35,24 @@ namespace QueryLite.Databases.SqlServer {
 
             sql.Append("UPDATE ");
 
-            sql.Append(template.Table.Alias);
+            bool useAlias = template.Joins != null;
+
+            string schemaName = database.SchemaMap(template.Table.SchemaName);
+
+            if(!useAlias) {
+
+                if(!string.IsNullOrWhiteSpace(schemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                    sql.Append('.');
+                }
+                SqlHelper.AppendEncloseTableName(sql, template.Table);
+            }
+            else {
+                sql.Append(template.Table.Alias);
+            }
 
             {
-                SqlServerPreparedSetValuesCollector<PARAMETERS> valuesCollector = new SqlServerPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: null, database, CollectorMode.Update);
+                SqlServerPreparedSetValuesCollector<PARAMETERS> valuesCollector = new SqlServerPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: null, database, CollectorMode.Update, useAlias: useAlias);
 
                 sql.Append(" SET ");
                 template.SetValues!(valuesCollector); //Note: This outputs sql to the sql string builder
@@ -57,20 +71,18 @@ namespace QueryLite.Databases.SqlServer {
                 SqlServerReturningCollectorCache.Release(collector);
             }
 
-            sql.Append(" FROM ");
-
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
-
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
-                sql.Append('.');
-            }
-
-            SqlHelper.AppendEncloseTableName(sql, template.Table);
-
-            sql.Append(" AS ").Append(template.Table.Alias);
-
             if(template.Joins != null) {
+
+                sql.Append(" FROM ");
+
+                if(!string.IsNullOrWhiteSpace(schemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                    sql.Append('.');
+                }
+
+                SqlHelper.AppendEncloseTableName(sql, template.Table);
+
+                sql.Append(" AS ").Append(template.Table.Alias);
 
                 foreach(PreparedUpdateJoin<PARAMETERS> join in template.Joins) {
 
@@ -88,12 +100,12 @@ namespace QueryLite.Databases.SqlServer {
                     }
                     SqlHelper.AppendEncloseTableName(sql, join.Table);
                     sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
-                    join.Condition.GetSql(sql, database, parameters, useAlias: true);
+                    join.Condition.GetSql(sql, database, parameters, useAlias: useAlias);
                 }
             }
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, parameters, useAlias: true);
+                template.WhereCondition.GetSql(sql, database, parameters, useAlias: useAlias);
             }
             return StringBuilderCache.ToStringAndRelease(sql);
         }

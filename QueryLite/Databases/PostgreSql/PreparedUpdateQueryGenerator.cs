@@ -42,28 +42,32 @@ namespace QueryLite.Databases.PostgreSql {
                 sql.Append('.');
             }
 
+            bool useAlias = template.Joins != null;
+
             SqlHelper.AppendEncloseTableName(sql, template.Table);
 
-            sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
+            if(useAlias) {
+                sql.Append(" AS ").Append(template.Table.Alias);
+            }
 
             {
                 PostgreSqlPreparedSetValuesCollector<PARAMETERS> valuesCollector = new PostgreSqlPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: null, database, CollectorMode.Update);
 
-                sql.Append("SET ");
+                sql.Append(" SET ");
                 template.SetValues!(valuesCollector);
 
                 parameters = valuesCollector.Parameters;
             }
 
-            sql.Append(" FROM ");
-
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
-                sql.Append('.');
-            }
-            SqlHelper.AppendEncloseTableName(sql, template.Table);
-
             if(template.Joins != null) {
+
+                sql.Append(" FROM ");
+
+                if(!string.IsNullOrWhiteSpace(schemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                    sql.Append('.');
+                }
+                SqlHelper.AppendEncloseTableName(sql, template.Table);
 
                 foreach(PreparedUpdateJoin<PARAMETERS> join in template.Joins) {
 
@@ -82,18 +86,18 @@ namespace QueryLite.Databases.PostgreSql {
                     }
                     SqlHelper.AppendEncloseTableName(sql, join.Table);
                     sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
-                    join.Condition.GetSql(sql, database, parameters, useAlias: true);
+                    join.Condition.GetSql(sql, database, parameters, useAlias: useAlias);
                 }
             }
 
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, parameters, useAlias: true);
+                template.WhereCondition.GetSql(sql, database, parameters, useAlias: useAlias);
             }
 
             if(outputFunc != null) {
 
-                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: true);
+                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: useAlias);
 
                 sql.Append(" RETURNING ");
 

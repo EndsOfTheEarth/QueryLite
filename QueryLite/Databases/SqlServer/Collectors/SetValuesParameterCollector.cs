@@ -37,14 +37,16 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
         private readonly IDatabase _database;
         private readonly CollectorMode _collectorMode;
+        private bool _useAlias;
 
         private int _counter;
 
-        public SqlServerSetValuesParameterCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode collectorMode) {
+        public SqlServerSetValuesParameterCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode collectorMode, bool useAlias) {
             _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
             _paramSql = paramSql;
+            _useAlias = useAlias;
         }
 
         private ISetValuesCollector AddParameter(IColumn column, SqlDbType dbType, object? value) {
@@ -84,8 +86,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
-                _sql.Append('.');
+                if(_useAlias) {
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    _sql.Append('.');
+                }
                 SqlHelper.AppendEncloseColumnName(_sql, column);
                 _sql.Append('=').Append(paramName);
 
@@ -109,7 +113,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                 _counter++;
 
                 SqlHelper.AppendEncloseColumnName(_sql, column);
-                _paramSql!.Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
+                _paramSql!.Append(function.GetSql(_database, useAlias: _useAlias, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
 
@@ -119,10 +123,12 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
-                _sql.Append('.');
+                if(_useAlias) {
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    _sql.Append('.');
+                }
                 SqlHelper.AppendEncloseColumnName(_sql, column);
-                _sql.Append('=').Append(function.GetSql(_database, useAlias: true, parameters: Parameters));
+                _sql.Append('=').Append(function.GetSql(_database, useAlias: _useAlias, parameters: Parameters));
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");
@@ -405,8 +411,9 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
         private readonly IDatabase _database;
         private readonly CollectorMode _collectorMode;
+        private readonly bool _useAlias;
 
-        public SqlServerSetValuesCollector(StringBuilder sql, IDatabase database, CollectorMode collectorMode) {
+        public SqlServerSetValuesCollector(StringBuilder sql, IDatabase database, CollectorMode collectorMode, bool useAlias) {
             _sql = sql;
             _database = database;
             _collectorMode = collectorMode;
@@ -414,6 +421,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             if(_collectorMode == CollectorMode.Insert) {
                 ParamsSql = new StringBuilder();
             }
+            _useAlias = useAlias;
         }
 
         private readonly StringBuilder _sql;
@@ -443,8 +451,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                 else {
                     _first = false;
                 }
-                SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
-                _sql.Append('.');
+                if(_useAlias) {
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    _sql.Append('.');
+                }
                 SqlHelper.AppendEncloseColumnName(_sql, column);
                 _sql.Append('=').Append(value);
             }
