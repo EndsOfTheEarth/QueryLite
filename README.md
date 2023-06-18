@@ -441,10 +441,10 @@ SELECT id,row_guid,message,date FROM Test01
 ```
 |                                    Method |     Mean |   Error |  StdDev |      Gen0 |      Gen1 | Allocated |
 |------------------------------------------ |---------:|--------:|--------:|----------:|----------:|----------:|
-|                Ado_One_Hundred_Row_Select | 152.4 ms | 1.30 ms | 1.22 ms | 1000.0000 | 1000.0000 |  30.75 MB |
-|             Dapper_One_Hundred_Row_Select | 199.8 ms | 0.96 ms | 0.80 ms | 2000.0000 | 1000.0000 | 46.57 MB |
-| QueryLite_..._Prepared_Select | 157.5 ms | 0.51 ms | 0.45 ms | 1000.0000 | 1000.0000 |  30.78 MB |
-|  QueryLite_..._Dynamic_Select | 161.0 ms | 1.72 ms | 1.53 ms | 1000.0000 | 1000.0000 |  31.62 MB |
+|                Ado_One_Hundred_Row_Select | 152.4 ms | 1.30 ms | 1.22 ms | 1000 | 1000 |  30.75 MB |
+|             Dapper_One_Hundred_Row_Select | 199.8 ms | 0.96 ms | 0.80 ms | 2000 | 1000 | 46.57 MB |
+| QueryLite_One_Hundred_Row_Prepared_Select | 157.5 ms | 0.51 ms | 0.45 ms | 1000 | 1000 |  30.78 MB |
+|  QueryLite_One_Hundred_Row_Dynamic_Select | 161.0 ms | 1.72 ms | 1.53 ms | 1000 | 1000 |  31.62 MB |
 
 
 ### Select One Thousand Rows To List (2000 Sequential Iterations)
@@ -455,10 +455,10 @@ SELECT id,row_guid,message,date FROM Test01
 
 |                                     Method |     Mean |   Error |  StdDev |       Gen0 |      Gen1 | Allocated |
 |------------------------------------------- |---------:|--------:|--------:|-----------:|----------:|----------:|
-|                Ado_One_Thousand_Row_Select | 474.1 ms | 1.18 ms | 1.10 ms | 17000.0000 | 5000.0000 | 277.95 MB |
-|             Dapper_One_Thousand_Row_Select | 807.4 ms | 1.85 ms | 1.73 ms | 27000.0000 | 8000.0000 | 431.11 MB |
-| QueryLite_..._Prepared_Select | 474.1 ms | 1.51 ms | 1.26 ms | 17000.0000 | 8000.0000 | 277.99 MB |
-|  QueryLite_..._Dynamic_Select | 477.5 ms | 1.75 ms | 1.55 ms | 17000.0000 | 8000.0000 | 278.82 MB |
+|                Ado_One_Thousand_Row_Select | 474.1 ms | 1.18 ms | 1.10 ms | 17000 | 5000 | 277.95 MB |
+|             Dapper_One_Thousand_Row_Select | 807.4 ms | 1.85 ms | 1.73 ms | 27000 | 8000 | 431.11 MB |
+| QueryLite_One_Thousand_Row_Prepared_Select | 474.1 ms | 1.51 ms | 1.26 ms | 17000 | 8000 | 277.99 MB |
+|  QueryLite_One_Thousand_Row_Dynamic_Select | 477.5 ms | 1.75 ms | 1.55 ms | 17000 | 8000 | 278.82 MB |
 
 ### Insert Single Row (2000 Sequential Iterations)
 
