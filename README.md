@@ -355,7 +355,7 @@ public sealed class OrderTable : ATable {
 
 ## Code Generator Tool
 
-The code generator tool can be used to generate database schema definitions.
+The code generator tool can be used to generate database schema definitions. The application CodeGenerator.exe can be dowloaded from the releases page: [https://github.com/EndsOfTheEarth/QueryLite/releases](https://github.com/EndsOfTheEarth/QueryLite/releases)
 
 ![image](https://user-images.githubusercontent.com/6175921/193362983-c5473a7e-7529-4850-8bdd-25a6e9f071bc.png)
 
