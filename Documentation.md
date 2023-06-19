@@ -980,7 +980,7 @@ string text = output.ToString();
 
 ### Suppressing Column Type Validation
 
-An attribute called `[SuppressColumnTypeValidation]` exists to surpress schema validation errors when a column type does not match the database schema.
+An attribute called `[SuppressColumnTypeValidation]` exists to suppress schema validation errors when a column type does not match the database schema.
 
 In this case `MyColumn` might map to an unsupported database type.
 
