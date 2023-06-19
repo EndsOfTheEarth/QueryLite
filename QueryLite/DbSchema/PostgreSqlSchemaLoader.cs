@@ -28,12 +28,15 @@ using System.Collections.Generic;
 
 namespace QueryLite.DbSchema {
 
+    using TableColumnKey = Key<StringKey<ISchemaName>, StringKey<ITableName>, StringKey<IColumnName>>;
+    using TableKey = Key<StringKey<ISchemaName>, StringKey<ITableName>>;
+
     public sealed class PostgreSqlSchemaLoader {
 
         public static List<DatabaseTable> LoadTables(IDatabase database) {
 
             List<DatabaseTable> tableList = new List<DatabaseTable>();
-            Dictionary<StringKey<ITableName>, DatabaseTable> tableLookup = new Dictionary<StringKey<ITableName>, DatabaseTable>();
+            Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
             Dictionary<string, Type?> typelookup = new Dictionary<string, Type?>();
 
             /*
@@ -61,10 +64,12 @@ namespace QueryLite.DbSchema {
 
                 var row = query.Rows[index];
 
-                if(!tableLookup.TryGetValue(row.Table_name, out DatabaseTable? databaseTable)) {
+                TableKey tableKey = new TableKey(row.Table_schema, row.Table_name);
+
+                if(!tableLookup.TryGetValue(tableKey, out DatabaseTable? databaseTable)) {
                     databaseTable = new DatabaseTable(schema: row.Table_schema, tableName: row.Table_name, isView: row.Table_type == "VIEW");
                     tableList.Add(databaseTable);
-                    tableLookup.Add(databaseTable.TableName, databaseTable);
+                    tableLookup.Add(tableKey, databaseTable);
                 }
 
                 ColumnsRow columnRow = row.ColumnsRow;
@@ -315,56 +320,6 @@ namespace QueryLite.DbSchema {
                         column.Description = columnDesc.description;
                     }
                 }
-            }
-        }
-
-        private sealed class TableKey {
-
-            private readonly StringKey<ISchemaName> SchemaName;
-            private readonly StringKey<ITableName> TableName;
-
-            public TableKey(StringKey<ISchemaName> schemaName, StringKey<ITableName> tableName) {
-                SchemaName = schemaName;
-                TableName = tableName;
-            }
-
-            public override bool Equals(object? obj) {
-
-                if(obj is TableKey key) {
-                    return SchemaName.Value == key.SchemaName.Value && TableName.Value == key.TableName.Value;
-                }
-                else {
-                    return false;
-                }
-            }
-            public override int GetHashCode() {
-                return (SchemaName.Value + "^" + TableName.Value).GetHashCode();
-            }
-        }
-
-        private sealed class TableColumnKey {
-
-            private readonly StringKey<ISchemaName> SchemaName;
-            private readonly StringKey<ITableName> TableName;
-            private readonly StringKey<IColumnName> ColumnName;
-
-            public TableColumnKey(StringKey<ISchemaName> schemaName, StringKey<ITableName> tableName, StringKey<IColumnName> columnName) {
-                SchemaName = schemaName;
-                TableName = tableName;
-                ColumnName = columnName;
-            }
-
-            public override bool Equals(object? obj) {
-
-                if(obj is TableColumnKey key) {
-                    return SchemaName.Value == key.SchemaName.Value && TableName.Value == key.TableName.Value && ColumnName.Value == key.ColumnName.Value;
-                }
-                else {
-                    return false;
-                }
-            }
-            public override int GetHashCode() {
-                return (SchemaName.Value + "^" + TableName.Value + "^" + ColumnName.Value).GetHashCode();
             }
         }
 
