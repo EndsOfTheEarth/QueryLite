@@ -353,11 +353,11 @@ namespace QueryLite {
                                 throw new Exception("An enum type must be mapped as a short, integer or long. This might be a bug");
                             }
                             if(codeAdoType != typeof(int) && codeAdoType != typeof(short) && codeAdoType != typeof(byte) && codeAdoType != typeof(long)) {
-                                tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column");
+                                tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
                             }
                         }
                         else if(codeAdoType != dbNetType) {
-                            tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column");
+                            tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
                         }
                     }
 
