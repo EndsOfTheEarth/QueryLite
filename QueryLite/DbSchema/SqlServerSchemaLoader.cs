@@ -343,7 +343,7 @@ namespace QueryLite.DbSchema {
 
     public static class SqlServerTypes {
 
-        private static readonly Dictionary<string, Type?> _Lookup = new Dictionary<string, Type?>();
+        private static readonly Dictionary<string, Type?> _Lookup = new Dictionary<string, Type?>(StringComparer.OrdinalIgnoreCase);
 
         static SqlServerTypes() {
 
