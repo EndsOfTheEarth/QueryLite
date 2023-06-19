@@ -52,6 +52,8 @@ namespace QueryLite {
     /// </summary>
     public interface IUnsupportedType { }
 
+    public interface IGeography_UnsupportedType : IUnsupportedType { }
+
     public sealed class PrimaryKey {
 
         public PrimaryKey(ITable table, string constraintName, params IColumn[] columns) {
