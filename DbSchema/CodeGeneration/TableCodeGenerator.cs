@@ -108,8 +108,19 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     code.Indent(2).Append("[Description(\"").Append(CodeHelper.ExcapeCSharpString(column.Description)).Append("\")]").EndLine();
                 }
 
+                bool addSuppressAttribute = false;
+
+                if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType))) {    //Ignore unsupported types
+                    addSuppressAttribute = true;
+                    code.EndLine();
+                    code.Indent(2).Append("[SuppressColumnTypeValidation] --> ***PLEASE_CHECK_UNSUPPORTED_TYPE***").EndLine();
+                }
                 count++;
                 code.Indent(2).Append($"public {columnClass}<{columnTypeName}> {columnName} {{ get; }}").EndLine();
+
+                if(addSuppressAttribute) {
+                    code.EndLine();
+                }
 
                 string columnLengthParameter = string.Empty;
 
