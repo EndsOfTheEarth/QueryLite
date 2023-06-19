@@ -52,6 +52,9 @@ namespace QueryLite {
     /// </summary>
     public interface IUnsupportedType { }
 
+    /// <summary>
+    /// This is a place older interface to indicate that the Sql Server Geography type is unsupported by Query Lite.
+    /// </summary>
     public interface IGeography_UnsupportedType : IUnsupportedType { }
 
     public sealed class PrimaryKey {
