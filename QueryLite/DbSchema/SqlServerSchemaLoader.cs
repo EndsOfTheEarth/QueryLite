@@ -28,6 +28,9 @@ using System.Collections.Generic;
 
 namespace QueryLite.DbSchema {
 
+    using TableColumnKey = Key<StringKey<ISchemaName>, StringKey<ITableName>, StringKey<IColumnName>>;
+    using TableKey = Key<StringKey<ISchemaName>, StringKey<ITableName>>;
+
     public sealed class SqlServerSchemaLoader {
 
         public sealed class COLUMNPROPERTY : NullableFunction<int> {
@@ -50,7 +53,7 @@ namespace QueryLite.DbSchema {
         public static List<DatabaseTable> LoadTables(IDatabase database) {
 
             List<DatabaseTable> tableList = new List<DatabaseTable>();
-            Dictionary<StringKey<ITableName>, DatabaseTable> tableLookup = new Dictionary<StringKey<ITableName>, DatabaseTable>();
+            Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
             Dictionary<string, Type?> typelookup = new Dictionary<string, Type?>();
 
             /*
@@ -79,10 +82,12 @@ namespace QueryLite.DbSchema {
 
                 var row = result.Rows[index];
 
-                if(!tableLookup.TryGetValue(row.TABLE_NAME, out DatabaseTable? databaseTable)) {
+                TableKey tableKey = new TableKey(row.TABLE_SCHEMA, row.TABLE_NAME);
+
+                if(!tableLookup.TryGetValue(tableKey, out DatabaseTable? databaseTable)) {
                     databaseTable = new DatabaseTable(schema: row.TABLE_SCHEMA, tableName: row.TABLE_NAME, isView: row.TABLE_TYPE == "VIEW");
                     tableList.Add(databaseTable);
-                    tableLookup.Add(databaseTable.TableName, databaseTable);
+                    tableLookup.Add(tableKey, databaseTable);
                 }
 
                 ColumnsRow columnRow = row.Column;
@@ -309,56 +314,6 @@ namespace QueryLite.DbSchema {
             }
         }
 
-        private sealed class TableKey {
-
-            private readonly StringKey<ISchemaName> SchemaName;
-            private readonly StringKey<ITableName> TableName;
-
-            public TableKey(StringKey<ISchemaName> schemaName, StringKey<ITableName> tableName) {
-                SchemaName = schemaName;
-                TableName = tableName;
-            }
-
-            public override bool Equals(object? obj) {
-
-                if(obj is TableKey key) {
-                    return SchemaName.Value == key.SchemaName.Value && TableName.Value == key.TableName.Value;
-                }
-                else {
-                    return false;
-                }
-            }
-            public override int GetHashCode() {
-                return (SchemaName.Value + "^" + TableName.Value).GetHashCode();
-            }
-        }
-
-        private sealed class TableColumnKey {
-
-            private readonly StringKey<ISchemaName> SchemaName;
-            private readonly StringKey<ITableName> TableName;
-            private readonly StringKey<IColumnName> ColumnName;
-
-            public TableColumnKey(StringKey<ISchemaName> schemaName, StringKey<ITableName> tableName, StringKey<IColumnName> columnName) {
-                SchemaName = schemaName;
-                TableName = tableName;
-                ColumnName = columnName;
-            }
-
-            public override bool Equals(object? obj) {
-
-                if(obj is TableColumnKey key) {
-                    return SchemaName.Value == key.SchemaName.Value && TableName.Value == key.TableName.Value && ColumnName.Value == key.ColumnName.Value;
-                }
-                else {
-                    return false;
-                }
-            }
-            public override int GetHashCode() {
-                return (SchemaName.Value + "^" + TableName.Value + "^" + ColumnName.Value).GetHashCode();
-            }
-        }
-
         private sealed class ForeignK {
 
             private readonly StringKey<ISchemaName> SchemaName;
@@ -410,6 +365,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("bit", typeof(Bit));
             _Lookup.Add("varbinary", typeof(byte[]));
             _Lookup.Add("datetime", typeof(DateTime));
+            _Lookup.Add("datetime2", typeof(DateTime));
             _Lookup.Add("smalldatetime", typeof(DateTime));
             _Lookup.Add("datetimeoffset", typeof(DateTimeOffset));
             _Lookup.Add("date", typeof(DateOnly));
