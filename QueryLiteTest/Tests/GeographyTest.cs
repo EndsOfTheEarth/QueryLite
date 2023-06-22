@@ -1,9 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 using QueryLite;
 using QueryLite.Databases.Functions;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLiteTest.Tables;
 using System;
+using System.Runtime.Intrinsics.Arm;
 
 namespace QueryLiteTest.Tests {
 
@@ -50,12 +52,21 @@ namespace QueryLiteTest.Tests {
 
         [TestMethod]
         public void TestGeographyFunctionsWithoutParams() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+                return;
+            }
+
             Settings.UseParameters = false;
             TestGeographyFunctions();
         }
 
         [TestMethod]
         public void TestGeographyFunctionsWithParams() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+                return;
+            }
 
             try {
 
@@ -91,12 +102,21 @@ namespace QueryLiteTest.Tests {
 
             GeographyPoint geographyPoint = new GeographyPoint(latitude: 47.65100, longitude: -122.34900);
             STDistance distance = new STDistance(table.Geography, geographyPoint);
+            STAsBinary stAsBinary = new STAsBinary(table.Geography);
+            STAsText stAsText = new STAsText(table.Geography);
+
+            Longitude longitude = new Longitude(table.Geography);
+            Latitude latitude = new Latitude(table.Geography);
 
             var result = Query
                 .Select(
                     row => new {
                         Guid = row.Get(table.Guid),
-                        Distance = row.Get(distance)
+                        Distance = row.Get(distance),
+                        Binary = row.Get(stAsBinary),
+                        Text = row.Get(stAsText),
+                        Longitude = row.Get(longitude),
+                        Latitude = row.Get(latitude)
                     }
                 )
                 .From(table)
@@ -109,16 +129,29 @@ namespace QueryLiteTest.Tests {
 
             Assert.AreEqual(row.Guid, guid);
             Assert.AreEqual(row.Distance, 0);
+            Assert.AreEqual(BitConverter.ToString(row.Binary!).Replace("-", ""), "01010000007593180456965EC017D9CEF753D34740");
+            Assert.AreEqual(row.Text, "POINT (-122.349 47.651)");
+            Assert.AreEqual(row.Longitude, -122.349);
+            Assert.AreEqual(row.Latitude, 47.651);
         }
 
         [TestMethod]
         public void TestGeographyDistanceWithoutParams() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+                return;
+            }
+
             Settings.UseParameters = false;
             TestGeographyDistance();
         }
 
         [TestMethod]
         public void TestGeographyDistanceWithParams() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+                return;
+            }
 
             try {
 
@@ -174,25 +207,34 @@ namespace QueryLiteTest.Tests {
         }
 
         [TestMethod]
-        public void TestSTContainsWithoutParams() {
+        public void TestSTFunctionsWithoutParams() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+                return;
+            }
+
             Settings.UseParameters = false;
-            TestSTContains();
+            TestSTFunctions();
         }
 
         [TestMethod]
-        public void TestSTContainsWithParams() {
+        public void TestSTFunctionsWithParams() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+                return;
+            }
 
             try {
 
                 Settings.UseParameters = true;
-                TestSTContains();
+                TestSTFunctions();
             }
             finally {
                 Settings.UseParameters = false;
             }
         }
 
-        private void TestSTContains() {
+        private void TestSTFunctions() {
 
             GeoTestTable table = GeoTestTable.Instance;
 
@@ -217,12 +259,15 @@ namespace QueryLiteTest.Tests {
             STContains stContainsA = new STContains(table.Geography, new GeographyPoint(latitude: 46.893985, longitude: -121.703796));
             STContains stContainsB = new STContains(table.Geography, new GeographyPoint(latitude: 47.65100, longitude: -122.34900));
 
+            STArea stArea = new STArea(table.Geography);
+
             var result = Query
                 .Select(
                     row => new {
                         Guid = row.Get(table.Guid),
                         ContainsA = row.Get(stContainsA),
-                        ContainsB = row.Get(stContainsB)
+                        ContainsB = row.Get(stContainsB),
+                        Area = row.Get(stArea)
                     }
                 )
                 .From(table)
@@ -236,6 +281,7 @@ namespace QueryLiteTest.Tests {
 
             Assert.AreEqual(row.ContainsA, Bit.TRUE);
             Assert.AreEqual(row.ContainsB, Bit.FALSE);
+            Assert.AreEqual(row.Area, 45023599772.742432);
         }
     }
 }
