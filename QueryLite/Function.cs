@@ -34,7 +34,7 @@ namespace QueryLite {
         string Name { get; }
 
         /// <summary>
-        /// Returns the function sql. This is used during sql query deneration
+        /// Returns the function sql. This is used during sql query generation
         /// </summary>
         /// <param name="database"></param>
         /// <param name="useAlias">Should table aliases be included in sql</param>

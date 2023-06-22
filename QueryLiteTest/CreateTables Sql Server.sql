@@ -35,3 +35,11 @@ CREATE TABLE Child (
 	CONSTRAINT fk_Child_Parent FOREIGN KEY(ParentId) REFERENCES Parent(Id),
 	CONSTRAINT fk_Child_Parent_Id2 FOREIGN KEY(ParentId) REFERENCES Parent(Id2)
 );
+
+CREATE TABLE GeoTest (
+
+	gtGuid UNIQUEIDENTIFIER NOT NULL,
+	gtGeography GEOGRAPHY NOT NULL,
+
+	CONSTRAINT pk_GeoTest PRIMARY KEY(gtGuid)
+);

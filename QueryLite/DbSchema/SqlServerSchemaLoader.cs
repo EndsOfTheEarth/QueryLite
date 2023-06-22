@@ -375,7 +375,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("datetimeoffset", typeof(DateTimeOffset));
             _Lookup.Add("date", typeof(DateOnly));
             _Lookup.Add("time", typeof(TimeOnly));
-            _Lookup.Add("geography", typeof(IGeography_UnsupportedType));
+            _Lookup.Add("geography", typeof(IGeography));
         }
         public static Type? GetDotNetType(string typeName) {
 

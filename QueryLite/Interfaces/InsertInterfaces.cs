@@ -147,6 +147,8 @@ namespace QueryLite {
 
         public ISetValuesCollector Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value);
 
+        public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value);
+
         public ISetValuesCollector Set(AColumn<byte> column, AFunction<byte> value);
 
         public ISetValuesCollector Set(AColumn<byte[]> column, AFunction<byte[]> value);

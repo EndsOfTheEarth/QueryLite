@@ -27,7 +27,7 @@ using System.Collections.Generic;
 namespace QueryLite {
 
     /// <summary>
-    /// Description attribute. Used to add human readable descriptions to table classes and table columns. These attrubutes are used to auto generate schema documentation.
+    /// Description attribute. Used to add human readable descriptions to table classes and table columns. These attributes are used to auto generate schema documentation.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public sealed class DescriptionAttribute : Attribute {
@@ -53,9 +53,9 @@ namespace QueryLite {
     public interface IUnsupportedType { }
 
     /// <summary>
-    /// This is a place older interface to indicate that the Sql Server Geography type is unsupported by Query Lite.
+    /// Geography type. Note: This cannot be queried directly but can be used with geography sql functions
     /// </summary>
-    public interface IGeography_UnsupportedType : IUnsupportedType { }
+    public interface IGeography { }
 
     public sealed class PrimaryKey {
 

@@ -590,6 +590,26 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetByte(_ordinal) == 1;
         }
 
+        public Bit Get(Function<Bit> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return Bit.ValueOf(false);
+            }
+            return Bit.ValueOf(_reader.GetBoolean(_ordinal));
+        }
+
+        public Bit? Get(NullableFunction<Bit> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Bit.ValueOf(_reader.GetBoolean(_ordinal));
+        }
+
         public short Get(Function<short> function) {
 
             _ordinal++;

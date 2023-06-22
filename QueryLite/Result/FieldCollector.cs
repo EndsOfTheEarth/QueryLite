@@ -297,6 +297,16 @@ namespace QueryLite {
             return default;
         }
 
+        public Bit Get(Function<Bit> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public Bit? Get(NullableFunction<Bit> column) {
+            Fields.Add(column);
+            return default;
+        }
+
         public short Get(Function<short> column) {
             Fields.Add(column);
             return default;

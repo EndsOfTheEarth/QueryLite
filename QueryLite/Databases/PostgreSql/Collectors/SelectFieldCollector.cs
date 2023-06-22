@@ -296,6 +296,14 @@ namespace QueryLite.Databases.PostgreSql {
             return Add(column);
         }
 
+        public Bit Get(Function<Bit> column) {
+            return Add(column);
+        }
+
+        public Bit? Get(NullableFunction<Bit> column) {
+            return Add(column);
+        }
+
         public short Get(Function<short> column) {
             return Add(column);
         }

@@ -73,6 +73,30 @@ namespace QueryLite.Databases {
                 sql.Append(value);
             }
         }
+
+        public static string EncloseTableName(ITable table) {
+
+            string value = table.TableName;
+
+            if(table.Enclose || value.Contains(' ')) {
+                value = $"[{value}]";
+            }
+            return value;
+        }
+
+        public static string EncloseColumnName(IColumn column) {
+
+            string value = column.ColumnName;
+
+            if(column.Enclose || value.Contains(' ')) {
+                value = $"[{value}]";
+            }
+            return value;
+        }
+
+        public static string EncloseSchemaName(string value) {
+            return value.Contains(' ') ? $"[{value}]" : value;
+        }
     }
 
     /// <summary>
