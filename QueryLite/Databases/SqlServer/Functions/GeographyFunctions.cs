@@ -33,7 +33,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
             Column = column;
         }
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return useAlias ? $"{Column.Table.Alias}.{Column.ColumnName}.Long" : $"{Column.ColumnName}.Long";
+            return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column)}.Long" : $"{SqlHelper.EncloseColumnName(Column)}.Long";
         }
     }
 
@@ -45,7 +45,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
             Column = column;
         }
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return useAlias ? $"{Column.Table.Alias}.{Column.ColumnName}.Lat" : $"{Column.ColumnName}.Lat";
+            return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column)}.Lat" : $"{SqlHelper.EncloseColumnName(Column)}.Lat";
         }
     }
 
@@ -57,7 +57,14 @@ namespace QueryLite.Databases.SqlServer.Functions {
             KwText = kwtText;
         }
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::Parse('{Helpers.EscapeForSql(KwText)}')";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                return $"geography::Parse({kwtParam})";
+            }
+            else {
+                return $"geography::Parse('{Helpers.EscapeForSql(KwText)}')";
+            }
         }
     }
 }

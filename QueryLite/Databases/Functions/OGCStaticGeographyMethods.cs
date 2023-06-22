@@ -39,7 +39,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STGeomFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STGeomFromText({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STGeomFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+            }
         }
     }
 
@@ -54,7 +62,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STPointFromText({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+            }
         }
     }
 
@@ -69,7 +85,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STLineFromText({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+            }
         }
     }
 
@@ -84,7 +108,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STPolyFromText({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+            }
         }
     }
 
@@ -99,7 +131,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STMPointFromText({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STMPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+            }
         }
     }
 
@@ -114,7 +154,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STMLineFromText({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STMLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+            }
         }
     }
 
@@ -129,7 +177,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STMPolyFromText({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STMPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+            }
         }
     }
 
@@ -144,7 +200,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STGeomCollFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STGeomCollFromText({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STGeomCollFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
+            }
         }
     }
 
@@ -159,7 +223,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STGeomCollFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STGeomCollFromWKB({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STGeomCollFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+            }
         }
     }
 
@@ -174,7 +246,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STGeomFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STGeomFromWKB({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STGeomFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+            }
         }
     }
 
@@ -189,7 +269,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STPointFromWKB({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+            }
         }
     }
 
@@ -204,7 +292,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STLineFromWKB({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+            }
         }
     }
 
@@ -219,7 +315,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STPolyFromWKB({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+            }
         }
     }
 
@@ -234,7 +338,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STMPointFromWKB({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STMPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+            }
         }
     }
 
@@ -249,7 +361,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STMLineFromWKB({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STMLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+            }
         }
     }
 
@@ -264,7 +384,15 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+
+            if(parameters != null) {
+                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                return $"geography::STMPolyFromWKB({kwtParam},{sridParam})";
+            }
+            else {
+                return $"geography::STMPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+            }
         }
     }
 }

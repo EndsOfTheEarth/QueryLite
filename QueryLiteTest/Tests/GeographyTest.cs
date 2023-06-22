@@ -47,8 +47,28 @@ namespace QueryLiteTest.Tests {
             Settings.UseParameters = false;
         }
 
+
         [TestMethod]
-        public void TestGeographyFunctions() {
+        public void TestGeographyFunctionsWithoutParams() {
+            Settings.UseParameters = false;
+            TestGeographyFunctions();
+        }
+
+        [TestMethod]
+        public void TestGeographyFunctionsWithParams() {
+
+            try {
+
+                Settings.UseParameters = true;
+
+                TestGeographyFunctions();
+            }
+            finally {
+                Settings.UseParameters = false;
+            }
+        }
+
+        private void TestGeographyFunctions() {
 
             GeoTestTable table = GeoTestTable.Instance;
 
@@ -92,7 +112,25 @@ namespace QueryLiteTest.Tests {
         }
 
         [TestMethod]
-        public void TestGeographyDistance() {
+        public void TestGeographyDistanceWithoutParams() {
+            Settings.UseParameters = false;
+            TestGeographyDistance();
+        }
+
+        [TestMethod]
+        public void TestGeographyDistanceWithParams() {
+
+            try {
+
+                Settings.UseParameters = true;
+                TestGeographyDistance();
+            }
+            finally {
+                Settings.UseParameters = false;
+            }
+        }
+
+        private void TestGeographyDistance() {
 
             GeoTestTable table = GeoTestTable.Instance;
 
@@ -131,12 +169,30 @@ namespace QueryLiteTest.Tests {
             var row = result.Rows[0];
 
             Assert.AreEqual(row.Guid, guid);
-            
+
             Assert.AreEqual(row.Distance, 555.94977427172694);
         }
 
         [TestMethod]
-        public void TestSTContains() {
+        public void TestSTContainsWithoutParams() {
+            Settings.UseParameters = false;
+            TestSTContains();
+        }
+
+        [TestMethod]
+        public void TestSTContainsWithParams() {
+
+            try {
+
+                Settings.UseParameters = true;
+                TestSTContains();
+            }
+            finally {
+                Settings.UseParameters = false;
+            }
+        }
+
+        private void TestSTContains() {
 
             GeoTestTable table = GeoTestTable.Instance;
 
@@ -181,12 +237,5 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(row.ContainsA, Bit.TRUE);
             Assert.AreEqual(row.ContainsB, Bit.FALSE);
         }
-        /*
-            DECLARE @g geography;  
-            DECLARE @h geography;  
-            SET @g = geography::Parse('CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (-122.200928 47.454094, -122.810669 47.00648, -122.942505 46.687131, -121.14624 45.786679, -119.119263 46.183634), (-119.119263 46.183634, -119.273071 47.107523, -120.640869 47.569114, -122.200928 47.454094)))');  
-            SET @h = geography::Parse('POINT(-121.703796 46.893985)');
-            SELECT @g.STContains(@h);
-        */
     }
 }

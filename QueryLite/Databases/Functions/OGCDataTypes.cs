@@ -70,7 +70,18 @@ namespace QueryLite.Databases.Functions {
             SRID = srid;
         }
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::Point({Latitude},{Longitude},{SRID})";
+
+            if(parameters != null) {
+
+                parameters.AddParameter(database, typeof(double), Latitude, out string latitudeParam);
+                parameters.AddParameter(database, typeof(double), Longitude, out string longitudeParam);
+                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+
+                return $"geography::Point({latitudeParam},{longitudeParam},{sridParam})";
+            }
+            else {
+                return $"geography::Point({Latitude},{Longitude},{SRID})";
+            }
         }
     }
 
@@ -89,7 +100,7 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(Column is not null) {
-                return useAlias ? $"{Column.Table.Alias}.{Column.ColumnName}.STArea()" : $"{Column.ColumnName}.STArea()";
+                return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column)}.STArea()" : $"{SqlHelper.EncloseColumnName(Column)}.STArea()";
             }
             else {
                 return $"{OCGType!.GetSql(database, useAlias: useAlias, parameters)}.STArea()";
@@ -119,10 +130,10 @@ namespace QueryLite.Databases.Functions {
             if(ColumnB is not null) {
 
                 if(useAlias) {
-                    sql = $"{ColumnA.Table.Alias}.{ColumnA.ColumnName}.STEquals({ColumnB.Table.Alias}.{ColumnB.ColumnName})";
+                    sql = $"{ColumnA.Table.Alias}.{SqlHelper.EncloseColumnName(ColumnA)}.STEquals({ColumnB.Table.Alias}.{SqlHelper.EncloseColumnName(ColumnB)})";
                 }
                 else {
-                    sql = $"{ColumnA.ColumnName}.STEquals({ColumnB.ColumnName})";
+                    sql = $"{SqlHelper.EncloseColumnName(ColumnA)}.STEquals({SqlHelper.EncloseColumnName(ColumnB)})";
                 }
             }
             else {
@@ -130,10 +141,10 @@ namespace QueryLite.Databases.Functions {
                 string toPointSql = ToGeography!.GetSql(database, useAlias: useAlias, parameters);
 
                 if(useAlias) {
-                    sql = $"{ColumnA.Table.Alias}.{ColumnA.ColumnName}.STEquals({toPointSql})";
+                    sql = $"{ColumnA.Table.Alias}.{SqlHelper.EncloseColumnName(ColumnA)}.STEquals({toPointSql})";
                 }
                 else {
-                    sql = $"{ColumnA.ColumnName}.STEquals({toPointSql})";
+                    sql = $"{SqlHelper.EncloseColumnName(ColumnA)}.STEquals({toPointSql})";
                 }
             }
             return sql;
@@ -155,7 +166,7 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(Column is not null) {
-                return useAlias ? $"{Column.Table.Alias}.{Column.ColumnName}.STAsBinary()" : $"{Column.ColumnName}.STAsBinary()";
+                return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column)}.STAsBinary()" : $"{SqlHelper.EncloseColumnName(Column)}.STAsBinary()";
             }
             else {
                 return $"{OCGType!.GetSql(database, useAlias: useAlias, parameters)}.STAsBinary()";
@@ -178,7 +189,7 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(Column is not null) {
-                return useAlias ? $"{Column.Table.Alias}.{Column.ColumnName}.STAsText()" : $"{Column.ColumnName}.STAsText()";
+                return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column)}.STAsText()" : $"{SqlHelper.EncloseColumnName(Column)}.STAsText()";
             }
             else {
                 return $"{OCGType!.GetSql(database, useAlias: useAlias, parameters)}.STAsText()";
@@ -208,10 +219,10 @@ namespace QueryLite.Databases.Functions {
             if(ColumnB is not null) {
 
                 if(useAlias) {
-                    sql = $"{ColumnA.Table.Alias}.{ColumnA.ColumnName}.STContains({ColumnB.Table.Alias}.{ColumnB.ColumnName})";
+                    sql = $"{ColumnA.Table.Alias}.{SqlHelper.EncloseColumnName(ColumnA)}.STContains({ColumnB.Table.Alias}.{SqlHelper.EncloseColumnName(ColumnB)})";
                 }
                 else {
-                    sql = $"{ColumnA.ColumnName}.STContains({ColumnB.ColumnName})";
+                    sql = $"{SqlHelper.EncloseColumnName(ColumnA)}.STContains({SqlHelper.EncloseColumnName(ColumnB)})";
                 }
             }
             else {
@@ -219,10 +230,10 @@ namespace QueryLite.Databases.Functions {
                 string toPointSql = ToGeography!.GetSql(database, useAlias: useAlias, parameters);
 
                 if(useAlias) {
-                    sql = $"{ColumnA.Table.Alias}.{ColumnA.ColumnName}.STContains({toPointSql})";
+                    sql = $"{ColumnA.Table.Alias}.{SqlHelper.EncloseColumnName(ColumnA)}.STContains({toPointSql})";
                 }
                 else {
-                    sql = $"{ColumnA.ColumnName}.STContains({toPointSql})";
+                    sql = $"{SqlHelper.EncloseColumnName(ColumnA)}.STContains({toPointSql})";
                 }
             }
             return sql;
@@ -255,10 +266,10 @@ namespace QueryLite.Databases.Functions {
             if(ToColumn is not null) {
 
                 if(useAlias) {
-                    sql = $"{FromColumn.Table.Alias}.{FromColumn.ColumnName}.STDistance({ToColumn.Table.Alias}.{ToColumn.ColumnName})";
+                    sql = $"{FromColumn.Table.Alias}.{SqlHelper.EncloseColumnName(FromColumn)}.STDistance({ToColumn.Table.Alias}.{SqlHelper.EncloseColumnName(ToColumn)})";
                 }
                 else {
-                    sql = $"{FromColumn.ColumnName}.STDistance({ToColumn.ColumnName})";
+                    sql = $"{SqlHelper.EncloseColumnName(FromColumn)}.STDistance({SqlHelper.EncloseColumnName(ToColumn)})";
                 }
             }
             else {
@@ -266,10 +277,10 @@ namespace QueryLite.Databases.Functions {
                 string toPointSql = ToGeography!.GetSql(database, useAlias: useAlias, parameters);
 
                 if(useAlias) {
-                    sql = $"{FromColumn.Table.Alias}.{FromColumn.ColumnName}.STDistance({toPointSql})";
+                    sql = $"{FromColumn.Table.Alias}.{SqlHelper.EncloseColumnName(FromColumn)}.STDistance({toPointSql})";
                 }
                 else {
-                    sql = $"{FromColumn.ColumnName}.STDistance({toPointSql})";
+                    sql = $"{SqlHelper.EncloseColumnName(FromColumn)}.STDistance({toPointSql})";
                 }
             }
             return sql;
