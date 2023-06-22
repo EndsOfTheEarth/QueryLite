@@ -30,8 +30,9 @@
 - [Functions](#functions)
 - [Custom Functions](#custom-functions)
 - [Supported Data Types](#supported-data-types)
-- [Key Columns](#key-columns)
-- [Not Supported Data Types](#not-supported-data-types)
+   - [Key Columns](#key-columns)
+   - [Geography Types](#geography-types)
+   - [Not Supported Data Types](#not-supported-data-types)
 - [Transaction Isolation Levels](#transaction-isolation-levels)
 - [Query Builder Caching](#query-builder-caching)
 - [Executing Custom SQL](#executing-custom-sql)
@@ -829,6 +830,125 @@ public sealed class ShipperTable : ATable {
         Phone = new NullableColumn<string>(this, columnName: "Phone", length: 24);
     }
 }
+```
+
+## Geography Types
+
+Geography types are partially supported. These are complex data types that cannot be returned directly via a query. Instead, a range of functions are used to return infomation about the various geography types.
+
+**Note: Currently Geography functions have only been implemented for Sql Server. Some functions may work on PostgreSql but others are Sql Server Only.**
+
+A custom function can be created if you require one that is not implemented by this library. Tip: View the source code and use the implementation of these functions as a guide on how to create a new function.
+
+These are the geography functions currently implemented:
+
+| Function           | Sql |
+| ------------------ | --- |
+| GeographyPoint | `geography::Point(...)` |
+| STArea | `.STArea()` |
+| STEquals | `.STEquals(...)` |
+| STAsBinary | `.STAsBinary()` |
+| STAsText | `.STAsText()` |
+| STContains | `.STContains(...)` |
+| STDistance | `.STDistance(...)` |
+| STGeomFromText | `geography::STGeomFromText(...)` |
+| STPointFromText | `geography::STPointFromText(...)` |
+| STLineFromText | `geography::STLineFromText(...)` |
+| STPolyFromText | `geography::STPolyFromText(...)` |
+| STMPointFromText | `geography::STMPointFromText(...)` |
+| STMLineFromText | `geography::STMLineFromText(...)` |
+| STMPolyFromText | `geography::STMPolyFromText(...)` |
+| STGeomCollFromText | `geography::STGeomCollFromText(...)` |
+| STGeomCollFromWKB | `geography::STGeomCollFromWKB(...)` |
+| STGeomFromWKB | `geography::STGeomFromWKB(...)` |
+| STPointFromWKB | `geography::STPointFromWKB(...)` |
+| STLineFromWKB | `geography::STLineFromWKB(...)` |
+| STPolyFromWKB | `geography::STPolyFromWKB(...)` |
+| STMPointFromWKB | `geography::STMPointFromWKB(...)` |
+| STMLineFromWKB | `geography::STMLineFromWKB(...)` |
+| STMPolyFromWKB | `geography::STMPolyFromWKB(...)` |
+| Longitude | `.Long` |
+| Latitude | `.Lat` |
+| GeographyParse | `geography::Parse(...)` |
+
+Here is a code example querying the database with a subset of the geography functions listed above:
+
+```C#
+GeoTestTable table = GeoTestTable.Instance;
+
+//Define a 'STPointFromText(...)' sql function
+STPointFromText stPointFromText = new STPointFromText(kwText: "POINT(-122.34900 47.65100)");
+
+GuidKey<IGeoTest> guid = GuidKey<IGeoTest>.ValueOf(Guid.NewGuid());
+
+using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+    //Insert a record into the database
+    NonQueryResult insertResult = Query
+        .Insert(table)
+        .Values(values => values
+            .Set(table.Guid, guid)
+            .Set(table.Geography, stPointFromText)
+        )
+        .Execute(transaction);
+    /*
+        INSERT INTO dbo.GeoTest(gtGuid,gtGeography) VALUES('f876dc6c-4ada-48cd-ade3-e61323d2b416',geography::STPointFromText('POINT(-122.34900 47.65100)', 4326))
+    */
+    transaction.Commit();
+}
+
+//Define a 'geography::Point' sql function
+GeographyPoint geographyPoint = new GeographyPoint(latitude: 47.65100, longitude: -122.34900);
+
+//Define a 'STDistance()' sql function
+STDistance distance = new STDistance(table.Geography, geographyPoint);
+
+//Define a 'STAsBinary()' sql function
+STAsBinary stAsBinary = new STAsBinary(table.Geography);
+
+//Define a 'STAsText()' sql function
+STAsText stAsText = new STAsText(table.Geography);
+
+//Define a '.Long' sql property
+Longitude longitude = new Longitude(table.Geography);
+
+//Define a '.Lat' sql property
+Latitude latitude = new Latitude(table.Geography);
+
+var result = Query
+    .Select(
+        row => new {
+            Guid = row.Get(table.Guid),
+            Distance = row.Get(distance),
+            Binary = row.Get(stAsBinary),
+            Text = row.Get(stAsText),
+            Longitude = row.Get(longitude),
+            Latitude = row.Get(latitude)
+        }
+    )
+    .From(table)
+    .Where(new STEquals(table.Geography, geographyPoint) == 1)
+    .Execute(TestDatabase.Database);
+/*
+    SELECT gtGuid,
+        gtGeography.STDistance(geography::Point(47.651,-122.349,4326)),
+        gtGeography.STAsBinary(),
+        gtGeography.STAsText(),
+        gtGeography.Long,
+        gtGeography.Lat
+    FROM dbo.GeoTest
+    WHERE gtGeography.STEquals(geography::Point(47.651,-122.349,4326)) = 1
+*/
+Assert.AreEqual(result.Rows.Count, 1);
+
+var row = result.Rows[0];
+
+Assert.AreEqual(row.Guid, guid);
+Assert.AreEqual(row.Distance, 0);
+Assert.AreEqual(BitConverter.ToString(row.Binary!).Replace("-", ""), "01010000007593180456965EC017D9CEF753D34740");
+Assert.AreEqual(row.Text, "POINT (-122.349 47.651)");
+Assert.AreEqual(row.Longitude, -122.349);
+Assert.AreEqual(row.Latitude, 47.651);
 ```
 
 ## Not Supported Data Types

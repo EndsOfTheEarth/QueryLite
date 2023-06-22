@@ -1,11 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 using QueryLite;
 using QueryLite.Databases.Functions;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLiteTest.Tables;
 using System;
-using System.Runtime.Intrinsics.Arm;
 
 namespace QueryLiteTest.Tests {
 
@@ -243,7 +241,7 @@ namespace QueryLiteTest.Tests {
             GeoTestTable table = GeoTestTable.Instance;
 
             //Sql server only
-            Geography_Parse geography_Parse = new Geography_Parse(kwtText: "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (-122.200928 47.454094, -122.810669 47.00648, -122.942505 46.687131, -121.14624 45.786679, -119.119263 46.183634), (-119.119263 46.183634, -119.273071 47.107523, -120.640869 47.569114, -122.200928 47.454094)))");
+            GeographyParse geography_Parse = new GeographyParse(kwtText: "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (-122.200928 47.454094, -122.810669 47.00648, -122.942505 46.687131, -121.14624 45.786679, -119.119263 46.183634), (-119.119263 46.183634, -119.273071 47.107523, -120.640869 47.569114, -122.200928 47.454094)))");
 
             GuidKey<IGeoTest> guid = GuidKey<IGeoTest>.ValueOf(Guid.NewGuid());
 

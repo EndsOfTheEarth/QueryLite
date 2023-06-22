@@ -49,11 +49,11 @@ namespace QueryLite.Databases.SqlServer.Functions {
         }
     }
 
-    public sealed class Geography_Parse : NullableFunction<IGeography> {
+    public sealed class GeographyParse : NullableFunction<IGeography> {
 
         public string KwText { get; }
 
-        public Geography_Parse(string kwtText) : base(name: "geography::Parse") {
+        public GeographyParse(string kwtText) : base(name: "geography::Parse") {
             KwText = kwtText;
         }
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
