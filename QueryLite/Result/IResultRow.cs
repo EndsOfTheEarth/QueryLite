@@ -107,6 +107,9 @@ namespace QueryLite {
         public bool Get(Function<bool> column);
         public bool? Get(NullableFunction<bool> column);
 
+        public Bit Get(Function<Bit> column);
+        public Bit? Get(NullableFunction<Bit> column);
+
         public short Get(Function<short> column);
         public short? Get(NullableFunction<short> column);
 

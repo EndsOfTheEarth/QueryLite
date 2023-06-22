@@ -98,7 +98,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return this;
         }
 
-        private ISetValuesCollector AddFunction(IColumn column, NpgsqlDbType dbType, IFunction function) {
+        private ISetValuesCollector AddFunction(IColumn column, IFunction function) {
 
             if(_collectorMode == CollectorMode.Insert) {
 
@@ -336,67 +336,71 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector Set(AColumn<string> column, AFunction<string> value) {
-            return AddFunction(column, NpgsqlDbType.Varchar, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<Guid> column, AFunction<Guid> value) {
-            return AddFunction(column, NpgsqlDbType.Unknown, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<bool> column, AFunction<bool> value) {
-            return AddFunction(column, NpgsqlDbType.Boolean, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<Bit> column, AFunction<Bit> value) {
-            return AddFunction(column, NpgsqlDbType.Boolean, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<decimal> column, AFunction<decimal> value) {
-            return AddFunction(column, NpgsqlDbType.Numeric, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<short> column, AFunction<short> value) {
-            return AddFunction(column, NpgsqlDbType.Smallint, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<int> column, AFunction<int> value) {
-            return AddFunction(column, NpgsqlDbType.Integer, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<long> column, AFunction<long> value) {
-            return AddFunction(column, NpgsqlDbType.Bigint, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<float> column, AFunction<float> value) {
-            return AddFunction(column, NpgsqlDbType.Real, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<double> column, AFunction<double> value) {
-            return AddFunction(column, NpgsqlDbType.Double, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<TimeOnly> column, AFunction<TimeOnly> value) {
-            return AddFunction(column, NpgsqlDbType.Time, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<DateTime> column, AFunction<DateTime> value) {
-            return AddFunction(column, NpgsqlDbType.Timestamp, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<DateOnly> column, AFunction<DateOnly> value) {
-            return AddFunction(column, NpgsqlDbType.Date, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value) {
-            return AddFunction(column, NpgsqlDbType.TimestampTz, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<byte> column, AFunction<byte> value) {
-            return AddFunction(column, NpgsqlDbType.Smallint, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<byte[]> column, AFunction<byte[]> value) {
-            return AddFunction(column, NpgsqlDbType.Bytea, value);
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value) {
+            return AddFunction(column, value);
         }
     }
 
@@ -791,6 +795,10 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector Set(AColumn<byte[]> column, AFunction<byte[]> value) {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value) {
             return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
         }
     }

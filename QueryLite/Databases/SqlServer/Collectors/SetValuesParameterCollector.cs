@@ -101,7 +101,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return this;
         }
 
-        private ISetValuesCollector AddFunction(IColumn column, SqlDbType dbType, IFunction function) {
+        private ISetValuesCollector AddFunction(IColumn column, IFunction function) {
 
             if(_collectorMode == CollectorMode.Insert) {
 
@@ -343,67 +343,71 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         }
 
         public ISetValuesCollector Set(AColumn<string> column, AFunction<string> value) {
-            return AddFunction(column, SqlDbType.NVarChar, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<Guid> column, AFunction<Guid> value) {
-            return AddFunction(column, SqlDbType.UniqueIdentifier, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<bool> column, AFunction<bool> value) {
-            return AddFunction(column, SqlDbType.Bit, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<Bit> column, AFunction<Bit> value) {
-            return AddFunction(column, SqlDbType.Bit, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<decimal> column, AFunction<decimal> value) {
-            return AddFunction(column, SqlDbType.Decimal, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<short> column, AFunction<short> value) {
-            return AddFunction(column, SqlDbType.SmallInt, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<int> column, AFunction<int> value) {
-            return AddFunction(column, SqlDbType.Int, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<long> column, AFunction<long> value) {
-            return AddFunction(column, SqlDbType.BigInt, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<float> column, AFunction<float> value) {
-            return AddFunction(column, SqlDbType.Real, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<double> column, AFunction<double> value) {
-            return AddFunction(column, SqlDbType.Float, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<TimeOnly> column, AFunction<TimeOnly> value) {
-            return AddFunction(column, SqlDbType.Time, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<DateTime> column, AFunction<DateTime> value) {
-            return AddFunction(column, SqlDbType.DateTime, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<DateOnly> column, AFunction<DateOnly> value) {
-            return AddFunction(column, SqlDbType.Date, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value) {
-            return AddFunction(column, SqlDbType.DateTimeOffset, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<byte> column, AFunction<byte> value) {
-            return AddFunction(column, SqlDbType.SmallInt, value);
+            return AddFunction(column, value);
         }
 
         public ISetValuesCollector Set(AColumn<byte[]> column, AFunction<byte[]> value) {
-            return AddFunction(column, SqlDbType.Binary, value);
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value) {
+            return AddFunction(column, value);
         }
     }
 
@@ -802,6 +806,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         }
 
         public ISetValuesCollector Set(AColumn<byte[]> column, AFunction<byte[]> value) {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value) {
             return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
         }
     }

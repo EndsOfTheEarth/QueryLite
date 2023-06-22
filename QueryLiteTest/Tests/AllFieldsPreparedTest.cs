@@ -199,12 +199,13 @@ namespace QueryLiteTest.Tests {
             List<ITable> tables = new List<ITable>() {
                 AllTypesTable.Instance,
                 ParentTable.Instance,
-                ChildTable.Instance
+                ChildTable.Instance,
+                GeoTestTable.Instance
             };
 
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
-            Assert.AreEqual(result.TableValidation.Count, 3);
+            Assert.AreEqual(result.TableValidation.Count, 4);
 
             foreach(TableValidation val in result.TableValidation) {
 

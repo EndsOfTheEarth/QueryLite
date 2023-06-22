@@ -1,4 +1,26 @@
-﻿
+﻿/*
+ * MIT License
+ *
+ * Copyright (c) 2023 EndsOfTheEarth
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ **/
 namespace QueryLite.Databases.Functions {
 
     public interface IGeographySqlType {
@@ -6,7 +28,7 @@ namespace QueryLite.Databases.Functions {
         internal string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters);
     }
 
-    public sealed class STGeomFromText : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STGeomFromText : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -17,11 +39,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STGeomFromText('{KwText}', {SRID})";
+            return $"geography::STGeomFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
 
-    public sealed class STPointFromText : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STPointFromText : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -32,11 +54,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STPointFromText('{KwText}', {SRID})";
+            return $"geography::STPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
 
-    public sealed class STLineFromText : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STLineFromText : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -47,11 +69,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STLineFromText('{KwText}', {SRID})";
+            return $"geography::STLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
 
-    public sealed class STPolyFromText : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STPolyFromText : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -62,11 +84,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STPolyFromText('{KwText}', {SRID})";
+            return $"geography::STPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
 
-    public sealed class STMPointFromText : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STMPointFromText : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -77,11 +99,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMPointFromText('{KwText}', {SRID})";
+            return $"geography::STMPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
 
-    public sealed class STMLineFromText : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STMLineFromText : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -92,11 +114,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMLineFromText('{KwText}', {SRID})";
+            return $"geography::STMLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
 
-    public sealed class STMPolyFromText : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STMPolyFromText : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -107,11 +129,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMPolyFromText('{KwText}', {SRID})";
+            return $"geography::STMPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
 
-    public sealed class STGeomCollFromText : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STGeomCollFromText : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -122,11 +144,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STGeomCollFromText('{KwText}', {SRID})";
+            return $"geography::STGeomCollFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
 
-    public sealed class STGeomCollFromWKB : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STGeomCollFromWKB : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -137,11 +159,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STGeomCollFromWKB({KwBinary}, {SRID})";
+            return $"geography::STGeomCollFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 
-    public sealed class STGeomFromWKB : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STGeomFromWKB : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -152,11 +174,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STGeomFromWKB({KwBinary}, {SRID})";
+            return $"geography::STGeomFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 
-    public sealed class STPointFromWKB : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STPointFromWKB : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -167,11 +189,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STPointFromWKB({KwBinary}, {SRID})";
+            return $"geography::STPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 
-    public sealed class STLineFromWKB : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STLineFromWKB : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -182,11 +204,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STLineFromWKB({KwBinary}, {SRID})";
+            return $"geography::STLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 
-    public sealed class STPolyFromWKB : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STPolyFromWKB : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -197,11 +219,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STPolyFromWKB({KwBinary}, {SRID})";
+            return $"geography::STPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 
-    public sealed class STMPointFromWKB : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STMPointFromWKB : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -212,11 +234,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMPointFromWKB({KwBinary}, {SRID})";
+            return $"geography::STMPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 
-    public sealed class STMLineFromWKB : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STMLineFromWKB : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -227,11 +249,11 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMLineFromWKB({KwBinary}, {SRID})";
+            return $"geography::STMLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 
-    public sealed class STMPolyFromWKB : NullableFunction<IGeographyType>, IGeographySqlType {
+    public sealed class STMPolyFromWKB : NullableFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -242,7 +264,7 @@ namespace QueryLite.Databases.Functions {
         }
 
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return $"geography::STMPolyFromWKB({KwBinary}, {SRID})";
+            return $"geography::STMPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 }

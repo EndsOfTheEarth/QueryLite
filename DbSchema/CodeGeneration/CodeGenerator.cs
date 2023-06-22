@@ -274,8 +274,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 columnTypeName = columnType;
             }
-            else if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeographyType))) {
-                columnTypeName = $"{nameof(IGeographyType)}";
+            else if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
+                columnTypeName = $"{nameof(IGeography)}";
             }
             else {
                 columnTypeName = columnType;
