@@ -199,13 +199,21 @@ namespace QueryLiteTest.Tests {
             List<ITable> tables = new List<ITable>() {
                 AllTypesTable.Instance,
                 ParentTable.Instance,
-                ChildTable.Instance,
-                GeoTestTable.Instance
+                ChildTable.Instance
             };
+
+            if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
+                tables.Add(GeoTestTable.Instance);
+            }
 
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
-            Assert.AreEqual(result.TableValidation.Count, 4);
+            if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
+                Assert.AreEqual(result.TableValidation.Count, 4);
+            }
+            else {
+                Assert.AreEqual(result.TableValidation.Count, 3);
+            }
 
             foreach(TableValidation val in result.TableValidation) {
 

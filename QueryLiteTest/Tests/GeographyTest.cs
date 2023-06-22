@@ -15,6 +15,10 @@ namespace QueryLiteTest.Tests {
         [TestInitialize]
         public void ClearTable() {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+                return;
+            }
+
             GeoTestTable table = GeoTestTable.Instance;
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
