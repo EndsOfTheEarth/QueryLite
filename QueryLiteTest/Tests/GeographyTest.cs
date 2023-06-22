@@ -110,6 +110,13 @@ namespace QueryLiteTest.Tests {
             Longitude longitude = new Longitude(table.Geography);
             Latitude latitude = new Latitude(table.Geography);
 
+            STAsText stGeomFromTextAsText = new STAsText(new STGeomFromText(kwText: "LINESTRING(-121.360 47.646,-122.343 47.601)"));
+            STAsText stLineFromTextAsText = new STAsText(new STLineFromText(kwText: "LINESTRING(-123.360 47.496,-121.323 47.256)"));
+            STAsText stPolyFromTextAsText = new STAsText(new STPolyFromText(kwText: "POLYGON((-121.358 47.643, -121.348 47.629, -121.348 47.678, -121.358 47.668, -121.358 47.643))"));
+            STAsText stMPointFromText = new STAsText(new STMPointFromText(kwText: "MULTIPOINT((-121.361 46.156), (-121.343 47.444))"));
+            STAsText stMLineFromText = new STAsText(new STMLineFromText(kwText: "MULTILINESTRING ((-121.358 47.653, -121.348 47.649, -121.348 47.658, -121.358 47.658, -121.358 47.653), (-121.357 47.654, -121.357 47.657, -121.349 47.657, -121.349 47.651, -121.357 47.654))"));
+            STAsText stMPolyFromText = new STAsText(new STMPolyFromText(kwText: "MULTIPOLYGON(((-111.228 47.313, -122.348 47.649, -122.358 47.658, -111.228 47.313)), ((-222.341 27.111, -122.341 46.661, -122.351 46.661, -222.341 27.111)))"));
+
             var result = Query
                 .Select(
                     row => new {
@@ -118,7 +125,13 @@ namespace QueryLiteTest.Tests {
                         Binary = row.Get(stAsBinary),
                         Text = row.Get(stAsText),
                         Longitude = row.Get(longitude),
-                        Latitude = row.Get(latitude)
+                        Latitude = row.Get(latitude),
+                        STGeomFromTextAsText = row.Get(stGeomFromTextAsText),
+                        STLineFromTextAsText = row.Get(stLineFromTextAsText),
+                        STPolyFromTextAsText = row.Get(stPolyFromTextAsText),
+                        STMPointFromText = row.Get(stMPointFromText),
+                        STMLineFromText = row.Get(stMLineFromText),
+                        STMPolyFromText = row.Get(stMPolyFromText)
                     }
                 )
                 .From(table)
@@ -135,6 +148,12 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(row.Text, "POINT (-122.349 47.651)");
             Assert.AreEqual(row.Longitude, -122.349);
             Assert.AreEqual(row.Latitude, 47.651);
+            Assert.AreEqual(row.STGeomFromTextAsText, "LINESTRING (-121.36 47.646, -122.343 47.601)");
+            Assert.AreEqual(row.STLineFromTextAsText, "LINESTRING (-123.36 47.496, -121.323 47.256)");
+            Assert.AreEqual(row.STPolyFromTextAsText, "POLYGON ((-121.358 47.643, -121.348 47.629, -121.348 47.678, -121.358 47.668, -121.358 47.643))");
+            Assert.AreEqual(row.STMPointFromText, "MULTIPOINT ((-121.361 46.156), (-121.343 47.444))");
+            Assert.AreEqual(row.STMLineFromText, "MULTILINESTRING ((-121.358 47.653, -121.348 47.649, -121.348 47.658, -121.358 47.658, -121.358 47.653), (-121.357 47.654, -121.357 47.657, -121.349 47.657, -121.349 47.651, -121.357 47.654))");
+            Assert.AreEqual(row.STMPolyFromText, "MULTIPOLYGON (((-111.228 47.313, -122.348 47.649, -122.358 47.658, -111.228 47.313)), ((-222.341 27.111, -122.341 46.661, -122.351 46.661, -222.341 27.111)))");
         }
 
         [TestMethod]
