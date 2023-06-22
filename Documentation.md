@@ -955,7 +955,7 @@ Assert.AreEqual(row.Latitude, 47.651);
 
 Most non-common or custom database types are not supported. If the type can be read in using a basic .net type (e.g. `int`, `string`, `decimal`) in `ado.net` (e.g. `reader.GetString(ordinal)`) then it should work.
 
-Sql server types like `hierarchyid` and `geography` are known to not work.
+Sql server types like `hierarchyid` are known to not work.
 
 
 ## Transaction Isolation Levels
