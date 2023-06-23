@@ -55,6 +55,8 @@ Query Lite is part of a set of personal projects exploring the optimal design fo
 
 **Please Note: Query Lite has not been used in a production environment as of yet and I consider the code to be a beta version. So any testing and feedback is appreciated.**
 
+## Getting Started Guide
+**[Getting Started Guide is found here](GettingStarted.md)**
 ## Documentation
 **[Documentation is found here](Documentation.md)**
 
