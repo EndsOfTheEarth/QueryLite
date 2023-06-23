@@ -3,10 +3,9 @@
 ## Steps
 
 1) Import Nuget Package
-2) Create Database Instance in code
-3) Create Table Definitions (Using Code Generator)
+2) Create Table Definition(s) (Using Code Generator)
+3) Create Database Instance in code
 4) Start Writing Queries
-
 
 ## 1) Import Nuget Package
 
@@ -24,13 +23,14 @@ Run the code generator, enter in your database connection string and click the `
 
 Table definitions are generated when a table is selected. Copy the table definition(s) into your project.
 
+![NorthwindCodeGenerator](https://github.com/EndsOfTheEarth/QueryLite/assets/6175921/f5eaea37-53d5-45eb-8cf6-750256d10c7a)
 
 ## 3) Define A Database Instance
 
+Create a single shared instance of the database. This instance can be cached in the application for queries to share.
 ```C#
 IDatabase database = new SqlServerDatabase(name: "MyDatabase", connectionString: "Server=localhost;Database=MyDatabase;Trusted_Connection=True;");
 ```
-
 
 ## 4) Start Writing Queries
 
