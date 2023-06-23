@@ -46,10 +46,6 @@ namespace QueryLite.Databases.PostgreSql {
 
             SqlHelper.AppendEncloseTableName(sql, template.Table);
 
-            if(useAlias) {
-                sql.Append(" AS ").Append(template.Table.Alias);
-            }
-
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
                 PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql: null, database, CollectorMode.Update, useAlias: useAlias);
@@ -80,7 +76,8 @@ namespace QueryLite.Databases.PostgreSql {
                     sql.Append('.');
                 }
                 SqlHelper.AppendEncloseTableName(sql, template.Table);
-                sql.Append(' ');
+                
+                sql.Append(" AS ").Append(template.Table.Alias);
 
                 foreach(IJoin join in template.Joins) {
 

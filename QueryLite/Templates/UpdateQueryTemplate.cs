@@ -42,7 +42,7 @@ namespace QueryLite {
             Table = table;
         }
 
-        public IUpdateWhere Values(Action<ISetValuesCollector> values) {
+        public IUpdateJoin Values(Action<ISetValuesCollector> values) {
             ValuesCollector = values;
             return this;
         }

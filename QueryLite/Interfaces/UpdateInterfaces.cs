@@ -29,7 +29,7 @@ namespace QueryLite {
 
     public interface IUpdateSet {
 
-        IUpdateWhere Values(Action<ISetValuesCollector> values);
+        IUpdateJoin Values(Action<ISetValuesCollector> values);
     }
 
     public interface IUpdateJoin : IUpdateWhere {
