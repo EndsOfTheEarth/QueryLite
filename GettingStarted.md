@@ -14,7 +14,7 @@ Import the Nuget package `QueryLite.net` into your project. Either by running th
 
 ## 2) Use Code Generator Tool To Create Table Definitions
 
-Download the CodeGenerator.exe tool from the latest QueryLite release. See [https://github.com/EndsOfTheEarth/QueryLite/releases](#https://github.com/EndsOfTheEarth/QueryLite/releases)
+Download the CodeGenerator.exe tool from the latest QueryLite release. See [https://github.com/EndsOfTheEarth/QueryLite/releases](https://github.com/EndsOfTheEarth/QueryLite/releases)
 
 The zip file `CodeGenerator.zip` contains the code generator tool `CodeGenerator.exe` and this can be found under the `Assets` section.
 
