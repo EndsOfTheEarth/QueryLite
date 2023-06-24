@@ -31,36 +31,18 @@ namespace QueryLite.Databases.SqlServer {
 
         string IPreparedDeleteQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
-            if(template.Usings != null) {
-                throw new Exception("Using syntax is not supported by Sql Server");
-            }
-
             parameters = new PreparedParameterList<PARAMETERS>();
 
             StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
-            bool useAlias = template.Joins?.Count != 0;
-
             //
             //  Note: The OUPUT clause changes goes before the 'FROM' clause when using aliasing and after the 'FROM' clause when not
             //
-            if(useAlias) {
+            if(template.FromTables != null) {
 
-                sql.Append("DELETE ").Append(template.Table.Alias);
+                sql.Append("DELETE FROM ").Append(template.Table.Alias);
 
                 GenerateOutputClause(sql, outputFunc);
-
-                sql.Append(" FROM ");
-
-                string schemaName = database.SchemaMap(template.Table.SchemaName);
-
-                if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
-                    sql.Append('.');
-                }
-                SqlHelper.AppendEncloseTableName(sql, template.Table);
-
-                sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
             }
             else {
 
@@ -77,27 +59,40 @@ namespace QueryLite.Databases.SqlServer {
                 GenerateOutputClause(sql, outputFunc);
             }
 
-            if(template.Joins != null) {
+            bool useAlias = template.FromTables != null;
 
-                for(int index = 0; index < template.Joins.Count; index++) {
+            if(template.FromTables != null) {
 
-                    PreparedDeleteJoin<PARAMETERS> join = template.Joins[index];
+                sql.Append(" FROM ");
 
-                    sql.Append(join.JoinType switch {
-                        JoinType.Join => " JOIN ",
-                        JoinType.LeftJoin => " LEFT JOIN ",
-                        _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
-                    });
+                string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-                    string joinSchemaName = database.SchemaMap(join.Table.SchemaName);
+                if(!string.IsNullOrWhiteSpace(schemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                    sql.Append('.');
+                }
+                SqlHelper.AppendEncloseTableName(sql, template.Table);
 
-                    if(!string.IsNullOrWhiteSpace(joinSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, joinSchemaName);
+                sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
+
+                for(int index = 0; index < template.FromTables.Count; index++) {
+
+                    sql.Append(',');
+
+                    ITable usingTable = template.FromTables[index];
+
+                    string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
+
+                    if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
+                        SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName);
                         sql.Append('.');
                     }
-                    SqlHelper.AppendEncloseTableName(sql, join.Table);
-                    sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
-                    join.Condition.GetSql(sql, database, parameters, useAlias: true);
+
+                    SqlHelper.AppendEncloseTableName(sql, usingTable);
+
+                    sql.Append(' ');
+
+                    SqlHelper.AppendEncloseAlias(sql, usingTable.Alias);
                 }
             }
 

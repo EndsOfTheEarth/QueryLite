@@ -28,39 +28,30 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    public interface IPreparedDeleteUsing<PARAMETERS> : IPreparedDeleteJoin<PARAMETERS> {
+    public interface IPreparedDeleteFrom<PARAMETERS> : IPreparedDeleteNoWhere<PARAMETERS> {
 
         /// <summary>
-        /// Delete using syntax. Please Note: This syntax is only supported by PostgreSql
+        /// Use additional tables in the delete query. Note: The 'From' and 'Using' methods are just aliases for the same action.
         /// </summary>
         /// <param name="tables"></param>
         /// <returns></returns>
-        IPreparedDeleteWhere<PARAMETERS> Using(params ITable[] tables);
+        IPreparedDeleteWhere<PARAMETERS> From(ITable table, params ITable[] tables);
+
+        /// <summary>
+        /// Use additional tables in the delete query. Note: The 'From' and 'Using' methods are just aliases for the same action.
+        /// </summary>
+        /// <param name="tables"></param>
+        /// <returns></returns>
+        IPreparedDeleteWhere<PARAMETERS> Using(ITable table, params ITable[] tables);
     }
-    public interface IPreparedDeleteJoin<PARAMETERS> : IPreparedDeleteWhere<PARAMETERS> {
+
+    public interface IPreparedDeleteNoWhere<PARAMETERS> : IPreparedDeleteWhere<PARAMETERS> {
 
         /// <summary>
-        /// Delete join syntax. Please Note: This syntax is only supported on Sql Server
+        /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used when there is no where clause on a delete query.
         /// </summary>
-        /// <param name="table"></param>
         /// <returns></returns>
-        IPreparedDeleteJoinOn<PARAMETERS> Join(ITable table);
-
-        /// <summary>
-        /// Delete left join syntax. Please Note: This syntax is only supported on Sql Server
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IPreparedDeleteJoinOn<PARAMETERS> LeftJoin(ITable table);
-    }
-    public interface IPreparedDeleteJoinOn<PARAMETERS> {
-
-        /// <summary>
-        /// Join condition
-        /// </summary>
-        /// <param name="on"></param>
-        /// <returns></returns>
-        IPreparedDeleteJoin<PARAMETERS> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on);
+        public IPreparedDeleteBuild<PARAMETERS> NoWhereCondition();
     }
 
     public interface IPreparedDeleteWhere<PARAMETERS> {
@@ -71,37 +62,6 @@ namespace QueryLite {
         /// <param name="condition"></param>
         /// <returns></returns>
         public IPreparedDeleteBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition);
-
-        /// <summary>
-        /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used when there is no where clause on a delete query.
-        /// </summary>
-        /// <returns></returns>
-        public IPreparedDeleteBuild<PARAMETERS> NoWhereCondition();
-    }
-
-    internal sealed class PreparedDeleteJoin<PARAMETERS> : IPreparedDeleteJoinOn<PARAMETERS> {
-
-        public JoinType JoinType { get; private set; }
-        public ITable Table { get; private set; }
-
-        public APreparedCondition<PARAMETERS>? _condition;
-
-        public APreparedCondition<PARAMETERS> Condition {
-            get { return _condition!; }
-        }
-
-        private readonly PreparedDeleteQueryTemplate<PARAMETERS> Template;
-
-        internal PreparedDeleteJoin(JoinType joinType, ITable table, PreparedDeleteQueryTemplate<PARAMETERS> template) {
-            JoinType = joinType;
-            Table = table;
-            Template = template;
-        }
-
-        public IPreparedDeleteJoin<PARAMETERS> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on) {
-            _condition = on(new EmptyPreparedCondition<PARAMETERS>());
-            return Template;
-        }
     }
 
     public interface IPreparedDeleteBuild<PARAMETERS> {
