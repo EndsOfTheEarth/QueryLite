@@ -360,6 +360,22 @@ namespace QueryLite.Databases.PostgreSql {
             return Add(column);
         }
 
+        public DateOnly Get(Function<DateOnly> column) {
+            return Add(column);
+        }
+
+        public DateOnly? Get(NullableFunction<DateOnly> column) {
+            return Add(column);
+        }
+
+        public TimeOnly Get(Function<TimeOnly> column) {
+            return Add(column);
+        }
+
+        public TimeOnly? Get(NullableFunction<TimeOnly> column) {
+            return Add(column);
+        }
+
         public byte Get(Function<byte> column) {
             return Add(column);
         }

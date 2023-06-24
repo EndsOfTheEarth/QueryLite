@@ -377,6 +377,26 @@ namespace QueryLite {
             return default;
         }
 
+        public DateOnly Get(Function<DateOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public DateOnly? Get(NullableFunction<DateOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public TimeOnly Get(Function<TimeOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public TimeOnly? Get(NullableFunction<TimeOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+
         public byte Get(Function<byte> column) {
             Fields.Add(column);
             return default;
