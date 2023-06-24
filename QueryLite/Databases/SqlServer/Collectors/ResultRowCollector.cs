@@ -743,6 +743,48 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetDateTimeOffset(_ordinal);
         }
 
+        public DateOnly Get(Function<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return DateOnly.MinValue;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
+        public DateOnly? Get(NullableFunction<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
+
+        public TimeOnly Get(Function<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return TimeOnly.MinValue;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
+        }
+        public TimeOnly? Get(NullableFunction<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
+        }
+
         public byte Get(Function<byte> function) {
 
             _ordinal++;

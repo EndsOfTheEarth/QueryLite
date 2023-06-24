@@ -131,6 +131,12 @@ namespace QueryLite {
         public DateTimeOffset Get(Function<DateTimeOffset> column);
         public DateTimeOffset? Get(NullableFunction<DateTimeOffset> column);
 
+        public DateOnly Get(Function<DateOnly> column);
+        public DateOnly? Get(NullableFunction<DateOnly> column);
+
+        public TimeOnly Get(Function<TimeOnly> column);
+        public TimeOnly? Get(NullableFunction<TimeOnly> column);
+
         public byte Get(Function<byte> column);
         public byte? Get(NullableFunction<byte> column);
 
