@@ -27,49 +27,24 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    public interface IDeleteUsing : IDeleteJoin {
+    public interface IDeleteFrom : IDeleteNoWhere {
 
         /// <summary>
-        /// Delete using syntax. Please Note: This syntax is only supported by PostgreSql
+        /// Use additional tables in the delete query. Note: The 'From' and 'Using' methods are just aliases for the same action.
         /// </summary>
         /// <param name="tables"></param>
         /// <returns></returns>
-        IDeleteWhere Using(params ITable[] tables);
-    }
-    public interface IDeleteJoin : IDeleteWhere {
+        IDeleteWhere From(ITable table, params ITable[] tables);
 
         /// <summary>
-        /// Delete join syntax. Please Note: This syntax is only supported on Sql Server
+        /// Use additional tables in the delete query. Note: The 'From' and 'Using' methods are just aliases for the same action.
         /// </summary>
-        /// <param name="table"></param>
+        /// <param name="tables"></param>
         /// <returns></returns>
-        IDeleteJoinOn Join(ITable table);
-
-        /// <summary>
-        /// Delete left join syntax. Please Note: This syntax is only supported on Sql Server
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IDeleteJoinOn LeftJoin(ITable table);
-    }
-    public interface IDeleteJoinOn {
-
-        /// <summary>
-        /// Join condition
-        /// </summary>
-        /// <param name="on"></param>
-        /// <returns></returns>
-        IDeleteJoin On(ICondition on);
+        IDeleteWhere Using(ITable table, params ITable[] tables);
     }
 
-    public interface IDeleteWhere {
-
-        /// <summary>
-        /// Where clause
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        public IDeleteExecute Where(ICondition condition);
+    public interface IDeleteNoWhere : IDeleteWhere {
 
         /// <summary>
         /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used when there is no where clause on a delete query.
@@ -77,30 +52,15 @@ namespace QueryLite {
         /// <returns></returns>
         public IDeleteExecute NoWhereCondition();
     }
+    
+    public interface IDeleteWhere {
 
-    internal sealed class DeleteJoin : IJoin, IDeleteJoinOn {
-
-        public JoinType JoinType { get; private set; }
-        public ITable Table { get; private set; }
-
-        public ICondition? _condition;
-
-        public ICondition Condition {
-            get { return _condition!; }
-        }
-
-        private readonly DeleteQueryTemplate Template;
-
-        internal DeleteJoin(JoinType joinType, ITable table, DeleteQueryTemplate tempate) {
-            JoinType = joinType;
-            Table = table;
-            Template = tempate;
-        }
-
-        public IDeleteJoin On(ICondition on) {
-            _condition = on;
-            return Template;
-        }
+        /// <summary>
+        /// Where clause
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        public IDeleteExecute Where(ICondition condition);        
     }
 
     public interface IDeleteExecute {

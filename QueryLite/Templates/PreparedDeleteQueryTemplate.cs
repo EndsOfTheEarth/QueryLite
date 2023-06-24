@@ -30,11 +30,11 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteUsing<PARAMETERS>, IPreparedDeleteJoin<PARAMETERS>, IPreparedDeleteWhere<PARAMETERS>, IPreparedDeleteBuild<PARAMETERS> {
+    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteFrom<PARAMETERS>, IPreparedDeleteNoWhere<PARAMETERS>, IPreparedDeleteWhere<PARAMETERS>, IPreparedDeleteBuild<PARAMETERS> {
 
         public ITable Table { get; }
-        public IList<ITable>? Usings { get; private set; }
-        public IList<PreparedDeleteJoin<PARAMETERS>>? Joins { get; private set; }
+        public List<ITable>? FromTables { get; private set; }
+
         public APreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
 
         public PreparedDeleteQueryTemplate(ITable table) {
@@ -44,36 +44,23 @@ namespace QueryLite {
             Table = table;
         }
 
-        public IPreparedDeleteWhere<PARAMETERS> Using(params ITable[] tables) {
-            ArgumentNullException.ThrowIfNull(tables);
-            Usings = new List<ITable>(tables);
+        public IPreparedDeleteWhere<PARAMETERS> From(ITable table, params ITable[] tables) {
+            Using(table, tables);
             return this;
         }
 
-        public IPreparedDeleteJoinOn<PARAMETERS> Join(ITable table) {
+        public IPreparedDeleteWhere<PARAMETERS> Using(ITable table, params ITable[] tables) {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            PreparedDeleteJoin<PARAMETERS> join = new PreparedDeleteJoin<PARAMETERS>(JoinType.Join, table, this);
+            FromTables = new List<ITable>(tables.Length + 1);
 
-            if(Joins == null) {
-                Joins = new List<PreparedDeleteJoin<PARAMETERS>>();
+            FromTables.Add(table);
+
+            if(tables.Length > 0) {
+                FromTables.AddRange(tables);
             }
-            Joins.Add(join);
-            return join;
-        }
-
-        public IPreparedDeleteJoinOn<PARAMETERS> LeftJoin(ITable table) {
-
-            ArgumentNullException.ThrowIfNull(table);
-
-            PreparedDeleteJoin<PARAMETERS> join = new PreparedDeleteJoin<PARAMETERS>(JoinType.LeftJoin, table, this);
-
-            if(Joins == null) {
-                Joins = new List<PreparedDeleteJoin<PARAMETERS>>();
-            }
-            Joins.Add(join);
-            return join;
+            return this;
         }
 
         public IPreparedDeleteBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {

@@ -633,25 +633,8 @@ namespace QueryLiteTest.Tests {
 
                 NonQueryResult result = await Query
                     .Delete(allTypesTable)
-                    .Join(allTypesTable2).On(allTypesTable.Id == allTypesTable2.Id)
-                    .Where(allTypesTable.Id == allTypes1.Id)
-                    .ExecuteAsync(transaction);
-
-                Assert.AreEqual(result.RowsEffected, 1);
-
-                result = await Query
-                    .Delete(allTypesTable)
-                    .LeftJoin(allTypesTable2).On(allTypesTable.Id == IntKey<AllTypes>.ValueOf(int.MaxValue))    //Left join with an id that does not exist
-                    .Where(allTypesTable.Id == allTypes2.Id & allTypesTable2.Id.IsNotNull)  //Is not null should return zero rows
-                    .ExecuteAsync(transaction);
-
-                Assert.AreEqual(result.RowsEffected, 0);
-
-
-                result = await Query
-                    .Delete(allTypesTable)
-                    .LeftJoin(allTypesTable2).On(allTypesTable.Id == IntKey<AllTypes>.ValueOf(int.MaxValue))    //Left join with an id that does not exist
-                    .Where(allTypesTable.Id == allTypes2.Id & allTypesTable2.Id.IsNull)
+                    .From(allTypesTable2)
+                    .Where(allTypesTable.Id == allTypesTable2.Id & allTypesTable.Id == allTypes1.Id)
                     .ExecuteAsync(transaction);
 
                 Assert.AreEqual(result.RowsEffected, 1);
@@ -674,15 +657,15 @@ namespace QueryLiteTest.Tests {
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 1);  //There should be one record left
+                Assert.AreEqual(countValue!.Value, 2);  //There should be one record left
             }
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 QueryResult<AllTypesInfo> result = await Query
                     .Delete(allTypesTable)
-                    .Join(allTypesTable2).On(allTypesTable.Id == allTypesTable2.Id)
-                    .Where(allTypesTable.Id == allTypes3.Id)
+                    .From(allTypesTable2)
+                    .Where(allTypesTable.Id == allTypesTable2.Id & allTypesTable.Id == allTypes3.Id)
                     .ExecuteAsync(
                         deleted => new AllTypesInfo(deleted, allTypesTable),
                         transaction
@@ -711,7 +694,7 @@ namespace QueryLiteTest.Tests {
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 0);
+                Assert.AreEqual(countValue!.Value, 1);
             }
         }
 

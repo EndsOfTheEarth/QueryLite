@@ -52,8 +52,6 @@ namespace QueryLiteTest.Tests {
         private IPreparedQueryExecute<AllTypes, int>? _selectAllTypesCountQuery;
 
         private IPreparedDeleteQuery<AllTypes>? _deleteQuery1;
-        private IPreparedDeleteQuery<AllTypes>? _deleteQuery2;
-        private IPreparedDeleteQuery<AllTypes>? _deleteQuery3;
         private IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo>? _deleteQuery4;
 
         public void InitQueries() {
@@ -107,29 +105,15 @@ namespace QueryLiteTest.Tests {
             _deleteQuery1 = Query
                 .Prepare<AllTypes>()
                 .Delete(allTypesTable)
-                .Join(allTypesTable2).On(on => on.EQUALS(allTypesTable.Id, allTypesTable2.Id))
-                .Where(where => where.EQUALS(allTypesTable.Id, info => info.Id))
-                .Build();
-
-            _deleteQuery2 = Query
-                .Prepare<AllTypes>()
-                .Delete(allTypesTable)
-                .LeftJoin(allTypesTable2).On(on => on.EQUALS(allTypesTable.Id, _ => IntKey<AllTypes>.ValueOf(int.MaxValue)))    //Left join with an id that does not exist
-                .Where(where => where.EQUALS(allTypesTable.Id, info => info.Id) & where.IS_NOT_NULL(allTypesTable2.Id))  //Is not null should return zero rows
-                .Build();
-
-            _deleteQuery3 = Query
-                .Prepare<AllTypes>()
-                .Delete(allTypesTable)
-                .LeftJoin(allTypesTable2).On(on => on.EQUALS(allTypesTable.Id, _ => IntKey<AllTypes>.ValueOf(int.MaxValue)))    //Left join with an id that does not exist
-                .Where(where => where.EQUALS(allTypesTable.Id, info => info.Id) & where.IS_NULL(allTypesTable2.Id))
+                .From(allTypesTable2)
+                .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable2.Id) & where.EQUALS(allTypesTable.Id, info => info.Id))
                 .Build();
 
             _deleteQuery4 = Query
                 .Prepare<IntKey<AllTypes>>()
                 .Delete(allTypesTable)
-                .Join(allTypesTable2).On(on => on.EQUALS(allTypesTable.Id, allTypesTable2.Id))
-                .Where(where => where.EQUALS(allTypesTable.Id, id => id))
+                .From(allTypesTable2)
+                .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable2.Id) & where.EQUALS(allTypesTable.Id, id => id))
                 .Build(deleted => new AllTypesInfo(deleted, allTypesTable));
         }
 
@@ -681,14 +665,6 @@ namespace QueryLiteTest.Tests {
 
                 Assert.AreEqual(result.RowsEffected, 1);
 
-                result = await _deleteQuery2!.ExecuteAsync(parameters: allTypes2, transaction);
-
-                Assert.AreEqual(result.RowsEffected, 0);
-
-                result = await _deleteQuery3!.ExecuteAsync(parameters: allTypes2, transaction);
-
-                Assert.AreEqual(result.RowsEffected, 1);
-
                 transaction.Commit();
             }
 
@@ -702,7 +678,7 @@ namespace QueryLiteTest.Tests {
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 1);  //There should be one record left
+                Assert.AreEqual(countValue!.Value, 2);  //There should be two records left
             }
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
@@ -727,7 +703,7 @@ namespace QueryLiteTest.Tests {
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 0);
+                Assert.AreEqual(countValue!.Value, 1);
             }
         }
 

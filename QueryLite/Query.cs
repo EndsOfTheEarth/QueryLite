@@ -52,7 +52,7 @@ namespace QueryLite {
             IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
             IPreparedInsertSet<PARAMETERS> Insert(ITable table);
             IPreparedUpdateSet<PARAMETERS> Update(ITable table);
-            IPreparedDeleteUsing<PARAMETERS> Delete(ITable table);
+            IPreparedDeleteFrom<PARAMETERS> Delete(ITable table);
         }
 
         internal sealed class PreparedOption<PARAMETERS> : IPreparedOption<PARAMETERS> {
@@ -63,7 +63,7 @@ namespace QueryLite {
 
             public IPreparedUpdateSet<PARAMETERS> Update(ITable table) => new PreparedUpdateTemplate<PARAMETERS>(table);
 
-            public IPreparedDeleteUsing<PARAMETERS> Delete(ITable table) => new PreparedDeleteQueryTemplate<PARAMETERS>(table);
+            public IPreparedDeleteFrom<PARAMETERS> Delete(ITable table) => new PreparedDeleteQueryTemplate<PARAMETERS>(table);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace QueryLite {
         /// <summary>
         /// Sql delete query
         /// </summary>
-        public static IDeleteUsing Delete(ITable table) {
+        public static IDeleteFrom Delete(ITable table) {
             return new DeleteQueryTemplate(table);
         }
 
