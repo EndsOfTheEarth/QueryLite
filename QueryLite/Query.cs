@@ -83,7 +83,7 @@ namespace QueryLite {
         /// <summary>
         /// Sql delete query
         /// </summary>
-        public static IDeleteUsing Delete(ITable table) {
+        public static IDeleteFrom Delete(ITable table) {
             return new DeleteQueryTemplate(table);
         }
 

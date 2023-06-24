@@ -28,11 +28,10 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal sealed class DeleteQueryTemplate : IDeleteUsing, IDeleteJoin, IDeleteWhere, IDeleteExecute {
+    internal sealed class DeleteQueryTemplate : IDeleteFrom, IDeleteNoWhere, IDeleteWhere, IDeleteExecute {
 
         public ITable Table { get; }
-        public IList<ITable>? Usings { get; private set; }
-        public IList<IJoin>? Joins { get; private set; }
+        public List<ITable>? FromTables { get; private set; }
         public ICondition? WhereCondition { get; private set; }
 
         public DeleteQueryTemplate(ITable table) {
@@ -48,39 +47,24 @@ namespace QueryLite {
             Table = table;
             WhereCondition = whereCondition;
         }
-        public IDeleteWhere Using(params ITable[] tables) {
 
-            ArgumentNullException.ThrowIfNull(tables);
-
-            if(tables.Length == 0) {
-                throw new ArgumentException($"{nameof(tables)} must not be empty");
-            }
-            Usings = new List<ITable>(tables);
+        public IDeleteWhere From(ITable table, params ITable[] tables) {
+            Using(table, tables);
             return this;
         }
 
-        public IDeleteJoinOn Join(ITable table) {
+        public IDeleteWhere Using(ITable table, params ITable[] tables) {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            if(Joins == null) {
-                Joins = new List<IJoin>();
+            FromTables = new List<ITable>(tables.Length + 1);
+
+            FromTables.Add(table);
+
+            if(tables.Length > 0) {
+                FromTables.AddRange(tables);
             }
-            DeleteJoin join = new DeleteJoin(JoinType.Join, table, this);
-            Joins.Add(join);
-            return join;
-        }
-
-        public IDeleteJoinOn LeftJoin(ITable table) {
-
-            ArgumentNullException.ThrowIfNull(table);
-
-            if(Joins == null) {
-                Joins = new List<IJoin>();
-            }
-            DeleteJoin join = new DeleteJoin(JoinType.LeftJoin, table, this);
-            Joins.Add(join);
-            return join;
+            return this;
         }
 
         public IDeleteExecute Where(ICondition condition) {

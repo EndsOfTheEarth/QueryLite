@@ -31,10 +31,6 @@ namespace QueryLite.Databases.PostgreSql {
 
         string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
-            if(template.Joins != null) {
-                throw new Exception("Delete join syntax is not supported by PostgreSql");
-            }
-
             StringBuilder sql = StringBuilderCache.Acquire();
 
             sql.Append("DELETE FROM ");
@@ -49,18 +45,25 @@ namespace QueryLite.Databases.PostgreSql {
             SqlHelper.AppendEncloseTableName(sql, template.Table);
             sql.Append(" AS ").Append(template.Table.Alias);
 
-            bool useAliases = template.Usings != null;
+            bool useAliases = template.FromTables != null;
 
-            if(template.Usings != null && template.Usings.Count > 0) {
+            if(template.FromTables != null) {
 
                 sql.Append(" USING ");
 
-                for(int index = 0; index < template.Usings.Count; index++) {
+                for(int index = 0; index < template.FromTables.Count; index++) {
 
                     if(index > 0) {
                         sql.Append(',');
                     }
-                    ITable usingTable = template.Usings[index];
+                    ITable usingTable = template.FromTables[index];
+
+                    string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
+
+                    if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
+                        SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName);
+                        sql.Append('.');
+                    }
 
                     SqlHelper.AppendEncloseTableName(sql, usingTable);
 
