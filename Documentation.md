@@ -20,7 +20,7 @@
 - [Nested Query](#nested-query)
 - [Insert Query](#insert-query)
 - [Update Query](#update-query)
-   - [Update Join Query](#update-join-query)
+   - [Update From Query](#update-from-query)
 - [Delete Query](#delete-query)
    - [Delete Join Query (MSSQL Only)](#delete-join-query)
    - [Delete Using Query (PostgreSql Only)](#delete-using-query)
@@ -492,7 +492,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 }
 ```
 
-## Update Join Query
+## Update From Query
 
 ```C#
 using(Transaction transaction = new Transaction(DB.Northwind)) {
