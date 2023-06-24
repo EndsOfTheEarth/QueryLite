@@ -28,11 +28,12 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal sealed class UpdateQueryTemplate : IUpdateSet, IUpdateJoin, IUpdateWhere, IUpdateExecute {
+    internal sealed class UpdateQueryTemplate : IUpdateSet, IUpdateFrom, IUpdateWhere, IUpdateExecute {
 
         public ITable Table { get; }
         public Action<ISetValuesCollector>? ValuesCollector;
-        public IList<IJoin>? Joins { get; private set; }
+        public List<ITable>? FromTables { get; private set; }
+        public ICondition? JoinCondition { get; private set; }
         public ICondition? WhereCondition { get; private set; }
 
         public UpdateQueryTemplate(ITable table) {
@@ -42,33 +43,23 @@ namespace QueryLite {
             Table = table;
         }
 
-        public IUpdateWhere Values(Action<ISetValuesCollector> values) {
+        public IUpdateFrom Values(Action<ISetValuesCollector> values) {
             ValuesCollector = values;
             return this;
         }
 
-        public IUpdateJoinOn Join(ITable table) {
+        public IUpdateWhere From(ITable table, params ITable[] tables) {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            if(Joins == null) {
-                Joins = new List<IJoin>();
+            FromTables = new List<ITable>(tables.Length + 1);
+
+            FromTables.Add(table);
+
+            if(tables.Length > 0) {
+                FromTables.AddRange(tables);
             }
-            UpdateJoin join = new UpdateJoin(JoinType.Join, table, this);
-            Joins.Add(join);
-            return join;
-        }
-
-        public IUpdateJoinOn LeftJoin(ITable table) {
-
-            ArgumentNullException.ThrowIfNull(table);
-
-            if(Joins == null) {
-                Joins = new List<IJoin>();
-            }
-            UpdateJoin join = new UpdateJoin(JoinType.LeftJoin, table, this);
-            Joins.Add(join);
-            return join;
+            return this;
         }
 
         public IUpdateExecute NoWhereCondition() {

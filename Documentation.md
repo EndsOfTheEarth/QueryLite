@@ -505,8 +505,8 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
         .Values(values => values
             .Set(orderTable.ShipVia, null)
         )
-        .Join(customersTable).On(orderTable.CustomerID == customersTable.CustomerID)
-        .Where(customersTable.Region.IsNull)
+        .From(customersTable)
+        .Where(orderTable.CustomerID == customersTable.CustomerID & customersTable.Region.IsNull)
         .Execute(transaction);
 
     transaction.Commit();

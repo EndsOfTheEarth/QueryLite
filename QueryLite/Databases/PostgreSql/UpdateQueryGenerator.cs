@@ -42,7 +42,7 @@ namespace QueryLite.Databases.PostgreSql {
                 sql.Append('.');
             }
 
-            bool useAlias = template.Joins != null;
+            bool useAlias = template.FromTables != null;
 
             SqlHelper.AppendEncloseTableName(sql, template.Table);
 
@@ -71,35 +71,26 @@ namespace QueryLite.Databases.PostgreSql {
                 parameters = null;
             }
 
-            if(template.Joins != null) {
+            if(template.FromTables != null) {
 
                 sql.Append(" FROM ");
 
-                if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
-                    sql.Append('.');
-                }
-                SqlHelper.AppendEncloseTableName(sql, template.Table);
-                sql.Append(' ');
+                for(int index = 0; index < template.FromTables.Count; index++) {
 
-                foreach(IJoin join in template.Joins) {
+                    ITable fromTable = template.FromTables[index];
 
-                    string joinType = join.JoinType switch {
-                        JoinType.Join => "JOIN",
-                        JoinType.LeftJoin => "LEFT JOIN",
-                        _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
-                    };
-                    sql.Append(' ').Append(joinType).Append(' ');
+                    if(index > 0) {
+                        sql.Append(',');
+                    }
 
-                    string joinSchemaName = database.SchemaMap(join.Table.SchemaName);
+                    string fromSchemaName = database.SchemaMap(fromTable.SchemaName);
 
-                    if(!string.IsNullOrWhiteSpace(joinSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, joinSchemaName);
+                    if(!string.IsNullOrWhiteSpace(fromSchemaName)) {
+                        SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName);
                         sql.Append('.');
                     }
-                    SqlHelper.AppendEncloseTableName(sql, join.Table);
-                    sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
-                    join.Condition.GetSql(sql, database, useAlias: useAlias, parameters);
+                    SqlHelper.AppendEncloseTableName(sql, fromTable);
+                    sql.Append(" as ").Append(fromTable.Alias);
                 }
             }
 

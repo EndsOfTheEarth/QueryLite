@@ -30,59 +30,12 @@ namespace QueryLite {
 
     public interface IPreparedUpdateSet<PARAMETERS> {
 
-        IPreparedUpdateJoin<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
+        IPreparedUpdateFrom<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
     }
 
-    public interface IPreparedUpdateJoin<PARAMETERS> : IPreparedUpdateWhere<PARAMETERS> {
+    public interface IPreparedUpdateFrom<PARAMETERS> : IPreparedUpdateWhere<PARAMETERS> {
 
-        /// <summary>
-        /// Join table clause
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IPreparedUpdateJoinOn<PARAMETERS> Join(ITable table);
-
-        /// <summary>
-        /// Left join table clause
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IPreparedUpdateJoinOn<PARAMETERS> LeftJoin(ITable table);
-    }
-
-    public interface IPreparedUpdateJoinOn<PARAMETERS> {
-
-        // <summary>
-        /// Join condition
-        /// </summary>
-        /// <param name="on"></param>
-        /// <returns></returns>
-        IPreparedUpdateJoin<PARAMETERS> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on);
-    }
-
-    internal sealed class PreparedUpdateJoin<PARAMETERS> : IPreparedUpdateJoinOn<PARAMETERS> {
-
-        public JoinType JoinType { get; private set; }
-        public ITable Table { get; private set; }
-
-        public APreparedCondition<PARAMETERS>? _condition;
-
-        public APreparedCondition<PARAMETERS> Condition {
-            get { return _condition!; }
-        }
-
-        private readonly PreparedUpdateTemplate<PARAMETERS> Template;
-
-        internal PreparedUpdateJoin(JoinType joinType, ITable table, PreparedUpdateTemplate<PARAMETERS> template) {
-            JoinType = joinType;
-            Table = table;
-            Template = template;
-        }
-
-        public IPreparedUpdateJoin<PARAMETERS> On(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> on) {
-            _condition = on(new EmptyPreparedCondition<PARAMETERS>());
-            return Template;
-        }
+        public IPreparedUpdateWhere<PARAMETERS> From(ITable table, params ITable[] tables);
     }
 
     public interface IPreparedUpdateWhere<PARAMETERS> : IPreparedUpdateSet<PARAMETERS> {

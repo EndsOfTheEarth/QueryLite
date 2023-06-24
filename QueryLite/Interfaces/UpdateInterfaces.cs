@@ -29,62 +29,15 @@ namespace QueryLite {
 
     public interface IUpdateSet {
 
-        IUpdateWhere Values(Action<ISetValuesCollector> values);
+        IUpdateFrom Values(Action<ISetValuesCollector> values);
     }
 
-    public interface IUpdateJoin : IUpdateWhere {
+    public interface IUpdateFrom : IUpdateWhere {
 
-        /// <summary>
-        /// Join table clause
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IUpdateJoinOn Join(ITable table);
-
-        /// <summary>
-        /// Left join table clause
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IUpdateJoinOn LeftJoin(ITable table);
+        public IUpdateWhere From(ITable table, params ITable[] tables);
     }
 
-    public interface IUpdateJoinOn {
-
-        // <summary>
-        /// Join condition
-        /// </summary>
-        /// <param name="on"></param>
-        /// <returns></returns>
-        IUpdateJoin On(ICondition on);
-    }
-
-    internal sealed class UpdateJoin : IJoin, IUpdateJoinOn {
-
-        public JoinType JoinType { get; private set; }
-        public ITable Table { get; private set; }
-
-        public ICondition? _condition;
-
-        public ICondition Condition {
-            get { return _condition!; }
-        }
-
-        private readonly UpdateQueryTemplate Template;
-
-        internal UpdateJoin(JoinType joinType, ITable table, UpdateQueryTemplate tempate) {
-            JoinType = joinType;
-            Table = table;
-            Template = tempate;
-        }
-
-        public IUpdateJoin On(ICondition on) {
-            _condition = on;
-            return Template;
-        }
-    }
-
-    public interface IUpdateWhere : IUpdateSet {
+    public interface IUpdateWhere {
 
         /// <summary>
         /// Where clause
