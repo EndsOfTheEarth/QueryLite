@@ -189,18 +189,21 @@ namespace QueryLiteTest.Tests {
 
         [TestMethod]
         public void UpdateJoinTests() {
-
-            Settings.UseParameters = false;
-
             UpdateJoinTest();
         }
 
         [TestMethod]
+        public void UpdateJoinTests2() {
+            UpdateJoinTest2();
+        }
+
+        [TestMethod]
         public async Task UpdateJoinTestsAsync() {
-
-            Settings.UseParameters = false;
-
             await UpdateJoinTestAsync();
+        }
+        [TestMethod]
+        public async Task UpdateJoinTests2Async() {
+            await UpdateJoinTest2Async();
         }
 
 
@@ -1541,8 +1544,6 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(beginRowCount, GetNumberOfRows());
         }
 
-
-
         /*
          * Test the update join syntax
          */
@@ -1555,7 +1556,7 @@ namespace QueryLiteTest.Tests {
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
             allTypes2.BigInt = 1;
-            allTypes2.BigInt = 1;
+            allTypes3.BigInt = 1;
 
             InsertWithQuery(allTypes1);
             InsertWithQuery(allTypes2);
@@ -1585,14 +1586,18 @@ namespace QueryLiteTest.Tests {
                         .Set(tableA.DateOnly, info => info.DateOnly)
                         .Set(tableA.TimeOnly, info => info.TimeOnly)
                     )
-                    .Join(tableB).On(on => on.EQUALS(tableA.BigInt, tableB.BigInt))
-                    .Where(where => where.EQUALS(tableB.Id, tableA.Id))
+                    .From(tableB)
+                    .Where(
+                        where => where.EQUALS(tableA.BigInt, tableB.BigInt) &   //Join condition
+                        where.NOT_EQUALS(tableA.Id, info => info.Id) &
+                        where.EQUALS(tableB.Id, info => info.Id)
+                    )
                     .Build(updated => new AllTypesInfo(updated, tableA));
 
                 QueryResult<AllTypesInfo> result = updateQuery.Execute(parameters: allTypes1, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 3);
-                Assert.AreEqual(result.Rows.Count, 3);
+                Assert.AreEqual(result.RowsEffected, 2);
+                Assert.AreEqual(result.Rows.Count, 2);
 
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
@@ -1651,7 +1656,7 @@ namespace QueryLiteTest.Tests {
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
             allTypes2.BigInt = 1;
-            allTypes2.BigInt = 1;
+            allTypes3.BigInt = 1;
 
             InsertWithQuery(allTypes1);
             InsertWithQuery(allTypes2);
@@ -1681,14 +1686,18 @@ namespace QueryLiteTest.Tests {
                         .Set(tableA.DateOnly, info => info.DateOnly)
                         .Set(tableA.TimeOnly, info => info.TimeOnly)
                     )
-                    .Join(tableB).On(on => on.EQUALS(tableA.BigInt, tableB.BigInt))
-                    .Where(where => where.EQUALS(tableB.Id, tableA.Id))
+                    .From(tableB)
+                    .Where(
+                        where => where.EQUALS(tableA.BigInt, tableB.BigInt) &   //Join condition
+                        where.NOT_EQUALS(tableA.Id, info => info.Id) &
+                        where.EQUALS(tableB.Id, info => info.Id)
+                    )
                     .Build(updated => new AllTypesInfo(updated, tableA));
 
                 QueryResult<AllTypesInfo> result = await updateQuery.ExecuteAsync(parameters: allTypes1, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 3);
-                Assert.AreEqual(result.Rows.Count, 3);
+                Assert.AreEqual(result.RowsEffected, 2);
+                Assert.AreEqual(result.Rows.Count, 2);
 
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
@@ -1729,6 +1738,180 @@ namespace QueryLiteTest.Tests {
                 allTypes3.DateOnly = allTypes1.DateOnly;
                 allTypes3.TimeOnly = allTypes1.TimeOnly;
 
+                AssertRowExists(allTypes3, transaction);
+
+                transaction.Commit();
+            }
+        }
+
+        /*
+         * Test the update join syntax
+         */
+        private void UpdateJoinTest2() {
+
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
+
+            //Set all BigInt to the same value so we can update join on it and set all records to the same values
+            allTypes1.BigInt = 1;
+            allTypes2.BigInt = 1;
+            allTypes3.BigInt = 1;
+
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
+
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                AllTypesTable tableA = AllTypesTable.Instance;
+                AllTypesTable tableB = AllTypesTable.Instance2;
+
+                (AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3) parameters = new (allTypes1, allTypes1.Id, allTypes3.Id);
+
+                IPreparedUpdateQuery<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3), AllTypesInfo> updateQuery = Query
+                    .Prepare<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3)>()
+                    .Update(tableA)
+                    .Values(values => values
+                        .Set(tableA.Guid, x => x.Info.Guid)
+                        .Set(tableA.String, x => x.Info.String)
+                        .Set(tableA.SmallInt, x => x.Info.SmallInt)
+                        .Set(tableA.Int, x => x.Info.Int)
+                        .Set(tableA.BigInt, x => x.Info.BigInt)
+                        .Set(tableA.Decimal, x => x.Info.Decimal)
+                        .Set(tableA.Float, x => x.Info.Float)
+                        .Set(tableA.Double, x => x.Info.Double)
+                        .Set(tableA.Boolean, x => x.Info.Boolean)
+                        .Set(tableA.Bytes, x => x.Info.Bytes)
+                        .Set(tableA.DateTime, x => x.Info.DateTime)
+                        .Set(tableA.DateTimeOffset, x => x.Info.DateTimeOffset)
+                        .Set(tableA.Enum, x => x.Info.Enum)
+                        .Set(tableA.DateOnly, x => x.Info.DateOnly)
+                        .Set(tableA.TimeOnly, x => x.Info.TimeOnly)
+                    )
+                    .From(tableB)
+                    .Where( //Only update allTypes2
+                        where => where.EQUALS(tableA.BigInt, tableB.BigInt) &   //Join condition
+                        where.NOT_EQUALS(tableA.Id, x => x.Id1) &
+                        where.EQUALS(tableB.Id, x => x.Id1) &
+                        where.NOT_EQUALS(tableA.Id, x => x.Id3)
+                    )
+                    .Build(updated => new AllTypesInfo(updated, tableA));
+
+                QueryResult<AllTypesInfo> result = updateQuery.Execute(parameters, transaction);
+
+                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(result.Rows.Count, 1);
+
+                /*
+                 *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
+                 */
+                AssertRowExists(allTypes1, transaction);
+
+                allTypes2.Guid = allTypes1.Guid;
+                allTypes2.String = allTypes1.String;
+                allTypes2.SmallInt = allTypes1.SmallInt;
+                allTypes2.Int = allTypes1.Int;
+                allTypes2.BigInt = allTypes1.BigInt;
+                allTypes2.Decimal = allTypes1.Decimal;
+                allTypes2.Float = allTypes1.Float;
+                allTypes2.Double = allTypes1.Double;
+                allTypes2.Boolean = allTypes1.Boolean;
+                allTypes2.Bytes = allTypes1.Bytes;
+                allTypes2.DateTime = allTypes1.DateTime;
+                allTypes2.DateTimeOffset = allTypes1.DateTimeOffset;
+                allTypes2.Enum = allTypes1.Enum;
+                allTypes2.DateOnly = allTypes1.DateOnly;
+                allTypes2.TimeOnly = allTypes1.TimeOnly;
+
+                AssertRowExists(allTypes2, transaction);
+                AssertRowExists(allTypes3, transaction);
+
+                transaction.Commit();
+            }
+        }
+
+        /*
+         * Test the update join syntax
+         */
+        private async Task UpdateJoinTest2Async() {
+
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
+
+            //Set all BigInt to the same value so we can update join on it and set all records to the same values
+            allTypes1.BigInt = 1;
+            allTypes2.BigInt = 1;
+            allTypes3.BigInt = 1;
+
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
+
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                AllTypesTable tableA = AllTypesTable.Instance;
+                AllTypesTable tableB = AllTypesTable.Instance2;
+
+                (AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3) parameters = new(allTypes1, allTypes1.Id, allTypes3.Id);
+
+                IPreparedUpdateQuery<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3), AllTypesInfo> updateQuery = Query
+                    .Prepare<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3)>()
+                    .Update(tableA)
+                    .Values(values => values
+                        .Set(tableA.Guid, x => x.Info.Guid)
+                        .Set(tableA.String, x => x.Info.String)
+                        .Set(tableA.SmallInt, x => x.Info.SmallInt)
+                        .Set(tableA.Int, x => x.Info.Int)
+                        .Set(tableA.BigInt, x => x.Info.BigInt)
+                        .Set(tableA.Decimal, x => x.Info.Decimal)
+                        .Set(tableA.Float, x => x.Info.Float)
+                        .Set(tableA.Double, x => x.Info.Double)
+                        .Set(tableA.Boolean, x => x.Info.Boolean)
+                        .Set(tableA.Bytes, x => x.Info.Bytes)
+                        .Set(tableA.DateTime, x => x.Info.DateTime)
+                        .Set(tableA.DateTimeOffset, x => x.Info.DateTimeOffset)
+                        .Set(tableA.Enum, x => x.Info.Enum)
+                        .Set(tableA.DateOnly, x => x.Info.DateOnly)
+                        .Set(tableA.TimeOnly, x => x.Info.TimeOnly)
+                    )
+                    .From(tableB)
+                    .Where( //Only update allTypes2
+                        where => where.EQUALS(tableA.BigInt, tableB.BigInt) &   //Join condition
+                        where.NOT_EQUALS(tableA.Id, x => x.Id1) &
+                        where.EQUALS(tableB.Id, x => x.Id1) &
+                        where.NOT_EQUALS(tableA.Id, x => x.Id3)
+                    )
+                    .Build(updated => new AllTypesInfo(updated, tableA));
+
+                QueryResult<AllTypesInfo> result = await updateQuery.ExecuteAsync(parameters, transaction);
+
+                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(result.Rows.Count, 1);
+
+                /*
+                 *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
+                 */
+                AssertRowExists(allTypes1, transaction);
+
+                allTypes2.Guid = allTypes1.Guid;
+                allTypes2.String = allTypes1.String;
+                allTypes2.SmallInt = allTypes1.SmallInt;
+                allTypes2.Int = allTypes1.Int;
+                allTypes2.BigInt = allTypes1.BigInt;
+                allTypes2.Decimal = allTypes1.Decimal;
+                allTypes2.Float = allTypes1.Float;
+                allTypes2.Double = allTypes1.Double;
+                allTypes2.Boolean = allTypes1.Boolean;
+                allTypes2.Bytes = allTypes1.Bytes;
+                allTypes2.DateTime = allTypes1.DateTime;
+                allTypes2.DateTimeOffset = allTypes1.DateTimeOffset;
+                allTypes2.Enum = allTypes1.Enum;
+                allTypes2.DateOnly = allTypes1.DateOnly;
+                allTypes2.TimeOnly = allTypes1.TimeOnly;
+
+                AssertRowExists(allTypes2, transaction);
                 AssertRowExists(allTypes3, transaction);
 
                 transaction.Commit();

@@ -35,7 +35,7 @@ namespace QueryLite.Databases.SqlServer {
 
             sql.Append("UPDATE ");
 
-            bool useAlias = template.Joins != null;
+            bool useAlias = template.FromTables != null;
 
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
@@ -81,7 +81,7 @@ namespace QueryLite.Databases.SqlServer {
                 SqlServerReturningCollectorCache.Release(collector);
             }
 
-            if(template.Joins != null) {
+            if(template.FromTables != null) {
 
                 sql.Append(" FROM ");
 
@@ -89,30 +89,30 @@ namespace QueryLite.Databases.SqlServer {
                     SqlHelper.AppendEncloseSchemaName(sql, schemaName);
                     sql.Append('.');
                 }
-
                 SqlHelper.AppendEncloseTableName(sql, template.Table);
+                sql.Append(" as ").Append(template.Table.Alias);
 
-                sql.Append(" AS ").Append(template.Table.Alias);
+                for(int index = 0; index < template.FromTables.Count; index++) {
 
-                foreach(IJoin join in template.Joins) {
+                    ITable fromTable = template.FromTables[index];
 
-                    sql.Append(join.JoinType switch {
-                        JoinType.Join => " JOIN ",
-                        JoinType.LeftJoin => " LEFT JOIN ",
-                        _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
-                    });
+                    if(fromTable == template.Table) {
+                        throw new Exception("The update table must not be included in the 'FROM' table list");
+                    }
 
-                    string joinSchemaName = database.SchemaMap(join.Table.SchemaName);
+                    sql.Append(',');
 
-                    if(!string.IsNullOrWhiteSpace(joinSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, joinSchemaName);
+                    string fromSchemaName = database.SchemaMap(fromTable.SchemaName);
+
+                    if(!string.IsNullOrWhiteSpace(fromSchemaName)) {
+                        SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName);
                         sql.Append('.');
                     }
-                    SqlHelper.AppendEncloseTableName(sql, join.Table);
-                    sql.Append(" AS ").Append(join.Table.Alias).Append(" ON ");
-                    join.Condition.GetSql(sql, database, useAlias: useAlias, parameters);
+                    SqlHelper.AppendEncloseTableName(sql, fromTable);
+                    sql.Append(" as ").Append(fromTable.Alias);
                 }
             }
+
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
                 template.WhereCondition.GetSql(sql, database, useAlias: useAlias, parameters);

@@ -30,11 +30,11 @@ using System.Threading.Tasks;
 
 namespace QueryLite {
 
-    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>, IPreparedUpdateJoin<PARAMETERS>, IPreparedUpdateWhere<PARAMETERS>, IPreparedUpdateBuild<PARAMETERS> {
+    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>, IPreparedUpdateFrom<PARAMETERS>, IPreparedUpdateWhere<PARAMETERS>, IPreparedUpdateBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
-        public IList<PreparedUpdateJoin<PARAMETERS>>? Joins { get; private set; }
+        public List<ITable>? FromTables { get; private set; }
         public APreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
 
         public PreparedUpdateTemplate(ITable table) {
@@ -44,39 +44,25 @@ namespace QueryLite {
             Table = table;
         }
 
-        public IPreparedUpdateJoin<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values) {
+        public IPreparedUpdateFrom<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values) {
 
             ArgumentNullException.ThrowIfNull(values);
             SetValues = values;
             return this;
         }
 
-        public IPreparedUpdateJoinOn<PARAMETERS> Join(ITable table) {
+        public IPreparedUpdateWhere<PARAMETERS> From(ITable table, params ITable[] tables) {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            if(Joins == null) {
-                Joins = new List<PreparedUpdateJoin<PARAMETERS>>();
+            FromTables = new List<ITable>(tables.Length + 1);
+
+            FromTables.Add(table);
+
+            if(tables.Length > 0) {
+                FromTables.AddRange(tables);
             }
-
-            PreparedUpdateJoin<PARAMETERS> join = new PreparedUpdateJoin<PARAMETERS>(JoinType.Join, table, this);
-
-            Joins.Add(join);
-            return join;
-        }
-
-        public IPreparedUpdateJoinOn<PARAMETERS> LeftJoin(ITable table) {
-
-            ArgumentNullException.ThrowIfNull(table);
-
-            if(Joins == null) {
-                Joins = new List<PreparedUpdateJoin<PARAMETERS>>();
-            }
-
-            PreparedUpdateJoin<PARAMETERS> join = new PreparedUpdateJoin<PARAMETERS>(JoinType.LeftJoin, table, this);
-
-            Joins.Add(join);
-            return join;
+            return this;
         }
 
         public IPreparedUpdateBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {
