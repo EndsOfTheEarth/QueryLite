@@ -86,9 +86,9 @@ Query Lite is part of a set of personal projects exploring the optimal design fo
 
 ## Dynamic And Prepared Queries
 
-Query lite implements both dynamic and prepared queries. Prepared queries allocate less memory on the heap during query execution. This gives them very similar performance (And garbage collector load) to lower level ado.net code. The downside is that prepared queries have multiple generic constraints which make them syntactically more complicated.
+Query lite implements both dynamic and prepared queries. Prepared queries allocate less memory on the heap during query execution. This gives them very similar performance (And garbage collector load) to lower level ado.net code. The downside is that prepared queries have multiple generic constraints which make them syntactically more complicated to write.
 
-On the other hand, dynamic queries are syntactically simpler but have a higher memory allocation during query execution. This is due to dynamically building the sql query on every execution. The additional memory allocation make dynamic query performance / memory allocation more similar to libaraies like Dapper.
+On the other hand, dynamic queries are syntactically simpler but allocate more memory during query execution. This is due to dynamically building the sql query string on every execution. The additional memory allocation makes dynamic queries use more memory than pure ado.net code but similar memory use to libaraies like Dapper. See the [benchmarks](#benchmarks) section for PostgreSql memory allocation statistics.
 
 [Prepared Query Documentation is found here](PreparedQueries.md)
 
@@ -407,7 +407,6 @@ CREATE TABLE Test01 (
 * `Dapper_Single_Row_Select` = Dapper query
 * `QueryLite_Single_Row_Prepared_Select` = Query Lite prepared query
 * `QueryLite_Single_Row_Dynamic_Select` = Query Lite dynamic query
-
 
 These tests are running for 2000 sequential iterations. So the results should be divided by 2000 to give 'per query' values.
 
