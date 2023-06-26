@@ -90,7 +90,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings);
 
-                string logicFilePath = Path.Combine(logicDir, CodeHelper.GetTableName(table, includePostFix: false) + ".cs");
+                string logicFilePath = Path.Combine(logicDir, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
                 File.WriteAllText(logicFilePath, classCode.ToString());
             }
         }

@@ -36,17 +36,22 @@ namespace QueryLite.DbSchema.CodeGeneration {
             code.Append("using System;").EndLine();
             code.Append("using QueryLite;").EndLine();
 
-            code.EndLine().Append($"namespace {settings.Namespaces.TableNamespace} {{").EndLine().EndLine();
+            bool skipInterfaces = tables.Count == 1 && tables[0].IsView;
 
-            foreach(DatabaseTable table in tables) {
+            if(!skipInterfaces) {
 
-                if(!table.IsView) {
-                    string tableName = CodeHelper.GetTableName(table, includePostFix: false);
-                    code.Indent(1).Append($"public interface I{tableName} {{}}").EndLine();
+                code.EndLine().Append($"namespace {settings.Namespaces.TableNamespace} {{").EndLine().EndLine();
+
+                foreach(DatabaseTable table in tables) {
+
+                    if(!table.IsView) {
+                        string tableName = CodeHelper.GetTableName(table, includePostFix: false);
+                        code.Indent(1).Append($"public interface I{tableName} {{}}").EndLine();
+                    }
                 }
-            }
 
-            code.Append("}").EndLine();
+                code.Append("}").EndLine();
+            }
 
             List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
 
