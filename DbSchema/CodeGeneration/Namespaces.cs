@@ -21,6 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.DbSchema.Tables;
+using System;
+
 namespace QueryLite.DbSchema.CodeGeneration {
 
     public sealed class Namespaces {
@@ -32,6 +35,30 @@ namespace QueryLite.DbSchema.CodeGeneration {
         }
         public string BaseNamespace { get; set; }
         public string TableNamespace { get; set; }
-        public string ClassNamespace { get; set; }
+        private string ClassNamespace { get; set; }
+
+        public string GetTableNamespace(StringKey<ISchemaName> schema) {
+
+            if(!IsDefaultSchema(schema)) {
+                return $"{TableNamespace}.{schema.Value}";
+            }
+            else {
+                return TableNamespace;
+            }
+        }
+
+        public string GetClassesNamespace(StringKey<ISchemaName> schema) {
+
+            if(!IsDefaultSchema(schema)) {
+                return $"{ClassNamespace}.{schema.Value}";
+            }
+            else {
+                return TableNamespace;
+            }
+        }
+
+        public static bool IsDefaultSchema(StringKey<ISchemaName> schema) {
+            return !string.Equals(schema.Value, "dbo", StringComparison.OrdinalIgnoreCase) && !string.Equals(schema.Value, "public", StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

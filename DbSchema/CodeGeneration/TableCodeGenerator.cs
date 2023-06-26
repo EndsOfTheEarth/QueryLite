@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.DbSchema.Tables;
 using System;
 using System.Collections.Generic;
 
@@ -32,23 +33,51 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             CodeBuilder code = new CodeBuilder();
 
+            code.Append("using System;").EndLine();
+            code.Append("using QueryLite;").EndLine();
+
             code.EndLine().Append($"namespace {settings.Namespaces.TableNamespace} {{").EndLine().EndLine();
 
-            code.Indent(1).Append("using System;").EndLine();
-            code.Indent(1).Append("using QueryLite;").EndLine();
-
-            code.EndLine();
-
             foreach(DatabaseTable table in tables) {
-                string tableName = CodeHelper.GetTableName(table, includePostFix: false);
-                code.Indent(1).Append($"public interface I{tableName} {{}}").EndLine();
+
+                if(!table.IsView) {
+                    string tableName = CodeHelper.GetTableName(table, includePostFix: false);
+                    code.Indent(1).Append($"public interface I{tableName} {{}}").EndLine();
+                }
             }
 
+            code.Append("}").EndLine();
+
+            List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
+
             foreach(DatabaseTable table in tables) {
-                TablePrefix prefix = new TablePrefix(table);
-                code.Append(Generate(table, prefix, settings, includeUsings: false, generateKeyInterface: false).ToString());
+
+                if(!schemaNames.Contains(table.Schema)) {
+                    schemaNames.Add(table.Schema);
+                }
             }
-            code.Append("}");
+
+            schemaNames.Sort((a, b) => a.Value.CompareTo(b.Value));
+
+            int count = 0;
+
+            foreach(StringKey<ISchemaName> schema in schemaNames) {
+
+                if(count > 0) {
+                    code.EndLine();
+                }
+                count++;
+                code.EndLine().Append($"namespace {settings.Namespaces.GetTableNamespace(schema)} {{").EndLine();
+
+                foreach(DatabaseTable table in tables) {
+
+                    if(string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
+                        TablePrefix prefix = new TablePrefix(table);
+                        code.Append(Generate(table, prefix, settings, includeUsings: false, generateKeyInterface: false).ToString());
+                    }
+                }
+                code.Append("}");
+            }
             return code;
         }
 
@@ -58,7 +87,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             if(includeUsings) {
 
-                code.Append($"namespace {settings.Namespaces.TableNamespace} {{").EndLine().EndLine();
+                code.Append($"namespace {settings.Namespaces.GetTableNamespace(table.Schema)} {{").EndLine().EndLine();
 
                 code.Indent(1).Append("using System;").EndLine();
                 code.Indent(1).Append("using QueryLite;").EndLine();
@@ -178,7 +207,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
                         string primaryKeyTable = CodeHelper.GetTableName(reference.PrimaryKeyColumn.Table, includePostFix: true);
                         string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(reference.PrimaryKeyColumn.ColumnName.Value, className: null);
 
-                        code.Append($".References({foreignKeyColumnName}, {primaryKeyTable}.Instance.{primaryKeyColumnName})");
+                        string primaryKeyTableSchemaName = !Namespaces.IsDefaultSchema(reference.PrimaryKeyColumn.Table.Schema) ? $"{reference.PrimaryKeyColumn.Table.Schema.Value}." : string.Empty;
+
+                        code.Append($".References({foreignKeyColumnName}, {primaryKeyTableSchemaName}{primaryKeyTable}.Instance.{primaryKeyColumnName})");
                     }
                 }
                 code.EndLine();

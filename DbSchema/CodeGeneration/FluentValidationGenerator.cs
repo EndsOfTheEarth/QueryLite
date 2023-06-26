@@ -31,7 +31,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             CodeBuilder classCode = new CodeBuilder();
 
-            classCode.Append($"namespace {namespaces.ClassNamespace} {{").EndLine().EndLine();
+            classCode.Append($"namespace {namespaces.GetClassesNamespace(table.Schema)} {{").EndLine().EndLine();
             classCode.Indent(1).Append("using System;").EndLine();
             classCode.Indent(1).Append("using FluentValidation;").EndLine();
             classCode.Indent(1).Append($"using {namespaces.TableNamespace};").EndLine();
@@ -62,7 +62,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             foreach(DatabaseColumn column in table.Columns) {
 
-                if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType))) {    //Ignore unsupported types
+                if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType)) || column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
                     continue;
                 }
 
