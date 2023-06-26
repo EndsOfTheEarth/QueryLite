@@ -32,7 +32,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             CodeBuilder classCode = new CodeBuilder();
 
-            classCode.Append($"namespace {settings.Namespaces.ClassNamespace} {{").EndLine().EndLine();
+            classCode.Append($"namespace {settings.Namespaces.GetClassesNamespace(table.Schema)} {{").EndLine().EndLine();
             classCode.Indent(1).Append("using System;").EndLine();
             classCode.Indent(1).Append("using QueryLite;").EndLine();
 
@@ -49,6 +49,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string className = CodeHelper.GetTableName(table, includePostFix: false);
 
+            if(table.IsView) {
+                className += "_View";
+            }
+
             if(settings.IncludeMessagePackAttributes) {
                 classCode.Indent(1).Append("[MessagePackObject]").EndLine();
             }
@@ -61,6 +65,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             int count = 0;
             foreach(DatabaseColumn column in table.Columns) {
+
+                if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
+                    continue;
+                }
 
                 if(count > 0) {
                     classCode.Append(", ");
@@ -97,6 +105,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
             CodeBuilder constructor2 = new CodeBuilder();
 
             foreach(DatabaseColumn column in table.Columns) {
+
+                if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
+                    continue;
+                }
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
                 constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{prefix.GetColumnName(column.ColumnName.Value, className: null)});").EndLine();
             }
@@ -106,6 +118,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
             count = 0;
 
             foreach(DatabaseColumn column in table.Columns) {
+
+                if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
+                    continue;
+                }
 
                 classCode.EndLine();
 

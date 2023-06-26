@@ -51,7 +51,6 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             foreach(DatabaseTable table in tables) {
 
-
                 if(classesText.Length > 0) {
                     classesText.Append(Environment.NewLine).Append(Environment.NewLine);
                 }
@@ -70,10 +69,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                     CodeBuilder tableCode = TableCodeGenerator.Generate(new List<DatabaseTable>() { table }, settings);
 
-                    string tableFileName = Path.Combine(tablesFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Table.cs");
+                    string tableFileName = Path.Combine(tablesFolder, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
                     File.WriteAllText(tableFileName, tableCode.ToString());
 
-                    string classesFileName = Path.Combine(classesFolder, CodeHelper.GetTableName(table, includePostFix: false) + ".cs");
+                    string classesFileName = Path.Combine(classesFolder, CodeHelper.GetTableName(table, includePostFix: false) + (table.IsView ? "View" : string.Empty) + ".cs");
                     File.WriteAllText(classesFileName, classesText.ToString());
                     classesText.Clear();
 
