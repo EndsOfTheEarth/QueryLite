@@ -23,6 +23,7 @@
  **/
 using QueryLite.DbSchema.Tables;
 using System;
+using System.Xml.Linq;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
@@ -39,8 +40,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         public string GetTableNamespace(StringKey<ISchemaName> schema) {
 
+            string schemaName = schema.Value;
+
+            schemaName = !string.IsNullOrEmpty(schemaName) ? $"{char.ToUpper(schemaName[0])}{schemaName.Substring(startIndex: 1)}" : string.Empty;
+
             if(!IsDefaultSchema(schema)) {
-                return $"{TableNamespace}.{schema.Value}";
+                return $"{TableNamespace}.{schemaName}";
             }
             else {
                 return TableNamespace;
@@ -49,8 +54,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         public string GetClassesNamespace(StringKey<ISchemaName> schema) {
 
+            string schemaName = schema.Value;
+
+            schemaName = !string.IsNullOrEmpty(schemaName) ? $"{char.ToUpper(schemaName[0])}{schemaName.Substring(startIndex: 1)}" : string.Empty;
+
             if(!IsDefaultSchema(schema)) {
-                return $"{ClassNamespace}.{schema.Value}";
+                return $"{ClassNamespace}.{schemaName}";
             }
             else {
                 return TableNamespace;

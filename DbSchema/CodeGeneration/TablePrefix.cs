@@ -78,7 +78,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             name = name.Replace('.', '_').Replace(' ', '_');
 
-            if(className != null && (name == className || CodeHelper.IsCSharpKeyword(columnName))) {
+            if(className != null && (string.Equals(name, className, StringComparison.OrdinalIgnoreCase) || CodeHelper.IsCSharpKeyword(columnName))) {
                 name = name + "_";
             }
 
