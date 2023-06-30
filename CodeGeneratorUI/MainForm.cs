@@ -122,6 +122,8 @@ namespace QueryLite.CodeGeneratorUI {
 
             bool includeSystemSchemas = chkIncludeSystemSchemas.Checked;
 
+            Tables.Sort((t1, t2) => t1.TableName.Value.CompareTo(t2.TableName.Value));
+
             foreach(DatabaseTable table in Tables) {
 
                 if(!includeSystemSchemas && _database.DatabaseType == DatabaseType.PostgreSql) { //Skip system schemas
