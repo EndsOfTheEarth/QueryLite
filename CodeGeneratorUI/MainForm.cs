@@ -308,8 +308,25 @@ namespace QueryLite.CodeGeneratorUI {
                         Namespaces = namespaces
                     };
 
+                    //
+                    //  Filter out system tables when needed
+                    //
+                    List<DatabaseTable> tables = new List<DatabaseTable>();
+
+                    bool includeSystemSchemas = chkIncludeSystemSchemas.Checked;
+
+                    foreach(DatabaseTable table in Tables) {
+
+                        if(!includeSystemSchemas && _database.DatabaseType == DatabaseType.PostgreSql) { //Skip system schemas
+
+                            if(string.Compare(table.Schema.Value, "pg_catalog", ignoreCase: true) == 0 || string.Compare(table.Schema.Value, "information_schema", ignoreCase: true) == 0) {
+                                continue;
+                            }
+                        }
+                        tables.Add(table);
+                    }
                     OutputToFolder.Output(
-                        tables: Tables,
+                        tables: tables,
                         namespaces: namespaces,
                         settings: settings,
                         folder: folder,

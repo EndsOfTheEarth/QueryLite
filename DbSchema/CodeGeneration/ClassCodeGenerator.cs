@@ -38,6 +38,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
+            string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
+
+            if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
+                classCode.Indent(1).Append($"using {tableNamespace};").EndLine();
+            }
+
             if(settings.IncludeMessagePackAttributes) {
                 classCode.Indent(1).Append("using MessagePack;").EndLine();
             }
@@ -109,8 +115,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
                     continue;
                 }
+                
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
-                constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{prefix.GetColumnName(column.ColumnName.Value, className: null)});").EndLine();
+                
+                string columnNameForTable = prefix.GetColumnName(column.ColumnName.Value, className: tableOrViewClassName);
+
+                constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{columnNameForTable});").EndLine();
             }
             classCode.Append(constructor2.ToString());
             classCode.Indent(2).Append("}").EndLine();

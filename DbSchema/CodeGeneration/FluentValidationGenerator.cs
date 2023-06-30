@@ -34,7 +34,14 @@ namespace QueryLite.DbSchema.CodeGeneration {
             classCode.Append($"namespace {namespaces.GetClassesNamespace(table.Schema)} {{").EndLine().EndLine();
             classCode.Indent(1).Append("using System;").EndLine();
             classCode.Indent(1).Append("using FluentValidation;").EndLine();
+
             classCode.Indent(1).Append($"using {namespaces.TableNamespace};").EndLine();
+
+            string tableNamespace = namespaces.GetTableNamespace(table.Schema);
+
+            if(namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
+                classCode.Indent(1).Append($"using {tableNamespace};").EndLine();
+            }
 
             string className = CodeHelper.GetTableName(table, includePostFix: false);
 
