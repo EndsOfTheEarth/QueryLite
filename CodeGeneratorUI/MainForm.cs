@@ -253,13 +253,13 @@ namespace QueryLite.CodeGeneratorUI {
 
                     txtCode.Text += Environment.NewLine;
 
-                    CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(_database, table, prefix, settings);
+                    CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(_database, table, prefix, settings, includeUsings: true);
 
                     txtCode.Text += Environment.NewLine + classCode.ToString();
 
                     if(!table.IsView) {
 
-                        CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(_database, table, prefix, useIdentifiers: chkUseIdentifiers.Checked, namespaces);
+                        CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
 
                         txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
                     }

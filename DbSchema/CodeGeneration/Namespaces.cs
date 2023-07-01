@@ -23,16 +23,19 @@
  **/
 using QueryLite.DbSchema.Tables;
 using System;
-using System.Xml.Linq;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
     public sealed class Namespaces {
 
         public Namespaces(string baseNamespace, string tableNamespace, string classNamespace) {
-            BaseNamespace = baseNamespace;
-            TableNamespace = tableNamespace;
-            ClassNamespace = classNamespace;
+            BaseNamespace = FirstLetterUpperCase(baseNamespace);
+            TableNamespace = FirstLetterUpperCase(tableNamespace);
+            ClassNamespace = FirstLetterUpperCase(classNamespace);
+        }
+
+        private string FirstLetterUpperCase(string value) {
+            return !string.IsNullOrEmpty(value) ? $"{char.ToUpper(value[0])}{value.Substring(startIndex: 1)}" : string.Empty;
         }
         public string BaseNamespace { get; set; }
         public string TableNamespace { get; set; }
@@ -42,7 +45,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string schemaName = schema.Value;
 
-            schemaName = !string.IsNullOrEmpty(schemaName) ? $"{char.ToUpper(schemaName[0])}{schemaName.Substring(startIndex: 1)}" : string.Empty;
+            schemaName = FirstLetterUpperCase(schemaName);
 
             if(!IsDefaultSchema(schema)) {
                 return $"{TableNamespace}.{schemaName}";
@@ -56,7 +59,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string schemaName = schema.Value;
 
-            schemaName = !string.IsNullOrEmpty(schemaName) ? $"{char.ToUpper(schemaName[0])}{schemaName.Substring(startIndex: 1)}" : string.Empty;
+            schemaName = FirstLetterUpperCase(schemaName);
 
             if(!IsDefaultSchema(schema)) {
                 return $"{ClassNamespace}.{schemaName}";
