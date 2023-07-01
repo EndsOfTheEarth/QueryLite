@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
@@ -36,64 +35,46 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 throw new ArgumentException($"{nameof(folder)} = '{folder}' does not exist");
             }
 
-            StringBuilder classesText = new StringBuilder();
-            StringBuilder fluentValidationText = new StringBuilder();
-
             string tablesFolder = Path.Combine(folder, "Tables");
             string classesFolder = Path.Combine(folder, "Classes");
             string validationFolder = Path.Combine(folder, "Validation");
 
             if(singleFiles) {
+
                 Directory.CreateDirectory(tablesFolder);
                 Directory.CreateDirectory(classesFolder);
                 Directory.CreateDirectory(validationFolder);
-            }
 
-            foreach(DatabaseTable table in tables) {
+                foreach(DatabaseTable table in tables) {
 
-                if(classesText.Length > 0) {
-                    classesText.Append(Environment.NewLine).Append(Environment.NewLine);
-                }
-                TablePrefix prefix = new TablePrefix(table);
-
-                CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings);
-
-                classesText.Append(classCode.ToString());
-
-                if(!table.IsView) {
-                    CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(database, table, prefix, settings.UseIdentifiers, namespaces);
-                    fluentValidationText.Append(validationCode.ToString());
-                }
-
-                if(singleFiles) {
+                    TablePrefix prefix = new TablePrefix(table);
 
                     CodeBuilder tableCode = TableCodeGenerator.Generate(new List<DatabaseTable>() { table }, settings);
 
                     string tableFileName = Path.Combine(tablesFolder, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
                     File.WriteAllText(tableFileName, tableCode.ToString());
 
+                    CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings, includeUsings: true);
+
                     string classesFileName = Path.Combine(classesFolder, CodeHelper.GetTableName(table, includePostFix: false) + (table.IsView ? "View" : string.Empty) + ".cs");
-                    File.WriteAllText(classesFileName, classesText.ToString());
-                    classesText.Clear();
+                    File.WriteAllText(classesFileName, classCode.ToString());
 
                     if(!table.IsView) {
+                        CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
                         string validationFileName = Path.Combine(validationFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Validation.cs");
-                        File.WriteAllText(validationFileName, fluentValidationText.ToString());
-                        fluentValidationText.Clear();
+                        File.WriteAllText(validationFileName, validationCode.ToString());
                     }
                 }
-                else {
-                    fluentValidationText.Append(Environment.NewLine).Append(Environment.NewLine);
-                }
             }
-
-            if(!singleFiles) {
+            else {
 
                 CodeBuilder tableCode = TableCodeGenerator.Generate(tables, settings);
+                CodeBuilder classCode = ClassCodeGenerator.Generate(database, tables, settings);
+                CodeBuilder validationCode = FluentValidationGenerator.Generate(tables, settings);
 
                 File.WriteAllText(Path.Combine(folder, "Tables.cs"), tableCode.ToString());
-                File.WriteAllText(Path.Combine(folder, "Classes.cs"), classesText.ToString());
-                File.WriteAllText(Path.Combine(folder, "Validation.cs"), fluentValidationText.ToString().TrimEnd());
+                File.WriteAllText(Path.Combine(folder, "Classes.cs"), classCode.ToString());
+                File.WriteAllText(Path.Combine(folder, "Validation.cs"), validationCode.ToString());
             }
         }
     }
