@@ -88,7 +88,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 string tableFilePath = Path.Combine(tablesDir, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
                 File.WriteAllText(tableFilePath, code.ToString());
 
-                CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings);
+                CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings, includeUsings: true);
 
                 string logicFilePath = Path.Combine(logicDir, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
                 File.WriteAllText(logicFilePath, classCode.ToString());
