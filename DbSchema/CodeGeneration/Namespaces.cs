@@ -70,7 +70,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
         }
 
         public static bool IsDefaultSchema(StringKey<ISchemaName> schema) {
-            return !string.Equals(schema.Value, "dbo", StringComparison.OrdinalIgnoreCase) && !string.Equals(schema.Value, "public", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(schema.Value, "dbo", StringComparison.OrdinalIgnoreCase) || string.Equals(schema.Value, "public", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
