@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using DbSchema.CodeGeneration;
 using Npgsql;
 using QueryLite.Databases.PostgreSql;
 using QueryLite.Databases.SqlServer;
@@ -263,6 +264,8 @@ namespace QueryLite.CodeGeneratorUI {
 
                         txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
                     }
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetCreateRequest(table);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetCreateHandlerCode(table);
                 }
             }
             finally {

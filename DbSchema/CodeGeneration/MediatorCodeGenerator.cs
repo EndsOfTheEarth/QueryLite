@@ -27,14 +27,14 @@ namespace DbSchema.CodeGeneration {
             name = name.FirstLetterUpperCase();
 
             string code = $@"
-public class Create{name}Request : IRequest<Response> {{
+public sealed class Create{name}Request : IRequest<Response> {{
 
-        public {name} {name} {{ get; set; }}
+    public {name} {name} {{ get; set; }}
 
-        public Create{name}Request({name} {name.ToLower()}) {{
-            {name} = {name.ToLower()};
-        }}
+    public Create{name}Request({name} {name.ToLower()}) {{
+        {name} = {name.ToLower()};
     }}
+}}
 ";
             return code;
         }
@@ -52,54 +52,54 @@ public class Create{name}Request : IRequest<Response> {{
                 if(setValues.Length > 0) {
                     setValues.Append(Environment.NewLine);
                 }
-
                 string columnName = column.ColumnName.Value.FirstLetterUpperCase();
-                setValues.Append($"                    values.Set(table.{columnName}, info => info.{columnName})");
+                setValues.Append($"                values.Set(table.{columnName}, info => info.{columnName});");
             }
             string code = $@"
-public class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
+public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
 
-        private static readonly {name}Validator _validator = new {name}Validator();
+    private static readonly {name}Validator _validator = new {name}Validator();
 
-        private static readonly IPreparedInsertQuery<{name}> _insertQuery;
+    private static readonly IPreparedInsertQuery<{name}> _insertQuery;
 
-        static Create{name}Handler() {{
+    static Create{name}Handler() {{
 
-            {name}Table table = {name}Table.Instance;
+        {name}Table table = {name}Table.Instance;
 
-            _insertQuery = Query.Prepare<{name}>()
-                .Insert(table)
-                .Values(values => values
+        _insertQuery = Query.Prepare<{name}>()
+            .Insert(table)
+            .Values(values => {{
 {setValues}
-                ).Build();
-        }}
-
-        private readonly IDatabase _database;
-
-        public Create{name}Handler(IDatabase database) {{
-            _database = database;
-        }}
-
-        public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
-
-            FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
-
-            if(!validation.IsValid) {{
-                return Response.Failed(validation.Errors);
             }}
-
-            using(Transaction transaction = new Transaction(_database)) {{
-
-                NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, cancellationToken, TimeoutLevel.ShortInsert);
-
-                if(result.RowsEffected != 1) {{
-                    throw new Exception($""{{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
-                }}
-                transaction.Commit();
-            }}
-            return Response.Successful;
-        }}
+            ).Build();
     }}
+
+    private readonly IDatabase _database;
+
+    public Create{name}Handler(IDatabase database) {{
+        _database = database;
+    }}
+
+    public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
+
+        FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
+
+        if(!validation.IsValid) {{
+            return Response.Failed(validation.Errors);
+        }}
+
+        using(Transaction transaction = new Transaction(_database)) {{
+
+            NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, cancellationToken, TimeoutLevel.ShortInsert);
+
+            if(result.RowsEffected != 1) {{
+                throw new Exception($""{{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+            }}
+            transaction.Commit();
+        }}
+        return Response.Successful;
+    }}
+}}
 ";
             return code;
         }
