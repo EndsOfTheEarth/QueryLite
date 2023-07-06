@@ -54,7 +54,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
 
@@ -78,9 +78,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
                 }
                 else {
 
@@ -94,14 +93,12 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
                 command.CommandTimeout = timeout.Seconds;
 
                 if(parameters != null) {
@@ -118,6 +115,11 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) { //Ideally we want to open the connection as late a possible and close it immediately after use so it is freed back into the connection pool for other threads to use
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
                 using DbDataReader reader = command.ExecuteReader();
 
                 IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
@@ -129,16 +131,16 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
+
+                if(oneTimeConnection) {
+                    dbConnection.Close();
+                }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 //Note: Reader must be closed for RecordsAffected to be populated
                 QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(closeConnection) {
-                    dbConnection.Close();
-                }
 
                 if(hasEvents) {
 
@@ -162,25 +164,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -197,7 +202,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;
 
@@ -221,9 +226,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
-                    dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
+                    oneTimeConnection = true;
+                    dbConnection = database.GetNewConnection();                    
                 }
                 else {
 
@@ -237,13 +241,12 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -261,12 +264,18 @@ namespace QueryLite {
                     }
                 }
 
-                int rowsEffected = command.ExecuteNonQuery();
-                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                if(closeConnection) {
+                int rowsEffected = command.ExecuteNonQuery();
+
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
 
                 if(hasEvents) {
 
@@ -290,25 +299,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -325,7 +337,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;
 
@@ -349,9 +361,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
                 }
                 else {
 
@@ -365,13 +376,12 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -388,6 +398,11 @@ namespace QueryLite {
                         Debugger.Break();
                     }
                 }
+
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 using DbDataReader reader = command.ExecuteReader();
 
@@ -406,13 +421,13 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
 
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 if(hasEvents) {
 
@@ -438,25 +453,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -474,7 +492,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;
 
@@ -498,9 +516,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
-                    dbConnection = database.GetNewConnection();
-                    await dbConnection.OpenAsync(cancellationToken);
+                    oneTimeConnection = true;
+                    dbConnection = database.GetNewConnection();                    
                 }
                 else {
 
@@ -508,19 +525,18 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken);
+                        dbConnection.Open();
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -537,6 +553,11 @@ namespace QueryLite {
                         Debugger.Break();
                     }
                 }
+
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
 
@@ -555,13 +576,13 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
 
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 if(hasEvents) {
 
@@ -587,25 +608,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -624,7 +648,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;
 
@@ -648,9 +672,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -658,19 +681,18 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken);
+                        dbConnection.Open();
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -688,6 +710,11 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
                 using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
@@ -699,16 +726,16 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
+
+                if(oneTimeConnection) {
+                    dbConnection.Close();
+                }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 //Note: Reader must be closed for RecordsAffected to be populated
                 QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(closeConnection) {
-                    dbConnection.Close();
-                }
 
                 if(hasEvents) {
 
@@ -732,25 +759,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -768,7 +798,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;
 
@@ -792,9 +822,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -802,19 +831,18 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken);
+                        dbConnection.Open();
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -832,13 +860,18 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
                 int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
 
-                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
-
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
 
                 if(hasEvents) {
 
@@ -862,25 +895,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -902,7 +938,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
 
@@ -926,9 +962,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
                 }
                 else {
 
@@ -942,13 +977,12 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -963,6 +997,11 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
                 using DbDataReader reader = command.ExecuteReader();
 
                 IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
@@ -974,16 +1013,16 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
+
+                if(oneTimeConnection) {
+                    dbConnection.Close();
+                }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 //Note: Reader must be closed for RecordsAffected to be populated
                 QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(closeConnection) {
-                    dbConnection.Close();
-                }
 
                 if(hasEvents) {
 
@@ -1007,25 +1046,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -1044,7 +1086,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;
 
@@ -1068,9 +1110,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
                 }
                 else {
 
@@ -1084,13 +1125,12 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -1104,6 +1144,11 @@ namespace QueryLite {
                         Debugger.Break();
                     }
                 }
+
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 using DbDataReader reader = command.ExecuteReader();
 
@@ -1122,13 +1167,13 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
 
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 if(hasEvents) {
 
@@ -1154,25 +1199,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -1192,7 +1240,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;
 
@@ -1216,9 +1264,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -1226,19 +1273,18 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken);
+                        dbConnection.Open();
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -1252,6 +1298,11 @@ namespace QueryLite {
                         Debugger.Break();
                     }
                 }
+
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
 
@@ -1270,13 +1321,13 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
 
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 if(hasEvents) {
 
@@ -1302,25 +1353,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -1335,14 +1389,12 @@ namespace QueryLite {
             Func<IResultRow, RESULT> func,
             string sql,
             QueryType queryType,
-            //IList<IField> selectFields,
-            //FieldCollector fieldCollector,
             string debugName,
             CancellationToken cancellationToken) {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;
 
@@ -1366,9 +1418,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
-                    dbConnection = database.GetNewConnection();
-                    await dbConnection.OpenAsync(cancellationToken);
+                    oneTimeConnection = true;
+                    dbConnection = database.GetNewConnection();                    
                 }
                 else {
 
@@ -1376,19 +1427,18 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken);
+                        dbConnection.Open();
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
 
@@ -1403,6 +1453,11 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
                 using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
@@ -1414,16 +1469,16 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
+
+                if(oneTimeConnection) {
+                    dbConnection.Close();
+                }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 //Note: Reader must be closed for RecordsAffected to be populated
                 QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(closeConnection) {
-                    dbConnection.Close();
-                }
 
                 if(hasEvents) {
 
@@ -1447,25 +1502,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -1484,7 +1542,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
 
@@ -1508,9 +1566,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
                 }
                 else {
 
@@ -1524,16 +1581,14 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
-
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
@@ -1549,6 +1604,11 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
                 using DbDataReader reader = command.ExecuteReader();
 
                 IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
@@ -1560,16 +1620,16 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
+
+                if(oneTimeConnection) {
+                    dbConnection.Close();
+                }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 //Note: Reader must be closed for RecordsAffected to be populated
                 QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(closeConnection) {
-                    dbConnection.Close();
-                }
 
                 if(hasEvents) {
 
@@ -1593,25 +1653,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -1630,7 +1693,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
 
@@ -1654,9 +1717,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
                 }
                 else {
 
@@ -1670,16 +1732,14 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
-
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
@@ -1694,6 +1754,11 @@ namespace QueryLite {
                         Debugger.Break();
                     }
                 }
+
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 using DbDataReader reader = command.ExecuteReader();
 
@@ -1712,13 +1777,13 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close(); //Note: Reader must be closed for RecordsAffected to be populated
 
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 if(hasEvents) {
 
@@ -1744,25 +1809,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -1782,7 +1850,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
 
@@ -1806,9 +1874,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
                 }
                 else {
 
@@ -1822,16 +1889,14 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
-
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
@@ -1846,6 +1911,11 @@ namespace QueryLite {
                         Debugger.Break();
                     }
                 }
+
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
 
@@ -1864,13 +1934,13 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close(); //Note: Reader must be closed for RecordsAffected to be populated
 
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 if(hasEvents) {
 
@@ -1896,25 +1966,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -1934,7 +2007,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
 
@@ -1958,9 +2031,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -1968,22 +2040,20 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken);
+                        dbConnection.Open();
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
-
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
@@ -1999,6 +2069,11 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
                 using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
 
                 IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
@@ -2010,16 +2085,16 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
                 reader.Close();
+
+                if(oneTimeConnection) {
+                    dbConnection.Close();
+                }
+
+                SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                 //Note: Reader must be closed for RecordsAffected to be populated
                 QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(closeConnection) {
-                    dbConnection.Close();
-                }
 
                 if(hasEvents) {
 
@@ -2043,25 +2118,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -2079,7 +2157,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
 
@@ -2103,9 +2181,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    dbConnection.Open();
                 }
                 else {
 
@@ -2119,16 +2196,14 @@ namespace QueryLite {
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
-
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
@@ -2144,13 +2219,18 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
                 int rowsEffected = command.ExecuteNonQuery();
 
-                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
-
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
+
+                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
 
                 if(hasEvents) {
 
@@ -2174,25 +2254,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
@@ -2211,7 +2294,7 @@ namespace QueryLite {
 
             DbConnection? dbConnection = null;
 
-            bool closeConnection = false;
+            bool oneTimeConnection = false;
 
             bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
 
@@ -2235,9 +2318,8 @@ namespace QueryLite {
                 }
 
                 if(transaction == null) {
-                    closeConnection = true;
+                    oneTimeConnection = true;
                     dbConnection = database.GetNewConnection();
-                    await dbConnection.OpenAsync(cancellationToken);
                 }
                 else {
 
@@ -2245,22 +2327,20 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken);
+                        dbConnection.Open();
                         transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
                     }
-                    closeConnection = false;
+                    oneTimeConnection = false;
                 }
 
                 using DbCommand command = dbConnection!.CreateCommand();
 
                 command.CommandText = sql;
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
                 command.CommandTimeout = timeout.Seconds;
-
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
@@ -2276,11 +2356,15 @@ namespace QueryLite {
                     }
                 }
 
+                if(oneTimeConnection) {
+                    dbConnection.Open();
+                }
+                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
                 int rowsEffected = await command.ExecuteNonQueryAsync();
 
                 NonQueryResult result = new NonQueryResult(sql, rowsEffected);
 
-                if(closeConnection) {
+                if(oneTimeConnection) {
                     dbConnection.Close();
                 }
 
@@ -2306,25 +2390,28 @@ namespace QueryLite {
             }
             catch(Exception ex) {
 
-                Settings.FireQueryPerformedEvent(
-                    database: database,
-                    sql: sql,
-                    rows: 0,
-                    rowsEffected: 0,
-                    queryType: queryType,
-                    result: null,
-                    start: start,
-                    end: DateTimeOffset.Now,
-                    elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                    exception: ex,
-                    isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                    transactionId: transaction?.TransactionId,
-                    debugName: debugName
-                );
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: database,
+                        sql: sql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: queryType,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        debugName: debugName
+                    );
+                }
                 throw;
             }
             finally {
-                if(closeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
                     dbConnection.Dispose();
                 }
             }
