@@ -563,7 +563,7 @@ namespace QueryLite {
 
                 RESULT? result = default;
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -1313,7 +1313,7 @@ namespace QueryLite {
                 RESULT? result = default;
                 bool isFirst = true;
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -1932,7 +1932,7 @@ namespace QueryLite {
 
                 RESULT? result = default;
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -2090,7 +2090,7 @@ namespace QueryLite {
 
                 List<RESULT> rowList = new List<RESULT>();
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -2377,7 +2377,7 @@ namespace QueryLite {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                 }
                 command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-                int rowsEffected = await command.ExecuteNonQueryAsync();
+                int rowsEffected = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
                 NonQueryResult result = new NonQueryResult(sql, rowsEffected);
 
