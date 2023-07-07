@@ -131,10 +131,10 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                reader.Close();
+                reader.Dispose();
 
                 if(oneTimeConnection) {
-                    dbConnection.Close();
+                    dbConnection.Dispose();
                 }
 
                 SelectCollectorCache.Release(database.DatabaseType, resultRow);
@@ -272,7 +272,7 @@ namespace QueryLite {
                 int rowsEffected = command.ExecuteNonQuery();
 
                 if(oneTimeConnection) {
-                    dbConnection.Close();
+                    dbConnection.Dispose();
                 }
 
                 NonQueryResult result = new NonQueryResult(sql, rowsEffected);
@@ -421,10 +421,10 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                reader.Close();
+                reader.Dispose();
 
                 if(oneTimeConnection) {
-                    dbConnection.Close();
+                    dbConnection.Dispose();
                 }
 
                 SelectCollectorCache.Release(database.DatabaseType, resultRow);
@@ -517,7 +517,7 @@ namespace QueryLite {
 
                 if(transaction == null) {
                     oneTimeConnection = true;
-                    dbConnection = database.GetNewConnection();                    
+                    dbConnection = database.GetNewConnection();
                 }
                 else {
 
@@ -526,7 +526,7 @@ namespace QueryLite {
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -569,7 +569,7 @@ namespace QueryLite {
 
                     IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                    while(reader.Read()) {  //Note: This cannot call ReadAsync otherwise it will mess with SelectCollectorCache.Release(...) being on a different thread
+                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
 
                         if(!isFirst) {
                             throw new Exception("More than one record exists in result");
@@ -685,7 +685,7 @@ namespace QueryLite {
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -726,7 +726,7 @@ namespace QueryLite {
 
                     IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                    while(reader.Read()) {  //Note: This cannot call ReadAsync otherwise it will mess with SelectCollectorCache.Release(...) being on a different thread
+                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
                         rowList.Add(func(resultRow));
                         resultRow.Reset();
                     }
@@ -838,7 +838,7 @@ namespace QueryLite {
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -1019,10 +1019,10 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                reader.Close();
+                reader.Dispose();
 
                 if(oneTimeConnection) {
-                    dbConnection.Close();
+                    dbConnection.Dispose();
                 }
 
                 SelectCollectorCache.Release(database.DatabaseType, resultRow);
@@ -1173,10 +1173,10 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                reader.Close();
+                reader.Dispose();
 
                 if(oneTimeConnection) {
-                    dbConnection.Close();
+                    dbConnection.Dispose();
                 }
 
                 SelectCollectorCache.Release(database.DatabaseType, resultRow);
@@ -1280,7 +1280,7 @@ namespace QueryLite {
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -1319,7 +1319,7 @@ namespace QueryLite {
 
                     IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                    while(reader.Read()) {  //Note: This cannot call ReadAsync otherwise it will mess with SelectCollectorCache.Release(...) being on a different thread
+                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
 
                         if(!isFirst) {
                             throw new Exception("More than one record exists in result");
@@ -1436,7 +1436,7 @@ namespace QueryLite {
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -1474,7 +1474,7 @@ namespace QueryLite {
 
                     IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                    while(reader.Read()) {  //Note: This cannot call ReadAsync otherwise it will mess with SelectCollectorCache.Release(...) being on a different thread
+                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
                         rowList.Add(func(resultRow));
                         resultRow.Reset();
                     }
@@ -1631,10 +1631,10 @@ namespace QueryLite {
                     resultRow.Reset();
                 }
 
-                reader.Close();
+                reader.Dispose();
 
                 if(oneTimeConnection) {
-                    dbConnection.Close();
+                    dbConnection.Dispose();
                 }
 
                 SelectCollectorCache.Release(database.DatabaseType, resultRow);
@@ -1788,10 +1788,10 @@ namespace QueryLite {
                     isFirst = false;
                 }
 
-                reader.Close(); //Note: Reader must be closed for RecordsAffected to be populated
+                reader.Dispose(); //Note: Reader must be closed for RecordsAffected to be populated
 
                 if(oneTimeConnection) {
-                    dbConnection.Close();
+                    dbConnection.Dispose();
                 }
 
                 SelectCollectorCache.Release(database.DatabaseType, resultRow);
@@ -1895,7 +1895,7 @@ namespace QueryLite {
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -1938,7 +1938,7 @@ namespace QueryLite {
 
                     IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                    while(reader.Read()) {  //Note: This cannot call ReadAsync otherwise it will mess with SelectCollectorCache.Release(...) being on a different thread
+                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
 
                         if(!isFirst) {
                             throw new Exception("More than one record exists in result");
@@ -2055,7 +2055,7 @@ namespace QueryLite {
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -2096,7 +2096,7 @@ namespace QueryLite {
 
                     IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                    while(reader.Read()) {  //Note: This cannot call ReadAsync otherwise it will mess with SelectCollectorCache.Release(...) being on a different thread
+                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
                         rowList.Add(outputFunc(resultRow));
                         resultRow.Reset();
                     }
@@ -2244,7 +2244,7 @@ namespace QueryLite {
                 int rowsEffected = command.ExecuteNonQuery();
 
                 if(oneTimeConnection) {
-                    dbConnection.Close();
+                    dbConnection.Dispose();
                 }
 
                 NonQueryResult result = new NonQueryResult(sql, rowsEffected);
@@ -2345,7 +2345,7 @@ namespace QueryLite {
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, dbConnection.BeginTransaction(transaction.IsolationLevel));
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
