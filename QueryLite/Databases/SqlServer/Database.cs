@@ -58,19 +58,8 @@ namespace QueryLite.Databases.SqlServer {
             ConnectionString = connectionString;
         }
 
-        public DbConnection GetNewConnection() {
+        public DbConnection GetNewConnection() => new SqlConnection(ConnectionString);
 
-            SqlConnection? connection = null;
-
-            try {
-                connection = new SqlConnection(ConnectionString);
-            }
-            catch {
-                connection?.Dispose();
-                throw;
-            }
-            return connection;
-        }
         DbConnection IDatabase.GetNewConnection() {
             return GetNewConnection();
         }
