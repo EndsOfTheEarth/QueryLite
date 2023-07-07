@@ -51,8 +51,6 @@ namespace QueryLite.Databases.PostgreSql {
 
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 
-
-
         public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 
             ArgumentException.ThrowIfNullOrEmpty(connectionString);
@@ -63,19 +61,8 @@ namespace QueryLite.Databases.PostgreSql {
             ConnectionString = connectionString;
         }
 
-        public DbConnection GetNewConnection() {
+        public DbConnection GetNewConnection()  => new NpgsqlConnection(ConnectionString);
 
-            NpgsqlConnection? connection = null;
-
-            try {
-                connection = new NpgsqlConnection(ConnectionString);
-            }
-            catch {
-                connection?.Dispose();
-                throw;
-            }
-            return connection;
-        }
         DbConnection IDatabase.GetNewConnection() {
             return GetNewConnection();
         }
