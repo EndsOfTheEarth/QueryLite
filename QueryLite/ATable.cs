@@ -50,6 +50,8 @@ namespace QueryLite {
 
         PrimaryKey? PrimaryKey { get; }
 
+        UniqueConstraint[] UniqueConstraints { get; }
+
         ForeignKey[] ForeignKeys { get; }
     }
 
@@ -84,6 +86,7 @@ namespace QueryLite {
         public string Alias { get; }
 
         public virtual PrimaryKey? PrimaryKey => null;
+        public virtual UniqueConstraint[] UniqueConstraints => Array.Empty<UniqueConstraint>();
         public virtual ForeignKey[] ForeignKeys => Array.Empty<ForeignKey>();
 
         /// <summary>

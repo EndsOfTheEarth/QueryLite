@@ -149,14 +149,14 @@ namespace QueryLiteTest.Tests {
         }
 
         [TestMethod]
-        public async Task UpdateJoinTestWithParamsAysnc() {
+        public async Task UpdateJoinTestWithParamsAsync() {
 
             Settings.UseParameters = true;
 
             await UpdateJoinTestAsync();
         }
         [TestMethod]
-        public async Task UpdateJoinTestWithParamsAysnc2() {
+        public async Task UpdateJoinTestWithParamsAsync2() {
 
             Settings.UseParameters = true;
 
@@ -168,7 +168,8 @@ namespace QueryLiteTest.Tests {
 
             SchemaValidationSettings settings = new SchemaValidationSettings() {
                 ValidatePrimaryKeys = true,
-                ValidateForeignKeys = true,   //TODO set to true
+                ValidateUniqueConstraints = true,
+                ValidateForeignKeys = true,
                 ValidateMissingCodeTables = true
             };
 

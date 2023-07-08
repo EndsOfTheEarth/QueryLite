@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
+using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite {
 
@@ -52,6 +53,7 @@ namespace QueryLite {
     public class SchemaValidationSettings {
 
         public required bool ValidatePrimaryKeys { get; init; }
+        public required bool ValidateUniqueConstraints { get; init; }
         public required bool ValidateForeignKeys { get; init; }
         public required bool ValidateMissingCodeTables { get; init; }
     }
@@ -445,7 +447,7 @@ namespace QueryLite {
 
             foreach(PropertyInfo tableProperty in tableProperties) {
 
-                if(tableProperty.Name == nameof(table.PrimaryKey) || tableProperty.Name == nameof(table.ForeignKeys)) {
+                if(tableProperty.Name == nameof(table.PrimaryKey) || tableProperty.Name == nameof(table.UniqueConstraints) || tableProperty.Name == nameof(table.ForeignKeys)) {
                     continue;
                 }
 
@@ -502,6 +504,9 @@ namespace QueryLite {
             if(validationSettings.ValidatePrimaryKeys) {
                 ValidatePrimaryKeyForTable(database, table, tableColumnProperties, dbTable, tableValidation);
             }
+            if(validationSettings.ValidateUniqueConstraints) {
+                ValidateUniqueConstraintsForTable(table, dbTable, tableValidation);
+            }
 
             if(validationSettings.ValidateForeignKeys) {
                 ValidateForeignKeys(table, dbTable, tableValidation);
@@ -539,6 +544,69 @@ namespace QueryLite {
                             tableValidation.Add($"Code and database primary key columns do not match. '{dbColumn}' != '{codeColumn}'");
                         }
                     }
+                }
+            }
+        }
+
+        private static void ValidateUniqueConstraintsForTable(ITable table, DatabaseTable dbTable, TableValidation tableValidation) {
+
+            if(table.UniqueConstraints.Length != dbTable.UniqueConstraints.Count) {
+                tableValidation.Add($"The number of unique constraints between the code and database do not match. '{table.UniqueConstraints.Length}' != '{dbTable.UniqueConstraints.Count}'");
+            }
+
+            foreach(DatabaseUniqueConstraint dbUniqueConstraint in dbTable.UniqueConstraints) {
+
+                UniqueConstraint? tableUniqueConstraint = null;
+
+                foreach(UniqueConstraint tableUC in table.UniqueConstraints) {
+
+                    if(string.Equals(dbUniqueConstraint.ConstraintName, tableUC.ConstraintName, StringComparison.OrdinalIgnoreCase)) {
+
+                        if(tableUniqueConstraint != null) {
+                            tableValidation.Add($"The unique constraint '{dbUniqueConstraint.ConstraintName}'is defined more than once in code");
+                            break;
+                        }
+                        tableUniqueConstraint = tableUC;
+                    }
+                }
+
+                if(tableUniqueConstraint == null) {
+                    tableValidation.Add($"The unique constraint '{dbUniqueConstraint.ConstraintName}' is not defined in code");
+                }
+                else {
+                    //Check columns exist
+
+                    if(dbUniqueConstraint.ColumnNames.Count != tableUniqueConstraint.Columns.Length) {
+                        tableValidation.Add($"Code and database unique constraint '{dbUniqueConstraint.ConstraintName}' column counts do not match. {dbUniqueConstraint.ColumnNames.Count} != {tableUniqueConstraint.Columns.Length}");
+                    }
+                    else {
+
+                        for(int index = 0; index < dbUniqueConstraint.ColumnNames.Count; index++) {
+
+                            string dbColumn = dbUniqueConstraint.ColumnNames[index].Value;
+                            string codeColumn = tableUniqueConstraint.Columns[index].ColumnName;
+
+                            if(!string.Equals(dbColumn, codeColumn, StringComparison.OrdinalIgnoreCase)) {
+                                tableValidation.Add($"Code and database unique constraint columns do not match. '{dbColumn}' != '{codeColumn}'. Names must match and be in the same order as defined in the database");
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach(UniqueConstraint tableUniqueConstraint in table.UniqueConstraints) {
+
+                bool found = false;
+
+                foreach(DatabaseUniqueConstraint dbUniqueConstraint in dbTable.UniqueConstraints) {
+
+                    if(string.Equals(dbUniqueConstraint.ConstraintName, tableUniqueConstraint.ConstraintName, StringComparison.OrdinalIgnoreCase)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found) {
+                    tableValidation.Add($"Code unique constrain name '{tableUniqueConstraint.ConstraintName}' does not exist in the database.");
                 }
             }
         }

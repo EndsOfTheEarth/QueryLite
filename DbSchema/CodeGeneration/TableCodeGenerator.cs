@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using QueryLite.Databases;
 using QueryLite.DbSchema.Tables;
 using System;
 using System.Collections.Generic;
@@ -186,6 +187,30 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     }
                 }
                 code.Append(");").EndLine();
+            }
+
+            if(table.UniqueConstraints.Count > 0 && settings.IncludeConstraints) {
+
+                code.EndLine();
+
+                code.Indent(2).Append("public override UniqueConstraint[] UniqueConstraints => new UniqueConstraint[] {").EndLine();
+
+                for(int index = 0; index < table.UniqueConstraints.Count; index++) {
+
+                    DatabaseUniqueConstraint uniqueConstraint = table.UniqueConstraints[index];
+
+                    if(index > 0) {
+                        code.Append(",").EndLine();
+                    }
+                    code.Indent(3).Append($"new UniqueConstraint(this, constraintName: \"{uniqueConstraint.ConstraintName}\"");
+
+                    foreach(StringKey<IColumnName> columnName in uniqueConstraint.ColumnNames) {
+                        code.Append(", ").Append(prefix.GetColumnName(columnName.Value, className: tableClassName));
+                    }
+                    code.Append(")");
+                }
+                code.EndLine();
+                code.Indent(2).Append("};").EndLine();
             }
 
             if(table.ForeignKeys.Count > 0 && settings.IncludeConstraints) {
