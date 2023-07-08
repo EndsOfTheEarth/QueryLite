@@ -606,7 +606,7 @@ namespace QueryLite {
                     }
                 }
                 if(!found) {
-                    tableValidation.Add($"Code unique constrain name '{tableUniqueConstraint.ConstraintName}' does not exist in the database.");
+                    tableValidation.Add($"The unique code constraint name '{tableUniqueConstraint.ConstraintName}' does not exist in the database.");
                 }
             }
         }
