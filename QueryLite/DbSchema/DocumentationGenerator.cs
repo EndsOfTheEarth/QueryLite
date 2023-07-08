@@ -182,6 +182,29 @@ namespace QueryLite.DbSchema {
                     html.Append("</td></table>");
                 }
 
+                html.Append($"<h3>Unique Constraints({table.TableClass.UniqueConstraints.Length})</h3><p>");
+                html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th>");
+
+                counter = 0;
+
+                foreach(UniqueConstraint uniqueConstraint in table.TableClass.UniqueConstraints) {
+
+                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(uniqueConstraint.ConstraintName)).Append("</td>");
+                    html.Append("<td>");
+
+                    foreach(IColumn columnName in uniqueConstraint.Columns) {
+
+                        if(counter > 0) {
+                            html.Append(",&nbsp;");
+                        }
+                        html.Append(WebUtility.HtmlEncode(columnName.ColumnName));
+                        counter++;
+                    }
+                    html.Append("</td>");
+                    
+                }
+                html.Append("</table>");
+
                 html.Append($"<h3>Foreign Keys({table.TableClass.ForeignKeys.Length})</h3><p>");
                 html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th><th style=\"text-align: center;\">References</th>");
 
