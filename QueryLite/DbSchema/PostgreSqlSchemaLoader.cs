@@ -220,6 +220,7 @@ namespace QueryLite.DbSchema {
 
                     constraint = new DatabaseUniqueConstraint(row.Constraint_Name);
                     table.UniqueConstraints.Add(constraint);
+                    dbUniqueConstraintLookup.Add(constraintKey, constraint);
                 }
                 constraint.ColumnNames.Add(row.Column_name);
             }
