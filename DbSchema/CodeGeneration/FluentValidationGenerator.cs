@@ -40,7 +40,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             foreach(DatabaseTable table in tables) {
 
-                if(!schemaNames.Contains(table.Schema)) {
+                if(!table.IsView && !schemaNames.Contains(table.Schema)) {
                     schemaNames.Add(table.Schema);
                 }
             }
@@ -59,7 +59,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 foreach(DatabaseTable table in tables) {
 
-                    if(string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
+                    if(!table.IsView && string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
                         TablePrefix prefix = new TablePrefix(table);
                         code.Append(GenerateFluentValidationCode(table, prefix, settings, includeUsings: false).ToString());
                     }

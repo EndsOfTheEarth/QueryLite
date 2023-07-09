@@ -108,6 +108,7 @@ namespace QueryLite.DbSchema {
             }
 
             SetPrimaryKeys(tableList, database);
+            SetUniqueConstraints(tableList, database);
             SetForeignKeys(tableList, database);
 
             LoadCommentMetaData(tableList, database);
@@ -166,6 +167,62 @@ namespace QueryLite.DbSchema {
                         dbColumn.IsPrimaryKey = true;
                     }
                 }
+            }
+        }
+
+        private static void SetUniqueConstraints(List<DatabaseTable> tableList, IDatabase database) {
+
+            Dictionary<TableKey, DatabaseTable> dbTableLookup = new Dictionary<TableKey, DatabaseTable>();
+
+            foreach(DatabaseTable table in tableList) {
+                dbTableLookup.Add(new TableKey(table.Schema, table.TableName), table);
+            }
+
+            TableConstraintsTable tableConstraints = TableConstraintsTable.Instance;
+            KeyColumnUsageTable keyColumnUsage = KeyColumnUsageTable.Instance;
+
+            var result = Query
+                .Select(
+                    row => new {
+                        Table_schema = row.Get(keyColumnUsage.Table_schema),
+                        Table_name = row.Get(keyColumnUsage.Table_name),
+                        Column_name = row.Get(keyColumnUsage.Column_name),
+                        Constraint_Name = row.Get(tableConstraints.Constraint_name)
+                    }
+                )
+                .From(tableConstraints)
+                .Join(keyColumnUsage).On(
+                    tableConstraints.Table_schema == keyColumnUsage.Table_schema &
+                    tableConstraints.Table_name == keyColumnUsage.Table_name &
+                    tableConstraints.Constraint_name == keyColumnUsage.Constraint_name
+                )
+                .Where(
+                    tableConstraints.Constraint_type == "UNIQUE" &
+                    keyColumnUsage.Ordinal_position.IsNotNull
+                //&
+                //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
+                //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                )
+                .OrderBy(keyColumnUsage.Ordinal_position)
+                .Execute(database, TimeoutLevel.ShortSelect);
+
+            Dictionary<Key<TableKey, string>, DatabaseUniqueConstraint> dbUniqueConstraintLookup = new Dictionary<Key<TableKey, string>, DatabaseUniqueConstraint>();
+
+            foreach(var row in result.Rows) {
+
+                TableKey tableKey = new TableKey(row.Table_schema, row.Table_name);
+
+                DatabaseTable table = dbTableLookup[tableKey];
+
+                Key<TableKey, string> constraintKey = new Key<TableKey, string>(tableKey, row.Constraint_Name);
+
+                if(!dbUniqueConstraintLookup.TryGetValue(constraintKey, out DatabaseUniqueConstraint? constraint)) {
+
+                    constraint = new DatabaseUniqueConstraint(row.Constraint_Name);
+                    table.UniqueConstraints.Add(constraint);
+                    dbUniqueConstraintLookup.Add(constraintKey, constraint);
+                }
+                constraint.ColumnNames.Add(row.Column_name);
             }
         }
 

@@ -1062,6 +1062,7 @@ Here is a code example of calling the schema validation.
 ```C#
 SchemaValidationSettings settings = new SchemaValidationSettings() {
     ValidatePrimaryKeys = true,
+    ValidateUniqueConstraints = true,
     ValidateForeignKeys = true,
     ValidateMissingCodeTables = true
 };
@@ -1114,7 +1115,7 @@ public sealed class MyTable : ATable {
 
 Primary and foreign keys can be defined on table definitions. These are useful for schema validation (i.e. Checking those constraints exist in the database) and for generating schema documentation.
 
-The ATable<> class has virtual methods called `PrimaryKey` and `ForeignKeys` that can be overridden to define the constraints. Here is an example below of how to define those constaints in code. (Note: These constraints can be generated using the code generator tool).
+The ATable<> class has virtual methods called `PrimaryKey`, `UniqueConstraints` and `ForeignKeys` that can be overridden to define the constraints. Here is an example below of how to define those constaints in code. (Note: These constraints can be generated using the code generator tool).
 
 Example:
 
@@ -1122,6 +1123,7 @@ Example:
 CREATE TABLE Parent (
 
 	Id UNIQUEIDENTIFIER NOT NULL,
+    Id2 UNIQUEIDENTIFIER NOT NULL,
 	
 	CONSTRAINT pk_Parent PRIMARY KEY(Id),
 	CONSTRAINT unq_Parent UNIQUE(Id2)
@@ -1154,6 +1156,10 @@ namespace Tables {
         public Column<Guid> Id2 { get; }
 
         public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Parent", Id);
+
+        public override UniqueConstraint[] UniqueConstraints => new UniqueConstraint[] {
+            new UniqueConstraint(this, constraintName: "unq_parent", Id2)
+        };
 
         private ParentTable() : base(tableName:"Parent", schemaName: "dbo") {
 
