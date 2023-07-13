@@ -250,7 +250,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string encloseTableName = SqlKeyWordLookup.IsKeyWord(table.TableName.Value) ? ", enclose: true" : "";
 
-            code.Indent(2).Append($"private {tableClassName}() : base(tableName:\"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}) {{").EndLine().EndLine();
+            string isViewCode = table.IsView ? ", isView: true" : string.Empty;
+
+            code.Indent(2).Append($"private {tableClassName}() : base(tableName:\"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}{isViewCode}) {{").EndLine().EndLine();
 
             foreach(string line in lines) {
                 code.Indent(3).Append(line).EndLine();

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Intrinsics;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -167,7 +168,7 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void LoadDocumentation() {
 
-            string doc = DocumentationGenerator.GenerateForAssembly(new Assembly[] { Assembly.GetExecutingAssembly() });
+            string doc = DocumentationGenerator.GenerateForAssembly(new Assembly[] { Assembly.GetExecutingAssembly() }, applicationName: "Auto Tester", version: "v1.0");
             Assert.IsNotNull(doc);
         }
 

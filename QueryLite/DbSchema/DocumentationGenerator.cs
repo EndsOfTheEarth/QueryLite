@@ -32,7 +32,7 @@ namespace QueryLite.DbSchema {
 
     public static class DocumentationGenerator {
 
-        public static string GenerateForAssembly(Assembly[] assemblies) {
+        public static string GenerateForAssembly(Assembly[] assemblies, string applicationName, string version) {
 
             List<Type> types = new List<Type>();
 
@@ -44,20 +44,20 @@ namespace QueryLite.DbSchema {
 
                 types.AddRange(listOfTypes);
             }
-            return GenerateForTableTypes(types);
+            return GenerateForTableTypes(types, applicationName, version);
         }
 
-        public static string GenerateForTables(List<ITable> tables) {
+        public static string GenerateForTables(List<ITable> tables, string applicationName, string version) {
 
             List<Type> types = new List<Type>();
 
             foreach(ITable table in tables) {
                 types.Add(table.GetType());
             }
-            return GenerateForTableTypes(types);
+            return GenerateForTableTypes(types, applicationName, version);
         }
 
-        public static string GenerateForTableTypes(List<Type> types) {
+        public static string GenerateForTableTypes(List<Type> types, string applicationName, string version) {
 
             List<TableValidation> validation = new List<TableValidation>();
 
@@ -84,59 +84,80 @@ namespace QueryLite.DbSchema {
 
                 tableLookup.Add(type, table);
             }
-            tables.Sort((a, b) => a.TableClass.TableName.CompareTo(b.TableClass.TableName));
-            return GenerateForTables(tables);
+            tables.Sort((a, b) => {
+
+                int compare = a.TableClass.SchemaName.CompareTo(b.TableClass.SchemaName);
+
+                if(compare == 0) {
+                    compare = a.TableClass.TableName.CompareTo(b.TableClass.TableName);
+                }
+                return compare;
+            });
+            return GenerateForTables(tables, applicationName, version);
         }
 
-        private static string GenerateForTables(List<Table> tables) {
+        private static string GenerateForTables(List<Table> tables, string applicationName, string version) {
 
             StringBuilder html = new StringBuilder();
 
             html.Append("<html><header>");
 
-            html.Append(@"
-            <style>
-                body {
-                    font-family: Arial, Helvetica, sans-serif;
-                }
-                table, th, td {
-                  border: 1px solid black;
-                  border-collapse: collapse;
-                  padding: 5px;
-                  text-align: center;
-                }
-                th {
-                    background-color: #abb2b9;
-                }
-                tr:nth-child(even) {
-                    background-color: #eaecee;
-                }
-                h2 {
-                    color: #b03a2e;
-                }
-                h3 {
-                    color: #2874a6;
-                }
-                a, a:visited {
-                    color: blue;
-                }
-            </style>"
-            );
+            html.Append(
+@"
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 5px;
+    text-align: center;
+}
+th {
+    background-color: #abb2b9;
+}
+tr:nth-child(even) {
+    background-color: #eaecee;
+}
+h2 {
+    color: #b03a2e;
+}
+h3 {
+    color: #2874a6;
+}
+a, a:visited {
+    color: blue;
+}
+</style>"
+);
             html.Append(" </header>");
 
             html.Append("<body>");
 
+            if(!string.IsNullOrWhiteSpace(applicationName) || !string.IsNullOrWhiteSpace(version)) {
+
+                html.Append("<h1>");
+
+                if(!string.IsNullOrWhiteSpace(applicationName)) {
+                    html.Append(WebUtility.HtmlEncode(applicationName)).Append(' ');
+                }
+                if(!string.IsNullOrWhiteSpace(version)) {
+                    html.Append('(').Append(WebUtility.HtmlEncode(version)).Append(')').Append(' ');
+                }
+                html.Append("</h1>");
+            }
             html.Append("<h1>Schema Documentation</h1>");
 
             html.Append("<h1>Index</h1>");
 
-            html.Append("<h2>Tables & Views:</h2>");
+            html.Append("<h2>Tables & Views</h2>");
 
             html.Append("<ul>");
 
             for(int index = 0; index < tables.Count; index++) {
                 Table table = tables[index];
-                html.Append("<li><a href=#").Append(index).Append('>').Append(WebUtility.HtmlEncode(table.TableClass.TableName)).Append("</a></li>");
+                html.Append("<li><a href=#").Append(index).Append('>').Append(WebUtility.HtmlEncode($"[{table.TableClass.SchemaName}].{table.TableClass.TableName}")).Append($"</a>{(table.TableClass.IsView ? "&nbsp;(View)" : string.Empty)}</li>");
             }
             html.Append("</ul>");
 
@@ -154,8 +175,38 @@ namespace QueryLite.DbSchema {
             StringBuilder html = new StringBuilder();
 
             html.Append("<hr/>");
-            html.Append($"<h2 id={id}>Table: ").Append(WebUtility.HtmlEncode(table.TableClass.TableName)).Append("</h2>");
+            html.Append($"<h2 id={id}>{(table.TableClass.IsView ? "View" : "Table")}: ").Append(WebUtility.HtmlEncode($"[{table.TableClass.SchemaName}].{table.TableClass.TableName}")).Append("</h2>");
             html.Append("<p>").Append(WebUtility.HtmlEncode(table.Description)).Append("</p>");
+
+            {
+                html.Append($"<h3>Columns({table.Columns.Count})</h3><p>");
+
+                html.Append("<table style=\"width:100%\">");
+
+                html.Append("<tr><th style=\"width:20%;text-align:left;\"> Column Name</th><th style=\"width:10%\">.net Type</th><th>Nullable</th><th>Auto</th><th style=\"width:50%;text-align:left;\">Description</th><tr>");
+
+                foreach(ColumnAndDescription colAndDesc in table.Columns) {
+
+                    IColumn column = colAndDesc.Column;
+
+                    html.Append($"<tr>");
+                    html.Append($"<td style=\"text-align:left;\">").Append(WebUtility.HtmlEncode(column.ColumnName)).Append("</td>");
+                    html.Append($"<td>").Append(WebUtility.HtmlEncode(column.Type.Name));
+
+                    if(column.Length != null && column.Type != typeof(IGeography)) {
+                        html.Append('(').Append(column.Length.Value).Append(')');
+                    }
+                    html.Append("</td>");
+                    html.Append($"<td>").Append(WebUtility.HtmlEncode(column.IsNullable ? "NULL" : "NOT NULL")).Append("</td>");
+
+                    //html.Append($"<td>").Append(WebUtility.HtmlEncode((column.IsPrimaryKey ? column.IsPrimaryKey.ToString() : string.Empty))).Append("</td>");
+                    html.Append($"<td>").Append(WebUtility.HtmlEncode((column.IsAutoGenerated ? column.IsAutoGenerated.ToString() : string.Empty))).Append("</td>");
+                    html.Append($"<td style=\"text-align:left;\">").Append(WebUtility.HtmlEncode(colAndDesc.Description)).Append("</td>");
+
+                    html.Append("</tr>");
+                }
+                html.Append("</table>");
+            }
 
             if(table.TableClass.PrimaryKey != null || table.TableClass.ForeignKeys.Length > 0) {
 
@@ -201,7 +252,7 @@ namespace QueryLite.DbSchema {
                         counter++;
                     }
                     html.Append("</td>");
-                    
+
                 }
                 html.Append("</table>");
 
@@ -247,34 +298,6 @@ namespace QueryLite.DbSchema {
                 html.Append("</table>");
                 html.Append("</p>");
             }
-
-            html.Append($"<h3>Columns({table.Columns.Count})</h3><p>");
-
-            html.Append("<table style=\"width:100%\">");
-
-            html.Append("<tr><th style=\"width:20%;text-align:left;\"> Column Name</th><th style=\"width:10%\">.net Type</th><th>Nullable</th><th>Auto</th><th style=\"width:50%;text-align:left;\">Description</th><tr>");
-
-            foreach(ColumnAndDescription colAndDesc in table.Columns) {
-
-                IColumn column = colAndDesc.Column;
-
-                html.Append($"<tr>");
-                html.Append($"<td style=\"text-align:left;\">").Append(WebUtility.HtmlEncode(column.ColumnName)).Append("</td>");
-                html.Append($"<td>").Append(WebUtility.HtmlEncode(column.Type.Name));
-
-                if(column.Length != null) {
-                    html.Append('(').Append(column.Length.Value).Append(')');
-                }
-                html.Append("</td>");
-                html.Append($"<td>").Append(WebUtility.HtmlEncode(column.IsNullable ? "NULL" : "NOT NULL")).Append("</td>");
-
-                //html.Append($"<td>").Append(WebUtility.HtmlEncode((column.IsPrimaryKey ? column.IsPrimaryKey.ToString() : string.Empty))).Append("</td>");
-                html.Append($"<td>").Append(WebUtility.HtmlEncode((column.IsAutoGenerated ? column.IsAutoGenerated.ToString() : string.Empty))).Append("</td>");
-                html.Append($"<td style=\"text-align:left;\">").Append(WebUtility.HtmlEncode(colAndDesc.Description)).Append("</td>");
-
-                html.Append("</tr>");
-            }
-            html.Append("</table>");
             return html.ToString();
         }
 
