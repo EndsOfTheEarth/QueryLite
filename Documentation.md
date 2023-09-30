@@ -609,8 +609,8 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 | Non Type Safe Equals   | Methods `SqlEquals_NonTypeSafe(...)` `SqlNotEquals_NonTypeSafe(...)` | `.Where(orderTable.CustomerID.SqlEquals_NonTypeSafe(10))` | NonTypeSafe methods can be used to work around compile errors caused by the database schema being too complex to be defined correctly in C# |
 | Math operators | `<` `<=` `>` `>=` | `.Where(productTable.ListPrice <= 10.0m)` |
 | `AND` | `&` | `.Where(productTable.Name == "abc" & productTable.ListPrice > 10.0m)` | |
-| `OR`  | `|` | `.Where(productTable.Name == "abc" | productTable.ListPrice > 10.0m)` | |
-| `AND` & `OR` | `&` `|` | `.Where((productTable.Name == "abc" | productTable.Name == "efg") & productTable.ListPrice > 10.0m)` | Note: Always surround mixed `AND` and `OR` C# operators with brackets to get the correct sql logic.|
+| `OR`  | `\|` | `.Where(productTable.Name == "abc" \| productTable.ListPrice > 10.0m)` | |
+| `AND` & `OR` | `&` `\|` | `.Where((productTable.Name == "abc" \| productTable.Name == "efg") & productTable.ListPrice > 10.0m)` | Note: Always surround mixed `AND` and `OR` C# operators with brackets to get the correct sql logic.|
 | `IS NULL` | `IsNull` | `.Where(productTable.Name.IsNull)`|
 | `IS NOT NULL` | `IsNotNull` | `.Where(productTable.Name.IsNotNull)` |
 | `IN(...)` | `In(...)` | `.Where(productTable.Name.In("abc", "efg", "hijk"))` |
