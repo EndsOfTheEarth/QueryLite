@@ -97,7 +97,7 @@ public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, R
             }}
             transaction.Commit();
         }}
-        return Response.Successful;
+        return Response.Success;
     }}
 }}
 ";
