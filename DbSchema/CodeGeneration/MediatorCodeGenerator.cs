@@ -58,7 +58,7 @@ public sealed class Create{name}Request : IRequest<Response> {{
             string code = $@"
 public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
 
-    private static readonly {name}Validator _validator = new {name}Validator();
+    private static readonly {name}Validator _validator = new {name}Validator(isNew: true);
 
     private static readonly IPreparedInsertQuery<{name}> _insertQuery;
 
@@ -85,7 +85,7 @@ public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, R
         FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
 
         if(!validation.IsValid) {{
-            return Response.Failed(validation.Errors);
+            return Response.Failure(validation);
         }}
 
         using(Transaction transaction = new Transaction(_database)) {{
