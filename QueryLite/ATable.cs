@@ -44,11 +44,18 @@ namespace QueryLite {
         string TableName { get; }
 
         /// <summary>
+        /// Is this table class representing a view.
+        /// </summary>
+        bool IsView { get; }
+
+        /// <summary>
         /// Enclose table name in sql query. For example enclose table name with [] (square brackets) in sql server queries.
         /// </summary>
         bool Enclose { get; }
 
         PrimaryKey? PrimaryKey { get; }
+
+        UniqueConstraint[] UniqueConstraints { get; }
 
         ForeignKey[] ForeignKeys { get; }
     }
@@ -82,8 +89,10 @@ namespace QueryLite {
         public string TableName { get; }
         public bool Enclose { get; }
         public string Alias { get; }
+        public bool IsView { get; }
 
         public virtual PrimaryKey? PrimaryKey => null;
+        public virtual UniqueConstraint[] UniqueConstraints => Array.Empty<UniqueConstraint>();
         public virtual ForeignKey[] ForeignKeys => Array.Empty<ForeignKey>();
 
         /// <summary>
@@ -93,7 +102,7 @@ namespace QueryLite {
         /// <param name="schemaName">Schema table belongs to</param>
         /// <param name="enclose">Set to true if the table name is a sql keyword. This will stop the key word from causing invalid sql from being created</param>
         /// <exception cref="ArgumentException"></exception>
-        protected ATable(string tableName, string schemaName, bool enclose = false) {
+        protected ATable(string tableName, string schemaName, bool enclose = false, bool isView = false) {
 
             ArgumentException.ThrowIfNullOrEmpty(tableName);
             ArgumentException.ThrowIfNullOrEmpty(schemaName);
@@ -102,6 +111,7 @@ namespace QueryLite {
             TableName = tableName;
             Enclose = enclose;
             Alias = "_" + AliasGenerator.GetAlias();
+            IsView = isView;
         }
     }
 }

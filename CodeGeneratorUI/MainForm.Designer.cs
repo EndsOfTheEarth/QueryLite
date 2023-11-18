@@ -112,15 +112,15 @@ namespace QueryLite.CodeGeneratorUI {
             splitContainer.Panel2.Controls.Add(lblPrefix);
             splitContainer.Panel2.Controls.Add(btnClose);
             splitContainer.Panel2.Controls.Add(txtCode);
-            splitContainer.Size = new System.Drawing.Size(1082, 608);
-            splitContainer.SplitterDistance = 211;
+            splitContainer.Size = new System.Drawing.Size(1021, 512);
+            splitContainer.SplitterDistance = 199;
             splitContainer.TabIndex = 1;
             // 
             // BtnCollapseAll
             // 
             BtnCollapseAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            BtnCollapseAll.Location = new System.Drawing.Point(81, 580);
-            BtnCollapseAll.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            BtnCollapseAll.Location = new System.Drawing.Point(83, 483);
+            BtnCollapseAll.Margin = new System.Windows.Forms.Padding(2);
             BtnCollapseAll.Name = "BtnCollapseAll";
             BtnCollapseAll.Size = new System.Drawing.Size(75, 25);
             BtnCollapseAll.TabIndex = 2;
@@ -131,8 +131,8 @@ namespace QueryLite.CodeGeneratorUI {
             // BtnExpandAll
             // 
             BtnExpandAll.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            BtnExpandAll.Location = new System.Drawing.Point(4, 579);
-            BtnExpandAll.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            BtnExpandAll.Location = new System.Drawing.Point(4, 483);
+            BtnExpandAll.Margin = new System.Windows.Forms.Padding(2);
             BtnExpandAll.Name = "BtnExpandAll";
             BtnExpandAll.Size = new System.Drawing.Size(75, 25);
             BtnExpandAll.TabIndex = 1;
@@ -146,14 +146,14 @@ namespace QueryLite.CodeGeneratorUI {
             tvwTables.HideSelection = false;
             tvwTables.Location = new System.Drawing.Point(0, 0);
             tvwTables.Name = "tvwTables";
-            tvwTables.Size = new System.Drawing.Size(211, 576);
+            tvwTables.Size = new System.Drawing.Size(199, 480);
             tvwTables.TabIndex = 0;
             tvwTables.AfterSelect += TvwTables_AfterSelect;
             // 
             // numNumberOfInstanceProperties
             // 
             numNumberOfInstanceProperties.Location = new System.Drawing.Point(491, 5);
-            numNumberOfInstanceProperties.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            numNumberOfInstanceProperties.Margin = new System.Windows.Forms.Padding(2);
             numNumberOfInstanceProperties.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
             numNumberOfInstanceProperties.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numNumberOfInstanceProperties.Name = "numNumberOfInstanceProperties";
@@ -223,7 +223,7 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             chkSingleFiles.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             chkSingleFiles.AutoSize = true;
-            chkSingleFiles.Location = new System.Drawing.Point(127, 581);
+            chkSingleFiles.Location = new System.Drawing.Point(127, 485);
             chkSingleFiles.Name = "chkSingleFiles";
             chkSingleFiles.Size = new System.Drawing.Size(84, 19);
             chkSingleFiles.TabIndex = 13;
@@ -233,7 +233,7 @@ namespace QueryLite.CodeGeneratorUI {
             // btnOutputAllToFile
             // 
             btnOutputAllToFile.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            btnOutputAllToFile.Location = new System.Drawing.Point(3, 579);
+            btnOutputAllToFile.Location = new System.Drawing.Point(3, 483);
             btnOutputAllToFile.Name = "btnOutputAllToFile";
             btnOutputAllToFile.Size = new System.Drawing.Size(117, 25);
             btnOutputAllToFile.TabIndex = 12;
@@ -290,7 +290,7 @@ namespace QueryLite.CodeGeneratorUI {
             // btnClose
             // 
             btnClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnClose.Location = new System.Drawing.Point(785, 578);
+            btnClose.Location = new System.Drawing.Point(742, 481);
             btnClose.Name = "btnClose";
             btnClose.Size = new System.Drawing.Size(71, 25);
             btnClose.TabIndex = 14;
@@ -301,13 +301,13 @@ namespace QueryLite.CodeGeneratorUI {
             // txtCode
             // 
             txtCode.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            txtCode.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            txtCode.Font = new System.Drawing.Font("Consolas", 9.75F);
             txtCode.Location = new System.Drawing.Point(3, 62);
             txtCode.Multiline = true;
             txtCode.Name = "txtCode";
             txtCode.ReadOnly = true;
             txtCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            txtCode.Size = new System.Drawing.Size(854, 514);
+            txtCode.Size = new System.Drawing.Size(812, 418);
             txtCode.TabIndex = 11;
             txtCode.WordWrap = false;
             // 
@@ -315,7 +315,7 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             chkIncludeSystemSchemas.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             chkIncludeSystemSchemas.AutoSize = true;
-            chkIncludeSystemSchemas.Location = new System.Drawing.Point(914, 58);
+            chkIncludeSystemSchemas.Location = new System.Drawing.Point(853, 58);
             chkIncludeSystemSchemas.Name = "chkIncludeSystemSchemas";
             chkIncludeSystemSchemas.Size = new System.Drawing.Size(156, 19);
             chkIncludeSystemSchemas.TabIndex = 7;
@@ -355,12 +355,12 @@ namespace QueryLite.CodeGeneratorUI {
             txtConnectionString.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             txtConnectionString.Location = new System.Drawing.Point(107, 22);
             txtConnectionString.Name = "txtConnectionString";
-            txtConnectionString.Size = new System.Drawing.Size(966, 23);
+            txtConnectionString.Size = new System.Drawing.Size(905, 23);
             txtConnectionString.TabIndex = 1;
             // 
             // btnLoad
             // 
-            btnLoad.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            btnLoad.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
             btnLoad.Location = new System.Drawing.Point(202, 49);
             btnLoad.Name = "btnLoad";
             btnLoad.Size = new System.Drawing.Size(91, 31);
@@ -382,7 +382,7 @@ namespace QueryLite.CodeGeneratorUI {
             grpConnection.Controls.Add(cboDatabaseType);
             grpConnection.Location = new System.Drawing.Point(4, 9);
             grpConnection.Name = "grpConnection";
-            grpConnection.Size = new System.Drawing.Size(1076, 89);
+            grpConnection.Size = new System.Drawing.Size(1015, 89);
             grpConnection.TabIndex = 0;
             grpConnection.TabStop = false;
             grpConnection.Text = "Database Connection";
@@ -402,14 +402,14 @@ namespace QueryLite.CodeGeneratorUI {
             txtExampleConnectionString.Location = new System.Drawing.Point(361, 53);
             txtExampleConnectionString.Name = "txtExampleConnectionString";
             txtExampleConnectionString.ReadOnly = true;
-            txtExampleConnectionString.Size = new System.Drawing.Size(549, 23);
+            txtExampleConnectionString.Size = new System.Drawing.Size(488, 23);
             txtExampleConnectionString.TabIndex = 6;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            ClientSize = new System.Drawing.Size(1082, 707);
+            ClientSize = new System.Drawing.Size(1021, 611);
             Controls.Add(grpConnection);
             Controls.Add(splitContainer);
             Name = "MainForm";
