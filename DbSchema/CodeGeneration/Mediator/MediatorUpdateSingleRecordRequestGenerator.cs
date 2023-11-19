@@ -215,7 +215,8 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
         {name} info = request.{name};
 
         using(Transaction transaction = new Transaction(_database)) {{
-            QueryResult<{name}> result = await Query
+
+            NonQueryResult result = await Query
                 .Update(table)
                 .Values(values => values
 {setValues}
@@ -223,9 +224,10 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
                 .Where({whereClause})
                 .ExecuteAsync(transaction, cancellationToken);
 
-            if(result.Rows.Count != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
+            if(result.RowsEffected != 1) {{
+                throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
             }}
+            transaction.Commit();
         }}
         return Response.Success;
     }}

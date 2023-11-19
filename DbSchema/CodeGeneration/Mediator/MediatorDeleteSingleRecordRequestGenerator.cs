@@ -224,6 +224,7 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
             if(result.RowsEffected != 1) {{
                 throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
             }}
+            transaction.Commit();
         }}
         return Response.Success;
     }}
