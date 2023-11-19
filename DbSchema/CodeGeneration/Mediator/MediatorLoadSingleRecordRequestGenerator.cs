@@ -134,7 +134,7 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
 
     public async Task<{name}> Handle({requestName} request, CancellationToken cancellationToken) {{
 
-        QueryResult<{name}> result = await _query.ExecuteAsync(parameters: request, _database, cancellationToken, TimeoutLevel.ShortSelect);
+        QueryResult<{name}> result = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
 
         if(result.Rows.Count != 1) {{
             throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
@@ -194,7 +194,7 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
             )
             .From(table)
             .Where({whereClause})
-            .ExecuteAsync(_database, cancellationToken, TimeoutLevel.ShortSelect);
+            .ExecuteAsync(_database, cancellationToken);
 
         if(result.Rows.Count != 1) {{
             throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");

@@ -87,7 +87,7 @@ public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, R
 
         using(Transaction transaction = new Transaction(_database)) {{
 
-            NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, cancellationToken, TimeoutLevel.ShortInsert);
+            NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, cancellationToken);
 
             if(result.RowsEffected != 1) {{
                 throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
@@ -147,7 +147,7 @@ public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, R
                 .Values(values => {{
 {setValues}
                 }}
-                ).ExecuteAsync(transaction, cancellationToken, timeout: TimeoutLevel.ShortInsert);
+                ).ExecuteAsync(transaction, cancellationToken);
 
                 if(result.RowsEffected != 1) {{
                     throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");

@@ -49,14 +49,14 @@ public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name
             string code = $@"
 public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
 
-    private readonly static IPreparedQueryExecute<bool, {name}> _query;
+    private readonly static IPreparedQueryExecute<{requestName}, {name}> _query;
 
     static {handlerName}() {{
 
         {name}Table table = {name}Table.Instance;
 
         _query = Query
-            .Prepare<bool>()
+            .Prepare<{requestName}>()
             .Select(row => new {name}(table, row))
             .From(table)
             .Build();
@@ -70,7 +70,7 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>>
 
     public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
 
-        QueryResult<{name}> list = await _query.ExecuteAsync(parameters: true, _database, cancellationToken, TimeoutLevel.ShortSelect);
+        QueryResult<{name}> list = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
 
         return list.Rows;
     }}
@@ -106,7 +106,7 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>>
                 row => new {name}(table, row)
             )
             .From(table)
-            .ExecuteAsync(_database, cancellationToken, TimeoutLevel.ShortSelect);
+            .ExecuteAsync(_database, cancellationToken);
 
         return list.Rows;
     }}
