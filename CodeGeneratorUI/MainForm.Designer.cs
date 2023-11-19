@@ -51,6 +51,7 @@ namespace QueryLite.CodeGeneratorUI {
             BtnCollapseAll = new System.Windows.Forms.Button();
             BtnExpandAll = new System.Windows.Forms.Button();
             tvwTables = new System.Windows.Forms.TreeView();
+            chkUsePreparedQueries = new System.Windows.Forms.CheckBox();
             numNumberOfInstanceProperties = new System.Windows.Forms.NumericUpDown();
             lblNumberOfInstanceProperties = new System.Windows.Forms.Label();
             chkIncludeJsonAttributes = new System.Windows.Forms.CheckBox();
@@ -75,7 +76,6 @@ namespace QueryLite.CodeGeneratorUI {
             grpConnection = new System.Windows.Forms.GroupBox();
             lblExample = new System.Windows.Forms.Label();
             txtExampleConnectionString = new System.Windows.Forms.TextBox();
-            chkCompiledQueries = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
             splitContainer.Panel1.SuspendLayout();
             splitContainer.Panel2.SuspendLayout();
@@ -98,7 +98,7 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             // splitContainer.Panel2
             // 
-            splitContainer.Panel2.Controls.Add(chkCompiledQueries);
+            splitContainer.Panel2.Controls.Add(chkUsePreparedQueries);
             splitContainer.Panel2.Controls.Add(numNumberOfInstanceProperties);
             splitContainer.Panel2.Controls.Add(lblNumberOfInstanceProperties);
             splitContainer.Panel2.Controls.Add(chkIncludeJsonAttributes);
@@ -151,6 +151,17 @@ namespace QueryLite.CodeGeneratorUI {
             tvwTables.Size = new System.Drawing.Size(199, 480);
             tvwTables.TabIndex = 0;
             tvwTables.AfterSelect += TvwTables_AfterSelect;
+            // 
+            // chkUsePreparedQueries
+            // 
+            chkUsePreparedQueries.AutoSize = true;
+            chkUsePreparedQueries.Location = new System.Drawing.Point(4, 60);
+            chkUsePreparedQueries.Name = "chkUsePreparedQueries";
+            chkUsePreparedQueries.Size = new System.Drawing.Size(138, 19);
+            chkUsePreparedQueries.TabIndex = 15;
+            chkUsePreparedQueries.Text = "Use Prepared Queries";
+            chkUsePreparedQueries.UseVisualStyleBackColor = true;
+            chkUsePreparedQueries.CheckedChanged += CheckBoxes_CheckedChanged;
             // 
             // numNumberOfInstanceProperties
             // 
@@ -304,12 +315,12 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             txtCode.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             txtCode.Font = new System.Drawing.Font("Consolas", 9.75F);
-            txtCode.Location = new System.Drawing.Point(3, 62);
+            txtCode.Location = new System.Drawing.Point(3, 85);
             txtCode.Multiline = true;
             txtCode.Name = "txtCode";
             txtCode.ReadOnly = true;
             txtCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            txtCode.Size = new System.Drawing.Size(812, 418);
+            txtCode.Size = new System.Drawing.Size(812, 395);
             txtCode.TabIndex = 11;
             txtCode.WordWrap = false;
             // 
@@ -407,17 +418,6 @@ namespace QueryLite.CodeGeneratorUI {
             txtExampleConnectionString.Size = new System.Drawing.Size(488, 23);
             txtExampleConnectionString.TabIndex = 6;
             // 
-            // chkCompiledQueries
-            // 
-            chkCompiledQueries.AutoSize = true;
-            chkCompiledQueries.Location = new System.Drawing.Point(544, 5);
-            chkCompiledQueries.Name = "chkCompiledQueries";
-            chkCompiledQueries.Size = new System.Drawing.Size(121, 19);
-            chkCompiledQueries.TabIndex = 15;
-            chkCompiledQueries.Text = "Compiled Queries";
-            chkCompiledQueries.UseVisualStyleBackColor = true;
-            chkCompiledQueries.CheckedChanged += CheckBoxes_CheckedChanged;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -469,6 +469,6 @@ namespace QueryLite.CodeGeneratorUI {
         private System.Windows.Forms.CheckBox chkIncludeSystemSchemas;
         private System.Windows.Forms.Button BtnCollapseAll;
         private System.Windows.Forms.Button BtnExpandAll;
-        private System.Windows.Forms.CheckBox chkCompiledQueries;
+        private System.Windows.Forms.CheckBox chkUsePreparedQueries;
     }
 }

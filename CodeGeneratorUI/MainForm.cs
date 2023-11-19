@@ -245,6 +245,7 @@ namespace QueryLite.CodeGeneratorUI {
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
                         IncludeConstraints = chkIncludeConstraints.Checked,
                         NumberOfInstanceProperties = (int)numNumberOfInstanceProperties.Value,
+                        UsePreparedQueries = chkUsePreparedQueries.Checked,
                         Namespaces = namespaces
                     };
 
@@ -265,9 +266,11 @@ namespace QueryLite.CodeGeneratorUI {
                         txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
                     }
                     txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateRequest(table);
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateHandlerCode(table, compiledQuery: chkCompiledQueries.Checked);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateHandlerCode(table, settings);
                     txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadRequest(table);
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, compiledQuery: chkCompiledQueries.Checked);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, settings);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, settings);
                 }
             }
             finally {
@@ -312,6 +315,7 @@ namespace QueryLite.CodeGeneratorUI {
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
                         IncludeConstraints = chkIncludeConstraints.Checked,
                         NumberOfInstanceProperties = (int)numNumberOfInstanceProperties.Value,
+                        UsePreparedQueries = chkUsePreparedQueries.Checked,
                         Namespaces = namespaces
                     };
 

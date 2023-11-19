@@ -15,6 +15,17 @@ namespace DbSchema.CodeGeneration {
             }
             return value;
         }
+        public static string FirstLetterLowerCase(this string value) {
+
+            if(value.Length == 0) {
+                return value;
+            }
+            if(!char.IsLower(value[0]) && value.Length > 1) {
+                char c = char.ToLower(value[0]);
+                value = string.Concat(new Span<char>(ref c), value.AsSpan(1));
+            }
+            return value;
+        }
     }
 }
 

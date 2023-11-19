@@ -1,4 +1,6 @@
-﻿using QueryLite.DbSchema;
+﻿using QueryLite;
+using QueryLite.DbSchema;
+using QueryLite.DbSchema.CodeGeneration;
 
 namespace DbSchema.CodeGeneration {
 
@@ -19,15 +21,15 @@ public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name
         }
 
         private static string GetLoadListRequestName(DatabaseTable table, string name) {
-            return $"Load{name}{(!name.EndsWith('s') ? "s" : string.Empty)}Request";
+            return $"Load{name}ListRequest";
         }
         private static string GetLoadListHandlerName(DatabaseTable table, string name) {
-            return $"Load{name}{(!name.EndsWith('s') ? "s" : string.Empty)}Handler";
+            return $"Load{name}ListHandler";
         }
 
-        public static string GetLoadListHandlerCode(DatabaseTable table, bool compiledQuery) {
+        public static string GetLoadListHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
 
-            if(compiledQuery) {
+            if(settings.UsePreparedQueries) {
                 return GetLoadListHandlerCodeWithCompiledQuery(table);
             }
             else {

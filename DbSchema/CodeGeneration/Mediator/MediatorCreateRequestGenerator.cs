@@ -1,4 +1,5 @@
 ﻿using QueryLite.DbSchema;
+using QueryLite.DbSchema.CodeGeneration;
 using System;
 using System.Text;
 
@@ -25,9 +26,9 @@ public sealed class Create{name}Request : IRequest<Response> {{
             return code;
         }
 
-        public static string GetCreateHandlerCode(DatabaseTable table, bool compiledQuery) {
+        public static string GetCreateHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
 
-            if(compiledQuery) {
+            if(settings.UsePreparedQueries) {
                 return GetCreateHandlerCodeWithCompiledQuery(table);
             }
             else {

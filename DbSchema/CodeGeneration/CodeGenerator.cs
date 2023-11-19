@@ -60,6 +60,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
         /// </summary>
         public required int NumberOfInstanceProperties { get; set; }
 
+        public required bool UsePreparedQueries { get; set; }
+
         public required Namespaces Namespaces { get; set; }
     }
 
