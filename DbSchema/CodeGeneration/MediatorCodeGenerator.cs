@@ -196,9 +196,56 @@ public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name
             return $"Load{name}{(!name.EndsWith('s') ? "s" : string.Empty)}Handler";
         }
 
-        public static string GetLoadListHandlerCode(DatabaseTable table) {
+        public static string GetLoadListHandlerCode(DatabaseTable table, bool compiledQuery) {
 
-            return GetLoadListHandlerCodeNonCompiledQuery(table);
+            if(compiledQuery) {
+                return GetLoadListHandlerCodeWithCompiledQuery(table);
+            }
+            else {
+                return GetLoadListHandlerCodeNonCompiledQuery(table);
+            }
+        }
+
+        private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table) {
+
+            string name = table.TableName.Value;
+
+            name = name.FirstLetterUpperCase();
+
+            string requestName = GetLoadListRequestName(table, name);
+            string handlerName = GetLoadListHandlerName(table, name);
+
+            string code = $@"
+public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
+
+    private readonly static IPreparedQueryExecute<bool, {name}> _query;
+
+    static {handlerName}() {{
+
+        {name}Table table = {name}Table.Instance;
+
+        _query = Query
+            .Prepare<bool>()
+            .Select(row => new {name}(table, row))
+            .From(table)
+            .Build();
+    }}
+
+    private readonly IDatabase _database;
+
+    public {handlerName}(IDatabase database) {{
+        _database = database;
+    }}
+
+    public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
+
+        QueryResult<{name}> list = await _query.ExecuteAsync(parameters: true, _database, cancellationToken, TimeoutLevel.ShortSelect);
+
+        return list.Rows;
+    }}
+}}
+";
+            return code;
         }
 
         private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table) {
