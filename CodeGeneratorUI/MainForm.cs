@@ -264,10 +264,10 @@ namespace QueryLite.CodeGeneratorUI {
 
                         txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
                     }
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetCreateRequest(table);
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetCreateHandlerCode(table, compiledQuery: chkCompiledQueries.Checked);
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetLoadRequest(table);
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetLoadListHandlerCode(table, compiledQuery: chkCompiledQueries.Checked);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateRequest(table);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateHandlerCode(table, compiledQuery: chkCompiledQueries.Checked);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadRequest(table);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, compiledQuery: chkCompiledQueries.Checked);
                 }
             }
             finally {
