@@ -36,7 +36,7 @@ namespace DbSchema.CodeGeneration {
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetLoadListRequestName(table, name);
+            string requestName = GetLoadListRequestName(name);
 
             StringBuilder parametersText = new StringBuilder();
             StringBuilder settersText = new StringBuilder();
@@ -87,31 +87,31 @@ namespace DbSchema.CodeGeneration {
             return code;
         }
 
-        private static string GetLoadListRequestName(DatabaseTable table, string name) {
+        private static string GetLoadListRequestName(string name) {
             return $"Load{name}Request";
         }
-        private static string GetLoadListHandlerName(DatabaseTable table, string name) {
+        private static string GetLoadListHandlerName(string name) {
             return $"Load{name}Handler";
         }
 
         public static string GetLoadListHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
 
             if(settings.UsePreparedQueries) {
-                return GetLoadListHandlerCodeWithCompiledQuery(table, settings);
+                return GetLoadListHandlerCodeWithCompiledQuery(table);
             }
             else {
                 return GetLoadListHandlerCodeNonCompiledQuery(table);
             }
         }
 
-        private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table, CodeGeneratorSettings settings) {
+        private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table) {
 
             string name = table.TableName.Value;
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetLoadListRequestName(table, name);
-            string handlerName = GetLoadListHandlerName(table, name);
+            string requestName = GetLoadListRequestName(name);
+            string handlerName = GetLoadListHandlerName(name);
 
             StringBuilder whereClause = new StringBuilder();
 
@@ -175,8 +175,8 @@ namespace DbSchema.CodeGeneration {
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetLoadListRequestName(table, name);
-            string handlerName = GetLoadListHandlerName(table, name);
+            string requestName = GetLoadListRequestName(name);
+            string handlerName = GetLoadListHandlerName(name);
 
 
             StringBuilder whereClause = new StringBuilder();

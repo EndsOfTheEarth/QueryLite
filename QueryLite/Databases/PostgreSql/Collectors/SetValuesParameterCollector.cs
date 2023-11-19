@@ -33,7 +33,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public PostgreSqlParameters Parameters { get; } = new PostgreSqlParameters(initParams: 1);
 
         private readonly StringBuilder _sql;
-        private StringBuilder? _paramSql;
+        private readonly StringBuilder? _paramSql;
 
         private readonly IDatabase _database;
         private readonly CollectorMode _collectorMode;
@@ -50,7 +50,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             _useAlias = useAlias;
         }
 
-        private ISetValuesCollector AddParameter(IColumn column, NpgsqlDbType dbType, object? value) {
+        private PostgreSqlSetValuesParameterCollector AddParameter(IColumn column, NpgsqlDbType dbType, object? value) {
 
             string paramName;
 
@@ -98,7 +98,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return this;
         }
 
-        private ISetValuesCollector AddFunction(IColumn column, IFunction function) {
+        private PostgreSqlSetValuesParameterCollector AddFunction(IColumn column, IFunction function) {
 
             if(_collectorMode == CollectorMode.Insert) {
 
@@ -177,7 +177,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Bit, value?.Value);
         }
 
-        private NpgsqlDbType GetEnumDbType<ENUM>() where ENUM : notnull, Enum {
+        private static NpgsqlDbType GetEnumDbType<ENUM>() where ENUM : notnull, Enum {
 
             NumericType integerType = EnumHelper.GetNumericType<ENUM>();
 
@@ -409,8 +409,8 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         private readonly StringBuilder _sql;
         public StringBuilder? ParamsSql;
 
-        private IDatabase _database;
-        private CollectorMode _collectorMode;
+        private readonly IDatabase _database;
+        private readonly CollectorMode _collectorMode;
 
         private bool _first = true;
 
@@ -425,7 +425,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
         }
 
-        private ISetValuesCollector SetValue(IColumn column, string value) {
+        private PostgreSqlSetValuesCollector SetValue(IColumn column, string value) {
 
             if(_collectorMode == CollectorMode.Insert) {
 

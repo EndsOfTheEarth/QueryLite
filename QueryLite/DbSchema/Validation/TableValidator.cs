@@ -502,7 +502,7 @@ namespace QueryLite {
                 }
             }
             if(validationSettings.ValidatePrimaryKeys) {
-                ValidatePrimaryKeyForTable(database, table, tableColumnProperties, dbTable, tableValidation);
+                ValidatePrimaryKeyForTable(table, dbTable, tableValidation);
             }
             if(validationSettings.ValidateUniqueConstraints) {
                 ValidateUniqueConstraintsForTable(table, dbTable, tableValidation);
@@ -513,7 +513,7 @@ namespace QueryLite {
             }
         }
 
-        private static void ValidatePrimaryKeyForTable(IDatabase database, ITable table, List<CodeColumnProperty> tableColumnProperties, DatabaseTable dbTable, TableValidation tableValidation) {
+        private static void ValidatePrimaryKeyForTable(ITable table, DatabaseTable dbTable, TableValidation tableValidation) {
 
             DatabasePrimaryKey? dbPrimaryKey = dbTable.PrimaryKey;
             PrimaryKey? codePrimaryKey = table.PrimaryKey;
