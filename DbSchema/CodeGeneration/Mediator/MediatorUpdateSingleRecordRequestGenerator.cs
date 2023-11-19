@@ -28,92 +28,58 @@ using System.Text;
 
 namespace DbSchema.CodeGeneration {
 
-    public static class MediatorDeleteSingleRecordRequestGenerator {
+    public static class MediatorUpdateSingleRecordRequestGenerator {
 
-        public static string GetDeleteRequest(DatabaseTable table, CodeGeneratorSettings settings) {
+        public static string GetUpdateRequest(DatabaseTable table, CodeGeneratorSettings settings) {
 
             string name = table.TableName.Value;
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetDeleteRequestName(table, name);
-
-            StringBuilder parametersText = new StringBuilder();
-            StringBuilder settersText = new StringBuilder();
-            StringBuilder propertiesText = new StringBuilder();
-
-            foreach(DatabaseColumn column in table.Columns) {
-
-                if(column.IsPrimaryKey) {
-
-                    CodeHelper.GetColumnName(table, column, useIdentifiers: settings.UseIdentifiers, dotNetType: out Type dotNetType, columnTypeName: out string columnTypeName, out bool isKeyColumn);
-
-                    if(parametersText.Length > 0) {
-                        parametersText.Append(',');
-                    }
-
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
-                    string parameterName = column.ColumnName.Value.FirstLetterLowerCase();
-
-                    parametersText.Append($"{columnTypeName} {parameterName}");
-
-                    if(settersText.Length > 0) {
-                        settersText.Append(',');
-                    }
-
-                    if(propertyName != parameterName) {
-                        settersText.Append($"        {propertyName} = {parameterName};");
-                    }
-                    else {
-                        settersText.Append($"        this.{propertyName} = {parameterName};");
-                    }
-
-                    if(propertiesText.Length > 0) {
-                        propertiesText.Append(Environment.NewLine);
-                    }
-                    propertiesText.Append($"    public {columnTypeName} {propertyName} {{ get; set; }}");
-                }
-            }
+            string requestName = GetUpdateRequestName( name);
 
             string code = $@"
 public sealed class {requestName} : IRequest<Response> {{
 
-    public {requestName}({parametersText}) {{
-{settersText}
+    public {name} {name} {{ get; set; }}
+
+    public {requestName}({name} {name.ToLower()}) {{
+        {name} = {name.ToLower()};
     }}
-{propertiesText}
 }}
 ";
             return code;
         }
 
-        private static string GetDeleteRequestName(DatabaseTable table, string name) {
-            return $"Delete{name}Request";
+        private static string GetUpdateRequestName(string name) {
+            return $"Update{name}Request";
         }
-        private static string GetDeleteHandlerName(DatabaseTable table, string name) {
-            return $"Delete{name}Handler";
+        private static string GetUpdateHandlerName(string name) {
+            return $"Update{name}Handler";
         }
 
-        public static string GetDeleteHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
+        public static string GetUpdateHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
 
             if(settings.UsePreparedQueries) {
-                return GetDeleteHandlerCodeWithCompiledQuery(table, settings);
+                return GetUpdateHandlerCodeWithCompiledQuery(table, settings);
             }
             else {
-                return GetDeleteHandlerCodeNonCompiledQuery(table);
+                return GetUpdateHandlerCodeNonCompiledQuery(table);
             }
         }
 
-        private static string GetDeleteHandlerCodeWithCompiledQuery(DatabaseTable table, CodeGeneratorSettings settings) {
+        private static string GetUpdateHandlerCodeWithCompiledQuery(DatabaseTable table, CodeGeneratorSettings settings) {
 
             string name = table.TableName.Value;
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetDeleteRequestName(table, name);
-            string handlerName = GetDeleteHandlerName(table, name);
+            string requestName = GetUpdateRequestName(name);
+            string handlerName = GetUpdateHandlerName(name);
 
             StringBuilder whereClause = new StringBuilder();
+
+            StringBuilder setValues = new StringBuilder();
 
             foreach(DatabaseColumn column in table.Columns) {
 
@@ -126,6 +92,12 @@ public sealed class {requestName} : IRequest<Response> {{
                     }
                     whereClause.Append($"where.EQUALS(table.{propertyName}, request => request.{propertyName})");
                 }
+
+                if(setValues.Length > 0) {
+                    setValues.Append(Environment.NewLine);
+                }
+                string columnName = column.ColumnName.Value.FirstLetterUpperCase();
+                setValues.Append($"                .Set(table.{columnName}, info => info.{columnName})");
             }
 
             if(whereClause.Length == 0) {
@@ -135,15 +107,20 @@ public sealed class {requestName} : IRequest<Response> {{
             string code = $@"
 public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
-    private readonly static IPreparedDeleteQuery<{requestName}> _query;
+    private static readonly {name}Validator _validator = new {name}Validator(isNew: false);
+
+    private readonly static IPreparedUpdateQuery<{name}> _query;
 
     static {handlerName}() {{
 
         {name}Table table = {name}Table.Instance;
 
         _query = Query
-            .Prepare<{requestName}> ()
-            .Delete(table)
+            .Prepare<{name}> ()
+            .Update(table)
+            .Values(values => values
+{setValues}
+            )
             .Where(where => {whereClause})
             .Build();
     }}
@@ -156,15 +133,21 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
     public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
 
+        FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
+
+        if(!validation.IsValid) {{
+            return Response.Failure(validation);
+        }}
+
         using(Transaction transaction = new Transaction(_database)) {{
 
-            NonQueryResult result = await _query.ExecuteAsync(parameters: request, transaction, cancellationToken);
-        
+            NonQueryResult result = await _query.ExecuteAsync(parameters: request.{name}, transaction, cancellationToken);
+
             if(result.RowsEffected != 1) {{
                 throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
             }}
             transaction.Commit();
-        }}        
+        }}
         return Response.Success;
     }}
 }}
@@ -172,15 +155,16 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
             return code;
         }
 
-        private static string GetDeleteHandlerCodeNonCompiledQuery(DatabaseTable table) {
+        private static string GetUpdateHandlerCodeNonCompiledQuery(DatabaseTable table) {
 
             string name = table.TableName.Value;
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetDeleteRequestName(table, name);
-            string handlerName = GetDeleteHandlerName(table, name);
+            string requestName = GetUpdateRequestName(name);
+            string handlerName = GetUpdateHandlerName(name);
 
+            StringBuilder setValues = new StringBuilder();
 
             StringBuilder whereClause = new StringBuilder();
 
@@ -193,8 +177,14 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
                     if(whereClause.Length > 0) {
                         whereClause.Append(" & ");
                     }
-                    whereClause.Append($"table.{propertyName} == request.{propertyName}");
+                    whereClause.Append($"table.{propertyName} == info.{propertyName}");
                 }
+
+                if(setValues.Length > 0) {
+                    setValues.Append(Environment.NewLine);
+                }
+                string columnName = column.ColumnName.Value.FirstLetterUpperCase();
+                setValues.Append($"                    .Set(table.{columnName}, info.{columnName})");
             }
 
             if(whereClause.Length == 0) {
@@ -204,6 +194,8 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
             string code = $@"
 public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
+    private static readonly {name}Validator _validator = new {name}Validator(isNew: false);
+
     private readonly IDatabase _database;
 
     public {handlerName}(IDatabase database) {{
@@ -212,17 +204,27 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
     public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
 
+        FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
+
+        if(!validation.IsValid) {{
+            return Response.Failure(validation);
+        }}
+
         {name}Table table = {name}Table.Instance;
 
-        using(Transaction transaction = new Transaction(_database)) {{
+        {name} info = request.{name};
 
-            NonQueryResult result = await Query
-                .Delete(table)
+        using(Transaction transaction = new Transaction(_database)) {{
+            QueryResult<{name}> result = await Query
+                .Update(table)
+                .Values(values => values
+{setValues}
+                )
                 .Where({whereClause})
                 .ExecuteAsync(transaction, cancellationToken);
 
-            if(result.RowsEffected != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+            if(result.Rows.Count != 1) {{
+                throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
             }}
         }}
         return Response.Success;
