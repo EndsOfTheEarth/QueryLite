@@ -37,14 +37,14 @@ namespace DbSchema.CodeGeneration {
             name = name.FirstLetterUpperCase();
 
             string code = $@"
-public sealed class Create{name}Request : IRequest<Response> {{
+    public sealed class Create{name}Request : IRequest<Response> {{
 
-    public {name} {name} {{ get; set; }}
+        public {name} {name} {{ get; set; }}
 
-    public Create{name}Request({name} {name.ToLower()}) {{
-        {name} = {name.ToLower()};
+        public Create{name}Request({name} {name.ToLower()}) {{
+            {name} = {name.ToLower()};
+        }}
     }}
-}}
 ";
             return code;
         }
@@ -76,50 +76,50 @@ public sealed class Create{name}Request : IRequest<Response> {{
                 setValues.Append($"                values.Set(table.{columnName}, info => info.{columnName});");
             }
             string code = $@"
-public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
+    public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
 
-    private static readonly {name}Validator _validator = new {name}Validator(isNew: true);
+        private static readonly {name}Validator _validator = new {name}Validator(isNew: true);
 
-    private static readonly IPreparedInsertQuery<{name}> _insertQuery;
+        private static readonly IPreparedInsertQuery<{name}> _insertQuery;
 
-    static Create{name}Handler() {{
+        static Create{name}Handler() {{
 
-        {name}Table table = {name}Table.Instance;
+            {name}Table table = {name}Table.Instance;
 
-        _insertQuery = Query.Prepare<{name}>()
-            .Insert(table)
-            .Values(values => {{
-{setValues}
-            }}
-            ).Build();
-    }}
-
-    private readonly IDatabase _database;
-
-    public Create{name}Handler(IDatabase database) {{
-        _database = database;
-    }}
-
-    public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
-
-        FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
-
-        if(!validation.IsValid) {{
-            return Response.Failure(validation);
+            _insertQuery = Query.Prepare<{name}>()
+                .Insert(table)
+                .Values(values => {{
+    {setValues}
+                }}
+                ).Build();
         }}
 
-        using(Transaction transaction = new Transaction(_database)) {{
+        private readonly IDatabase _database;
 
-            NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, cancellationToken);
-
-            if(result.RowsEffected != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
-            }}
-            transaction.Commit();
+        public Create{name}Handler(IDatabase database) {{
+            _database = database;
         }}
-        return Response.Success;
+
+        public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
+
+            FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
+
+            if(!validation.IsValid) {{
+                return Response.Failure(validation);
+            }}
+
+            using(Transaction transaction = new Transaction(_database)) {{
+
+                NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, cancellationToken);
+
+                if(result.RowsEffected != 1) {{
+                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+                }}
+                transaction.Commit();
+            }}
+            return Response.Success;
+        }}
     }}
-}}
 ";
             return code;
         }
@@ -141,45 +141,45 @@ public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, R
                 setValues.Append($"                    values.Set(table.{columnName}, info.{columnName});");
             }
             string code = $@"
-public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
+    public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
 
-    private static readonly {name}Validator _validator = new {name}Validator(isNew: true);
+        private static readonly {name}Validator _validator = new {name}Validator(isNew: true);
 
-    private readonly IDatabase _database;
+        private readonly IDatabase _database;
 
-    public Create{name}Handler(IDatabase database) {{
-        _database = database;
-    }}
-
-    public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
-
-        FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
-
-        if(!validation.IsValid) {{
-            return Response.Failure(validation);
+        public Create{name}Handler(IDatabase database) {{
+            _database = database;
         }}
 
-        using(Transaction transaction = new Transaction(_database)) {{
+        public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
 
-            {name}Table table = {name}Table.Instance;
+            FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
 
-            {name} info = request.{name};
-
-            NonQueryResult result = await Query
-                .Insert(table)
-                .Values(values => {{
-{setValues}
-                }}
-                ).ExecuteAsync(transaction, cancellationToken);
-
-                if(result.RowsEffected != 1) {{
-                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
-                }}
-                transaction.Commit();
+            if(!validation.IsValid) {{
+                return Response.Failure(validation);
             }}
-        return Response.Success;
+
+            using(Transaction transaction = new Transaction(_database)) {{
+
+                {name}Table table = {name}Table.Instance;
+
+                {name} info = request.{name};
+
+                NonQueryResult result = await Query
+                    .Insert(table)
+                    .Values(values => {{
+    {setValues}
+                    }}
+                    ).ExecuteAsync(transaction, cancellationToken);
+
+                    if(result.RowsEffected != 1) {{
+                        throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+                    }}
+                    transaction.Commit();
+                }}
+            return Response.Success;
+        }}
     }}
-}}
 ";
             return code;
         }

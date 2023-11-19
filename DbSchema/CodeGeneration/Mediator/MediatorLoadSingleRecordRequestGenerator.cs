@@ -76,13 +76,13 @@ namespace DbSchema.CodeGeneration {
             }
 
             string code = $@"
-public sealed class {requestName} : IRequest<{name}> {{
+    public sealed class {requestName} : IRequest<{name}> {{
 
-    public {requestName}({parametersText}) {{
-{settersText}
+        public {requestName}({parametersText}) {{
+    {settersText}
+        }}
+    {propertiesText}
     }}
-{propertiesText}
-}}
 ";
             return code;
         }
@@ -133,38 +133,38 @@ public sealed class {requestName} : IRequest<{name}> {{
             }
 
             string code = $@"
-public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
+    public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
 
-    private readonly static IPreparedQueryExecute<{requestName}, {name}> _query;
+        private readonly static IPreparedQueryExecute<{requestName}, {name}> _query;
 
-    static {handlerName}() {{
+        static {handlerName}() {{
 
-        {name}Table table = {name}Table.Instance;
+            {name}Table table = {name}Table.Instance;
 
-        _query = Query
-            .Prepare<{requestName}> ()
-            .Select(row => new {name}(table, row))
-            .From(table)
-            .Where(where => {whereClause})
-            .Build();
-    }}
-
-    private readonly IDatabase _database;
-
-    public {handlerName}(IDatabase database) {{
-        _database = database;
-    }}
-
-    public async Task<{name}> Handle({requestName} request, CancellationToken cancellationToken) {{
-
-        QueryResult<{name}> result = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
-
-        if(result.Rows.Count != 1) {{
-            throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
+            _query = Query
+                .Prepare<{requestName}> ()
+                .Select(row => new {name}(table, row))
+                .From(table)
+                .Where(where => {whereClause})
+                .Build();
         }}
-        return result.Rows[0];
+
+        private readonly IDatabase _database;
+
+        public {handlerName}(IDatabase database) {{
+            _database = database;
+        }}
+
+        public async Task<{name}> Handle({requestName} request, CancellationToken cancellationToken) {{
+
+            QueryResult<{name}> result = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
+
+            if(result.Rows.Count != 1) {{
+                throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
+            }}
+            return result.Rows[0];
+        }}
     }}
-}}
 ";
             return code;
         }
@@ -199,32 +199,32 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
             }
 
             string code = $@"
-public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
+    public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
 
-    private readonly IDatabase _database;
+        private readonly IDatabase _database;
 
-    public {handlerName}(IDatabase database) {{
-        _database = database;
-    }}
-
-    public async Task<{name}> Handle({requestName} request, CancellationToken cancellationToken) {{
-
-        {name}Table table = {name}Table.Instance;
-
-        QueryResult<{name}> result = await Query
-            .Select(
-                row => new {name}(table, row)
-            )
-            .From(table)
-            .Where({whereClause})
-            .ExecuteAsync(_database, cancellationToken);
-
-        if(result.Rows.Count != 1) {{
-            throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
+        public {handlerName}(IDatabase database) {{
+            _database = database;
         }}
-        return result.Rows[0];
+
+        public async Task<{name}> Handle({requestName} request, CancellationToken cancellationToken) {{
+
+            {name}Table table = {name}Table.Instance;
+
+            QueryResult<{name}> result = await Query
+                .Select(
+                    row => new {name}(table, row)
+                )
+                .From(table)
+                .Where({whereClause})
+                .ExecuteAsync(_database, cancellationToken);
+
+            if(result.Rows.Count != 1) {{
+                throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
+            }}
+            return result.Rows[0];
+        }}
     }}
-}}
 ";
             return code;
         }

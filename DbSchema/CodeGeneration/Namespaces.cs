@@ -28,10 +28,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public sealed class Namespaces {
 
-        public Namespaces(string baseNamespace, string tableNamespace, string classNamespace) {
+        public Namespaces(string baseNamespace, string tableNamespace, string classNamespace, string requestNamespace) {
             BaseNamespace = FirstLetterUpperCase(baseNamespace);
             TableNamespace = FirstLetterUpperCase(tableNamespace);
             ClassNamespace = FirstLetterUpperCase(classNamespace);
+            RequestNamespace = FirstLetterUpperCase(requestNamespace);
         }
 
         private string FirstLetterUpperCase(string value) {
@@ -40,6 +41,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
         public string BaseNamespace { get; set; }
         public string TableNamespace { get; set; }
         private string ClassNamespace { get; set; }
+        private string RequestNamespace { get; set; }
 
         public string GetTableNamespace(StringKey<ISchemaName> schema) {
 
@@ -63,6 +65,20 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             if(!IsDefaultSchema(schema)) {
                 return $"{ClassNamespace}.{schemaName}";
+            }
+            else {
+                return TableNamespace;
+            }
+        }
+
+        public string GetRequestsNamespace(StringKey<ISchemaName> schema) {
+
+            string schemaName = schema.Value;
+
+            schemaName = FirstLetterUpperCase(schemaName);
+
+            if(!IsDefaultSchema(schema)) {
+                return $"{RequestNamespace}.{schemaName}";
             }
             else {
                 return TableNamespace;

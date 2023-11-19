@@ -29,16 +29,16 @@ namespace DbSchema.CodeGeneration {
 
     public static class MediatorLoadListRequestGenerator {
 
-        public static string GetLoadRequest(DatabaseTable table) {
+        public static string GetLoadListRequest(DatabaseTable table) {
 
             string name = table.TableName.Value;
 
             name = name.FirstLetterUpperCase();
 
             string code = $@"
-public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name}>> {{
+    public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name}>> {{
 
-}}
+    }}
 ";
             return code;
         }
@@ -70,34 +70,34 @@ public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name
             string handlerName = GetLoadListHandlerName(table, name);
 
             string code = $@"
-public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
+    public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
 
-    private readonly static IPreparedQueryExecute<{requestName}, {name}> _query;
+        private readonly static IPreparedQueryExecute<{requestName}, {name}> _query;
 
-    static {handlerName}() {{
+        static {handlerName}() {{
 
-        {name}Table table = {name}Table.Instance;
+            {name}Table table = {name}Table.Instance;
 
-        _query = Query
-            .Prepare<{requestName}>()
-            .Select(row => new {name}(table, row))
-            .From(table)
-            .Build();
+            _query = Query
+                .Prepare<{requestName}>()
+                .Select(row => new {name}(table, row))
+                .From(table)
+                .Build();
+        }}
+
+        private readonly IDatabase _database;
+
+        public {handlerName}(IDatabase database) {{
+            _database = database;
+        }}
+
+        public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
+
+            QueryResult<{name}> list = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
+
+            return list.Rows;
+        }}
     }}
-
-    private readonly IDatabase _database;
-
-    public {handlerName}(IDatabase database) {{
-        _database = database;
-    }}
-
-    public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
-
-        QueryResult<{name}> list = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
-
-        return list.Rows;
-    }}
-}}
 ";
             return code;
         }
@@ -112,28 +112,28 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>>
             string handlerName = GetLoadListHandlerName(table, name);
 
             string code = $@"
-public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
+    public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
 
-    private readonly IDatabase _database;
+        private readonly IDatabase _database;
 
-    public {handlerName}(IDatabase database) {{
-        _database = database;
+        public {handlerName}(IDatabase database) {{
+            _database = database;
+        }}
+
+        public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
+
+            {name}Table table = {name}Table.Instance;
+
+            QueryResult<{name}> list = await Query
+                .Select(
+                    row => new {name}(table, row)
+                )
+                .From(table)
+                .ExecuteAsync(_database, cancellationToken);
+
+            return list.Rows;
+        }}
     }}
-
-    public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
-
-        {name}Table table = {name}Table.Instance;
-
-        QueryResult<{name}> list = await Query
-            .Select(
-                row => new {name}(table, row)
-            )
-            .From(table)
-            .ExecuteAsync(_database, cancellationToken);
-
-        return list.Rows;
-    }}
-}}
 ";
             return code;
         }

@@ -39,14 +39,14 @@ namespace DbSchema.CodeGeneration {
             string requestName = GetUpdateRequestName( name);
 
             string code = $@"
-public sealed class {requestName} : IRequest<Response> {{
+    public sealed class {requestName} : IRequest<Response> {{
 
-    public {name} {name} {{ get; set; }}
+        public {name} {name} {{ get; set; }}
 
-    public {requestName}({name} {name.ToLower()}) {{
-        {name} = {name.ToLower()};
+        public {requestName}({name} {name.ToLower()}) {{
+            {name} = {name.ToLower()};
+        }}
     }}
-}}
 ";
             return code;
         }
@@ -105,52 +105,52 @@ public sealed class {requestName} : IRequest<Response> {{
             }
 
             string code = $@"
-public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
+    public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
-    private static readonly {name}Validator _validator = new {name}Validator(isNew: false);
+        private static readonly {name}Validator _validator = new {name}Validator(isNew: false);
 
-    private readonly static IPreparedUpdateQuery<{name}> _query;
+        private readonly static IPreparedUpdateQuery<{name}> _query;
 
-    static {handlerName}() {{
+        static {handlerName}() {{
 
-        {name}Table table = {name}Table.Instance;
+            {name}Table table = {name}Table.Instance;
 
-        _query = Query
-            .Prepare<{name}> ()
-            .Update(table)
-            .Values(values => values
-{setValues}
-            )
-            .Where(where => {whereClause})
-            .Build();
-    }}
-
-    private readonly IDatabase _database;
-
-    public {handlerName}(IDatabase database) {{
-        _database = database;
-    }}
-
-    public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
-
-        FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
-
-        if(!validation.IsValid) {{
-            return Response.Failure(validation);
+            _query = Query
+                .Prepare<{name}> ()
+                .Update(table)
+                .Values(values => values
+    {setValues}
+                )
+                .Where(where => {whereClause})
+                .Build();
         }}
 
-        using(Transaction transaction = new Transaction(_database)) {{
+        private readonly IDatabase _database;
 
-            NonQueryResult result = await _query.ExecuteAsync(parameters: request.{name}, transaction, cancellationToken);
+        public {handlerName}(IDatabase database) {{
+            _database = database;
+        }}
 
-            if(result.RowsEffected != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+        public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
+
+            FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
+
+            if(!validation.IsValid) {{
+                return Response.Failure(validation);
             }}
-            transaction.Commit();
+
+            using(Transaction transaction = new Transaction(_database)) {{
+
+                NonQueryResult result = await _query.ExecuteAsync(parameters: request.{name}, transaction, cancellationToken);
+
+                if(result.RowsEffected != 1) {{
+                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+                }}
+                transaction.Commit();
+            }}
+            return Response.Success;
         }}
-        return Response.Success;
     }}
-}}
 ";
             return code;
         }
@@ -192,46 +192,46 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
             }
 
             string code = $@"
-public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
+    public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
-    private static readonly {name}Validator _validator = new {name}Validator(isNew: false);
+        private static readonly {name}Validator _validator = new {name}Validator(isNew: false);
 
-    private readonly IDatabase _database;
+        private readonly IDatabase _database;
 
-    public {handlerName}(IDatabase database) {{
-        _database = database;
-    }}
-
-    public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
-
-        FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
-
-        if(!validation.IsValid) {{
-            return Response.Failure(validation);
+        public {handlerName}(IDatabase database) {{
+            _database = database;
         }}
 
-        {name}Table table = {name}Table.Instance;
+        public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
 
-        {name} info = request.{name};
+            FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
 
-        using(Transaction transaction = new Transaction(_database)) {{
-
-            NonQueryResult result = await Query
-                .Update(table)
-                .Values(values => values
-{setValues}
-                )
-                .Where({whereClause})
-                .ExecuteAsync(transaction, cancellationToken);
-
-            if(result.RowsEffected != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+            if(!validation.IsValid) {{
+                return Response.Failure(validation);
             }}
-            transaction.Commit();
+
+            {name}Table table = {name}Table.Instance;
+
+            {name} info = request.{name};
+
+            using(Transaction transaction = new Transaction(_database)) {{
+
+                NonQueryResult result = await Query
+                    .Update(table)
+                    .Values(values => values
+    {setValues}
+                    )
+                    .Where({whereClause})
+                    .ExecuteAsync(transaction, cancellationToken);
+
+                if(result.RowsEffected != 1) {{
+                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+                }}
+                transaction.Commit();
+            }}
+            return Response.Success;
         }}
-        return Response.Success;
     }}
-}}
 ";
             return code;
         }

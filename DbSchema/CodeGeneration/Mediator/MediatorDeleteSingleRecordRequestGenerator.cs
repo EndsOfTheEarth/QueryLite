@@ -76,13 +76,13 @@ namespace DbSchema.CodeGeneration {
             }
 
             string code = $@"
-public sealed class {requestName} : IRequest<Response> {{
+    public sealed class {requestName} : IRequest<Response> {{
 
-    public {requestName}({parametersText}) {{
-{settersText}
+        public {requestName}({parametersText}) {{
+    {settersText}
+        }}
+    {propertiesText}
     }}
-{propertiesText}
-}}
 ";
             return code;
         }
@@ -133,41 +133,41 @@ public sealed class {requestName} : IRequest<Response> {{
             }
 
             string code = $@"
-public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
+    public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
-    private readonly static IPreparedDeleteQuery<{requestName}> _query;
+        private readonly static IPreparedDeleteQuery<{requestName}> _query;
 
-    static {handlerName}() {{
+        static {handlerName}() {{
 
-        {name}Table table = {name}Table.Instance;
+            {name}Table table = {name}Table.Instance;
 
-        _query = Query
-            .Prepare<{requestName}> ()
-            .Delete(table)
-            .Where(where => {whereClause})
-            .Build();
-    }}
+            _query = Query
+                .Prepare<{requestName}> ()
+                .Delete(table)
+                .Where(where => {whereClause})
+                .Build();
+        }}
 
-    private readonly IDatabase _database;
+        private readonly IDatabase _database;
 
-    public {handlerName}(IDatabase database) {{
-        _database = database;
-    }}
+        public {handlerName}(IDatabase database) {{
+            _database = database;
+        }}
 
-    public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
 
-        using(Transaction transaction = new Transaction(_database)) {{
+            using(Transaction transaction = new Transaction(_database)) {{
 
-            NonQueryResult result = await _query.ExecuteAsync(parameters: request, transaction, cancellationToken);
+                NonQueryResult result = await _query.ExecuteAsync(parameters: request, transaction, cancellationToken);
         
-            if(result.RowsEffected != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
-            }}
-            transaction.Commit();
-        }}        
-        return Response.Success;
+                if(result.RowsEffected != 1) {{
+                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+                }}
+                transaction.Commit();
+            }}        
+            return Response.Success;
+        }}
     }}
-}}
 ";
             return code;
         }
@@ -202,33 +202,33 @@ public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
             }
 
             string code = $@"
-public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
+    public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
-    private readonly IDatabase _database;
+        private readonly IDatabase _database;
 
-    public {handlerName}(IDatabase database) {{
-        _database = database;
-    }}
-
-    public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
-
-        {name}Table table = {name}Table.Instance;
-
-        using(Transaction transaction = new Transaction(_database)) {{
-
-            NonQueryResult result = await Query
-                .Delete(table)
-                .Where({whereClause})
-                .ExecuteAsync(transaction, cancellationToken);
-
-            if(result.RowsEffected != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
-            }}
-            transaction.Commit();
+        public {handlerName}(IDatabase database) {{
+            _database = database;
         }}
-        return Response.Success;
+
+        public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
+
+            {name}Table table = {name}Table.Instance;
+
+            using(Transaction transaction = new Transaction(_database)) {{
+
+                NonQueryResult result = await Query
+                    .Delete(table)
+                    .Where({whereClause})
+                    .ExecuteAsync(transaction, cancellationToken);
+
+                if(result.RowsEffected != 1) {{
+                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+                }}
+                transaction.Commit();
+            }}
+            return Response.Success;
+        }}
     }}
-}}
 ";
             return code;
         }
