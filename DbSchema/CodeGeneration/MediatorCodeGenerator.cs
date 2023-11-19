@@ -1,6 +1,7 @@
 ﻿using QueryLite.DbSchema;
 using System;
 using System.Text;
+using System.Xml.Linq;
 
 namespace DbSchema.CodeGeneration {
 
@@ -173,8 +174,94 @@ public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, R
 ";
             return code;
         }
+
+        public static string GetLoadRequest(DatabaseTable table) {
+
+            string name = table.TableName.Value;
+
+            name = name.FirstLetterUpperCase();
+
+            string code = $@"
+public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name}>> {{
+
+}}
+";
+            return code;
+        }
+
+        private static string GetLoadListRequestName(DatabaseTable table, string name) {
+            return $"Load{name}{(!name.EndsWith('s') ? "s" : string.Empty)}Request";
+        }
+        private static string GetLoadListHandlerName(DatabaseTable table, string name) {
+            return $"Load{name}{(!name.EndsWith('s') ? "s" : string.Empty)}Handler";
+        }
+
+        public static string GetLoadListHandlerCode(DatabaseTable table) {
+
+            return GetLoadListHandlerCodeNonCompiledQuery(table);
+        }
+
+        private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table) {
+
+            string name = table.TableName.Value;
+
+            name = name.FirstLetterUpperCase();
+
+            string requestName = GetLoadListRequestName(table, name);
+            string handlerName = GetLoadListHandlerName(table, name);
+
+            string code = $@"
+public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
+
+    private readonly IDatabase _database;
+
+    public {handlerName}(IDatabase database) {{
+        _database = database;
+    }}
+
+    public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
+
+        {name}Table table = {name}Table.Instance;
+
+        QueryResult<{name}> list = await Query
+            .Select(
+                row => new {name}(table, row)
+            )
+            .From(table)
+            .ExecuteAsync(_database, cancellationToken, TimeoutLevel.ShortSelect);
+
+        return list.Rows;
+    }}
+}}
+";
+            return code;
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Examples
 
     public class CreateCustomerRequest : IRequest<Response> {
