@@ -89,9 +89,8 @@ namespace DbSchema.CodeGeneration {
 
                 code.Append($"namespace {settings.Namespaces.GetRequestsNamespace(table.Schema)} {{").EndLine().EndLine();
 
-                code.Indent(1).Append("using FluentValidation;").EndLine();
-                code.Append("using MediatR;").EndLine();
-
+                code.Indent(1).Append("using QueryLite;").EndLine();
+                code.Indent(1).Append("using MediatR;").EndLine();
                 code.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
                 string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
@@ -100,11 +99,92 @@ namespace DbSchema.CodeGeneration {
                     code.Indent(1).Append($"using {tableNamespace};").EndLine();
                 }
             }
-            code.Append(MediatorCreateRequestGenerator.GetCreateRequest(table));
-            code.Append(MediatorUpdateSingleRecordRequestGenerator.GetUpdateRequest(table, settings));
-            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, settings));
             code.Append(MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, settings));
             code.Append(MediatorLoadListRequestGenerator.GetLoadListRequest(table));
+            code.Append(MediatorCreateRequestGenerator.GetCreateRequest(table));
+            code.Append(MediatorUpdateSingleRecordRequestGenerator.GetUpdateRequest(table, settings));
+            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, settings));            
+
+            if(includeUsings) {
+                code.Append("}");
+            }
+            return code;
+        }
+
+        public static CodeBuilder GenerateMediatorHandlersCode(List<DatabaseTable> tables, CodeGeneratorSettings settings, bool includeUsings) {
+
+            CodeBuilder code = new CodeBuilder();
+
+            code.Append("using FluentValidation;").EndLine();
+            code.Append("using QueryLite;").EndLine();
+            code.Append("using MediatR;").EndLine();
+            code.Append($"using {settings.Namespaces.TableNamespace};").EndLine();
+
+            List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
+
+            foreach(DatabaseTable table in tables) {
+
+                if(!table.IsView && !schemaNames.Contains(table.Schema)) {
+                    schemaNames.Add(table.Schema);
+                }
+            }
+
+            schemaNames.Sort((a, b) => a.Value.CompareTo(b.Value));
+
+            int count = 0;
+
+            foreach(StringKey<ISchemaName> schema in schemaNames) {
+
+                if(count > 0) {
+                    code.EndLine();
+                }
+                count++;
+                code.EndLine().Append($"namespace {settings.Namespaces.GetRequestsNamespace(schema)} {{").EndLine();
+
+                string tableNamespace = settings.Namespaces.GetTableNamespace(schema);
+
+                if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
+                    code.EndLine().Indent(1).Append($"using {tableNamespace};").EndLine();
+                }
+
+                foreach(DatabaseTable table in tables) {
+
+                    if(!table.IsView && string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
+
+                        TablePrefix prefix = new TablePrefix(table);
+
+                        code.Append(GenerateMediatorHandlersCode(table, prefix, settings, includeUsings: false).ToString());
+                    }
+                }
+                code.Append("}");
+            }
+            return code;
+        }
+
+        public static CodeBuilder GenerateMediatorHandlersCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
+
+            CodeBuilder code = new CodeBuilder();
+
+            if(includeUsings) {
+
+                code.Append($"namespace {settings.Namespaces.GetRequestsNamespace(table.Schema)} {{").EndLine().EndLine();
+
+                //code.Indent(1).Append("using FluentValidation;").EndLine();
+                code.Indent(1).Append("using QueryLite;").EndLine();
+                code.Indent(1).Append("using MediatR;").EndLine();
+                //code.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
+
+                string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
+
+                if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
+                    code.Indent(1).Append($"using {tableNamespace};").EndLine();
+                }
+            }
+            code.Append(MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, settings));
+            code.Append(MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings));
+            code.Append(MediatorCreateRequestGenerator.GetCreateHandlerCode(table, settings));
+            code.Append(MediatorUpdateSingleRecordRequestGenerator.GetUpdateHandlerCode(table, settings));
+            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, settings));
 
             if(includeUsings) {
                 code.Append("}");

@@ -265,6 +265,13 @@ namespace QueryLite.CodeGeneratorUI {
 
                         txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
                     }
+
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, settings);
+                    txtCode.Text += MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, settings);
+
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadListRequest(table);
+                    txtCode.Text += MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings);
+
                     txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateRequest(table);
                     txtCode.Text += MediatorCreateRequestGenerator.GetCreateHandlerCode(table, settings);
 
@@ -273,12 +280,6 @@ namespace QueryLite.CodeGeneratorUI {
 
                     txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, settings);
                     txtCode.Text += MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, settings);
-
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, settings);
-                    txtCode.Text += MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, settings);
-
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadListRequest(table);
-                    txtCode.Text += MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings);
                 }
             }
             finally {

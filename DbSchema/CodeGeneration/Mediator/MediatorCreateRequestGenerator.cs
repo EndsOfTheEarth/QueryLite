@@ -73,7 +73,7 @@ namespace DbSchema.CodeGeneration {
                     setValues.Append(Environment.NewLine);
                 }
                 string columnName = column.ColumnName.Value.FirstLetterUpperCase();
-                setValues.Append($"                values.Set(table.{columnName}, info => info.{columnName});");
+                setValues.Append($"                    values.Set(table.{columnName}, info => info.{columnName});");
             }
             string code = $@"
     public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
@@ -89,7 +89,7 @@ namespace DbSchema.CodeGeneration {
             _insertQuery = Query.Prepare<{name}>()
                 .Insert(table)
                 .Values(values => {{
-    {setValues}
+{setValues}
                 }}
                 ).Build();
         }}
@@ -138,7 +138,7 @@ namespace DbSchema.CodeGeneration {
                     setValues.Append(Environment.NewLine);
                 }
                 string columnName = column.ColumnName.Value.FirstLetterUpperCase();
-                setValues.Append($"                    values.Set(table.{columnName}, info.{columnName});");
+                setValues.Append($"                        values.Set(table.{columnName}, info.{columnName});");
             }
             string code = $@"
     public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
@@ -168,7 +168,7 @@ namespace DbSchema.CodeGeneration {
                 NonQueryResult result = await Query
                     .Insert(table)
                     .Values(values => {{
-    {setValues}
+{setValues}
                     }}
                     ).ExecuteAsync(transaction, cancellationToken);
 

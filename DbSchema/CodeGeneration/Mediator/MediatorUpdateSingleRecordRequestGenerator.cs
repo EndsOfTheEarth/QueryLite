@@ -97,7 +97,7 @@ namespace DbSchema.CodeGeneration {
                     setValues.Append(Environment.NewLine);
                 }
                 string columnName = column.ColumnName.Value.FirstLetterUpperCase();
-                setValues.Append($"                .Set(table.{columnName}, info => info.{columnName})");
+                setValues.Append($"                    .Set(table.{columnName}, info => info.{columnName})");
             }
 
             if(whereClause.Length == 0) {
@@ -119,7 +119,7 @@ namespace DbSchema.CodeGeneration {
                 .Prepare<{name}> ()
                 .Update(table)
                 .Values(values => values
-    {setValues}
+{setValues}
                 )
                 .Where(where => {whereClause})
                 .Build();
@@ -184,7 +184,7 @@ namespace DbSchema.CodeGeneration {
                     setValues.Append(Environment.NewLine);
                 }
                 string columnName = column.ColumnName.Value.FirstLetterUpperCase();
-                setValues.Append($"                    .Set(table.{columnName}, info.{columnName})");
+                setValues.Append($"                        .Set(table.{columnName}, info.{columnName})");
             }
 
             if(whereClause.Length == 0) {
@@ -219,7 +219,7 @@ namespace DbSchema.CodeGeneration {
                 NonQueryResult result = await Query
                     .Update(table)
                     .Values(values => values
-    {setValues}
+{setValues}
                     )
                     .Where({whereClause})
                     .ExecuteAsync(transaction, cancellationToken);
