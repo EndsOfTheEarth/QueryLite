@@ -39,7 +39,17 @@ public sealed class Create{name}Request : IRequest<Response> {{
             return code;
         }
 
-        public static string GetCreateHandlerCode(DatabaseTable table) {
+        public static string GetCreateHandlerCode(DatabaseTable table, bool compiledQuery) {
+
+            if(compiledQuery) {
+                return GetCreateHandlerCodeWithCompiledQuery(table);
+            }
+            else {
+                return GetCreateHandlerCodeNonCompiledQuery(table);
+            }
+        }
+
+        private static string GetCreateHandlerCodeWithCompiledQuery(DatabaseTable table) {
 
             string name = table.TableName.Value;
 
@@ -93,10 +103,70 @@ public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, R
             NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, cancellationToken, TimeoutLevel.ShortInsert);
 
             if(result.RowsEffected != 1) {{
-                throw new Exception($""{{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+                throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
             }}
             transaction.Commit();
         }}
+        return Response.Success;
+    }}
+}}
+";
+            return code;
+        }
+
+        private static string GetCreateHandlerCodeNonCompiledQuery(DatabaseTable table) {
+
+            string name = table.TableName.Value;
+
+            name = name.FirstLetterUpperCase();
+
+            StringBuilder setValues = new StringBuilder();
+
+            foreach(DatabaseColumn column in table.Columns) {
+
+                if(setValues.Length > 0) {
+                    setValues.Append(Environment.NewLine);
+                }
+                string columnName = column.ColumnName.Value.FirstLetterUpperCase();
+                setValues.Append($"                    values.Set(table.{columnName}, info.{columnName});");
+            }
+            string code = $@"
+public sealed class Create{name}Handler : IRequestHandler<Create{name}Request, Response> {{
+
+    private static readonly {name}Validator _validator = new {name}Validator(isNew: true);
+
+    private readonly IDatabase _database;
+
+    public Create{name}Handler(IDatabase database) {{
+        _database = database;
+    }}
+
+    public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
+
+        FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
+
+        if(!validation.IsValid) {{
+            return Response.Failure(validation);
+        }}
+
+        using(Transaction transaction = new Transaction(_database)) {{
+
+            {name}Table table = {name}Table.Instance;
+
+            {name} info = request.{name};
+
+            NonQueryResult result = await Query
+                .Insert(table)
+                .Values(values => {{
+{setValues}
+                }}
+                ).ExecuteAsync(transaction, cancellationToken, timeout: TimeoutLevel.ShortInsert);
+
+                if(result.RowsEffected != 1) {{
+                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
+                }}
+                transaction.Commit();
+            }}
         return Response.Success;
     }}
 }}

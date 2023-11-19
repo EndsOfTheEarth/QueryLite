@@ -265,7 +265,7 @@ namespace QueryLite.CodeGeneratorUI {
                         txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
                     }
                     txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetCreateRequest(table);
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetCreateHandlerCode(table);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCodeGenerator.GetCreateHandlerCode(table, compiledQuery: chkCompiledQueries.Checked);
                 }
             }
             finally {
