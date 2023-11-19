@@ -67,3 +67,32 @@ namespace QueryLite.DbSchema.CodeGeneration {
         }
     }
 }
+
+namespace DbSchema.CodeGeneration {
+
+    public static class Str {
+
+        public static string FirstLetterUpperCase(this string value) {
+
+            if(value.Length == 0) {
+                return value;
+            }
+            if(!char.IsUpper(value[0]) && value.Length > 1) {
+                char c = char.ToUpper(value[0]);
+                value = string.Concat(new Span<char>(ref c), value.AsSpan(1));
+            }
+            return value;
+        }
+        public static string FirstLetterLowerCase(this string value) {
+
+            if(value.Length == 0) {
+                return value;
+            }
+            if(!char.IsLower(value[0]) && value.Length > 1) {
+                char c = char.ToLower(value[0]);
+                value = string.Concat(new Span<char>(ref c), value.AsSpan(1));
+            }
+            return value;
+        }
+    }
+}

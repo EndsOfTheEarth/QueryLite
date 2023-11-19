@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using DbSchema.CodeGeneration;
 using Npgsql;
 using QueryLite.Databases.PostgreSql;
 using QueryLite.Databases.SqlServer;
@@ -235,7 +236,7 @@ namespace QueryLite.CodeGeneratorUI {
 
                     string baseNamespace = txtNamespace.Text;
 
-                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}.Tables", classNamespace: $"{baseNamespace}.Classes");
+                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}.Tables", classNamespace: $"{baseNamespace}.Classes", requestNamespace: $"{baseNamespace}.Requests");
 
                     CodeGeneratorSettings settings = new CodeGeneratorSettings() {
                         IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.Checked,
@@ -244,6 +245,7 @@ namespace QueryLite.CodeGeneratorUI {
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
                         IncludeConstraints = chkIncludeConstraints.Checked,
                         NumberOfInstanceProperties = (int)numNumberOfInstanceProperties.Value,
+                        UsePreparedQueries = chkUsePreparedQueries.Checked,
                         Namespaces = namespaces
                     };
 
@@ -263,6 +265,21 @@ namespace QueryLite.CodeGeneratorUI {
 
                         txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
                     }
+
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, settings);
+                    txtCode.Text += MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, settings);
+
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadListRequest(table);
+                    txtCode.Text += MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings);
+
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateRequest(table);
+                    txtCode.Text += MediatorCreateRequestGenerator.GetCreateHandlerCode(table, settings);
+
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorUpdateSingleRecordRequestGenerator.GetUpdateRequest(table, settings);
+                    txtCode.Text += MediatorUpdateSingleRecordRequestGenerator.GetUpdateHandlerCode(table, settings);
+
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, settings);
+                    txtCode.Text += MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, settings);
                 }
             }
             finally {
@@ -298,7 +315,7 @@ namespace QueryLite.CodeGeneratorUI {
 
                     string baseNamespace = txtNamespace.Text;
 
-                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}.Tables", classNamespace: $"{baseNamespace}.Classes");
+                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}.Tables", classNamespace: $"{baseNamespace}.Classes", requestNamespace: $"{baseNamespace}.Requests");
 
                     CodeGeneratorSettings settings = new CodeGeneratorSettings() {
                         IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.Checked,
@@ -307,6 +324,7 @@ namespace QueryLite.CodeGeneratorUI {
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
                         IncludeConstraints = chkIncludeConstraints.Checked,
                         NumberOfInstanceProperties = (int)numNumberOfInstanceProperties.Value,
+                        UsePreparedQueries = chkUsePreparedQueries.Checked,
                         Namespaces = namespaces
                     };
 

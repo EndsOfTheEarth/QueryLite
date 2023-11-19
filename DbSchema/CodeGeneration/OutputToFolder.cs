@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using DbSchema.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,12 +39,16 @@ namespace QueryLite.DbSchema.CodeGeneration {
             string tablesFolder = Path.Combine(folder, "Tables");
             string classesFolder = Path.Combine(folder, "Classes");
             string validationFolder = Path.Combine(folder, "Validation");
+            string requestsFolder = Path.Combine(folder, "Requests");
+            string handlersFolder = Path.Combine(folder, "Handlers");
 
             if(singleFiles) {
 
                 Directory.CreateDirectory(tablesFolder);
                 Directory.CreateDirectory(classesFolder);
                 Directory.CreateDirectory(validationFolder);
+                Directory.CreateDirectory(requestsFolder);
+                Directory.CreateDirectory(handlersFolder);
 
                 foreach(DatabaseTable table in tables) {
 
@@ -60,9 +65,18 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     File.WriteAllText(classesFileName, classCode.ToString());
 
                     if(!table.IsView) {
+
                         CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
                         string validationFileName = Path.Combine(validationFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Validation.cs");
                         File.WriteAllText(validationFileName, validationCode.ToString());
+
+                        CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(table, prefix, settings, includeUsings: true);
+                        string requestsFileName = Path.Combine(requestsFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Requests.cs");
+                        File.WriteAllText(requestsFileName, requestsCode.ToString());
+
+                        CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(table, prefix, settings, includeUsings: true);
+                        string handlersFileName = Path.Combine(handlersFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Handlers.cs");
+                        File.WriteAllText(handlersFileName, handlersCode.ToString());
                     }
                 }
             }
@@ -71,10 +85,14 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 CodeBuilder tableCode = TableCodeGenerator.Generate(tables, settings);
                 CodeBuilder classCode = ClassCodeGenerator.Generate(database, tables, settings);
                 CodeBuilder validationCode = FluentValidationGenerator.Generate(tables, settings);
+                CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(tables, settings, includeUsings: true);
+                CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(tables, settings, includeUsings: true);
 
                 File.WriteAllText(Path.Combine(folder, "Tables.cs"), tableCode.ToString());
                 File.WriteAllText(Path.Combine(folder, "Classes.cs"), classCode.ToString());
                 File.WriteAllText(Path.Combine(folder, "Validation.cs"), validationCode.ToString());
+                File.WriteAllText(Path.Combine(folder, "Requests.cs"), requestsCode.ToString());
+                File.WriteAllText(Path.Combine(folder, "Handlers.cs"), handlersCode.ToString());
             }
         }
     }
