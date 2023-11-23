@@ -36,7 +36,7 @@ namespace DbSchema.CodeGeneration {
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetDeleteRequestName(table, name);
+            string requestName = GetDeleteRequestName(name);
 
             StringBuilder parametersText = new StringBuilder();
             StringBuilder settersText = new StringBuilder();
@@ -87,31 +87,31 @@ namespace DbSchema.CodeGeneration {
             return code;
         }
 
-        private static string GetDeleteRequestName(DatabaseTable table, string name) {
+        private static string GetDeleteRequestName(string name) {
             return $"Delete{name}Request";
         }
-        private static string GetDeleteHandlerName(DatabaseTable table, string name) {
+        private static string GetDeleteHandlerName(string name) {
             return $"Delete{name}Handler";
         }
 
         public static string GetDeleteHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
 
             if(settings.UsePreparedQueries) {
-                return GetDeleteHandlerCodeWithCompiledQuery(table, settings);
+                return GetDeleteHandlerCodeWithCompiledQuery(table);
             }
             else {
                 return GetDeleteHandlerCodeNonCompiledQuery(table);
             }
         }
 
-        private static string GetDeleteHandlerCodeWithCompiledQuery(DatabaseTable table, CodeGeneratorSettings settings) {
+        private static string GetDeleteHandlerCodeWithCompiledQuery(DatabaseTable table) {
 
             string name = table.TableName.Value;
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetDeleteRequestName(table, name);
-            string handlerName = GetDeleteHandlerName(table, name);
+            string requestName = GetDeleteRequestName(name);
+            string handlerName = GetDeleteHandlerName(name);
 
             StringBuilder whereClause = new StringBuilder();
 
@@ -178,8 +178,8 @@ namespace DbSchema.CodeGeneration {
 
             name = name.FirstLetterUpperCase();
 
-            string requestName = GetDeleteRequestName(table, name);
-            string handlerName = GetDeleteHandlerName(table, name);
+            string requestName = GetDeleteRequestName(name);
+            string handlerName = GetDeleteHandlerName(name);
 
 
             StringBuilder whereClause = new StringBuilder();

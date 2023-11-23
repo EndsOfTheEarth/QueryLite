@@ -58,7 +58,7 @@ namespace QueryLiteTestLogic {
         public float Float { get; set; }
         public double Double { get; set; }
         public bool Boolean { get; set; }
-        public byte[] Bytes { get; set; } = new byte[] { };
+        public byte[] Bytes { get; set; } = [];
         public DateTime DateTime { get; set; }
         public DateTimeOffset DateTimeOffset { get; set; }
         public AllTypesEnum Enum { get; set; }
