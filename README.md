@@ -8,21 +8,21 @@ using QueryLite;
 using Northwind.Tables;
 using Northwind;
 
-OrdersTable ordersTable = OrdersTable.Instance;
-CustomersTable customersTable = CustomersTable.Instance;
+OrderTable orderTable = OrderTable.Instance;
+CustomerTable customerTable = CustomerTable.Instance;
 
 var result = Query
     .Select(
         row => new {
-            OrderId = row.Get(ordersTable.OrderID),
-            CustomerId = row.Get(customersTable.CustomerID),
-            CompanyName = row.Get(customersTable.CompanyName)
+            OrderId = row.Get(orderTable.OrderID),
+            CustomerId = row.Get(customerTable.CustomerID),
+            CompanyName = row.Get(customerTable.CompanyName)
         }
     )
-    .From(ordersTable)
-    .Join(customersTable).On(ordersTable.CustomerID == customersTable.CustomerID)
-    .Where(ordersTable.OrderDate < DateTime.Now & customersTable.ContactName == "Jane")
-    .OrderBy(ordersTable.OrderID.ASC)
+    .From(orderTable)
+    .Join(customerTable).On(orderTable.CustomerID == customerTable.CustomerID)
+    .Where(orderTable.OrderDate < DateTime.Now & customerTable.ContactName == "Jane")
+    .OrderBy(orderTable.OrderID.ASC)
     .Execute(DB.Northwind);
 
 string sql = result.Sql;    //Generated sql is available on the result
@@ -131,30 +131,30 @@ using QueryLite;
 using Northwind.Tables;
 using Northwind;
 
-CustomersTable customersTable = CustomersTable.Instance;
-
 StringKey<ICustomer> customerId = new StringKey<ICustomer>("ABC");
 
 using(Transaction transaction = new Transaction(DB.Northwind)) {
 
-    var result = Query.Insert(customersTable)
+    CustomerTable table = CustomerTable.Instance;
+
+    var result = Query.Insert(customerTable)
         .Values(values => values
-            .Set(customersTable.CustomerID, customerId)
-            .Set(customersTable.CompanyName, "company name")
-            .Set(customersTable.ContactName, "contact name")
-            .Set(customersTable.ContactTitle, "title")
-            .Set(customersTable.Address, "address")
-            .Set(customersTable.City, "city")
-            .Set(customersTable.Region, "region")
-            .Set(customersTable.PostalCode, "12345")
-            .Set(customersTable.Country, "somewhere")
-            .Set(customersTable.Phone, "312-12312-123")
-            .Set(customersTable.Fax, null)
+            .Set(table.CustomerID, customerId)
+            .Set(table.CompanyName, "company name")
+            .Set(table.ContactName, "contact name")
+            .Set(table.ContactTitle, "title")
+            .Set(table.Address, "address")
+            .Set(table.City, "city")
+            .Set(table.Region, "region")
+            .Set(table.PostalCode, "12345")
+            .Set(table.Country, "somewhere")
+            .Set(table.Phone, "312-12312-123")
+            .Set(table.Fax, null)
         )
         .Execute(
-            inserted => new {
-                PostalCode = inserted.Get(customersTable.PostalCode),
-                Address = inserted.Get(customersTable.Address)
+            inserted => new {   //Return the two updated fields, PostalCode and Address
+                PostalCode = inserted.Get(table.PostalCode),
+                Address = inserted.Get(table.Address)
             },
             transaction
         );
@@ -175,18 +175,18 @@ using QueryLite;
 using Northwind.Tables;
 using Northwind;
 
-CustomersTable customersTable = CustomersTable.Instance;
-
 StringKey<ICustomer> customerId = new StringKey<ICustomer>("ABC");
 
 using(Transaction transaction = new Transaction(DB.Northwind)) {
 
-    Query.Update(customersTable)
+    CustomerTable table = CustomerTable.Instance;
+
+    Query.Update(table)
         .Values(values => values
-            .Set(customersTable.ContactTitle, "Mrs")
-            .Set(customersTable.ContactName, "Mary")
+            .Set(table.ContactTitle, "Mrs")
+            .Set(table.ContactName, "Mary")
         )
-        .Where(customersTable.CustomerID == customerId)
+        .Where(table.CustomerID == customerId)
         .Execute(transaction);
 
     transaction.Commit();
@@ -200,16 +200,20 @@ using QueryLite;
 using Northwind.Tables;
 using Northwind;
 
-CustomersTable customersTable = CustomersTable.Instance;
-
 StringKey<ICustomer> customerId = new StringKey<ICustomer>("ABC");
 
 using(Transaction transaction = new Transaction(DB.Northwind)) {
 
-    Query.Delete(customersTable)
-        .Where(customersTable.CustomerID == customerId)
+    CustomerTable table = CustomerTable.Instance;
+
+    NonQueryResult result = Query
+        .Delete(table)
+        .Where(table.CustomerID == customerId)
         .Execute(transaction);
 
+    if(result.RowsEffected > 1) {
+        throw new Exception($"Deleted {result.RowsEffected} records. Should have only deleted one row.");
+    }
     transaction.Commit();
 }
 ```
