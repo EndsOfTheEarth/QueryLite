@@ -52,7 +52,7 @@ namespace QueryLite.Databases.SqlServer {
                 bool useAliases = template.Joins != null && template.Joins.Count > 0;
 
                 GenerateTopClause(sql, template);
-                GenerateSelectClause(sql, template, useAliases: useAliases, database, parameters);
+                GenerateSelectClause(sql, template, useAliases: useAliases, database);
                 GenerateFromClause(sql, template, useAliases: useAliases, database);
 
                 if(template.Joins != null) {
@@ -83,7 +83,7 @@ namespace QueryLite.Databases.SqlServer {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
 
             sql.Append(' ');
 

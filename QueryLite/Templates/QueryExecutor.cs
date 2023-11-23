@@ -1603,7 +1603,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPerparedParameter<PARAMETERS> param = setParameters[index];
+                    IPreparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -1754,7 +1754,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPerparedParameter<PARAMETERS> param = setParameters[index];
+                    IPreparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -1911,7 +1911,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPerparedParameter<PARAMETERS> param = setParameters[index];
+                    IPreparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -2071,7 +2071,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPerparedParameter<PARAMETERS> param = setParameters[index];
+                    IPreparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -2224,7 +2224,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPerparedParameter<PARAMETERS> param = setParameters[index];
+                    IPreparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -2361,7 +2361,7 @@ namespace QueryLite {
 
                 for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPerparedParameter<PARAMETERS> param = setParameters[index];
+                    IPreparedParameter<PARAMETERS> param = setParameters[index];
 
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
@@ -2377,7 +2377,7 @@ namespace QueryLite {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                 }
                 command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-                int rowsEffected = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
 
                 NonQueryResult result = new NonQueryResult(sql, rowsEffected);
 

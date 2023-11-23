@@ -27,14 +27,14 @@ using System.Data.Common;
 
 namespace QueryLite.Databases {
 
-    internal interface IPerparedParameter<PARAMETERS> {
+    internal interface IPreparedParameter<PARAMETERS> {
 
         DbParameter CreateParameter(PARAMETERS parameters);
     }
 
     internal sealed class PreparedParameterList<PARAMETERS> {
 
-        private readonly List<IPerparedParameter<PARAMETERS>> _list = new List<IPerparedParameter<PARAMETERS>>();
+        private readonly List<IPreparedParameter<PARAMETERS>> _list = new List<IPreparedParameter<PARAMETERS>>();
 
         private int _paramCounter = 0;
 
@@ -54,13 +54,13 @@ namespace QueryLite.Databases {
 
         public int Count => _list.Count;
 
-        public IPerparedParameter<PARAMETERS> this[int index] => _list[index];
+        public IPreparedParameter<PARAMETERS> this[int index] => _list[index];
 
-        public void Add(IPerparedParameter<PARAMETERS> parameter) {
+        public void Add(IPreparedParameter<PARAMETERS> parameter) {
             _list.Add(parameter);
         }
     }
-    internal sealed class PreparedParameter<PARAMETERS, TYPE> : IPerparedParameter<PARAMETERS> {
+    internal sealed class PreparedParameter<PARAMETERS, TYPE> : IPreparedParameter<PARAMETERS> {
 
         public PreparedParameter(string name, Func<PARAMETERS, TYPE> getValueFunc, CreateParameterDelegate createParameter) {
             Name = name;
@@ -71,7 +71,7 @@ namespace QueryLite.Databases {
         public Func<PARAMETERS, TYPE> GetValueFunc { get; }
         public CreateParameterDelegate _createParameter { get; }
 
-        DbParameter IPerparedParameter<PARAMETERS>.CreateParameter(PARAMETERS parameters) {
+        DbParameter IPreparedParameter<PARAMETERS>.CreateParameter(PARAMETERS parameters) {
             return _createParameter(name: Name, value: GetValueFunc(parameters));
         }
     }
