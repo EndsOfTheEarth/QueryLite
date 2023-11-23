@@ -142,7 +142,7 @@ namespace DbSchema.CodeGeneration {
             {name}Table table = {name}Table.Instance;
 
             _query = Query
-                .Prepare<{requestName}> ()
+                .Prepare<{requestName}>()
                 .Select(row => new {name}(table, row))
                 .From(table)
                 .Where(where => {whereClause})

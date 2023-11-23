@@ -116,7 +116,7 @@ namespace DbSchema.CodeGeneration {
             {name}Table table = {name}Table.Instance;
 
             _query = Query
-                .Prepare<{name}> ()
+                .Prepare<{name}>()
                 .Update(table)
                 .Values(values => values
 {setValues}
