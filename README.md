@@ -137,7 +137,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     CustomerTable table = CustomerTable.Instance;
 
-    var result = Query.Insert(customerTable)
+    var result = Query.Insert(table)
         .Values(values => values
             .Set(table.CustomerID, customerId)
             .Set(table.CompanyName, "company name")
