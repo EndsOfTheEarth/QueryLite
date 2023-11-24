@@ -477,7 +477,7 @@ INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)
 |--------------------------------- |---------:|--------:|--------:|---------:|----------:|
 |                Ado_Single_Insert | 266.1 ms | 2.22 ms | 1.73 ms | 265.7 ms | 3.43 MB |
 |             Dapper_Single_Insert | 275.1 ms | 5.49 ms | 8.71 ms | 270.0 ms | 3.56 MB |
-| QueryLite_Single_Compiled_Insert | 269.0 ms | 1.50 ms | 1.33 ms | 268.6 ms | 3.56 MB |
+| QueryLite_Single_Prepared_Insert | 269.0 ms | 1.50 ms | 1.33 ms | 268.6 ms | 3.56 MB |
 |  QueryLite_Single_Dynamic_Insert | 271.3 ms | 2.26 ms | 2.11 ms | 271.1 ms | 4.73 MB |
 
 
