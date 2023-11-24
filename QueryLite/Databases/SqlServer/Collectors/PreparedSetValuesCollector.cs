@@ -48,7 +48,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             _useAlias = useAlias;
         }
 
-        private IPreparedSetValuesCollector<PARAMETERS> AddParameter<TYPE>(IColumn column, Func<PARAMETERS, TYPE> func, CreateParameterDelegate setParameterFunc) {
+        private SqlServerPreparedSetValuesCollector<PARAMETERS> AddParameter<TYPE>(IColumn column, Func<PARAMETERS, TYPE> func, CreateParameterDelegate setParameterFunc) {
 
             string paramName = Parameters.GetNextParameterName();
 
@@ -86,7 +86,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return this;
         }
 
-        private IPreparedSetValuesCollector<PARAMETERS> AddFunction(IColumn column, IFunction function) {
+        private SqlServerPreparedSetValuesCollector<PARAMETERS> AddFunction(IColumn column, IFunction function) {
 
             if(_collectorMode == CollectorMode.Insert) {
 

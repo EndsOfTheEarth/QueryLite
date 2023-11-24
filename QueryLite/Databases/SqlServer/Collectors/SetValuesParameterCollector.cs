@@ -49,7 +49,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             _useAlias = useAlias;
         }
 
-        private ISetValuesCollector AddParameter(IColumn column, SqlDbType dbType, object? value) {
+        private SqlServerSetValuesParameterCollector AddParameter(IColumn column, SqlDbType dbType, object? value) {
 
             string paramName;
 
@@ -101,7 +101,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return this;
         }
 
-        private ISetValuesCollector AddFunction(IColumn column, IFunction function) {
+        private SqlServerSetValuesParameterCollector AddFunction(IColumn column, IFunction function) {
 
             if(_collectorMode == CollectorMode.Insert) {
 
@@ -433,7 +433,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
         private bool _first = true;
 
-        private ISetValuesCollector SetValue(IColumn column, string value) {
+        private SqlServerSetValuesCollector SetValue(IColumn column, string value) {
 
             if(_collectorMode == CollectorMode.Insert) {
 
