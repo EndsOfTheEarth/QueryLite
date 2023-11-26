@@ -57,6 +57,7 @@ namespace QueryLite {
         bool Value { get; }
     }
 
+    [MessagePackObject]
     public readonly struct GuidKey<TYPE> : IKeyValue, IGuidType, IEquatable<GuidKey<TYPE>> {
 
         [Key(0)]
@@ -136,6 +137,7 @@ namespace QueryLite {
         }
     }
 
+    [MessagePackObject]
     public readonly struct StringKey<TYPE> : IKeyValue, IStringType, IEquatable<StringKey<TYPE>> {
 
         [Key(0)]
@@ -206,6 +208,7 @@ namespace QueryLite {
         }
     }
 
+    [MessagePackObject]
     public readonly struct ShortKey<TYPE> : IKeyValue, IInt16Type, IEquatable<ShortKey<TYPE>> {
 
         [Key(0)]
@@ -285,6 +288,7 @@ namespace QueryLite {
         }
     }
 
+    [MessagePackObject]
     public readonly struct IntKey<TYPE> : IKeyValue, IInt32Type, IEquatable<IntKey<TYPE>> {
 
         [Key(0)]
@@ -364,6 +368,7 @@ namespace QueryLite {
         }
     }
 
+    [MessagePackObject]
     public readonly struct LongKey<TYPE> : IKeyValue, IInt64Type, IEquatable<LongKey<TYPE>> {
 
         [Key(0)]
@@ -442,6 +447,7 @@ namespace QueryLite {
         }
     }
 
+    [MessagePackObject]
     public readonly struct BoolValue<TYPE> : IKeyValue, IBoolType, IEquatable<BoolValue<TYPE>> {
 
         [Key(0)]
@@ -509,6 +515,7 @@ namespace QueryLite {
         }
     }
 
+    [MessagePackObject]
     public readonly struct Bit {
 
         public readonly static Bit TRUE = new Bit(true);
