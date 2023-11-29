@@ -100,7 +100,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public static class CodeHelper {
 
-        public static string ExcapeCSharpString(string text) {
+        public static string EscapeCSharpString(string text) {
             return !string.IsNullOrEmpty(text) ? text.Replace("\"", "\\\"") : text;
         }
 
