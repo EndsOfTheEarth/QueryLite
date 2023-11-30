@@ -566,7 +566,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     NonQueryResult result = Query
         .Delete(orderTable)
-        .From(customersTable)
+        .From(customersTable)    //Note: More than one table can be set in the 'From' method
         .Where(orderTable.CustomerID == customersTable.CustomerID & customersTable.Region.IsNull)
         .Execute(transaction);
 
@@ -582,7 +582,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     NonQueryResult result = Query
         .Delete(orderTable)
-        .Using(customersTable)
+        .Using(customersTable)    //Note: More than one table can be set in the 'Using' method
         .Where(orderTable.CustomerID == customersTable.CustomerID & customersTable.Region.IsNull)
         .Execute(transaction);
 
