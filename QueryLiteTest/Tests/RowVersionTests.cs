@@ -1,11 +1,7 @@
-﻿using Microsoft.VisualBasic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLiteTest.Tables;
-using QueryLiteTestLogic;
-using System;
-using System.Threading;
 
 namespace QueryLiteTest.Tests {
 
@@ -76,7 +72,8 @@ namespace QueryLiteTest.Tests {
                     NonQueryResult insertResult = Query
                         .Insert(table)
                         .Values(values => values
-                            .Set(table.Id, index)
+                            .Set(table.Id, IntKey<IRowVersionTest>.ValueOf(index))
+                            .Set(table.TextValue, index.ToString())
                         )
                         .Execute(transaction);
 
@@ -111,10 +108,10 @@ namespace QueryLiteTest.Tests {
                     if(rowVersion[byteIndex] != previousBytes[byteIndex]) {
                         isEqual = false;
                         break;
-                    }                    
+                    }
                 }
                 Assert.IsFalse(isEqual);
-            }            
+            }
         }
     }
 }
