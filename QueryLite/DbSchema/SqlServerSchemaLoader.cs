@@ -409,12 +409,14 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("int", typeof(int));
             _Lookup.Add("smallint", typeof(short));
             _Lookup.Add("bigint", typeof(long));
-            
             _Lookup.Add("uniqueidentifier", typeof(Guid));
-            _Lookup.Add("nvarchar", typeof(string));
-            _Lookup.Add("varchar", typeof(string));
             _Lookup.Add("xml", typeof(string));
+            _Lookup.Add("char", typeof(string));
             _Lookup.Add("nchar", typeof(string));
+            _Lookup.Add("varchar", typeof(string));
+            _Lookup.Add("nvarchar", typeof(string));
+            _Lookup.Add("text", typeof(string));
+            _Lookup.Add("ntext", typeof(string));
             _Lookup.Add("decimal", typeof(decimal));
             _Lookup.Add("numeric", typeof(decimal));
             _Lookup.Add("money", typeof(decimal));
@@ -423,6 +425,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("float", typeof(double));
             _Lookup.Add("tinyint", typeof(bool));
             _Lookup.Add("bit", typeof(Bit));
+            _Lookup.Add("binary", typeof(byte[]));
             _Lookup.Add("varbinary", typeof(byte[]));
             _Lookup.Add("timestamp", typeof(byte[]));
             _Lookup.Add("datetime", typeof(DateTime));

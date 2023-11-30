@@ -47,6 +47,7 @@ CREATE TABLE GeoTest (
 CREATE TABLE RowVersionTest (
 
 	Id INTEGER NOT NULL,
+	TextValue CHAR(10) NOT NULL,
 	RowVersion RowVersion,
 
 	CONSTRAINT pk_RowVersionTest PRIMARY KEY(Id)
