@@ -43,3 +43,11 @@ CREATE TABLE GeoTest (
 
 	CONSTRAINT pk_GeoTest PRIMARY KEY(gtGuid)
 );
+
+CREATE TABLE RowVersionTest (
+
+	Id INTEGER NOT NULL,
+	RowVersion RowVersion,
+
+	CONSTRAINT pk_RowVersionTest PRIMARY KEY(Id)
+);

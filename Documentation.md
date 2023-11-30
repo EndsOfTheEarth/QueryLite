@@ -776,7 +776,7 @@ public enum SqlServerQueryOption {
 | Column&lt;decimal>            | DECIMAL                | DECIMAL                     |        |
 | Column&lt;float>              | REAL                   | REAL                        |        |
 | Column&lt;double>             | FLOAT                  | DOUBLE PRECISION            |        |
-| Column&lt;byte[]>             | VARBINARY              | BYTEA                       |        |
+| Column&lt;byte[]>             | VARBINARY, ROWVERSION  | BYTEA                       |        |
 | Column&lt;DateOnly>           | DATE                   | DATE                        |        |
 | Column&lt;TimeOnly>           | TIME                   | TIME WITHOUT TIME ZONE      | Precision is only up to microseconds. Nanosecond precision and timezone are not supported. |
 | Column&lt;DateTime>           | DATETIME               | TIMESTAMP WITHOUT TIME ZONE | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |

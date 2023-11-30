@@ -1,4 +1,3 @@
-using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
@@ -176,7 +175,8 @@ namespace QueryLiteTest.Tests {
             List<ITable> tables = new List<ITable>() {
                 AllTypesTable.Instance,
                 ParentTable.Instance,
-                ChildTable.Instance                
+                ChildTable.Instance,
+                RowVersionTestTable.Instance
             };
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
@@ -186,7 +186,7 @@ namespace QueryLiteTest.Tests {
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
-                Assert.AreEqual(result.TableValidation.Count, 4);
+                Assert.AreEqual(result.TableValidation.Count, 5);
             }
             else {
                 Assert.AreEqual(result.TableValidation.Count, 3);
