@@ -556,7 +556,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
 ## Delete From Query
 
-Note: The `From` and `Using` methods are equivalent syntax for both PostgreSql and Sql Server.
+Note: The `From` and `Using` methods are equivalent syntax and can be used for both PostgreSql and Sql Server.
 
 ```C#
 using(Transaction transaction = new Transaction(DB.Northwind)) {
