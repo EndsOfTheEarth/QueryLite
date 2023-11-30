@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Intrinsics;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -205,7 +204,8 @@ namespace QueryLiteTest.Tests {
             List<ITable> tables = new List<ITable>() {
                 AllTypesTable.Instance,
                 ParentTable.Instance,
-                ChildTable.Instance
+                ChildTable.Instance,
+                RowVersionTestTable.Instance
             };
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
@@ -215,7 +215,7 @@ namespace QueryLiteTest.Tests {
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
-                Assert.AreEqual(result.TableValidation.Count, 4);
+                Assert.AreEqual(result.TableValidation.Count, 5);
             }
             else {
                 Assert.AreEqual(result.TableValidation.Count, 3);
@@ -1745,7 +1745,7 @@ namespace QueryLiteTest.Tests {
                 AllTypesTable tableA = AllTypesTable.Instance;
                 AllTypesTable tableB = AllTypesTable.Instance2;
 
-                (AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3) parameters = new (allTypes1, allTypes1.Id, allTypes3.Id);
+                (AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3) parameters = new(allTypes1, allTypes1.Id, allTypes3.Id);
 
                 IPreparedUpdateQuery<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3), AllTypesInfo> updateQuery = Query
                     .Prepare<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3)>()
