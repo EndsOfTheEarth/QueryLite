@@ -245,7 +245,7 @@ var result = Query
 
 When a table is used in a left join its result can be empty / null. In this case the selected columns of the left join table will default in different ways depending on their .net type. Reference types (e.g. string, byte[] and key types) will return null (Even when non-nullable reference types is turned on), value types will default to their default value e.g. short / int / long will default to 0. Nullable value types will default to null.
 
-To detect if a left join result is null, it is recommended to select the primary key column of the table and check the result is not null. Note: That nullable columns are not suitable for this type of check as they can return null regardless of the join used.
+To detect if a left join result is null, it is recommended to select the primary key column of the table and check that the column is not set to its default value in C#. This will only work if the column never contains its default C# value. For example an integer primary key should never contain the value of 0. Note: That nullable columns are not suitable for this type of check as they can return null regardless of the join used.
 
 For example:
 
@@ -266,7 +266,12 @@ var result = Query
 
 foreach(var row in result.Rows) {
 
-    if(row.CustomerId != null) {    //Check to see if the left join result is not null
+    IntKey<ICustomer> customerId = row.CustomerId;
+    /*
+     * Check to see if the left join result has a value.
+     * In this case the customerId would be the default value of 0.
+     */
+    if(customerId.IsValid) {
 
     }
 }
