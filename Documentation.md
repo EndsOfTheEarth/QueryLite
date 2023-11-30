@@ -266,12 +266,12 @@ var result = Query
 
 foreach(var row in result.Rows) {
 
-    IntKey<ICustomer> customerId = row.CustomerId;
+    int customerId = row.CustomerId;
+
     /*
-     * Check to see if the left join result has a value.
-     * In this case the customerId would be the default value of 0.
+     * Check to see if a customer exists from the left join result
      */
-    if(customerId.IsValid) {
+    if(customerId != 0) {    //Note: The 'NULL' value from the LEFT JOIN is converted to the C# default of 0
 
     }
 }
@@ -408,7 +408,7 @@ var result = Query
 
 ## Nested Query
 
-Nested queries are supported.
+Nested queries are supported (Only from within a `WHERE` caluse).
 
 ```C#
 ShipperTable shipperTable = ShipperTable.Instance;
