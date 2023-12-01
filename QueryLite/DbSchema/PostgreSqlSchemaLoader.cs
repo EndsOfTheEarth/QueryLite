@@ -425,6 +425,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("_int2", typeof(short));
             _Lookup.Add("interval", null);
             _Lookup.Add("abstime", null);
+            _Lookup.Add("regproc", null);
             _Lookup.Add("_regtype", null);
             _Lookup.Add("ARRAY", null);
             _Lookup.Add("bytea", typeof(byte[]));
@@ -444,14 +445,6 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("int2", typeof(short));
             _Lookup.Add("_oid", typeof(uint));
             _Lookup.Add("oid", typeof(uint));
-            _Lookup.Add("regproc", typeof(uint));
-            _Lookup.Add("regprocedure", typeof(uint));
-            _Lookup.Add("regoper", typeof(uint));
-            _Lookup.Add("regoperator", typeof(uint));
-            _Lookup.Add("regclass", typeof(uint));
-            _Lookup.Add("regtype", typeof(uint));
-            _Lookup.Add("regconfig", typeof(uint));
-            _Lookup.Add("regdictionary", typeof(uint));
             _Lookup.Add("varchar", typeof(string));
             _Lookup.Add("character", typeof(string));
             _Lookup.Add("bpchar", typeof(string));
