@@ -236,7 +236,7 @@ namespace QueryLite.CodeGeneratorUI {
 
                     string baseNamespace = txtNamespace.Text;
 
-                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}.Tables", classNamespace: $"{baseNamespace}.Classes", requestNamespace: $"{baseNamespace}.Requests");
+                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}", classNamespace: $"{baseNamespace}", requestNamespace: $"{baseNamespace}", handlerNamespace: $"{baseNamespace}");
 
                     CodeGeneratorSettings settings = new CodeGeneratorSettings() {
                         IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.Checked,
@@ -315,7 +315,7 @@ namespace QueryLite.CodeGeneratorUI {
 
                     string baseNamespace = txtNamespace.Text;
 
-                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}.Tables", classNamespace: $"{baseNamespace}.Classes", requestNamespace: $"{baseNamespace}.Requests");
+                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}", classNamespace: $"{baseNamespace}", requestNamespace: $"{baseNamespace}", handlerNamespace: $"{baseNamespace}");
 
                     CodeGeneratorSettings settings = new CodeGeneratorSettings() {
                         IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.Checked,

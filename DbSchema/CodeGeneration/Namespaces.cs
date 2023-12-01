@@ -28,11 +28,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public sealed class Namespaces {
 
-        public Namespaces(string baseNamespace, string tableNamespace, string classNamespace, string requestNamespace) {
+        public Namespaces(string baseNamespace, string tableNamespace, string classNamespace, string requestNamespace, string handlerNamespace) {
             BaseNamespace = FirstLetterUpperCase(baseNamespace);
             TableNamespace = FirstLetterUpperCase(tableNamespace);
             ClassNamespace = FirstLetterUpperCase(classNamespace);
             RequestNamespace = FirstLetterUpperCase(requestNamespace);
+            HandlerNamespace = FirstLetterUpperCase(handlerNamespace);
         }
 
         private string FirstLetterUpperCase(string value) {
@@ -42,6 +43,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
         public string TableNamespace { get; set; }
         private string ClassNamespace { get; set; }
         private string RequestNamespace { get; set; }
+        private string HandlerNamespace { get; set; }
 
         public string GetTableNamespace(StringKey<ISchemaName> schema) {
 
@@ -50,7 +52,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             schemaName = FirstLetterUpperCase(schemaName);
 
             if(!IsDefaultSchema(schema)) {
-                return $"{TableNamespace}.{schemaName}";
+                return $"{TableNamespace}.{schemaName}.Tables";
             }
             else {
                 return TableNamespace;
@@ -64,7 +66,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             schemaName = FirstLetterUpperCase(schemaName);
 
             if(!IsDefaultSchema(schema)) {
-                return $"{ClassNamespace}.{schemaName}";
+                return $"{ClassNamespace}.{schemaName}.Classes";
             }
             else {
                 return TableNamespace;
@@ -78,7 +80,21 @@ namespace QueryLite.DbSchema.CodeGeneration {
             schemaName = FirstLetterUpperCase(schemaName);
 
             if(!IsDefaultSchema(schema)) {
-                return $"{RequestNamespace}.{schemaName}";
+                return $"{RequestNamespace}.{schemaName}.Requests";
+            }
+            else {
+                return TableNamespace;
+            }
+        }
+
+        public string GetHandlersNamespace(StringKey<ISchemaName> schema) {
+
+            string schemaName = schema.Value;
+
+            schemaName = FirstLetterUpperCase(schemaName);
+
+            if(!IsDefaultSchema(schema)) {
+                return $"{HandlerNamespace}.{schemaName}.Handlers";
             }
             else {
                 return TableNamespace;

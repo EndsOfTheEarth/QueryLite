@@ -139,7 +139,7 @@ namespace DbSchema.CodeGeneration {
                     code.EndLine();
                 }
                 count++;
-                code.EndLine().Append($"namespace {settings.Namespaces.GetRequestsNamespace(schema)} {{").EndLine();
+                code.EndLine().Append($"namespace {settings.Namespaces.GetHandlersNamespace(schema)} {{").EndLine();
 
                 string tableNamespace = settings.Namespaces.GetTableNamespace(schema);
 
@@ -167,7 +167,7 @@ namespace DbSchema.CodeGeneration {
 
             if(includeUsings) {
 
-                code.Append($"namespace {settings.Namespaces.GetRequestsNamespace(table.Schema)} {{").EndLine().EndLine();
+                code.Append($"namespace {settings.Namespaces.GetHandlersNamespace(table.Schema)} {{").EndLine().EndLine();
 
                 //code.Indent(1).Append("using FluentValidation;").EndLine();
                 code.Indent(1).Append("using QueryLite;").EndLine();

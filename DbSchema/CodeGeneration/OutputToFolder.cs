@@ -36,47 +36,32 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 throw new ArgumentException($"{nameof(folder)} = '{folder}' does not exist");
             }
 
-            string tablesFolder = Path.Combine(folder, "Tables");
-            string classesFolder = Path.Combine(folder, "Classes");
-            string validationFolder = Path.Combine(folder, "Validation");
-            string requestsFolder = Path.Combine(folder, "Requests");
-            string handlersFolder = Path.Combine(folder, "Handlers");
-
             if(singleFiles) {
-
-                Directory.CreateDirectory(tablesFolder);
-                Directory.CreateDirectory(classesFolder);
-                Directory.CreateDirectory(validationFolder);
-                Directory.CreateDirectory(requestsFolder);
-                Directory.CreateDirectory(handlersFolder);
 
                 foreach(DatabaseTable table in tables) {
 
+                    string tablesFolder = Path.Combine(folder, "Tables");
+                    string classesFolder = Path.Combine(folder, "Classes");
+                    string validationFolder = Path.Combine(folder, "Validation");
+                    string requestsFolder = Path.Combine(folder, "Requests");
+                    string handlersFolder = Path.Combine(folder, "Handlers");
+
+                    Directory.CreateDirectory(tablesFolder);
+                    Directory.CreateDirectory(classesFolder);
+                    Directory.CreateDirectory(validationFolder);
+                    Directory.CreateDirectory(requestsFolder);
+                    Directory.CreateDirectory(handlersFolder);
+
                     TablePrefix prefix = new TablePrefix(table);
 
-                    CodeBuilder tableCode = TableCodeGenerator.Generate(new List<DatabaseTable>() { table }, settings);
-
-                    string tableFileName = Path.Combine(tablesFolder, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
-                    File.WriteAllText(tableFileName, tableCode.ToString());
-
-                    CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings, includeUsings: true);
-
-                    string classesFileName = Path.Combine(classesFolder, CodeHelper.GetTableName(table, includePostFix: false) + (table.IsView ? "View" : string.Empty) + ".cs");
-                    File.WriteAllText(classesFileName, classCode.ToString());
+                    OutputTableFile(settings, tablesFolder, table);
+                    OutputClassCodeFile(settings, database, classesFolder, table, prefix);
 
                     if(!table.IsView) {
 
-                        CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
-                        string validationFileName = Path.Combine(validationFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Validation.cs");
-                        File.WriteAllText(validationFileName, validationCode.ToString());
-
-                        CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(table, prefix, settings, includeUsings: true);
-                        string requestsFileName = Path.Combine(requestsFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Requests.cs");
-                        File.WriteAllText(requestsFileName, requestsCode.ToString());
-
-                        CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(table, prefix, settings, includeUsings: true);
-                        string handlersFileName = Path.Combine(handlersFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Handlers.cs");
-                        File.WriteAllText(handlersFileName, handlersCode.ToString());
+                        OutputValidationFile(settings, validationFolder, table, prefix);
+                        OutputRequestFile(settings, requestsFolder, table, prefix);
+                        OutputHandlerFile(settings, handlersFolder, table, prefix);
                     }
                 }
             }
@@ -94,6 +79,73 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 File.WriteAllText(Path.Combine(folder, "Requests.cs"), requestsCode.ToString());
                 File.WriteAllText(Path.Combine(folder, "Handlers.cs"), handlersCode.ToString());
             }
+        }
+
+        private static void OutputHandlerFile(CodeGeneratorSettings settings, string handlersFolder, DatabaseTable table, TablePrefix prefix) {
+
+            string handlersAndSchemaFolder = Path.Combine(handlersFolder, (table.Schema.Value ?? string.Empty));
+
+            if(!Directory.Exists(handlersAndSchemaFolder)) {
+                Directory.CreateDirectory(handlersAndSchemaFolder);
+            }
+
+            CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(table, prefix, settings, includeUsings: true);
+            string handlersFileName = Path.Combine(handlersAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Handlers.cs");
+            File.WriteAllText(handlersFileName, handlersCode.ToString());
+        }
+
+        private static void OutputRequestFile(CodeGeneratorSettings settings, string requestsFolder, DatabaseTable table, TablePrefix prefix) {
+
+            string requestsAndSchemaFolder = Path.Combine(requestsFolder, (table.Schema.Value ?? string.Empty));
+
+            if(!Directory.Exists(requestsAndSchemaFolder)) {
+                Directory.CreateDirectory(requestsAndSchemaFolder);
+            }
+
+            CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(table, prefix, settings, includeUsings: true);
+            string requestsFileName = Path.Combine(requestsAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Requests.cs");
+            File.WriteAllText(requestsFileName, requestsCode.ToString());
+        }
+
+        private static void OutputValidationFile(CodeGeneratorSettings settings, string validationFolder, DatabaseTable table, TablePrefix prefix) {
+
+            string validationAndSchemaFolder = Path.Combine(validationFolder, (table.Schema.Value ?? string.Empty));
+
+            if(!Directory.Exists(validationAndSchemaFolder)) {
+                Directory.CreateDirectory(validationAndSchemaFolder);
+            }
+
+            CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
+            string validationFileName = Path.Combine(validationAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Validation.cs");
+            File.WriteAllText(validationFileName, validationCode.ToString());
+        }
+
+        private static void OutputClassCodeFile(CodeGeneratorSettings settings, IDatabase database, string classesFolder, DatabaseTable table, TablePrefix prefix) {
+
+            string classesAndSchemaFolder = Path.Combine(classesFolder, (table.Schema.Value ?? string.Empty));
+
+            if(!Directory.Exists(classesAndSchemaFolder)) {
+                Directory.CreateDirectory(classesAndSchemaFolder);
+            }
+
+            CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings, includeUsings: true);
+
+            string classesFileName = Path.Combine(classesAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + (table.IsView ? "View" : string.Empty) + ".cs");
+            File.WriteAllText(classesFileName, classCode.ToString());
+        }
+
+        private static void OutputTableFile(CodeGeneratorSettings settings, string tablesFolder, DatabaseTable table) {
+
+            string tablesAndSchemaFolder = Path.Combine(tablesFolder, (table.Schema.Value ?? string.Empty));
+
+            if(!Directory.Exists(tablesAndSchemaFolder)) {
+                Directory.CreateDirectory(tablesAndSchemaFolder);
+            }
+
+            CodeBuilder tableCode = TableCodeGenerator.Generate(new List<DatabaseTable>() { table }, settings);
+
+            string tableFileName = Path.Combine(tablesAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
+            File.WriteAllText(tableFileName, tableCode.ToString());
         }
     }
 }
