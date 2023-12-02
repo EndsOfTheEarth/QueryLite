@@ -73,6 +73,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -157,6 +158,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -179,6 +181,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -221,6 +224,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -292,6 +296,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -314,6 +319,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -356,6 +362,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -446,6 +453,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -468,6 +476,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -511,6 +520,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -604,6 +614,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -626,6 +637,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -670,6 +682,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -758,6 +771,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -780,6 +794,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -823,6 +838,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -894,6 +910,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -916,6 +933,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -963,6 +981,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1045,6 +1064,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1067,6 +1087,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1111,6 +1132,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1198,6 +1220,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1220,6 +1243,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1265,6 +1289,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1354,6 +1379,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1376,6 +1402,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1421,6 +1448,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1506,6 +1534,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1528,6 +1557,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1572,6 +1602,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1657,6 +1688,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1679,6 +1711,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1723,6 +1756,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1813,6 +1847,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1835,6 +1870,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1880,6 +1916,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1973,6 +2010,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -1995,6 +2033,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2040,6 +2079,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2128,6 +2168,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2150,6 +2191,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2193,6 +2235,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2264,6 +2307,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2286,6 +2330,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2330,6 +2375,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2400,6 +2446,7 @@ namespace QueryLite {
                         exception: null,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
@@ -2422,6 +2469,7 @@ namespace QueryLite {
                         exception: ex,
                         isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
+                        timeout: timeout,
                         debugName: debugName
                     );
                 }
