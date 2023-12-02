@@ -25,6 +25,7 @@ using DbSchema.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
@@ -41,14 +42,14 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 foreach(DatabaseTable table in tables) {
 
                     string tablesFolder = Path.Combine(folder, "Tables");
-                    string classesFolder = Path.Combine(folder, "Classes");
-                    string validationFolder = Path.Combine(folder, "Validation");
+                    //string validationFolder = Path.Combine(folder, "Validation");
                     string requestsFolder = Path.Combine(folder, "Requests");
+                    string classesFolder = Path.Combine(folder, "Classes");
                     string handlersFolder = Path.Combine(folder, "Handlers");
 
                     Directory.CreateDirectory(tablesFolder);
                     Directory.CreateDirectory(classesFolder);
-                    Directory.CreateDirectory(validationFolder);
+                    //Directory.CreateDirectory(validationFolder);
                     Directory.CreateDirectory(requestsFolder);
                     Directory.CreateDirectory(handlersFolder);
 
@@ -59,9 +60,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                     if(!table.IsView) {
 
-                        OutputValidationFile(settings, validationFolder, table, prefix);
+                        //OutputValidationFile(settings, validationFolder, table, prefix);
                         OutputRequestFile(settings, requestsFolder, table, prefix);
-                        OutputHandlerFile(settings, handlersFolder, table, prefix);
+                        OutputHandlersAndValidationToFile(settings, handlersFolder, table, prefix);
                     }
                 }
             }
@@ -81,7 +82,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             }
         }
 
-        private static void OutputHandlerFile(CodeGeneratorSettings settings, string handlersFolder, DatabaseTable table, TablePrefix prefix) {
+        private static void OutputHandlersAndValidationToFile(CodeGeneratorSettings settings, string handlersFolder, DatabaseTable table, TablePrefix prefix) {
 
             string handlersAndSchemaFolder = Path.Combine(handlersFolder, (table.Schema.Value ?? string.Empty));
 
@@ -90,7 +91,13 @@ namespace QueryLite.DbSchema.CodeGeneration {
             }
 
             CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(table, prefix, settings, includeUsings: true);
+            CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
+
+            handlersCode.EndLine().EndLine();
+            handlersCode.Append(validationCode.ToString()); //Add the validation code to the handlers code
+
             string handlersFileName = Path.Combine(handlersAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Handlers.cs");
+
             File.WriteAllText(handlersFileName, handlersCode.ToString());
         }
 
@@ -107,18 +114,18 @@ namespace QueryLite.DbSchema.CodeGeneration {
             File.WriteAllText(requestsFileName, requestsCode.ToString());
         }
 
-        private static void OutputValidationFile(CodeGeneratorSettings settings, string validationFolder, DatabaseTable table, TablePrefix prefix) {
+        //private static void OutputValidationFile(CodeGeneratorSettings settings, string validationFolder, DatabaseTable table, TablePrefix prefix) {
 
-            string validationAndSchemaFolder = Path.Combine(validationFolder, (table.Schema.Value ?? string.Empty));
+        //    string validationAndSchemaFolder = Path.Combine(validationFolder, (table.Schema.Value ?? string.Empty));
 
-            if(!Directory.Exists(validationAndSchemaFolder)) {
-                Directory.CreateDirectory(validationAndSchemaFolder);
-            }
+        //    if(!Directory.Exists(validationAndSchemaFolder)) {
+        //        Directory.CreateDirectory(validationAndSchemaFolder);
+        //    }
 
-            CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
-            string validationFileName = Path.Combine(validationAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Validation.cs");
-            File.WriteAllText(validationFileName, validationCode.ToString());
-        }
+        //    CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
+        //    string validationFileName = Path.Combine(validationAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Validation.cs");
+        //    File.WriteAllText(validationFileName, validationCode.ToString());
+        //}
 
         private static void OutputClassCodeFile(CodeGeneratorSettings settings, IDatabase database, string classesFolder, DatabaseTable table, TablePrefix prefix) {
 

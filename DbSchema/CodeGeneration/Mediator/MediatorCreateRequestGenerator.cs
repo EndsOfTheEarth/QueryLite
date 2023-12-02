@@ -93,9 +93,9 @@ namespace DbSchema.CodeGeneration {
                 ).Build();
         }}
 
-        private readonly IDatabase _database;
+        private readonly __IDatabase__ _database;
 
-        public Create{name}Handler(IDatabase database) {{
+        public Create{name}Handler(__IDatabase__ database) {{
             _database = database;
         }}
 
@@ -146,9 +146,9 @@ namespace DbSchema.CodeGeneration {
 
         private static readonly {name}Validator _validator = new {name}Validator(isNew: true);
 
-        private readonly IDatabase _database;
+        private readonly __IDatabase__ _database;
 
-        public Create{name}Handler(IDatabase database) {{
+        public Create{name}Handler(__IDatabase__ database) {{
             _database = database;
         }}
 
