@@ -423,7 +423,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("smallmoney", typeof(decimal));
             _Lookup.Add("real", typeof(float));
             _Lookup.Add("float", typeof(double));
-            _Lookup.Add("tinyint", typeof(bool));
+            _Lookup.Add("tinyint", typeof(short));
             _Lookup.Add("bit", typeof(Bit));
             _Lookup.Add("binary", typeof(byte[]));
             _Lookup.Add("varbinary", typeof(byte[]));
