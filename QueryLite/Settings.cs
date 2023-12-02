@@ -83,7 +83,7 @@ namespace QueryLite {
         /// </summary>
         public static event QueryExecutingDelegate? QueryExecuting;
 
-        internal static void FireQueryExecutingEvent(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, System.Data.IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
+        internal static void FireQueryExecutingEvent(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, System.Data.IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout, string debugName) {
             try {
 
                 QueryExecuting?.Invoke(
@@ -94,6 +94,7 @@ namespace QueryLite {
                         start: start,
                         isolationLevel: isolationLevel,
                         transactionId: transactionId,
+                        timeout: timeout,
                         debugName: debugName
                     )
                 );
@@ -108,7 +109,7 @@ namespace QueryLite {
         /// </summary>
         public static event QueryPerformedDelegate? QueryPerformed;
 
-        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
+        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout, string debugName) {
             try {
 
 
@@ -126,6 +127,7 @@ namespace QueryLite {
                         exception: exception,
                         isolationLevel: isolationLevel,
                         transactionId: transactionId,
+                        timeout: timeout,
                         debugName: debugName
                     )
                 );
@@ -136,13 +138,14 @@ namespace QueryLite {
 
     public class QueryExecutingDetail {
 
-        public QueryExecutingDetail(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
+        public QueryExecutingDetail(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout, string debugName) {
             Database = database;
             Sql = sql;
             QueryType = queryType;
             Start = start;
             IsolationLevel = isolationLevel;
             TransactionId = transactionId;
+            Timeout = timeout;
             DebugName = debugName;
         }
 
@@ -177,6 +180,11 @@ namespace QueryLite {
         public ulong? TransactionId { get; }
 
         /// <summary>
+        /// Query timeout
+        /// </summary>
+        public QueryTimeout Timeout { get; set; }
+
+        /// <summary>
         /// Debugging name given to query. This is useful for identifying particular queries. This name is passed as a parameter in query execute methods.
         /// </summary>
         public string DebugName { get; }
@@ -184,7 +192,7 @@ namespace QueryLite {
 
     public class QueryDetail {
 
-        public QueryDetail(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, IsolationLevel isolationLevel, ulong? transactionId, string debugName) {
+        public QueryDetail(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout, string debugName) {
 
             Database = database;
             Sql = sql;
@@ -198,6 +206,7 @@ namespace QueryLite {
             Exception = exception;
             IsolationLevel = isolationLevel;
             TransactionId = transactionId;
+            Timeout = timeout;
             DebugName = debugName;
         }
 
@@ -260,6 +269,11 @@ namespace QueryLite {
         /// Transaction id
         /// </summary>
         public ulong? TransactionId { get; }
+
+        /// <summary>
+        /// Query timeout
+        /// </summary>
+        public QueryTimeout Timeout { get; set; }
 
         /// <summary>
         /// Debugging name given to query. This is useful for identifying particular queries. This name is passed as a parameter in query execute methods.

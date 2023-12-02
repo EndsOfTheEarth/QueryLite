@@ -1024,6 +1024,7 @@ void Settings_QueryExecuting(QueryExecutingDetail queryDetail) {
     DateTimeOffset? start = queryDetail.Start;
     System.Data.IsolationLevel isolationLevel = queryDetail.IsolationLevel;
     ulong? transactionId = queryDetail.TransactionId;
+    QueryTimeout timeout = queryDetail.QueryTimeout;
     string debugName = queryDetail.DebugName;
 }
 
@@ -1041,6 +1042,7 @@ void Settings_QueryPerformed(QueryDetail queryDetail) {
     Exception? exception = queryDetail.Exception;
     System.Data.IsolationLevel isolationLevel = queryDetail.IsolationLevel;
     ulong? transactionId = queryDetail.TransactionId;
+    QueryTimeout timeout = queryDetail.QueryTimeout;
     string debugName = queryDetail.DebugName;
 }
 ```
