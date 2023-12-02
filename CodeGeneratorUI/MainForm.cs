@@ -266,20 +266,20 @@ namespace QueryLite.CodeGeneratorUI {
                         txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
                     }
 
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, settings);
-                    txtCode.Text += MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, settings);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, prefix, settings);
+                    txtCode.Text += MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, prefix, settings);
 
                     txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadListRequest(table);
                     txtCode.Text += MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings);
 
                     txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateRequest(table);
-                    txtCode.Text += MediatorCreateRequestGenerator.GetCreateHandlerCode(table, settings);
+                    txtCode.Text += MediatorCreateRequestGenerator.GetCreateHandlerCode(table, prefix, settings);
 
                     txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorUpdateSingleRecordRequestGenerator.GetUpdateRequest(table, settings);
-                    txtCode.Text += MediatorUpdateSingleRecordRequestGenerator.GetUpdateHandlerCode(table, settings);
+                    txtCode.Text += MediatorUpdateSingleRecordRequestGenerator.GetUpdateHandlerCode(table, prefix, settings);
 
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, settings);
-                    txtCode.Text += MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, settings);
+                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, prefix, settings);
+                    txtCode.Text += MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, prefix, settings);
                 }
             }
             finally {

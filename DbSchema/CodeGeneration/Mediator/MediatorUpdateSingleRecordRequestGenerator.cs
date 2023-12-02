@@ -32,9 +32,7 @@ namespace DbSchema.CodeGeneration {
 
         public static string GetUpdateRequest(DatabaseTable table, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetUpdateRequestName( name);
 
@@ -58,21 +56,19 @@ namespace DbSchema.CodeGeneration {
             return $"Update{name}Handler";
         }
 
-        public static string GetUpdateHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
+        public static string GetUpdateHandlerCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
             if(settings.UsePreparedQueries) {
-                return GetUpdateHandlerCodeWithCompiledQuery(table, settings);
+                return GetUpdateHandlerCodeWithCompiledQuery(table, prefix, settings);
             }
             else {
-                return GetUpdateHandlerCodeNonCompiledQuery(table);
+                return GetUpdateHandlerCodeNonCompiledQuery(table, prefix);
             }
         }
 
-        private static string GetUpdateHandlerCodeWithCompiledQuery(DatabaseTable table, CodeGeneratorSettings settings) {
+        private static string GetUpdateHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetUpdateRequestName(name);
             string handlerName = GetUpdateHandlerName(name);
@@ -83,9 +79,11 @@ namespace DbSchema.CodeGeneration {
 
             foreach(DatabaseColumn column in table.Columns) {
 
+                string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
                 if(column.IsPrimaryKey) {
 
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
+                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
                     if(whereClause.Length > 0) {
                         whereClause.Append(" & ");
@@ -95,8 +93,8 @@ namespace DbSchema.CodeGeneration {
 
                 if(setValues.Length > 0) {
                     setValues.Append(Environment.NewLine);
-                }
-                string columnName = column.ColumnName.Value.FirstLetterUpperCase();
+                }                
+                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
                 setValues.Append($"                    .Set(table.{columnName}, info => info.{columnName})");
             }
 
@@ -155,11 +153,9 @@ namespace DbSchema.CodeGeneration {
             return code;
         }
 
-        private static string GetUpdateHandlerCodeNonCompiledQuery(DatabaseTable table) {
+        private static string GetUpdateHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetUpdateRequestName(name);
             string handlerName = GetUpdateHandlerName(name);
@@ -170,9 +166,11 @@ namespace DbSchema.CodeGeneration {
 
             foreach(DatabaseColumn column in table.Columns) {
 
+                string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
                 if(column.IsPrimaryKey) {
 
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
+                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
                     if(whereClause.Length > 0) {
                         whereClause.Append(" & ");
@@ -183,7 +181,7 @@ namespace DbSchema.CodeGeneration {
                 if(setValues.Length > 0) {
                     setValues.Append(Environment.NewLine);
                 }
-                string columnName = column.ColumnName.Value.FirstLetterUpperCase();
+                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
                 setValues.Append($"                        .Set(table.{columnName}, info.{columnName})");
             }
 

@@ -99,11 +99,11 @@ namespace DbSchema.CodeGeneration {
                     code.Indent(1).Append($"using {tableNamespace};").EndLine();
                 }
             }
-            code.Append(MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, settings));
+            code.Append(MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, prefix, settings));
             code.Append(MediatorLoadListRequestGenerator.GetLoadListRequest(table));
             code.Append(MediatorCreateRequestGenerator.GetCreateRequest(table));
             code.Append(MediatorUpdateSingleRecordRequestGenerator.GetUpdateRequest(table, settings));
-            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, settings));            
+            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, prefix, settings));            
 
             if(includeUsings) {
                 code.Append("}");
@@ -180,11 +180,11 @@ namespace DbSchema.CodeGeneration {
                     code.Indent(1).Append($"using {tableNamespace};").EndLine();
                 }
             }
-            code.Append(MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, settings));
+            code.Append(MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, prefix, settings));
             code.Append(MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings));
-            code.Append(MediatorCreateRequestGenerator.GetCreateHandlerCode(table, settings));
-            code.Append(MediatorUpdateSingleRecordRequestGenerator.GetUpdateHandlerCode(table, settings));
-            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, settings));
+            code.Append(MediatorCreateRequestGenerator.GetCreateHandlerCode(table, prefix, settings));
+            code.Append(MediatorUpdateSingleRecordRequestGenerator.GetUpdateHandlerCode(table, prefix, settings));
+            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, prefix, settings));
 
             if(includeUsings) {
                 code.Append("}");

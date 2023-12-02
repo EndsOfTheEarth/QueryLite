@@ -30,11 +30,9 @@ namespace DbSchema.CodeGeneration {
 
     public static class MediatorLoadSingleRecordRequestGenerator {
 
-        public static string GetLoadRequest(DatabaseTable table, CodeGeneratorSettings settings) {
+        public static string GetLoadRequest(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetLoadListRequestName(name);
 
@@ -52,8 +50,10 @@ namespace DbSchema.CodeGeneration {
                         parametersText.Append(',');
                     }
 
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
-                    string parameterName = column.ColumnName.Value.FirstLetterLowerCase();
+                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
+                    string parameterName = propertyName.FirstLetterLowerCase();
 
                     parametersText.Append($"{columnTypeName} {parameterName}");
 
@@ -94,21 +94,19 @@ namespace DbSchema.CodeGeneration {
             return $"Load{name}Handler";
         }
 
-        public static string GetLoadListHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
+        public static string GetLoadListHandlerCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
             if(settings.UsePreparedQueries) {
-                return GetLoadListHandlerCodeWithCompiledQuery(table);
+                return GetLoadListHandlerCodeWithCompiledQuery(table, prefix);
             }
             else {
-                return GetLoadListHandlerCodeNonCompiledQuery(table);
+                return GetLoadListHandlerCodeNonCompiledQuery(table, prefix);
             }
         }
 
-        private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table) {
+        private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetLoadListRequestName(name);
             string handlerName = GetLoadListHandlerName(name);
@@ -119,7 +117,8 @@ namespace DbSchema.CodeGeneration {
 
                 if(column.IsPrimaryKey) {
 
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
+                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
                     if(whereClause.Length > 0) {
                         whereClause.Append(" & ");
@@ -169,11 +168,9 @@ namespace DbSchema.CodeGeneration {
             return code;
         }
 
-        private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table) {
+        private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetLoadListRequestName(name);
             string handlerName = GetLoadListHandlerName(name);
@@ -185,7 +182,8 @@ namespace DbSchema.CodeGeneration {
 
                 if(column.IsPrimaryKey) {
 
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
+                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
                     if(whereClause.Length > 0) {
                         whereClause.Append(" & ");

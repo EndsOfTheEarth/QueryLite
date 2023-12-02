@@ -30,11 +30,9 @@ namespace DbSchema.CodeGeneration {
 
     public static class MediatorDeleteSingleRecordRequestGenerator {
 
-        public static string GetDeleteRequest(DatabaseTable table, CodeGeneratorSettings settings) {
+        public static string GetDeleteRequest(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetDeleteRequestName(name);
 
@@ -52,8 +50,10 @@ namespace DbSchema.CodeGeneration {
                         parametersText.Append(',');
                     }
 
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
-                    string parameterName = column.ColumnName.Value.FirstLetterLowerCase();
+                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
+                    string parameterName = propertyName.FirstLetterLowerCase();
 
                     parametersText.Append($"{columnTypeName} {parameterName}");
 
@@ -94,21 +94,19 @@ namespace DbSchema.CodeGeneration {
             return $"Delete{name}Handler";
         }
 
-        public static string GetDeleteHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
+        public static string GetDeleteHandlerCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
             if(settings.UsePreparedQueries) {
-                return GetDeleteHandlerCodeWithCompiledQuery(table);
+                return GetDeleteHandlerCodeWithCompiledQuery(table, prefix);
             }
             else {
-                return GetDeleteHandlerCodeNonCompiledQuery(table);
+                return GetDeleteHandlerCodeNonCompiledQuery(table, prefix);
             }
         }
 
-        private static string GetDeleteHandlerCodeWithCompiledQuery(DatabaseTable table) {
+        private static string GetDeleteHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetDeleteRequestName(name);
             string handlerName = GetDeleteHandlerName(name);
@@ -119,7 +117,8 @@ namespace DbSchema.CodeGeneration {
 
                 if(column.IsPrimaryKey) {
 
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
+                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
                     if(whereClause.Length > 0) {
                         whereClause.Append(" & ");
@@ -172,15 +171,12 @@ namespace DbSchema.CodeGeneration {
             return code;
         }
 
-        private static string GetDeleteHandlerCodeNonCompiledQuery(DatabaseTable table) {
+        private static string GetDeleteHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value;
-
-            name = name.FirstLetterUpperCase();
+            string name = table.TableName.Value.FirstLetterUpperCase();
 
             string requestName = GetDeleteRequestName(name);
             string handlerName = GetDeleteHandlerName(name);
-
 
             StringBuilder whereClause = new StringBuilder();
 
@@ -188,7 +184,8 @@ namespace DbSchema.CodeGeneration {
 
                 if(column.IsPrimaryKey) {
 
-                    string propertyName = column.ColumnName.Value.FirstLetterUpperCase();
+                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
                     if(whereClause.Length > 0) {
                         whereClause.Append(" & ");
