@@ -358,6 +358,9 @@ namespace QueryLite {
                                 tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
                             }
                         }
+                        else if(codeAdoType == typeof(bool) && dbNetType == typeof(short)) {
+                            //For sql servers TINYINT data type we can map to bool or short
+                        }
                         else if(codeAdoType != dbNetType) {
                             tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
                         }

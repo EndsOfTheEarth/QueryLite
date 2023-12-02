@@ -770,13 +770,13 @@ public enum SqlServerQueryOption {
 | Column&lt;StringKey&lt;TYPE>> | NVARCHAR               | VARCHAR                     |        |
 | Column&lt;Guid>               | UNIQUEIDENTIFIER       | UUID                        |        |
 | Column&lt;GuidKey&lt;TYPE>>   | UNIQUEIDENTIFIER       | UUID                        |        |
-| Columns&lt;short>             | SMALLINT               | SMALLINT                    |        |
-| Column&lt;ShortKey&lt;TYPE>>  | SMALLINT               | SMALLINT                    |        |
+| Columns&lt;short>             | SMALLINT, TINYINT      | SMALLINT                    |        |
+| Column&lt;ShortKey&lt;TYPE>>  | SMALLINT, TINYINT      | SMALLINT                    |        |
 | Column&lt;int>                | INTEGER                | INTEGER, SERIAL             |        |
 | Column&lt;IntKey&lt;TYPE>>    | INTEGER                | INTEGER, SERIAL             |        |
 | Column&lt;long>               | BIGINT                 | BIGINT                      |        |
 | Column&lt;LongKey&lt;TYPE>>   | BIGINT                 | BIGINT                      |        |
-| Columns&lt;bool>              | TINYINT                | BOOLEAN                     |        |
+| Columns&lt;bool>              |                        | BOOLEAN                     |        |
 | Columns&lt;Bit>               | BIT                    |                             | Ado returns `BIT` as a `byte` rather than a `bool`. So sharing the `bool` type with both `BIT` and `SMALLINT` would add a conversion step that would reduce result loading preformance. |
 | Column&lt;decimal>            | DECIMAL                | DECIMAL                     |        |
 | Column&lt;float>              | REAL                   | REAL                        |        |
@@ -1087,7 +1087,13 @@ foreach(TableValidation tableValidation in result.TableValidation) {
         string tableName = tableValidation.Table?.TableName ?? string.Empty;
 
         foreach(string message in tableValidation.ValidationMessages) {
-            output.AppendLine($"[{tableSchema}].[{tableName}] =>    {message}");
+            
+            if(!string.IsNullOrWhiteSpace(tableSchema) && !string.IsNullOrWhiteSpace(tableName)) {
+                output.AppendLine($"[{tableSchema}].[{tableName}] =>    {message}");
+            }
+            else {
+                output.AppendLine($"{message}");
+            }
         }
         output.Append(Environment.NewLine);
     }
