@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite {
 
