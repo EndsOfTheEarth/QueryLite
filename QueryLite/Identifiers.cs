@@ -30,6 +30,7 @@ namespace QueryLite {
     public interface IKeyValue {
 
         object GetValueAsObject();
+        bool IsValid { get; }
     }
 
     public interface IGuidType {
@@ -470,6 +471,8 @@ namespace QueryLite {
         public static bool? ToBool(BoolValue<TYPE>? key) {
             return key?.Value;
         }
+
+        public bool IsValid => true;
 
         [IgnoreMember]
         [JsonIgnore]
