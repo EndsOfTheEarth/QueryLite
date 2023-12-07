@@ -662,13 +662,13 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         }
 
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum {
-            return SetValue(column, ((int)(object)value).ToString());   //TODO: Find way to convert enum to integer without allocating an object on the heap 
+            return SetValue(column, EnumHelper.GetEnumNumberAsString(value));
         }
 
         public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : notnull, Enum {
 
             if(value != null) {
-                return SetValue(column, ((int)(object)value).ToString());   //TODO: Find way to convert enum to integer without allocating an object on the heap 
+                return SetValue(column, EnumHelper.GetEnumNumberAsString(value));
             }
             return SetValue(column, "null");
         }

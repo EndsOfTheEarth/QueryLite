@@ -24,6 +24,7 @@
 using Npgsql;
 using NpgsqlTypes;
 using System;
+using System.Numerics;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql.Collectors {
@@ -200,11 +201,10 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum {
-            return AddParameter(column, GetEnumDbType<ENUM>(), (int)(object)value);
+            return AddParameter(column, GetEnumDbType<ENUM>(), EnumHelper.GetEnumAsNumber(value));
         }
-
         public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : notnull, Enum {
-            return AddParameter(column, GetEnumDbType<ENUM>(), value != null ? (int)(object)value : null);
+            return AddParameter(column, GetEnumDbType<ENUM>(), value != null ? EnumHelper.GetEnumAsNumber(value) : null);
         }
 
         public ISetValuesCollector Set(Column<string> column, string value) {
@@ -651,13 +651,13 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum {
-            return SetValue(column, ((int)(object)value).ToString());   //TODO: Find way to convert enum to integer without allocating an object on the heap 
+            return SetValue(column, EnumHelper.GetEnumNumberAsString(value)); 
         }
 
         public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : notnull, Enum {
 
             if(value != null) {
-                return SetValue(column, ((int)(object)value).ToString());   //TODO: Find way to convert enum to integer without allocating an object on the heap 
+                return SetValue(column, EnumHelper.GetEnumNumberAsString(value));
             }
             return SetValue(column, "null");
         }

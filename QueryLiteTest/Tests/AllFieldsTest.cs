@@ -175,12 +175,12 @@ namespace QueryLiteTest.Tests {
             List<ITable> tables = new List<ITable>() {
                 AllTypesTable.Instance,
                 ParentTable.Instance,
-                ChildTable.Instance,
-                RowVersionTestTable.Instance
+                ChildTable.Instance
             };
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
                 tables.Add(GeoTestTable.Instance);
+                tables.Add(RowVersionTestTable.Instance);
             }
 
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
