@@ -21,10 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using NpgsqlTypes;
 using System;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
+using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite.Databases {
 
@@ -251,6 +253,72 @@ namespace QueryLite.Databases {
         }
         public static byte UnsafeConvertToByte<ENUM>(ENUM enumValue) where ENUM : Enum {
             return Unsafe.As<ENUM, byte>(ref enumValue);
+        }
+
+        public static object GetEnumAsNumber<ENUM>(ENUM value) where ENUM : notnull, Enum {
+
+            Type enumType = Enum.GetUnderlyingType(typeof(ENUM));
+
+            if(enumType == typeof(byte)) {
+                return ((byte)((object)value));
+            }
+            else if(enumType == typeof(sbyte)) {
+                return ((sbyte)((object)value));
+            }
+            else if(enumType == typeof(short)) {
+                return ((short)((object)value));
+            }
+            else if(enumType == typeof(ushort)) {
+                return ((ushort)((object)value));
+            }
+            else if(enumType == typeof(int)) {
+                return ((int)((object)value));
+            }
+            else if(enumType == typeof(uint)) {
+                return ((uint)((object)value));
+            }
+            else if(enumType == typeof(long)) {
+                return ((long)((object)value));
+            }
+            else if(enumType == typeof(ulong)) {
+                return ((ulong)((object)value));
+            }
+            else {
+                throw new ArgumentException($"{nameof(ENUM)} is an unknown type '{typeof(ENUM)}'");
+            }
+        }
+
+        public static string GetEnumNumberAsString<ENUM>(ENUM value) where ENUM : notnull, Enum {
+
+            Type enumType = Enum.GetUnderlyingType(typeof(ENUM));
+
+            if(enumType == typeof(byte)) {
+                return ((byte)((object)value)).ToString();
+            }
+            else if(enumType == typeof(sbyte)) {
+                return ((sbyte)((object)value)).ToString();
+            }
+            else if(enumType == typeof(short)) {
+                return ((short)((object)value)).ToString();
+            }
+            else if(enumType == typeof(ushort)) {
+                return ((ushort)((object)value)).ToString();
+            }
+            else if(enumType == typeof(int)) {
+                return ((int)((object)value)).ToString();
+            }
+            else if(enumType == typeof(uint)) {
+                return ((uint)((object)value)).ToString();
+            }
+            else if(enumType == typeof(long)) {
+                return ((long)((object)value)).ToString();
+            }
+            else if(enumType == typeof(ulong)) {
+                return ((ulong)((object)value)).ToString();
+            }
+            else {
+                throw new ArgumentException($"{nameof(ENUM)} is an unknown type '{typeof(ENUM)}'");
+            }
         }
     }
 }

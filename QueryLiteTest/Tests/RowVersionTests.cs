@@ -11,6 +11,10 @@ namespace QueryLiteTest.Tests {
         [TestInitialize]
         public void ClearTable() {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+                return;
+            }
+
             RowVersionTestTable table = RowVersionTestTable.Instance;
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
