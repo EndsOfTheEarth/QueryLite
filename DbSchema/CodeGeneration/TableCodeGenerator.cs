@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Databases;
 using QueryLite.DbSchema.Tables;
 using System;
 using System.Collections.Generic;
@@ -47,7 +46,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                     if(!table.IsView) {
                         string tableName = CodeHelper.GetTableName(table, includePostFix: false);
-                        code.Indent(1).Append($"public interface I{tableName} {{}}").EndLine();
+                        code.Indent(1).Append($"public interface I{tableName}Id {{}}").EndLine();
                     }
                 }
 
@@ -103,7 +102,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             if(generateKeyInterface) {
                 string tableName = CodeHelper.GetTableName(table, includePostFix: false);
-                code.Indent(1).Append($"public interface I{tableName} {{}}").EndLine();
+                code.Indent(1).Append($"public interface I{tableName}Id {{}}").EndLine();
             }
 
             string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);

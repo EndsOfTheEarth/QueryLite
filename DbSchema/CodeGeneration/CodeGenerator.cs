@@ -223,7 +223,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 isKeyColumn = true;
 
-                string keyName = $"I{GetTableName(referencedTable, includePostFix: false)}";
+                string keyName = $"I{GetTableName(referencedTable, includePostFix: false)}Id";
 
                 if(dotNetType == typeof(string)) {
                     columnType = $"StringKey<{keyName}>";
@@ -251,7 +251,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 isKeyColumn = true;
 
-                string keyName = $"I{GetTableName(table, includePostFix: false)}";
+                string keyName = $"I{GetTableName(table, includePostFix: false)}Id";
 
                 if(dotNetType == typeof(string)) {
                     columnType = $"StringKey<{keyName}>";
