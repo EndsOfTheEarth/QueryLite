@@ -125,8 +125,8 @@ namespace QueryLite {
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
-        public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : notnull, Enum;
-        public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : notnull, Enum;
+        public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : struct, Enum;
+        public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum;
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
@@ -257,8 +257,8 @@ namespace QueryLite {
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
-        public ENUM GetEnum<ENUM>(Function<ENUM> column) where ENUM : notnull, Enum;
-        public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> column) where ENUM : notnull, Enum;
+        public ENUM GetEnum<ENUM>(Function<ENUM> column) where ENUM : struct, Enum;
+        public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> column) where ENUM : struct, Enum;
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.

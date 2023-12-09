@@ -52,3 +52,15 @@ CREATE TABLE RowVersionTest (
 
 	CONSTRAINT pk_RowVersionTest PRIMARY KEY(Id)
 );
+
+CREATE TABLE EnumTestTable (
+
+	etByteEnum TINYINT NOT NULL,	
+	etShortEnum SMALLINT NOT NULL,	
+	etIntEnum INTEGER NOT NULL,	
+	etLongEnum BIGINT NOT NULL,
+	etByteNullEnum TINYINT NULL,	
+	etShortNullEnum SMALLINT NULL,	
+	etIntNullEnum INTEGER NULL,	
+	etLongNullEnum BIGINT NULL
+);

@@ -24,7 +24,6 @@
 using Npgsql;
 using NpgsqlTypes;
 using System;
-using System.Numerics;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql.Collectors {
@@ -91,6 +90,9 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 SqlHelper.AppendEncloseColumnName(_sql, column);
                 _sql.Append('=').Append(paramName);
 
+                if(value == null) {
+                    value = DBNull.Value;
+                }
                 Parameters.ParameterList.Add(new NpgsqlParameter(parameterName: paramName, value) { NpgsqlDbType = dbType });
             }
             else {
@@ -203,8 +205,8 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum {
             return AddParameter(column, GetEnumDbType<ENUM>(), EnumHelper.GetEnumAsNumber(value));
         }
-        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : notnull, Enum {
-            return AddParameter(column, GetEnumDbType<ENUM>(), value != null ? EnumHelper.GetEnumAsNumber(value) : null);
+        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
+            return AddParameter(column, GetEnumDbType<ENUM>(), value != null ? EnumHelper.GetEnumAsNumber(value.Value) : null);
         }
 
         public ISetValuesCollector Set(Column<string> column, string value) {
@@ -651,13 +653,13 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum {
-            return SetValue(column, EnumHelper.GetEnumNumberAsString(value)); 
+            return SetValue(column, EnumHelper.GetEnumNumberAsString(value));
         }
 
-        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : notnull, Enum {
+        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
 
             if(value != null) {
-                return SetValue(column, EnumHelper.GetEnumNumberAsString(value));
+                return SetValue(column, EnumHelper.GetEnumNumberAsString(value.Value));
             }
             return SetValue(column, "null");
         }
