@@ -93,6 +93,9 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                 SqlHelper.AppendEncloseColumnName(_sql, column);
                 _sql.Append('=').Append(paramName);
 
+                if(value == null) {
+                    value = DBNull.Value;
+                }
                 Parameters.ParameterList.Add(new SqlParameter(parameterName: paramName, value) { SqlDbType = dbType });
             }
             else {
@@ -210,7 +213,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return AddParameter(column, GetEnumDbType<ENUM>(), value);
         }
 
-        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : notnull, Enum {
+        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
             return AddParameter(column, GetEnumDbType<ENUM>(), value);
         }
 
@@ -665,10 +668,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, EnumHelper.GetEnumNumberAsString(value));
         }
 
-        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : notnull, Enum {
+        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
 
             if(value != null) {
-                return SetValue(column, EnumHelper.GetEnumNumberAsString(value));
+                return SetValue(column, EnumHelper.GetEnumNumberAsString(value.Value));
             }
             return SetValue(column, "null");
         }

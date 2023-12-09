@@ -368,7 +368,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return (byte[])_reader.GetValue(_ordinal);
         }
 
-        public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : notnull, Enum {
+        public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -378,21 +378,21 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 return IntegerToEnum<int, ENUM>.Convert(0);
             }
 
-            int value;
-
             if(fieldType == typeof(byte)) {
-                value = _reader.GetByte(_ordinal);
+                return IntegerToEnum<byte, ENUM>.Convert(_reader.GetByte(_ordinal));
             }
             else if(fieldType == typeof(short)) {
-                value = _reader.GetInt16(_ordinal);
+                return IntegerToEnum<int, ENUM>.Convert(_reader.GetInt16(_ordinal));
+            }
+            else if(fieldType == typeof(long)) {
+                return IntegerToEnum<long, ENUM>.Convert(_reader.GetInt64(_ordinal));
             }
             else {
-                value = _reader.GetInt32(_ordinal);
-            }
-            return IntegerToEnum<int, ENUM>.Convert(value);
+                return IntegerToEnum<int, ENUM>.Convert(_reader.GetInt32(_ordinal));
+            }            
         }
 
-        public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : notnull, Enum {
+        public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -402,18 +402,18 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 return (ENUM?)(object?)null;
             }
 
-            int value;
-
             if(fieldType == typeof(byte)) {
-                value = _reader.GetByte(_ordinal);
+                return IntegerToEnum<byte, ENUM>.Convert(_reader.GetByte(_ordinal));
             }
             else if(fieldType == typeof(short)) {
-                value = _reader.GetInt16(_ordinal);
+                return IntegerToEnum<int, ENUM>.Convert(_reader.GetInt16(_ordinal));
+            }
+            else if(fieldType == typeof(long)) {
+                return IntegerToEnum<long, ENUM>.Convert(_reader.GetInt64(_ordinal));
             }
             else {
-                value = _reader.GetInt32(_ordinal);
+                return IntegerToEnum<int, ENUM>.Convert(_reader.GetInt32(_ordinal));
             }
-            return IntegerToEnum<int, ENUM>.Convert(value);
         }
 
         public StringKey<TYPE> Get<TYPE>(Column<StringKey<TYPE>> column) where TYPE : notnull {
@@ -829,7 +829,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return (byte[])_reader.GetValue(_ordinal);
         }
 
-        public ENUM GetEnum<ENUM>(Function<ENUM> function) where ENUM : notnull, Enum {
+        public ENUM GetEnum<ENUM>(Function<ENUM> function) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -853,7 +853,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return IntegerToEnum<int, ENUM>.Convert(value);
         }
 
-        public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> function) where ENUM : notnull, Enum {
+        public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> function) where ENUM : struct, Enum {
 
             _ordinal++;
 

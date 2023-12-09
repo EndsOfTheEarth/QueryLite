@@ -190,7 +190,6 @@ namespace QueryLiteTest.Tests {
             await UpdateJoinTest2Async();
         }
 
-
         [TestMethod]
         public void RunSchemaValidator() {
 
@@ -204,7 +203,8 @@ namespace QueryLiteTest.Tests {
             List<ITable> tables = new List<ITable>() {
                 AllTypesTable.Instance,
                 ParentTable.Instance,
-                ChildTable.Instance
+                ChildTable.Instance,
+                EnumTestTableTable.Instance
             };
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
@@ -215,10 +215,10 @@ namespace QueryLiteTest.Tests {
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
-                Assert.AreEqual(result.TableValidation.Count, 5);
+                Assert.AreEqual(result.TableValidation.Count, 6);
             }
             else {
-                Assert.AreEqual(result.TableValidation.Count, 3);
+                Assert.AreEqual(result.TableValidation.Count, 4);
             }
 
             foreach(TableValidation val in result.TableValidation) {

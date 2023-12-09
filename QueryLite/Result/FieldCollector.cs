@@ -467,22 +467,22 @@ namespace QueryLite {
             return default;
         }
 
-        public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : notnull, Enum {
+        public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
             Fields.Add(column);
             return default!;
         }
 
-        public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : notnull, Enum {
+        public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum {
             Fields.Add(column);
             return default;
         }
 
-        public ENUM GetEnum<ENUM>(Function<ENUM> column) where ENUM : notnull, Enum {
+        public ENUM GetEnum<ENUM>(Function<ENUM> column) where ENUM : struct, Enum {
             Fields.Add(column);
             return default!;
         }
 
-        public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> column) where ENUM : notnull, Enum {
+        public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> column) where ENUM : struct, Enum {
             Fields.Add(column);
             return default;
         }

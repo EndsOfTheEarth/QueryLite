@@ -37,3 +37,15 @@ CREATE TABLE Child (
 	CONSTRAINT fk_Child_Parent FOREIGN KEY(ParentId) REFERENCES Parent(Id),
 	CONSTRAINT fk_Child_Parent_Id2 FOREIGN KEY(ParentId) REFERENCES Parent(Id2)
 );
+
+CREATE TABLE EnumTestTable (
+
+	etByteEnum SMALLINT NOT NULL,	
+	etShortEnum SMALLINT NOT NULL,	
+	etIntEnum INTEGER NOT NULL,	
+	etLongEnum BIGINT NOT NULL,
+	etByteNullEnum SMALLINT NULL,	
+	etShortNullEnum SMALLINT NULL,	
+	etIntNullEnum INTEGER NULL,	
+	etLongNullEnum BIGINT NULL
+);
