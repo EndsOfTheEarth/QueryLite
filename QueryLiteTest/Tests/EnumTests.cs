@@ -192,52 +192,5 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(intNullValue, row.IntNullEnum);
             Assert.AreEqual(longNullValue, row.LongNullEnum);
         }
-
-
-        //private void TestEnumNullValueColumns(ByteTestEnum byteValue, ShortTestEnum shortValue, IntegerTestEnum intValue, LongTestEnum longValue) {
-
-        //    EnumTestTableTable table = EnumTestTableTable.Instance;
-
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-        //        Query.Insert(table)
-        //            .Values(values => values
-        //                .SetEnum(table.ByteEnum, byteValue)
-        //                .SetEnum(table.ShortEnum, shortValue)
-        //                .SetEnum(table.IntEnum, intValue)
-        //                .SetEnum(table.LongEnum, longValue)
-        //                .SetEnum(table.ByteNullEnum, null)
-        //                .SetEnum(table.ShortNullEnum, null)
-        //                .SetEnum(table.IntNullEnum, null)
-        //                .SetEnum(table.LongNullEnum, null)
-        //            )
-        //            .Execute(transaction);
-
-        //        transaction.Commit();
-        //    }
-
-        //    AssertSingleRow(byteValue, shortValue, intValue, longValue,);
-
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-        //        Query.Update(table)
-        //            .Values(values => values
-        //                .SetEnum(table.ByteEnum, byteValue)
-        //                .SetEnum(table.ShortEnum, shortValue)
-        //                .SetEnum(table.IntEnum, intValue)
-        //                .SetEnum(table.LongEnum, longValue)
-        //                .SetEnum(table.ByteNullEnum, null)
-        //                .SetEnum(table.ShortNullEnum, null)
-        //                .SetEnum(table.IntNullEnum, null)
-        //                .SetEnum(table.LongNullEnum, null)
-        //            )
-        //            .NoWhereCondition()
-        //            .Execute(transaction);
-
-        //        transaction.Commit();
-        //    }
-
-        //    AssertSingleRow(byteValue, shortValue, intValue, longValue);
-        //}
     }
 }
