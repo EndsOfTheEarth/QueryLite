@@ -366,7 +366,7 @@ namespace QueryLite.Databases.SqlServer {
             return (byte[])_reader.GetValue(_ordinal);
         }
 
-        public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
+        public ENUM Get<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -390,7 +390,7 @@ namespace QueryLite.Databases.SqlServer {
             }
         }
 
-        public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum {
+        public ENUM? Get<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -825,7 +825,7 @@ namespace QueryLite.Databases.SqlServer {
             return (byte[])_reader.GetValue(_ordinal);
         }
 
-        public ENUM GetEnum<ENUM>(Function<ENUM> function) where ENUM : struct, Enum {
+        public ENUM Get<ENUM>(Function<ENUM> function) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -849,7 +849,7 @@ namespace QueryLite.Databases.SqlServer {
             return IntegerToEnum<int, ENUM>.Convert(value);
         }
 
-        public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> function) where ENUM : struct, Enum {
+        public ENUM? Get<ENUM>(NullableFunction<ENUM> function) where ENUM : struct, Enum {
 
             _ordinal++;
 

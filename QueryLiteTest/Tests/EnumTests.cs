@@ -165,14 +165,14 @@ namespace QueryLiteTest.Tests {
             var result = Query
                 .Select(
                     row => new {
-                        ByteEnum = row.GetEnum(table.ByteEnum),
-                        ShortEnum = row.GetEnum(table.ShortEnum),
-                        IntEnum = row.GetEnum(table.IntEnum),
-                        LongEnum = row.GetEnum(table.LongEnum),
-                        ByteNullEnum = row.GetEnum(table.ByteNullEnum),
-                        ShortNullEnum = row.GetEnum(table.ShortNullEnum),
-                        IntNullEnum = row.GetEnum(table.IntNullEnum),
-                        LongNullEnum = row.GetEnum(table.LongNullEnum)
+                        ByteEnum = row.Get(table.ByteEnum),
+                        ShortEnum = row.Get(table.ShortEnum),
+                        IntEnum = row.Get(table.IntEnum),
+                        LongEnum = row.Get(table.LongEnum),
+                        ByteNullEnum = row.Get(table.ByteNullEnum),
+                        ShortNullEnum = row.Get(table.ShortNullEnum),
+                        IntNullEnum = row.Get(table.IntNullEnum),
+                        LongNullEnum = row.Get(table.LongNullEnum)
                     }
                 )
                 .From(table)

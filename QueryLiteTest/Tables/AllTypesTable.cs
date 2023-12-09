@@ -71,7 +71,7 @@ namespace QueryLiteTest.Tables {
             Bytes = row.Get(table.Bytes);
             DateTime = row.Get(table.DateTime);
             DateTimeOffset = row.Get(table.DateTimeOffset);
-            Enum = row.GetEnum(table.Enum);
+            Enum = row.Get(table.Enum);
             DateOnly = row.Get(table.DateOnly);
             TimeOnly = row.Get(table.TimeOnly);
         }

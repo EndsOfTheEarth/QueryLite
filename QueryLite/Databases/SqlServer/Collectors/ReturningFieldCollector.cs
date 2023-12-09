@@ -425,19 +425,19 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public ENUM GetEnum<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
+        public ENUM Get<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
 
-        public ENUM? GetEnum<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum {
+        public ENUM? Get<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
 
-        public ENUM GetEnum<ENUM>(Function<ENUM> column) where ENUM : struct, Enum {
+        public ENUM Get<ENUM>(Function<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
 
-        public ENUM? GetEnum<ENUM>(NullableFunction<ENUM> column) where ENUM : struct, Enum {
+        public ENUM? Get<ENUM>(NullableFunction<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
     }
