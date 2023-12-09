@@ -786,7 +786,7 @@ public enum SqlServerQueryOption {
 | Column&lt;TimeOnly>           | TIME                   | TIME WITHOUT TIME ZONE      | Precision is only up to microseconds. Nanosecond precision and timezone are not supported. |
 | Column&lt;DateTime>           | DATETIME               | TIMESTAMP WITHOUT TIME ZONE | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
 | Column&lt;DateTimeOffset>     | DATETIMEOFFSET         | TIMESTAMP WITH TIME ZONE    | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
-| Column&lt;Enum> (byte)        | TINYINT                | SMALLINT                    | With PostgreSql, byte enums must are mapped to the SMALLINT data type. The BYTEA data type cannot be used as an enum type. Note: Enums of type sbyte are not supported. |
+| Column&lt;Enum> (byte)        | TINYINT                | SMALLINT                    | With PostgreSql, byte enums are mapped to the SMALLINT data type. BYTEA data type cannot be used as an enum type. Note: Enums of type sbyte are not supported. |
 | Column&lt;Enum> (short)       | SMALLINT               | SMALLINT                    | Note: Enums of type ushort are not supported. |
 | Column&lt;Enum> (int)         | INT                    | INT                         | Note: Enums of type uint are not supported. |
 | Column&lt;Enum> (long)        | BIGINT                 | BIGINT                      | Note: Enums of type ulong are not supported. |
