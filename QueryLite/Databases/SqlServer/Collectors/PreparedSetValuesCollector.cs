@@ -248,11 +248,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(byte[])));
         }
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(Column<ENUM> column, Func<PARAMETERS, ENUM> value) where ENUM : notnull, Enum {
+        public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(Column<ENUM> column, Func<PARAMETERS, ENUM> value) where ENUM : struct, Enum {
             return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(ENUM)));
         }
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(NullableColumn<ENUM> column, Func<PARAMETERS, ENUM?> value) where ENUM : notnull, Enum {
+        public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(NullableColumn<ENUM> column, Func<PARAMETERS, ENUM?> value) where ENUM : struct, Enum {
             return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(ENUM?)));
         }
 

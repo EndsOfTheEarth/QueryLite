@@ -220,9 +220,24 @@ namespace QueryLite.Databases.SqlServer {
                     Value = value != null ? ((IBoolType)value).Value : DBNull.Value
                 };
             }
-            else if(type.IsEnum) {
 
-                NumericType integerType = EnumHelper.GetNumericType(type);
+            Type? enumType = null;
+
+            if(type.IsEnum) {
+                enumType = type;
+            }
+            else {  //Check to see if this is a nullable enum type
+
+                Type? underlyingType = Nullable.GetUnderlyingType(type);
+
+                if(underlyingType != null && underlyingType.IsEnum) {
+                    enumType = underlyingType;
+                }
+            }
+
+            if(enumType != null) {
+
+                NumericType integerType = EnumHelper.GetNumericType(enumType);
 
                 if(integerType == NumericType.UShort) {
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
@@ -268,7 +283,7 @@ namespace QueryLite.Databases.SqlServer {
                 else if(integerType == NumericType.Byte) {
 
                     return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                        Value = value != null ? (short)value : DBNull.Value
+                        Value = value != null ? (byte)value : DBNull.Value
                     };
                 }
                 else {
