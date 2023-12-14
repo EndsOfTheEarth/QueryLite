@@ -529,7 +529,7 @@ For example:
         .Update(table)
         .Values(values => values
             .Set(table.CounterA, SqlMath.Add(table.CounterA, 1)),   --Add one to the existing column value
-            .Set(table.CounterB, SqlMath.Subtract(table.CounterB, 1))   --Subtract one to the existing column value
+            .Set(table.CounterB, SqlMath.Subtract(table.CounterB, 1))   --Subtract one from the existing column value
         )
         .From(table)
         .Where(table.Id == id)
