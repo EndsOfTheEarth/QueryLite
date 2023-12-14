@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
+using QueryLite.Databases.Functions;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
@@ -160,13 +161,17 @@ namespace QueryLiteTest.Tests {
                         .Set(table.Guid, NEWID.Instance)
                         .Set(table.DateTime, GETDATE.Instance)
                         .Set(table.DateTimeOffset, SYSDATETIMEOFFSET.Instance)
+                        .Set(table.Int, SqlMath.Add(table.Int, 1))
+                        .Set(table.BigInt, SqlMath.Subtract(table.BigInt, 1))
                     )
                     .Where(table.Id == info.Id)
                     .Execute(
                         result => new {
                             Guid = result.Get(table.Guid),
                             DateTime = result.Get(table.DateTime),
-                            DateTimeOffset = result.Get(table.DateTimeOffset)
+                            DateTimeOffset = result.Get(table.DateTimeOffset),
+                            Int = result.Get(table.Int),
+                            BigInt = result.Get(table.BigInt)
                         },
                         transaction,
                         TimeoutLevel.ShortInsert
@@ -180,6 +185,8 @@ namespace QueryLiteTest.Tests {
                 Assert.AreNotEqual(row.Guid, guid);
                 Assert.AreNotEqual(row.DateTime, dateTime);
                 Assert.AreNotEqual(row.DateTimeOffset, dateTimeOffset);
+                Assert.AreEqual(row.Int, info.Int + 1);
+                Assert.AreEqual(row.BigInt, info.BigInt - 1);
 
                 guid = row.Guid;
                 dateTime = row.DateTime;
