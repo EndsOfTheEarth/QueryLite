@@ -22,6 +22,7 @@
  * SOFTWARE.
  **/
 using Npgsql;
+using QueryLite.Utility;
 using System;
 using System.Data.Common;
 
@@ -389,7 +390,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             else {
                 return IntegerToEnum<int, ENUM>.Convert(_reader.GetInt32(_ordinal));
-            }            
+            }
         }
 
         public ENUM? Get<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum {
@@ -601,7 +602,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return Bit.ValueOf(false);
             }
-            
+
             return Bit.ValueOf(_reader.GetBoolean(_ordinal));
         }
 

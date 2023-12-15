@@ -23,6 +23,7 @@
  **/
 using Npgsql;
 using NpgsqlTypes;
+using QueryLite.Utility;
 using System;
 
 namespace QueryLite.Databases.SqlServer {

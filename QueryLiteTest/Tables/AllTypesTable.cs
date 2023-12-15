@@ -1,4 +1,5 @@
-﻿
+﻿using QueryLite.Utility;
+
 namespace QueryLiteTest.Tables {
 
     using QueryLite;

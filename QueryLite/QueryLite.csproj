@@ -38,8 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.5.129" />
     <PackageReference Include="Npgsql" Version="7.0.6" />
+    <PackageReference Include="QueryLite.Utility" Version="0.1.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 </Project>

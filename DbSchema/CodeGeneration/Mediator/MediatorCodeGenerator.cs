@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite;
 using QueryLite.DbSchema;
 using QueryLite.DbSchema.CodeGeneration;
 using QueryLite.DbSchema.Tables;
+using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 
@@ -103,7 +103,7 @@ namespace DbSchema.CodeGeneration {
             code.Append(MediatorLoadListRequestGenerator.GetLoadListRequest(table));
             code.Append(MediatorCreateRequestGenerator.GetCreateRequest(table));
             code.Append(MediatorUpdateSingleRecordRequestGenerator.GetUpdateRequest(table, settings));
-            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, prefix, settings));            
+            code.Append(MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, prefix, settings));
 
             if(includeUsings) {
                 code.Append("}");

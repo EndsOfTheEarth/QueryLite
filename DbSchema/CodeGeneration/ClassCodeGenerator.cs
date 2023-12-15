@@ -22,6 +22,7 @@
  * SOFTWARE.
  **/
 using QueryLite.DbSchema.Tables;
+using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,13 +81,13 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 classCode.Indent(1).Append("using QueryLite;").EndLine();
 
                 classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
-            
 
-            string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
 
-            if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
-                classCode.Indent(1).Append($"using {tableNamespace};").EndLine();
-            }
+                string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
+
+                if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
+                    classCode.Indent(1).Append($"using {tableNamespace};").EndLine();
+                }
             }
 
             if(settings.IncludeMessagePackAttributes) {
@@ -160,9 +161,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
                     continue;
                 }
-                
+
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
-                
+
                 string columnNameForTable = prefix.GetColumnName(column.ColumnName.Value, className: tableOrViewClassName);
 
                 constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{columnNameForTable});").EndLine();

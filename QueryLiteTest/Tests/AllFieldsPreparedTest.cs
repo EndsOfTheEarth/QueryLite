@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.DbSchema;
+using QueryLite.Utility;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;

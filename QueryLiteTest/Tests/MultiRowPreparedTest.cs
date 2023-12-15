@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
+using QueryLite.Utility;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
@@ -37,7 +38,6 @@ namespace QueryLiteTest.Tests {
                     )
                     .From(allTypesTable)
                     .Build();
-
 
                 var result = selectQuery.Execute(parameters: true, transaction);
 

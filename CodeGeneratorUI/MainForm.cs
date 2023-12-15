@@ -28,6 +28,7 @@ using QueryLite.Databases.SqlServer;
 using QueryLite.DbSchema;
 using QueryLite.DbSchema.CodeGeneration;
 using QueryLite.DbSchema.Tables;
+using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;

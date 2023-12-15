@@ -2,6 +2,7 @@
 using QueryLite;
 using QueryLite.Databases.Functions;
 using QueryLite.Databases.SqlServer.Functions;
+using QueryLite.Utility;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;

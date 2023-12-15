@@ -1,6 +1,7 @@
 ﻿namespace QueryLiteTest.Tables {
 
     using QueryLite;
+    using QueryLite.Utility;
 
     public interface IChild { }
 

@@ -22,6 +22,7 @@
  * SOFTWARE.
  **/
 using QueryLite.DbSchema.Tables;
+using QueryLite.Utility;
 using System;
 
 namespace QueryLite.DbSchema.CodeGeneration {
