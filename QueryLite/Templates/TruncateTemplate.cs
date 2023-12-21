@@ -60,7 +60,7 @@ namespace QueryLite {
             );
         }
 
-        public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -71,7 +71,7 @@ namespace QueryLite {
 
             string sql = transaction.Database.TruncateGenerator.GetSql(this, transaction.Database, parameters: null);
 
-            return QueryExecutor.ExecuteNonQueryAsync(
+            NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
                 database: transaction.Database,
                 transaction: transaction,
                 timeout: timeout.Value,
@@ -81,6 +81,7 @@ namespace QueryLite {
                 debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None
             );
+            return result;
         }
     }
 }

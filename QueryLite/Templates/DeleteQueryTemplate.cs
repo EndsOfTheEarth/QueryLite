@@ -147,7 +147,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -162,7 +162,7 @@ namespace QueryLite {
 
             string sql = database.DeleteGenerator.GetSql<bool>(this, database, parameters, outputFunc: null);
 
-            Task<NonQueryResult> result = QueryExecutor.ExecuteNonQueryAsync(
+            NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
                 database: database,
                 transaction: transaction,
                 timeout: timeout.Value,
@@ -175,7 +175,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(func);
             ArgumentNullException.ThrowIfNull(transaction);
@@ -191,7 +191,7 @@ namespace QueryLite {
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters, func);
 
-            Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
+            QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
                 database: database,
                 transaction: transaction,
                 timeout: timeout.Value,

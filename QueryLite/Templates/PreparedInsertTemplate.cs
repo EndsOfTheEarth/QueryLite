@@ -115,11 +115,11 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
-            return PreparedQueryExecutor.ExecuteNonQueryAsync(
+            NonQueryResult result = await PreparedQueryExecutor.ExecuteNonQueryAsync(
                 database: transaction.Database,
                 transaction: transaction,
                 timeout: timeout ?? TimeoutLevel.ShortInsert,
@@ -127,9 +127,10 @@ namespace QueryLite {
                 setParameters: insertDetail.SetParameters,
                 sql: insertDetail.Sql,
                 queryType: QueryType.Insert,
-                debugName: debugName
-,
-                cancellationToken: cancellationToken ?? CancellationToken.None);
+                debugName: debugName,
+                cancellationToken: cancellationToken ?? CancellationToken.None
+            );
+            return result;
         }
     }
 
@@ -199,11 +200,11 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
-            return PreparedQueryExecutor.ExecuteAsync(
+            QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
                 database: transaction.Database,
                 transaction: transaction,
                 timeout: timeout ?? TimeoutLevel.ShortInsert,
@@ -212,9 +213,10 @@ namespace QueryLite {
                 outputFunc: _outputFunc,
                 sql: insertDetail.Sql,
                 queryType: QueryType.Insert,
-                debugName: debugName
-,
-                cancellationToken: cancellationToken ?? CancellationToken.None);
+                debugName: debugName,
+                cancellationToken: cancellationToken ?? CancellationToken.None
+            );
+            return result;
         }
 
         public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
@@ -251,11 +253,11 @@ namespace QueryLite {
             );
         }
 
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
-            return PreparedQueryExecutor.SingleOrDefaultAsync(
+            RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
                 database: transaction.Database,
                 transaction: transaction,
                 timeout: timeout ?? TimeoutLevel.ShortInsert,
@@ -267,13 +269,14 @@ namespace QueryLite {
                 debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None
             );
+            return result;
         }
 
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(database);
 
-            return PreparedQueryExecutor.SingleOrDefaultAsync(
+            RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
                 database: database,
                 transaction: null,
                 timeout: timeout ?? TimeoutLevel.ShortInsert,
@@ -285,6 +288,7 @@ namespace QueryLite {
                 debugName: debugName,
                 cancellationToken: cancellationToken ?? CancellationToken.None
             );
+            return result;
         }
     }
 }

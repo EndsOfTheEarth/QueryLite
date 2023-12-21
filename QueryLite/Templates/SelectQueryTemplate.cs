@@ -279,7 +279,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -292,7 +292,7 @@ namespace QueryLite {
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
 
-            Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
+            QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
                 database: transaction.Database,
                 transaction: transaction,
                 timeout: timeout.Value,
@@ -306,7 +306,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(database);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -319,7 +319,7 @@ namespace QueryLite {
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
 
-            Task<QueryResult<RESULT>> result = QueryExecutor.ExecuteAsync(
+            QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
                 database: database,
                 transaction: null,
                 timeout: timeout.Value,
@@ -411,7 +411,7 @@ namespace QueryLite {
             return result;
         }
 
-        public Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -424,7 +424,7 @@ namespace QueryLite {
 
             string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
 
-            return QueryExecutor.SingleOrDefaultAsync(
+            RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
                 database: transaction.Database,
                 cancellationToken: cancellationToken ?? CancellationToken.None,
                 transaction: transaction,
@@ -435,9 +435,10 @@ namespace QueryLite {
                 queryType: QueryType.Select,
                 debugName: debugName
             );
+            return result;
         }
 
-        public Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(database);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -450,7 +451,7 @@ namespace QueryLite {
 
             string sql = database.QueryGenerator.GetSql(this, database, parameters);
 
-            return QueryExecutor.SingleOrDefaultAsync(
+            RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
                 database: database,
                 cancellationToken: cancellationToken ?? CancellationToken.None,
                 transaction: null,
@@ -461,6 +462,7 @@ namespace QueryLite {
                 queryType: QueryType.Select,
                 debugName: debugName
             );
+            return result;
         }
 
         public IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
