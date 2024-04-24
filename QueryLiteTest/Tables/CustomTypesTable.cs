@@ -14,6 +14,13 @@ namespace QueryLiteTest.Tables {
         public Column<CustomString> String { get; }
         public Column<CustomBool> Bool { get; }
 
+        public NullableColumn<CustomGuid> NGuid { get; }
+        public NullableColumn<CustomShort> NShort { get; }
+        public NullableColumn<CustomInt> NInt { get; }
+        public NullableColumn<CustomLong> NLong { get; }
+        public NullableColumn<CustomString> NString { get; }
+        public NullableColumn<CustomBool> NBool { get; }
+
         private CustomTypesTable() : base(tableName: "CustomTypes", schemaName: "dbo") {
 
             Guid = new Column<CustomGuid>(this, columnName: "ctGuid");
@@ -22,6 +29,13 @@ namespace QueryLiteTest.Tables {
             Long = new Column<CustomLong>(this, columnName: "ctLong");
             String = new Column<CustomString>(this, columnName: "ctString", length: 100);
             Bool = new Column<CustomBool>(this, columnName: "ctBool");
+
+            NGuid = new NullableColumn<CustomGuid>(this, columnName: "ctNGuid");
+            NShort = new NullableColumn<CustomShort>(this, columnName: "ctNShort");
+            NInt = new NullableColumn<CustomInt>(this, columnName: "ctNInt");
+            NLong = new NullableColumn<CustomLong>(this, columnName: "ctNLong");
+            NString = new NullableColumn<CustomString>(this, columnName: "ctNString", length: 100);
+            NBool = new NullableColumn<CustomBool>(this, columnName: "ctNBool");
         }
     }
 

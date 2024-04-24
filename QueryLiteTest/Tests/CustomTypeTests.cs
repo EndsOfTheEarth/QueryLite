@@ -71,12 +71,20 @@ namespace QueryLiteTest.Tests {
                     NonQueryResult insertResult = Query
                         .Insert(table)
                         .Values(values => values
+
                             .SetGuid(table.Guid, customTypesA.CustomGuid)
                             .SetShort(table.Short, customTypesA.CustomShort)
                             .SetInt(table.Int, customTypesA.CustomInt)
                             .SetLong(table.Long, customTypesA.CustomLong)
                             .SetString(table.String, customTypesA.CustomString)
                             .SetBool(table.Bool, customTypesA.CustomBool)
+
+                            .SetGuid(table.NGuid, customTypesA.NCustomGuid)
+                            .SetShort(table.NShort, customTypesA.NCustomShort)
+                            .SetInt(table.NInt, customTypesA.NCustomInt)
+                            .SetLong(table.NLong, customTypesA.NCustomLong)
+                            .SetString(table.NString, customTypesA.NCustomString)
+                            .SetBool(table.NBool, customTypesA.NCustomBool)
                         )
                         .Execute(transaction);
 
@@ -98,12 +106,20 @@ namespace QueryLiteTest.Tests {
                     NonQueryResult insertResult = Query
                         .Update(table)
                         .Values(values => values
+                            
                             .SetGuid(table.Guid, customTypesB.CustomGuid)
                             .SetShort(table.Short, customTypesB.CustomShort)
                             .SetInt(table.Int, customTypesB.CustomInt)
                             .SetLong(table.Long, customTypesB.CustomLong)
                             .SetString(table.String, customTypesB.CustomString)
                             .SetBool(table.Bool, customTypesB.CustomBool)
+
+                            .SetGuid(table.NGuid, customTypesB.NCustomGuid)
+                            .SetShort(table.NShort, customTypesB.NCustomShort)
+                            .SetInt(table.NInt, customTypesB.NCustomInt)
+                            .SetLong(table.NLong, customTypesB.NCustomLong)
+                            .SetString(table.NString, customTypesB.NCustomString)
+                            .SetBool(table.NBool, customTypesB.NCustomBool)
                         )
                         .Where(table.Guid == customTypesA.CustomGuid)
                         .Execute(transaction);
@@ -114,6 +130,27 @@ namespace QueryLiteTest.Tests {
                 }
             }
             AssertCustomTypes(customTypesB);
+
+            {
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    NonQueryResult insertResult = Query
+                        .Delete(table)
+                        .Where(
+                            table.Guid == customTypesB.CustomGuid &
+                            table.Short == customTypesB.CustomShort &
+                            table.Int == customTypesB.CustomInt &
+                            table.Long == customTypesB.CustomLong &
+                            table.String == customTypesB.CustomString &
+                            table.Bool == customTypesB.CustomBool
+                        )
+                        .Execute(transaction);
+
+                    transaction.Commit();
+
+                    Assert.AreEqual(1, insertResult.RowsEffected);
+                }
+            }
         }
 
         private void AssertOnlyOneRowExists() {
@@ -137,12 +174,20 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<CustomTypes> result = Query.Select(
                     row => new CustomTypes(
+
                         customGuid: row.GetGuid(table.Guid),
                         customShort: row.GetShort(table.Short),
                         customInt: row.GetInt(table.Int),
                         customLong: row.GetLong(table.Long),
                         customString: row.GetString(table.String),
-                        customBool: row.GetBool(table.Bool)
+                        customBool: row.GetBool(table.Bool),
+
+                        nCustomGuid: row.GetGuid(table.NGuid),
+                        nCustomShort: row.GetShort(table.NShort),
+                        nCustomInt: row.GetInt(table.NInt),
+                        nCustomLong: row.GetLong(table.NLong),
+                        nCustomString: row.GetString(table.NString),
+                        nCustomBool: row.GetBool(table.NBool)
                     )
                 )
                 .From(table)
@@ -158,24 +203,47 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(customTypes.CustomLong, values.CustomLong);
             Assert.AreEqual(customTypes.CustomString, values.CustomString);
             Assert.AreEqual(customTypes.CustomBool, values.CustomBool);
+
+            Assert.AreEqual(customTypes.NCustomGuid, values.NCustomGuid);
+            Assert.AreEqual(customTypes.NCustomShort, values.NCustomShort);
+            Assert.AreEqual(customTypes.NCustomInt, values.NCustomInt);
+            Assert.AreEqual(customTypes.NCustomLong, values.NCustomLong);
+            Assert.AreEqual(customTypes.NCustomString, values.NCustomString);
+            Assert.AreEqual(customTypes.NCustomBool, values.NCustomBool);
         }
 
         private CustomTypes GetCustomTypesA() => new CustomTypes(
+
             customGuid: CustomGuid.ValueOf(Guid.NewGuid()),
             customShort: CustomShort.ValueOf(12),
             customInt: CustomInt.ValueOf(55),
             customLong: CustomLong.ValueOf(43213412),
             customString: CustomString.ValueOf(Guid.NewGuid().ToString()),
-            customBool: CustomBool.ValueOf(true)
+            customBool: CustomBool.ValueOf(true),
+
+            nCustomGuid: null,
+            nCustomShort: null,
+            nCustomInt: null,
+            nCustomLong: null,
+            nCustomString: null,
+            nCustomBool: null
         );
 
         private CustomTypes GetCustomTypesB() => new CustomTypes(
+
             customGuid: CustomGuid.ValueOf(Guid.NewGuid()),
             customShort: CustomShort.ValueOf(43),
             customInt: CustomInt.ValueOf(2384234),
             customLong: CustomLong.ValueOf(6525234),
             customString: CustomString.ValueOf(Guid.NewGuid().ToString()),
-            customBool: CustomBool.ValueOf(false)
+            customBool: CustomBool.ValueOf(false),
+
+            nCustomGuid: CustomGuid.ValueOf(Guid.NewGuid()),
+            nCustomShort: CustomShort.ValueOf(11),
+            nCustomInt: CustomInt.ValueOf(3232),
+            nCustomLong: CustomLong.ValueOf(2414564),
+            nCustomString: CustomString.ValueOf(Guid.NewGuid().ToString()),
+            nCustomBool: CustomBool.ValueOf(true)
         );
 
         public class CustomTypes {
@@ -187,13 +255,26 @@ namespace QueryLiteTest.Tests {
             public CustomString CustomString { get; set; }
             public CustomBool CustomBool { get; set; }
 
-            public CustomTypes(CustomGuid customGuid, CustomShort customShort, CustomInt customInt, CustomLong customLong, CustomString customString, CustomBool customBool) {
+            public CustomGuid? NCustomGuid { get; set; }
+            public CustomShort? NCustomShort { get; set; }
+            public CustomInt? NCustomInt { get; set; }
+            public CustomLong? NCustomLong { get; set; }
+            public CustomString? NCustomString { get; set; }
+            public CustomBool? NCustomBool { get; set; }
+
+            public CustomTypes(CustomGuid customGuid, CustomShort customShort, CustomInt customInt, CustomLong customLong, CustomString customString, CustomBool customBool, CustomGuid? nCustomGuid, CustomShort? nCustomShort, CustomInt? nCustomInt, CustomLong? nCustomLong, CustomString? nCustomString, CustomBool? nCustomBool) {
                 CustomGuid = customGuid;
                 CustomShort = customShort;
                 CustomInt = customInt;
                 CustomLong = customLong;
                 CustomString = customString;
                 CustomBool = customBool;
+                NCustomGuid = nCustomGuid;
+                NCustomShort = nCustomShort;
+                NCustomInt = nCustomInt;
+                NCustomLong = nCustomLong;
+                NCustomString = nCustomString;
+                NCustomBool = nCustomBool;
             }
         }
     }
