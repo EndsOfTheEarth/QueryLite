@@ -24,6 +24,7 @@
 using NpgsqlTypes;
 using QueryLite.Utility;
 using System;
+using System.Data;
 
 namespace QueryLite.Databases.PostgreSql {
 
@@ -159,6 +160,25 @@ namespace QueryLite.Databases.PostgreSql {
             if(type.IsAssignableTo(typeof(IBoolType))) {
                 return NpgsqlDbType.Boolean;
             }
+
+            if(type.IsAssignableTo(typeof(IValue<Guid>))) {
+                return NpgsqlDbType.Uuid;
+            }
+            if(type.IsAssignableTo(typeof(IValue<short>))) {
+                return NpgsqlDbType.Smallint;
+            }
+            if(type.IsAssignableTo(typeof(IValue<int>))) {
+                return NpgsqlDbType.Integer;
+            }
+            if(type.IsAssignableTo(typeof(IValue<long>))) {
+                return NpgsqlDbType.Bigint;
+            }
+            if(type.IsAssignableTo(typeof(IValue<string>))) {
+                return NpgsqlDbType.Varchar;
+            }
+            if(type.IsAssignableTo(typeof(IValue<bool>))) {
+                return NpgsqlDbType.Boolean;
+            }
             throw new Exception($"Unknown PostgreSql parameter type '{type.FullName}'");
         }
 
@@ -291,6 +311,25 @@ namespace QueryLite.Databases.PostgreSql {
             }
             if(value is IBoolType boolType) {
                 return ToSqlString(boolType);
+            }
+
+            if(value is IValue<Guid> guidIValue) {
+                return ToSqlString(guidIValue.Value);
+            }
+            if(value is IValue<short> shortIValue) {
+                return ToSqlString(shortIValue.Value);
+            }
+            if(value is IValue<int> intIValue) {
+                return ToSqlString(intIValue.Value);
+            }
+            if(value is IValue<long> longIValue) {
+                return ToSqlString(longIValue.Value);
+            }
+            if(value is IValue<string> stringIValue) {
+                return ToSqlString(stringIValue.Value);
+            }
+            if(value is IValue<bool> boolIValue) {
+                return ToSqlString(boolIValue.Value);
             }
 
             Type type = value.GetType();

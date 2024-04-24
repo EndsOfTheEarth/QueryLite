@@ -54,7 +54,25 @@ namespace QueryLite.Databases.SqlServer {
                 else if(value is Bit bitValue) {
                     value = bitValue.Value;
                 }
-            }
+                else if(value is IValue<Guid> guidValue) {
+                    value = guidValue.Value;
+                }
+                else if(value is IValue<short> shortValue) {
+                    value = shortValue.Value;
+                }
+                else if(value is IValue<int> intValue) {
+                    value = intValue.Value;
+                }
+                else if(value is IValue<long> longValue) {
+                    value = longValue.Value;
+                }
+                else if(value is IValue<string> stringValue) {
+                    value = stringValue.Value;
+                }
+                else if(value is IValue<bool> boolValue) {
+                    value = boolValue.Value;
+                }
+            }            
             else {
                 value = DBNull.Value;
             }

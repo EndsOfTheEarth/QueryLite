@@ -497,5 +497,59 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+
+        public CUSTOM_TYPE GetGuid<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<Guid, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetGuid<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<Guid, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetShort<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<short, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetShort<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<short, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetInt<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<int, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetInt<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<int, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetLong<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<long, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetLong<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<long, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetString<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<string, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetString<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<string, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<bool, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<bool, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
     }
 }

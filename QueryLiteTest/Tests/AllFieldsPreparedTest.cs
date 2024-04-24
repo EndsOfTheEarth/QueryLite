@@ -205,7 +205,8 @@ namespace QueryLiteTest.Tests {
                 AllTypesTable.Instance,
                 ParentTable.Instance,
                 ChildTable.Instance,
-                EnumTestTableTable.Instance
+                EnumTestTableTable.Instance,
+                CustomTypesTable.Instance
             };
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
@@ -216,10 +217,10 @@ namespace QueryLiteTest.Tests {
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
-                Assert.AreEqual(result.TableValidation.Count, 6);
+                Assert.AreEqual(result.TableValidation.Count, 7);
             }
             else {
-                Assert.AreEqual(result.TableValidation.Count, 4);
+                Assert.AreEqual(result.TableValidation.Count, 5);
             }
 
             foreach(TableValidation val in result.TableValidation) {

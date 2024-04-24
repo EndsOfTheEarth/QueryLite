@@ -64,3 +64,12 @@ CREATE TABLE EnumTestTable (
 	etIntNullEnum INTEGER NULL,	
 	etLongNullEnum BIGINT NULL
 );
+
+CREATE TABLE CustomTypes (
+	ctGuid UNIQUEIDENTIFIER NOT NULL,
+	ctShort SMALLINT NOT NULL,
+	ctInt INT NOT NULL,
+	ctLong BIGINT NOT NULL,
+	ctString NVARCHAR(100) NOT NULL,
+	ctBool TINYINT NOT NULL
+);
