@@ -49,3 +49,20 @@ CREATE TABLE EnumTestTable (
 	etIntNullEnum INTEGER NULL,	
 	etLongNullEnum BIGINT NULL
 );
+
+CREATE TABLE CustomTypes (
+
+	ctGuid UUID NOT NULL,
+	ctShort SMALLINT NOT NULL,
+	ctInt INTEGER NOT NULL,
+	ctLong BIGINT NOT NULL,
+	ctString VARCHAR(100) NOT NULL,
+	ctBool BOOLEAN NOT NULL,
+
+	ctNGuid UUID NULL,
+	ctNShort SMALLINT NULL,
+	ctNInt INTEGER NULL,
+	ctNLong BIGINT NULL,
+	ctNString VARCHAR(100) NULL,
+	ctNBool BOOLEAN NULL
+);

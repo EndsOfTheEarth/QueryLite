@@ -25,6 +25,7 @@ using Npgsql;
 using NpgsqlTypes;
 using QueryLite.Utility;
 using System;
+using System.Data;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql.Collectors {
@@ -174,11 +175,11 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector Set<TYPE>(Column<BoolValue<TYPE>> column, BoolValue<TYPE> value) where TYPE : notnull {
-            return AddParameter(column, NpgsqlDbType.Bit, value.Value);
+            return AddParameter(column, NpgsqlDbType.Boolean, value.Value);
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<BoolValue<TYPE>> column, BoolValue<TYPE>? value) where TYPE : notnull {
-            return AddParameter(column, NpgsqlDbType.Bit, value?.Value);
+            return AddParameter(column, NpgsqlDbType.Boolean, value?.Value);
         }
 
         private static NpgsqlDbType GetEnumDbType<ENUM>() where ENUM : notnull, Enum {
@@ -404,6 +405,48 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
         public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value) {
             return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector SetGuid<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Guid> {
+            return AddParameter(column, NpgsqlDbType.Uuid, value.Value);
+        }
+        public ISetValuesCollector SetGuid<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Guid> {
+            return AddParameter(column, NpgsqlDbType.Uuid, value?.Value);
+        }
+
+        public ISetValuesCollector SetShort<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<short> {
+            return AddParameter(column, NpgsqlDbType.Smallint, value.Value);
+        }
+        public ISetValuesCollector SetShort<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<short> {
+            return AddParameter(column, NpgsqlDbType.Smallint, value?.Value);
+        }
+
+        public ISetValuesCollector SetInt<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<int> {
+            return AddParameter(column, NpgsqlDbType.Integer, value.Value);
+        }
+        public ISetValuesCollector SetInt<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<int> {
+            return AddParameter(column, NpgsqlDbType.Integer, value?.Value);
+        }
+
+        public ISetValuesCollector SetLong<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<long> {
+            return AddParameter(column, NpgsqlDbType.Bigint, value.Value);
+        }
+        public ISetValuesCollector SetLong<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<long> {
+            return AddParameter(column, NpgsqlDbType.Bigint, value?.Value);
+        }
+
+        public ISetValuesCollector SetString<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<string> {
+            return AddParameter(column, NpgsqlDbType.Varchar, value.Value);
+        }
+        public ISetValuesCollector SetString<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<string> {
+            return AddParameter(column, NpgsqlDbType.Varchar, value?.Value);
+        }
+
+        public ISetValuesCollector SetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<bool> {
+            return AddParameter(column, NpgsqlDbType.Boolean, value.Value);
+        }
+        public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
+            return AddParameter(column, NpgsqlDbType.Boolean, value?.Value);
         }
     }
 
@@ -803,6 +846,72 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
         public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value) {
             return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector SetGuid<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Guid> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+        public ISetValuesCollector SetGuid<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Guid> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetShort<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<short> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+        public ISetValuesCollector SetShort<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<short> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetInt<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<int> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+        public ISetValuesCollector SetInt<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<int> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetLong<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<long> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+        public ISetValuesCollector SetLong<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<long> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetString<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<string> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+        public ISetValuesCollector SetString<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<string> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<bool> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+        public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
         }
     }
 }

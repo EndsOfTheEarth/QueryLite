@@ -989,5 +989,120 @@ namespace QueryLite.Databases.SqlServer {
             }
             return new BoolValue<TYPE>(_reader.GetBoolean(_ordinal));
         }
+
+        public TYPE GetGuid<TYPE>(Column<TYPE> column) where TYPE : struct, IValueOf<Guid, TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return TYPE.ValueOf(Guid.Empty);
+            }
+            return TYPE.ValueOf(_reader.GetGuid(_ordinal));
+        }
+
+        public TYPE? GetGuid<TYPE>(NullableColumn<TYPE> column) where TYPE : struct, IValueOf<Guid, TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return TYPE.ValueOf(_reader.GetGuid(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetShort<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<short, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return CUSTOM_TYPE.ValueOf(0);
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt16(_ordinal));
+        }
+        public CUSTOM_TYPE? GetShort<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<short, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt16(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetInt<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<int, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return CUSTOM_TYPE.ValueOf(0);
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt32(_ordinal));
+        }
+        public CUSTOM_TYPE? GetInt<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<int, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt32(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetLong<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<long, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return CUSTOM_TYPE.ValueOf(0);
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt64(_ordinal));
+        }
+        public CUSTOM_TYPE? GetLong<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<long, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt64(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetString<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<string, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return CUSTOM_TYPE.ValueOf(string.Empty);
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetString(_ordinal));
+        }
+        public CUSTOM_TYPE? GetString<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<string, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetString(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<bool, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return CUSTOM_TYPE.ValueOf(false);
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetByte(_ordinal) == 1);
+        }
+        public CUSTOM_TYPE? GetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<bool, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetByte(_ordinal) == 1);
+        }
     }
 }

@@ -784,10 +784,27 @@ namespace QueryLite {
                 }
                 else if(type.GetGenericTypeDefinition() == typeof(BoolValue<>)) {
                     type = typeof(bool);
-                }
+                }                
             }
-
-            if(type.IsEnum) {
+            else if(type.IsAssignableTo(typeof(IValue<Guid>))) {
+                type = typeof(Guid);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<short>))) {
+                type = typeof(short);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<int>))) {
+                type = typeof(int);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<long>))) {
+                type = typeof(long);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<string>))) {
+                type = typeof(string);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<bool>))) {
+                type = typeof(bool);
+            }
+            else if(type.IsEnum) {
                 type = typeof(int);
             }
             return type;
