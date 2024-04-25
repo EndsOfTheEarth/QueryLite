@@ -318,11 +318,4 @@ namespace QueryLite {
         public CUSTOM_TYPE GetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<bool, CUSTOM_TYPE>;
         public CUSTOM_TYPE? GetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<bool, CUSTOM_TYPE>;
     }
-
-    public interface IValue<TYPE> {
-        TYPE Value { get; }
-    }
-    public interface IValueOf<TYPE, RETURN> {
-        abstract static RETURN ValueOf(TYPE value);
-    }
 }

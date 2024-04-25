@@ -3,7 +3,6 @@ using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLiteTest.Tables;
 using System;
-using static QueryLiteTest.Tests.CustomTypeTests;
 
 namespace QueryLiteTest.Tests {
 
@@ -106,7 +105,7 @@ namespace QueryLiteTest.Tests {
                     NonQueryResult insertResult = Query
                         .Update(table)
                         .Values(values => values
-                            
+
                             .SetGuid(table.Guid, customTypesB.CustomGuid)
                             .SetShort(table.Short, customTypesB.CustomShort)
                             .SetInt(table.Int, customTypesB.CustomInt)
