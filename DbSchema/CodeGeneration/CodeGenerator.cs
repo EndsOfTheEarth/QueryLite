@@ -209,22 +209,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 defaultValue = "???";
             }
 
-            DatabaseTable? referencedTable = null;
-
-            foreach(DatabaseForeignKey foreignKey in table.ForeignKeys) {
-
-                foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
-
-                    if(string.Compare(reference.ForeignKeyColumn.ColumnName.Value, column.ColumnName.Value, ignoreCase: true) == 0) {
-
-                        referencedTable = reference.PrimaryKeyColumn.Table;
-                        break;
-                    }
-                }
-                if(referencedTable != null) {
-                    break;
-                }
-            }
+            DatabaseTable? referencedTable = ClassCodeGenerator.GetReferenceTable(table, column);
 
             if(useIdentifiers == IdentifierType.Key && (referencedTable != null || column.IsPrimaryKey)) {
 
@@ -278,21 +263,25 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     columnType = $"{keyName}";
                     defaultValue = $"{columnType}.NotValid";
                 }
-                if(dotNetType == typeof(Guid)) {
+                else if(dotNetType == typeof(Guid)) {
                     columnType = $"{keyName}Guid";
                     defaultValue = $"{columnType}.NotValid";
                 }
-                if(dotNetType == typeof(short)) {
+                else if(dotNetType == typeof(short)) {
                     columnType = $"{keyName}Id";
                     defaultValue = $"{columnType}.NotValid";
                 }
-                if(dotNetType == typeof(int)) {
+                else if(dotNetType == typeof(int)) {
                     columnType = $"{keyName}Id";
                     defaultValue = $"{columnType}.NotValid";
                 }
-                if(dotNetType == typeof(long)) {
+                else if(dotNetType == typeof(long)) {
                     columnType = $"{keyName}Id";
                     defaultValue = $"{columnType}.NotValid";
+                }
+                else if(dotNetType == typeof(string)) {
+                    columnType = $"{keyName}";
+                    defaultValue = $"string.Empty";
                 }
                 columnTypeName = columnType;
             }            

@@ -168,26 +168,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 if(settings.UseIdentifiers == IdentifierType.Custom) {
 
-                    DatabaseTable? referencedTable = null;
-
-                    foreach(DatabaseForeignKey foreignKey in table.ForeignKeys) {
-
-                        foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
-
-                            if(string.Compare(reference.ForeignKeyColumn.ColumnName.Value, column.ColumnName.Value, ignoreCase: true) == 0) {
-
-                                referencedTable = reference.PrimaryKeyColumn.Table;
-                                break;
-                            }
-                        }
-                        if(referencedTable != null) {
-                            break;
-                        }
-                    }
+                    DatabaseTable? referencedTable = GetReferenceTable(table, column);
 
                     string method = "Get";
 
                     if(referencedTable != null || column.IsPrimaryKey) {
+
                         if(column.DataType.DotNetType == typeof(Guid)) {
                             method = "GetGuid";
                         }
@@ -199,6 +185,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
                         }
                         else if(column.DataType.DotNetType == typeof(long)) {
                             method = "GetLong";
+                        }
+                        else if(column.DataType.DotNetType == typeof(string)) {
+                            method = "GetString";
                         }
                     }
                     constructor2.Indent(3).Append($"{columnName} = row.{method}({tableOrViewParamName}.{columnNameForTable});").EndLine();
@@ -254,6 +243,27 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 classCode.Append("}");
             }
             return classCode;
+        }
+
+        public static DatabaseTable? GetReferenceTable(DatabaseTable table, DatabaseColumn column) {
+
+            DatabaseTable? referencedTable = null;
+
+            foreach(DatabaseForeignKey foreignKey in table.ForeignKeys) {
+
+                foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
+
+                    if(string.Compare(reference.ForeignKeyColumn.ColumnName.Value, column.ColumnName.Value, ignoreCase: true) == 0) {
+
+                        referencedTable = reference.PrimaryKeyColumn.Table;
+                        break;
+                    }
+                }
+                if(referencedTable != null) {
+                    break;
+                }
+            }
+            return referencedTable;
         }
     }
 }
