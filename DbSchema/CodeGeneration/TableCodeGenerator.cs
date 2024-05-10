@@ -39,7 +39,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             bool skipInterfaces = tables.Count == 1 && tables[0].IsView;
 
-            if(!skipInterfaces) {
+            if(!skipInterfaces && settings.UseIdentifiers == IdentifierType.Key) {
 
                 code.EndLine().Append($"namespace {settings.Namespaces.TableNamespace} {{").EndLine().EndLine();
 
