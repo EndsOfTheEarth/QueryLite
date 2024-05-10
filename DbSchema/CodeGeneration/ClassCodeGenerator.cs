@@ -166,7 +166,46 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 string columnNameForTable = prefix.GetColumnName(column.ColumnName.Value, className: tableOrViewClassName);
 
-                constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{columnNameForTable});").EndLine();
+                if(settings.UseIdentifiers == IdentifierType.Custom) {
+
+                    DatabaseTable? referencedTable = null;
+
+                    foreach(DatabaseForeignKey foreignKey in table.ForeignKeys) {
+
+                        foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
+
+                            if(string.Compare(reference.ForeignKeyColumn.ColumnName.Value, column.ColumnName.Value, ignoreCase: true) == 0) {
+
+                                referencedTable = reference.PrimaryKeyColumn.Table;
+                                break;
+                            }
+                        }
+                        if(referencedTable != null) {
+                            break;
+                        }
+                    }
+
+                    string method = "Get";
+
+                    if(referencedTable != null || column.IsPrimaryKey) {
+                        if(column.DataType.DotNetType == typeof(Guid)) {
+                            method = "GetGuid";
+                        }
+                        else if(column.DataType.DotNetType == typeof(short)) {
+                            method = "GetShort";
+                        }
+                        else if(column.DataType.DotNetType == typeof(int)) {
+                            method = "GetInt";
+                        }
+                        else if(column.DataType.DotNetType == typeof(long)) {
+                            method = "GetLong";
+                        }
+                    }
+                    constructor2.Indent(3).Append($"{columnName} = row.{method}({tableOrViewParamName}.{columnNameForTable});").EndLine();
+                }
+                else {
+                    constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{columnNameForTable});").EndLine();
+                }
             }
             classCode.Append(constructor2.ToString());
             classCode.Indent(2).Append("}").EndLine();
