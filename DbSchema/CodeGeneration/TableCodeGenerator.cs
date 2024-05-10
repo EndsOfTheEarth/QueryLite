@@ -193,7 +193,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 code.EndLine();
 
-                code.Indent(2).Append("public override UniqueConstraint[] UniqueConstraints => new UniqueConstraint[] {").EndLine();
+                code.Indent(2).Append("public override UniqueConstraint[] UniqueConstraints => [").EndLine();
 
                 for(int index = 0; index < table.UniqueConstraints.Count; index++) {
 
@@ -210,14 +210,14 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     code.Append(")");
                 }
                 code.EndLine();
-                code.Indent(2).Append("};").EndLine();
+                code.Indent(2).Append("];").EndLine();
             }
 
             if(table.ForeignKeys.Count > 0 && settings.IncludeConstraints) {
 
                 code.EndLine();
 
-                code.Indent(2).Append("public override ForeignKey[] ForeignKeys => new ForeignKey[] {").EndLine();
+                code.Indent(2).Append("public override ForeignKey[] ForeignKeys => [").EndLine();
 
                 for(int index = 0; index < table.ForeignKeys.Count; index++) {
 
@@ -243,7 +243,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     }
                 }
                 code.EndLine();
-                code.Indent(2).Append("};").EndLine();
+                code.Indent(2).Append("];").EndLine();
             }
 
             code.EndLine();
