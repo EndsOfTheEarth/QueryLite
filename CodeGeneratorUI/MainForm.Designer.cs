@@ -51,13 +51,16 @@ namespace QueryLite.CodeGeneratorUI {
             BtnCollapseAll = new System.Windows.Forms.Button();
             BtnExpandAll = new System.Windows.Forms.Button();
             tvwTables = new System.Windows.Forms.TreeView();
+            grpIdentifiers = new System.Windows.Forms.GroupBox();
+            radioIdentifierCustom = new System.Windows.Forms.RadioButton();
+            radioIdentifierKeyType = new System.Windows.Forms.RadioButton();
+            radioIdentifierNone = new System.Windows.Forms.RadioButton();
             chkUsePreparedQueries = new System.Windows.Forms.CheckBox();
             numNumberOfInstanceProperties = new System.Windows.Forms.NumericUpDown();
             lblNumberOfInstanceProperties = new System.Windows.Forms.Label();
             chkIncludeJsonAttributes = new System.Windows.Forms.CheckBox();
             chkIncludeConstraints = new System.Windows.Forms.CheckBox();
             chkIncludeDescriptions = new System.Windows.Forms.CheckBox();
-            chkUseIdentifiers = new System.Windows.Forms.CheckBox();
             chkSingleFiles = new System.Windows.Forms.CheckBox();
             btnOutputAllToFile = new System.Windows.Forms.Button();
             txtNamespace = new System.Windows.Forms.TextBox();
@@ -80,6 +83,7 @@ namespace QueryLite.CodeGeneratorUI {
             splitContainer.Panel1.SuspendLayout();
             splitContainer.Panel2.SuspendLayout();
             splitContainer.SuspendLayout();
+            grpIdentifiers.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numNumberOfInstanceProperties).BeginInit();
             grpConnection.SuspendLayout();
             SuspendLayout();
@@ -98,13 +102,13 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             // splitContainer.Panel2
             // 
+            splitContainer.Panel2.Controls.Add(grpIdentifiers);
             splitContainer.Panel2.Controls.Add(chkUsePreparedQueries);
             splitContainer.Panel2.Controls.Add(numNumberOfInstanceProperties);
             splitContainer.Panel2.Controls.Add(lblNumberOfInstanceProperties);
             splitContainer.Panel2.Controls.Add(chkIncludeJsonAttributes);
             splitContainer.Panel2.Controls.Add(chkIncludeConstraints);
             splitContainer.Panel2.Controls.Add(chkIncludeDescriptions);
-            splitContainer.Panel2.Controls.Add(chkUseIdentifiers);
             splitContainer.Panel2.Controls.Add(chkSingleFiles);
             splitContainer.Panel2.Controls.Add(btnOutputAllToFile);
             splitContainer.Panel2.Controls.Add(txtNamespace);
@@ -152,13 +156,60 @@ namespace QueryLite.CodeGeneratorUI {
             tvwTables.TabIndex = 0;
             tvwTables.AfterSelect += TvwTables_AfterSelect;
             // 
+            // grpIdentifiers
+            // 
+            grpIdentifiers.Controls.Add(radioIdentifierCustom);
+            grpIdentifiers.Controls.Add(radioIdentifierKeyType);
+            grpIdentifiers.Controls.Add(radioIdentifierNone);
+            grpIdentifiers.Location = new System.Drawing.Point(4, 32);
+            grpIdentifiers.Name = "grpIdentifiers";
+            grpIdentifiers.Size = new System.Drawing.Size(244, 44);
+            grpIdentifiers.TabIndex = 6;
+            grpIdentifiers.TabStop = false;
+            grpIdentifiers.Text = "Custom Identifiers";
+            // 
+            // radioIdentifierCustom
+            // 
+            radioIdentifierCustom.AutoSize = true;
+            radioIdentifierCustom.Checked = true;
+            radioIdentifierCustom.Location = new System.Drawing.Point(160, 20);
+            radioIdentifierCustom.Name = "radioIdentifierCustom";
+            radioIdentifierCustom.Size = new System.Drawing.Size(67, 19);
+            radioIdentifierCustom.TabIndex = 2;
+            radioIdentifierCustom.TabStop = true;
+            radioIdentifierCustom.Text = "Custom";
+            radioIdentifierCustom.UseVisualStyleBackColor = true;
+            radioIdentifierCustom.CheckedChanged += CheckBoxes_CheckedChanged;
+            // 
+            // radioIdentifierKeyType
+            // 
+            radioIdentifierKeyType.AutoSize = true;
+            radioIdentifierKeyType.Location = new System.Drawing.Point(72, 20);
+            radioIdentifierKeyType.Name = "radioIdentifierKeyType";
+            radioIdentifierKeyType.Size = new System.Drawing.Size(76, 19);
+            radioIdentifierKeyType.TabIndex = 1;
+            radioIdentifierKeyType.Text = "Key Types";
+            radioIdentifierKeyType.UseVisualStyleBackColor = true;
+            radioIdentifierKeyType.CheckedChanged += CheckBoxes_CheckedChanged;
+            // 
+            // radioIdentifierNone
+            // 
+            radioIdentifierNone.AutoSize = true;
+            radioIdentifierNone.Location = new System.Drawing.Point(8, 20);
+            radioIdentifierNone.Name = "radioIdentifierNone";
+            radioIdentifierNone.Size = new System.Drawing.Size(54, 19);
+            radioIdentifierNone.TabIndex = 0;
+            radioIdentifierNone.Text = "None";
+            radioIdentifierNone.UseVisualStyleBackColor = true;
+            radioIdentifierNone.CheckedChanged += CheckBoxes_CheckedChanged;
+            // 
             // chkUsePreparedQueries
             // 
             chkUsePreparedQueries.AutoSize = true;
-            chkUsePreparedQueries.Location = new System.Drawing.Point(4, 60);
+            chkUsePreparedQueries.Location = new System.Drawing.Point(408, 56);
             chkUsePreparedQueries.Name = "chkUsePreparedQueries";
             chkUsePreparedQueries.Size = new System.Drawing.Size(138, 19);
-            chkUsePreparedQueries.TabIndex = 15;
+            chkUsePreparedQueries.TabIndex = 11;
             chkUsePreparedQueries.Text = "Use Prepared Queries";
             chkUsePreparedQueries.UseVisualStyleBackColor = true;
             chkUsePreparedQueries.CheckedChanged += CheckBoxes_CheckedChanged;
@@ -187,7 +238,7 @@ namespace QueryLite.CodeGeneratorUI {
             // chkIncludeJsonAttributes
             // 
             chkIncludeJsonAttributes.AutoSize = true;
-            chkIncludeJsonAttributes.Location = new System.Drawing.Point(593, 35);
+            chkIncludeJsonAttributes.Location = new System.Drawing.Point(252, 56);
             chkIncludeJsonAttributes.Name = "chkIncludeJsonAttributes";
             chkIncludeJsonAttributes.Size = new System.Drawing.Size(146, 19);
             chkIncludeJsonAttributes.TabIndex = 10;
@@ -200,7 +251,7 @@ namespace QueryLite.CodeGeneratorUI {
             chkIncludeConstraints.AutoSize = true;
             chkIncludeConstraints.Checked = true;
             chkIncludeConstraints.CheckState = System.Windows.Forms.CheckState.Checked;
-            chkIncludeConstraints.Location = new System.Drawing.Point(253, 35);
+            chkIncludeConstraints.Location = new System.Drawing.Point(389, 36);
             chkIncludeConstraints.Name = "chkIncludeConstraints";
             chkIncludeConstraints.Size = new System.Drawing.Size(128, 19);
             chkIncludeConstraints.TabIndex = 8;
@@ -211,26 +262,13 @@ namespace QueryLite.CodeGeneratorUI {
             // chkIncludeDescriptions
             // 
             chkIncludeDescriptions.AutoSize = true;
-            chkIncludeDescriptions.Location = new System.Drawing.Point(116, 35);
+            chkIncludeDescriptions.Location = new System.Drawing.Point(252, 36);
             chkIncludeDescriptions.Name = "chkIncludeDescriptions";
             chkIncludeDescriptions.Size = new System.Drawing.Size(133, 19);
             chkIncludeDescriptions.TabIndex = 7;
             chkIncludeDescriptions.Text = "Include Descriptions";
             chkIncludeDescriptions.UseVisualStyleBackColor = true;
             chkIncludeDescriptions.CheckedChanged += CheckBoxes_CheckedChanged;
-            // 
-            // chkUseIdentifiers
-            // 
-            chkUseIdentifiers.AutoSize = true;
-            chkUseIdentifiers.Checked = true;
-            chkUseIdentifiers.CheckState = System.Windows.Forms.CheckState.Checked;
-            chkUseIdentifiers.Location = new System.Drawing.Point(4, 35);
-            chkUseIdentifiers.Name = "chkUseIdentifiers";
-            chkUseIdentifiers.Size = new System.Drawing.Size(100, 19);
-            chkUseIdentifiers.TabIndex = 6;
-            chkUseIdentifiers.Text = "Use Identifiers";
-            chkUseIdentifiers.UseVisualStyleBackColor = true;
-            chkUseIdentifiers.CheckedChanged += CheckBoxes_CheckedChanged;
             // 
             // chkSingleFiles
             // 
@@ -239,7 +277,7 @@ namespace QueryLite.CodeGeneratorUI {
             chkSingleFiles.Location = new System.Drawing.Point(127, 485);
             chkSingleFiles.Name = "chkSingleFiles";
             chkSingleFiles.Size = new System.Drawing.Size(84, 19);
-            chkSingleFiles.TabIndex = 13;
+            chkSingleFiles.TabIndex = 14;
             chkSingleFiles.Text = "Single Files";
             chkSingleFiles.UseVisualStyleBackColor = true;
             // 
@@ -249,7 +287,7 @@ namespace QueryLite.CodeGeneratorUI {
             btnOutputAllToFile.Location = new System.Drawing.Point(3, 483);
             btnOutputAllToFile.Name = "btnOutputAllToFile";
             btnOutputAllToFile.Size = new System.Drawing.Size(117, 25);
-            btnOutputAllToFile.TabIndex = 12;
+            btnOutputAllToFile.TabIndex = 13;
             btnOutputAllToFile.Text = "Output All To File";
             btnOutputAllToFile.UseVisualStyleBackColor = true;
             btnOutputAllToFile.Click += BtnOutputAllToFile_Click;
@@ -275,7 +313,7 @@ namespace QueryLite.CodeGeneratorUI {
             // chkIncludeMessagePackAttributes
             // 
             chkIncludeMessagePackAttributes.AutoSize = true;
-            chkIncludeMessagePackAttributes.Location = new System.Drawing.Point(391, 35);
+            chkIncludeMessagePackAttributes.Location = new System.Drawing.Point(524, 36);
             chkIncludeMessagePackAttributes.Name = "chkIncludeMessagePackAttributes";
             chkIncludeMessagePackAttributes.Size = new System.Drawing.Size(197, 19);
             chkIncludeMessagePackAttributes.TabIndex = 9;
@@ -306,7 +344,7 @@ namespace QueryLite.CodeGeneratorUI {
             btnClose.Location = new System.Drawing.Point(742, 481);
             btnClose.Name = "btnClose";
             btnClose.Size = new System.Drawing.Size(71, 25);
-            btnClose.TabIndex = 14;
+            btnClose.TabIndex = 15;
             btnClose.Text = "&Close";
             btnClose.UseVisualStyleBackColor = true;
             btnClose.Click += BtnClose_Click;
@@ -315,13 +353,13 @@ namespace QueryLite.CodeGeneratorUI {
             // 
             txtCode.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             txtCode.Font = new System.Drawing.Font("Consolas", 9.75F);
-            txtCode.Location = new System.Drawing.Point(3, 85);
+            txtCode.Location = new System.Drawing.Point(3, 76);
             txtCode.Multiline = true;
             txtCode.Name = "txtCode";
             txtCode.ReadOnly = true;
             txtCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            txtCode.Size = new System.Drawing.Size(812, 395);
-            txtCode.TabIndex = 11;
+            txtCode.Size = new System.Drawing.Size(812, 404);
+            txtCode.TabIndex = 12;
             txtCode.WordWrap = false;
             // 
             // chkIncludeSystemSchemas
@@ -434,6 +472,8 @@ namespace QueryLite.CodeGeneratorUI {
             splitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
             splitContainer.ResumeLayout(false);
+            grpIdentifiers.ResumeLayout(false);
+            grpIdentifiers.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numNumberOfInstanceProperties).EndInit();
             grpConnection.ResumeLayout(false);
             grpConnection.PerformLayout();
@@ -452,7 +492,6 @@ namespace QueryLite.CodeGeneratorUI {
         private System.Windows.Forms.TextBox txtNamespace;
         private System.Windows.Forms.Label lblNamespace;
         private System.Windows.Forms.CheckBox chkSingleFiles;
-        private System.Windows.Forms.CheckBox chkUseIdentifiers;
         private System.Windows.Forms.CheckBox chkIncludeDescriptions;
         private System.Windows.Forms.Label lblDatabaseType;
         private System.Windows.Forms.ComboBox cboDatabaseType;
@@ -470,5 +509,9 @@ namespace QueryLite.CodeGeneratorUI {
         private System.Windows.Forms.Button BtnCollapseAll;
         private System.Windows.Forms.Button BtnExpandAll;
         private System.Windows.Forms.CheckBox chkUsePreparedQueries;
+        private System.Windows.Forms.GroupBox grpIdentifiers;
+        private System.Windows.Forms.RadioButton radioIdentifierCustom;
+        private System.Windows.Forms.RadioButton radioIdentifierKeyType;
+        private System.Windows.Forms.RadioButton radioIdentifierNone;
     }
 }

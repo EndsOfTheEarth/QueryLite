@@ -242,7 +242,7 @@ namespace QueryLite.CodeGeneratorUI {
                     CodeGeneratorSettings settings = new CodeGeneratorSettings() {
                         IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.Checked,
                         IncludeJsonAttributes = chkIncludeJsonAttributes.Checked,
-                        UseIdentifiers = chkUseIdentifiers.Checked,
+                        UseIdentifiers = GetIdentifierType(),
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
                         IncludeConstraints = chkIncludeConstraints.Checked,
                         NumberOfInstanceProperties = (int)numNumberOfInstanceProperties.Value,
@@ -289,6 +289,19 @@ namespace QueryLite.CodeGeneratorUI {
             }
         }
 
+        public IdentifierType GetIdentifierType() {
+
+            IdentifierType type = IdentifierType.None;
+
+            if(radioIdentifierKeyType.Checked) {
+                type = IdentifierType.Key;
+            }
+            else if(radioIdentifierCustom.Checked) {
+                type = IdentifierType.Custom;
+            }
+            return type;
+        }
+
         private void BtnClose_Click(object sender, EventArgs e) {
             Close();
         }
@@ -321,7 +334,7 @@ namespace QueryLite.CodeGeneratorUI {
                     CodeGeneratorSettings settings = new CodeGeneratorSettings() {
                         IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.Checked,
                         IncludeJsonAttributes = chkIncludeJsonAttributes.Checked,
-                        UseIdentifiers = chkUseIdentifiers.Checked,
+                        UseIdentifiers = GetIdentifierType(),
                         IncludeDescriptions = chkIncludeDescriptions.Checked,
                         IncludeConstraints = chkIncludeConstraints.Checked,
                         NumberOfInstanceProperties = (int)numNumberOfInstanceProperties.Value,

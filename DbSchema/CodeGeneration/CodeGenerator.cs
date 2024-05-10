@@ -44,7 +44,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
         /// <summary>
         /// Use key structs on primary key and foreign key columns e.g. GuidKey<>, IntKey<> etc.
         /// </summary>
-        public required bool UseIdentifiers { get; set; }
+        public required IdentifierType UseIdentifiers { get; set; }
 
         /// <summary>
         /// Include table and column description attributes
@@ -64,6 +64,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
         public required bool UsePreparedQueries { get; set; }
 
         public required Namespaces Namespaces { get; set; }
+    }
+
+    public enum IdentifierType {
+        None,
+        Key,
+        Custom
     }
 
     public sealed class SchemaGenerator {
@@ -113,7 +119,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             return $"{char.ToUpper(name[0])}{name.Substring(startIndex: 1)}";
         }
 
-        public static void GetColumnName(DatabaseTable table, DatabaseColumn column, bool useIdentifiers, out Type dotNetType, out string columnTypeName, out bool isKeyColumn) {
+        public static void GetColumnName(DatabaseTable table, DatabaseColumn column, IdentifierType useIdentifiers, out Type dotNetType, out string columnTypeName, out bool isKeyColumn) {
 
             string columnType;
             string defaultValue;
@@ -220,11 +226,18 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 }
             }
 
-            if(useIdentifiers && referencedTable != null) {
+            if(useIdentifiers == IdentifierType.Key && (referencedTable != null || column.IsPrimaryKey)) {
 
                 isKeyColumn = true;
 
-                string keyName = $"I{GetTableName(referencedTable, includePostFix: false)}Id";
+                string keyName;
+
+                if(referencedTable != null) {
+                    keyName = $"I{GetTableName(referencedTable, includePostFix: false)}Id";
+                }
+                else {
+                    keyName = $"I{GetTableName(table, includePostFix: false)}Id";
+                }
 
                 if(dotNetType == typeof(string)) {
                     columnType = $"StringKey<{keyName}>";
@@ -247,36 +260,42 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     defaultValue = $"{columnType}.NotValid";
                 }
                 columnTypeName = columnType;
-            }
-            else if(useIdentifiers && column.IsPrimaryKey) {
+            }            
+            else if(useIdentifiers == IdentifierType.Custom && (referencedTable != null || column.IsPrimaryKey)) {
 
                 isKeyColumn = true;
 
-                string keyName = $"I{GetTableName(table, includePostFix: false)}Id";
+                string keyName;
+
+                if(referencedTable != null) {
+                    keyName = $"{GetTableName(referencedTable, includePostFix: false)}";
+                }
+                else {
+                    keyName = $"{GetTableName(table, includePostFix: false)}";
+                }
 
                 if(dotNetType == typeof(string)) {
-                    columnType = $"StringKey<{keyName}>";
+                    columnType = $"{keyName}";
                     defaultValue = $"{columnType}.NotValid";
                 }
                 if(dotNetType == typeof(Guid)) {
-                    columnType = $"GuidKey<{keyName}>";
+                    columnType = $"{keyName}Guid";
                     defaultValue = $"{columnType}.NotValid";
                 }
                 if(dotNetType == typeof(short)) {
-                    columnType = $"ShortKey<{keyName}>";
+                    columnType = $"{keyName}Id";
                     defaultValue = $"{columnType}.NotValid";
                 }
                 if(dotNetType == typeof(int)) {
-                    columnType = $"IntKey<{keyName}>";
+                    columnType = $"{keyName}Id";
                     defaultValue = $"{columnType}.NotValid";
                 }
                 if(dotNetType == typeof(long)) {
-                    columnType = $"LongKey<{keyName}>";
+                    columnType = $"{keyName}Id";
                     defaultValue = $"{columnType}.NotValid";
                 }
-
                 columnTypeName = columnType;
-            }
+            }            
             else if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
                 columnTypeName = $"{nameof(IGeography)}";
             }

@@ -97,18 +97,17 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 code.Indent(1).Append("using System;").EndLine();
                 code.Indent(1).Append("using QueryLite;").EndLine();
-
-                code.EndLine();
             }
 
-            if(generateKeyInterface) {
+            if(generateKeyInterface && settings.UseIdentifiers == IdentifierType.Key) {
+                code.EndLine();
                 string tableName = CodeHelper.GetTableName(table, includePostFix: false);
                 code.Indent(1).Append($"public interface I{tableName}Id {{}}").EndLine();
             }
 
-            string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
-
             code.EndLine();
+
+            string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
 
             if(settings.IncludeDescriptions) {
                 code.Indent(1).Append("[Description(\"").Append(CodeHelper.EscapeCSharpString(table.Description)).Append("\")]").EndLine();
