@@ -894,23 +894,23 @@ public readonly struct ShipperId : QueryLite.IValueOf<int, ShipperId>, QueryLite
         return Value == other.Value;
     }
 
-    public static bool operator ==(ShipperId? pA, ShipperId? pB) {
+    public static bool operator ==(ShipperId? shipperA, ShipperId? shipperB) {
 
-        if(pA is null && pB is null) {
+        if(shipperA is null && shipperB is null) {
             return true;
         }
-        if(pA is not null) {
-            return pA.Equals(pB);
+        if(shipperA is not null) {
+            return shipperA.Equals(shipperB);
         }
         return false;
     }
-    public static bool operator !=(ShipperId? pA, ShipperId? pB) {
+    public static bool operator !=(ShipperId? shipperA, ShipperId? shipperB) {
 
-        if(pA is null && pB is null) {
+        if(shipperA is null && shipperB is null) {
             return false;
         }
-        if(pA is not null) {
-            return !pA.Equals(pB);
+        if(shipperA is not null) {
+            return !shipperA.Equals(shipperB);
         }
         return true;
     }
