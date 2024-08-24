@@ -331,7 +331,7 @@ public static class TimeoutLevel {
 }
 ```
 
-Example of passing a timeout parameters:
+Example of passing a timeout parameter:
 ```C#
 var result = Query
     .Select(row => row.Get(shipperTable.Id))
