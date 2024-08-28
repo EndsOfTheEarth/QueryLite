@@ -42,7 +42,7 @@ It is designed to achieve these main goals:
 1. Typesafe database queries and schema
     - Queries, joins, 'where' conditions, column types and column nullability are enforced by the compiler
 2. Runtime validation between code schema and database schema
-    - Check for missing tables, missing columns, column type and nullablility differences
+    - Check for missing tables, missing columns, column type and nullability differences
 3. Debuggable
     - Show detailed information about sql queries during and after execution
 4. Performance
@@ -88,7 +88,7 @@ Query Lite is part of a set of personal projects exploring the optimal design fo
 
 Query lite implements both dynamic and prepared queries. Prepared queries allocate less memory on the heap during query execution. This gives them very similar performance (And garbage collector load) to lower level ado.net code. The downside is that prepared queries have multiple generic constraints which make them syntactically more complicated to write.
 
-On the other hand, dynamic queries are syntactically simpler but allocate more memory during query execution. This is due to dynamically building the sql query string on every execution. The additional memory allocation makes dynamic queries use more memory than pure ado.net code but similar memory use to libaraies like Dapper. See the [benchmarks](#benchmarks) section for PostgreSql memory allocation statistics.
+On the other hand, dynamic queries are syntactically simpler but allocate more memory during query execution. This is due to dynamically building the sql query string on every execution. The additional memory allocation makes dynamic queries use more memory than pure ado.net code but similar memory use to libraries like Dapper. See the [benchmarks](#benchmarks) section for PostgreSql memory allocation statistics.
 
 [Prepared Query Documentation is found here](PreparedQueries.md)
 
@@ -361,7 +361,7 @@ public sealed class OrderTable : ATable {
 
 ## Code Generator Tool
 
-The code generator tool can be used to generate database schema definitions. The application CodeGenerator.exe can be dowloaded from the releases page: [https://github.com/EndsOfTheEarth/QueryLite/releases](https://github.com/EndsOfTheEarth/QueryLite/releases)
+The code generator tool can be used to generate database schema definitions. The application CodeGenerator.exe can be downloaded from the releases page: [https://github.com/EndsOfTheEarth/QueryLite/releases](https://github.com/EndsOfTheEarth/QueryLite/releases)
 
 ![QueryLite Core Generator](https://github.com/EndsOfTheEarth/QueryLite/assets/6175921/898d6de3-f631-42f1-b318-d34acd882e35)
 

@@ -10,8 +10,8 @@ These are the pros and cons of the two query types:
 
 Pros:
 
-* Simpiler C# syntax
-* Allow for dynanic condtions
+* Simpler C# syntax
+* Allow for dynamic conditions
     * i.e. The `WHERE` clause can change between executions. Good for filtering and reporting queries that have customizable `WHERE` clause criteria.
 * Supports sql query features that are dynamic in nature
     * e.g. in list `IN(@0,@1,@3....)` (As the number of items in the list can change)
