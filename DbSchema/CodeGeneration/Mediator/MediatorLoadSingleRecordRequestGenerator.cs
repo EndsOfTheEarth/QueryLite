@@ -58,7 +58,7 @@ namespace DbSchema.CodeGeneration {
                     parametersText.Append($"{columnTypeName} {parameterName}");
 
                     if(settersText.Length > 0) {
-                        settersText.Append(',');
+                        settersText.Append(Environment.NewLine);
                     }
 
                     if(propertyName != parameterName) {

@@ -233,11 +233,11 @@ namespace DbSchema.CodeGeneration {
                     }}
                     ).ExecuteAsync(transaction, cancellationToken);
 
-                    if(result.RowsEffected != 1) {{
-                        throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
-                    }}
-                    transaction.Commit();
+                if(result.RowsEffected != 1) {{
+                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
                 }}
+                transaction.Commit();
+            }}
             return Response.Success;
         }}
     }}

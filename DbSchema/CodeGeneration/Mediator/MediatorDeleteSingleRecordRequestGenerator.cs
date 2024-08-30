@@ -47,7 +47,7 @@ namespace DbSchema.CodeGeneration {
                     CodeHelper.GetColumnName(table, column, useIdentifiers: settings.UseIdentifiers, dotNetType: out Type dotNetType, columnTypeName: out string columnTypeName, out bool isKeyColumn);
 
                     if(parametersText.Length > 0) {
-                        parametersText.Append(',');
+                        parametersText.Append(", ");
                     }
 
                     string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
@@ -58,20 +58,20 @@ namespace DbSchema.CodeGeneration {
                     parametersText.Append($"{columnTypeName} {parameterName}");
 
                     if(settersText.Length > 0) {
-                        settersText.Append(',');
+                        settersText.Append(Environment.NewLine);
                     }
 
                     if(propertyName != parameterName) {
-                        settersText.Append($"        {propertyName} = {parameterName};");
+                        settersText.Append($"            {propertyName} = {parameterName};");
                     }
                     else {
-                        settersText.Append($"        this.{propertyName} = {parameterName};");
+                        settersText.Append($"            this.{propertyName} = {parameterName};");
                     }
 
                     if(propertiesText.Length > 0) {
                         propertiesText.Append(Environment.NewLine);
                     }
-                    propertiesText.Append($"    public {columnTypeName} {propertyName} {{ get; set; }}");
+                    propertiesText.Append($"        public {columnTypeName} {propertyName} {{ get; set; }}");
                 }
             }
 
@@ -79,9 +79,9 @@ namespace DbSchema.CodeGeneration {
     public sealed class {requestName} : IRequest<Response> {{
 
         public {requestName}({parametersText}) {{
-    {settersText}
+{settersText}
         }}
-    {propertiesText}
+{propertiesText}
     }}
 ";
             return code;

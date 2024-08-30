@@ -40,6 +40,25 @@ namespace DbSchema.CodeGeneration {
             code.Append("using MediatR;").EndLine();
             code.Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
+
+            code.Append(@$"
+namespace {settings.Namespaces.BaseNamespace} {{
+
+    public struct Response {{
+
+        public static Response Success => new Response(successful: true, validation: null);
+        public static Response Failure(FluentValidation.Results.ValidationResult validation) => new Response(successful: false, validation);
+
+        public bool Successful {{ get; }}
+        public FluentValidation.Results.ValidationResult? Validation {{ get; }}
+
+        public Response(bool successful, FluentValidation.Results.ValidationResult? validation) {{
+            Successful = successful;
+            Validation = validation;
+        }}
+    }}
+}}
+");
             List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
 
             foreach(DatabaseTable table in tables) {
@@ -99,6 +118,7 @@ namespace DbSchema.CodeGeneration {
                     code.Indent(1).Append($"using {tableNamespace};").EndLine();
                 }
             }
+
             code.Append(MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, prefix, settings));
             code.Append(MediatorLoadListRequestGenerator.GetLoadListRequest(table));
             code.Append(MediatorCreateRequestGenerator.GetCreateRequest(table));
