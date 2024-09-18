@@ -109,9 +109,9 @@ namespace QueryLite {
         /// </summary>
         public static event QueryPerformedDelegate? QueryPerformed;
 
-        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout, string debugName) {
+        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout, bool isAsync, string debugName) {
+            
             try {
-
 
                 QueryPerformed?.Invoke(
                     new QueryDetail(
@@ -128,6 +128,7 @@ namespace QueryLite {
                         isolationLevel: isolationLevel,
                         transactionId: transactionId,
                         timeout: timeout,
+                        isAsync: isAsync,
                         debugName: debugName
                     )
                 );
@@ -192,7 +193,7 @@ namespace QueryLite {
 
     public class QueryDetail {
 
-        public QueryDetail(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout, string debugName) {
+        public QueryDetail(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout,  bool isAsync, string debugName) {
 
             Database = database;
             Sql = sql;
@@ -207,6 +208,7 @@ namespace QueryLite {
             IsolationLevel = isolationLevel;
             TransactionId = transactionId;
             Timeout = timeout;
+            IsAsync = isAsync;
             DebugName = debugName;
         }
 
@@ -274,6 +276,11 @@ namespace QueryLite {
         /// Query timeout
         /// </summary>
         public QueryTimeout Timeout { get; set; }
+
+        /// <summary>
+        /// Is this query running asynchronously
+        /// </summary>
+        public bool IsAsync { get; set; }
 
         /// <summary>
         /// Debugging name given to query. This is useful for identifying particular queries. This name is passed as a parameter in query execute methods.
