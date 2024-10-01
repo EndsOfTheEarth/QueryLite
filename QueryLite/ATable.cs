@@ -46,7 +46,7 @@ namespace QueryLite {
         /// <summary>
         /// Table description.
         /// </summary>
-        string Description { get; }
+        string TableDescription { get; }
 
         /// <summary>
         /// Is this table class representing a view.
@@ -92,7 +92,7 @@ namespace QueryLite {
 
         public string SchemaName { get; }
         public string TableName { get; }
-        public string Description { get; }
+        public string TableDescription { get; }
         public bool Enclose { get; }
         public string Alias { get; }
         public bool IsView { get; }
@@ -115,7 +115,7 @@ namespace QueryLite {
 
             SchemaName = schemaName;
             TableName = tableName;
-            Description = description;
+            TableDescription = description;
             Enclose = enclose;
             Alias = "_" + AliasGenerator.GetAlias();
             IsView = isView;
