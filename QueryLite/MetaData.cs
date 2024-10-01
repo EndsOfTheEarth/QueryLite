@@ -27,19 +27,6 @@ using System.Collections.Generic;
 namespace QueryLite {
 
     /// <summary>
-    /// Description attribute. Used to add human readable descriptions to table classes and table columns. These attributes are used to auto generate schema documentation.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
-    public sealed class DescriptionAttribute : Attribute {
-
-        public string Description { get; }
-
-        public DescriptionAttribute(string description) {
-            Description = description ?? string.Empty;
-        }
-    }
-
-    /// <summary>
     /// This attribute stops an error appearing in the schema validator when this column type does not map correctly to the database.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
