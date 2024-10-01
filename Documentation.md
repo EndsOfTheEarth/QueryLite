@@ -1332,31 +1332,25 @@ List<Table> tables = new List<Table>();
 string htmlDoc = DocumentationGenerator.GenerateForTables(tables, applicationName: "My Application", version: "v1.0.0");
 ```
 
-`Description` attributes can be added to table classes and table column properties. These descriptions are included in the generated documentation.
+Descriptions can be added to tables and columns. These descriptions are included in the generated documentation.
 
 For example:
 ```C#
 using QueryLite;
 
-[Description("Stores information about territories")]
 public sealed class TerritoryTable : ATable {
 
     public static readonly TerritoryTable Instance = new TerritoryTable();
 
-    [Description("Territory identifier")]
     public Column<StringKey<ITerritory>> TerritoryId { get; }
-
-    [Description("Territory description")]
     public Column<string> TerritoryDescription { get; }
-
-    [Description("Region that territory belongs to")]
     public Column<IntKey<IRegion>> RegionId { get; }
 
-    private TerritoryTable() : base(tableName:"Territory", schemaName: "dbo") {
+    private TerritoryTable() : base(tableName:"Territory", schemaName: "dbo", description: "Stores information about territories") {
 
-        TerritoryId = new Column<StringKey<ITerritory>>(this, columnName: "TerritoryId", length: 20);
-        TerritoryDescription = new Column<string>(this, columnName: "TerritoryDescription", length: 50);
-        RegionId = new Column<IntKey<IRegion>>(this, columnName: "RegionId");
+        TerritoryId = new Column<StringKey<ITerritory>>(this, columnName: "TerritoryId", length: 20, description: "Territory identifier");
+        TerritoryDescription = new Column<string>(this, columnName: "TerritoryDescription", length: 50, description: "Territory description");
+        RegionId = new Column<IntKey<IRegion>>(this, columnName: "RegionId", description: "Region that territory belongs to");
     }
 }
 ```
