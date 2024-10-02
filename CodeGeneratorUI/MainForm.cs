@@ -106,6 +106,8 @@ namespace QueryLite.CodeGeneratorUI {
                 return;
             }
 
+            tvwTables.Nodes.Clear();
+
             txtNamespace.Text = !string.IsNullOrWhiteSpace(_database.Name) ? _database.Name : "MyProject";
 
             if(_database.DatabaseType == DatabaseType.PostgreSql) {
@@ -118,7 +120,14 @@ namespace QueryLite.CodeGeneratorUI {
                 throw new Exception($"Unknown database type. Value = '{_database.DatabaseType}'");
             }
 
-            tvwTables.Nodes.Clear();
+            if(Tables.Count == 0) {
+                MessageBox.Show(owner: this, text: "No tables found", caption: "No tables found", buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Warning);
+                return;
+            }
+            LoadTablesNodes(_database.DatabaseType);
+        }
+
+        private void LoadTablesNodes(DatabaseType databaseType) {
 
             Dictionary<StringKey<ISchemaName>, SchemaNode> schemaLookup = new Dictionary<StringKey<ISchemaName>, SchemaNode>();
 
@@ -128,7 +137,7 @@ namespace QueryLite.CodeGeneratorUI {
 
             foreach(DatabaseTable table in Tables) {
 
-                if(!includeSystemSchemas && _database.DatabaseType == DatabaseType.PostgreSql) { //Skip system schemas
+                if(!includeSystemSchemas && databaseType == DatabaseType.PostgreSql) { //Skip system schemas
 
                     if(string.Compare(table.Schema.Value, "pg_catalog", ignoreCase: true) == 0 || string.Compare(table.Schema.Value, "information_schema", ignoreCase: true) == 0) {
                         continue;
