@@ -21,12 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using NpgsqlTypes;
 using System;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite.Databases {
 
