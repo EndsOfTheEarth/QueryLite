@@ -189,13 +189,13 @@ namespace QueryLiteTest.Tests {
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
-                Assert.AreEqual(result.TableValidation.Count, 7);
+                Assert.AreEqual(result.Items.Count, 7);
             }
             else {
-                Assert.AreEqual(result.TableValidation.Count, 5);
+                Assert.AreEqual(result.Items.Count, 5);
             }
 
-            foreach(TableValidation val in result.TableValidation) {
+            foreach(ValidationItem val in result.Items) {
 
                 Assert.AreEqual(val.ValidationMessages.Count, 0);
             }

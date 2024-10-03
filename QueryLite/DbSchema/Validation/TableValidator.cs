@@ -31,10 +31,20 @@ using System.Reflection;
 
 namespace QueryLite {
 
-    public sealed class TableValidation {
+    public sealed class ValidationItem {
 
         public Type? TableType { get; }
-        public ITable? Table { get; set; }
+
+        public ITable? Table { get; private set; }
+
+        public void SetTable(ITable table) {
+            Table = table;
+            Schema = table.SchemaName;
+            TableName = table.TableName;
+        }
+        public string Schema { get; private set; } = string.Empty;
+        public string TableName { get; private set; } = string.Empty;
+
         public bool HasErrors => ValidationMessages.Count > 0;
         public List<string> ValidationMessages { get; } = new List<string>();
 
@@ -42,8 +52,10 @@ namespace QueryLite {
             ValidationMessages.Add(message);
         }
 
-        public TableValidation(Type? tableType) {
+        public ValidationItem(Type? tableType, string schema = "", string tableName = "") {
             TableType = tableType;
+            Schema = schema;
+            TableName = tableName;
         }
         public override string? ToString() {
             return TableType?.FullName ?? base.ToString();
@@ -60,7 +72,8 @@ namespace QueryLite {
 
     public class ValidationResult {
 
-        public List<TableValidation> TableValidation { get; } = new List<TableValidation>();
+        public List<ValidationItem> Items { get; } = new List<ValidationItem>();
+
         public DatabaseSchema Schema { get; set; }
 
         public ValidationResult(DatabaseSchema schema) {
@@ -98,9 +111,9 @@ namespace QueryLite {
                 }
                 catch(ReflectionTypeLoadException ex) {
                     //Ignore as some types cannot be loaded
-                    TableValidation tableValidation = new TableValidation(tableType: null);
+                    ValidationItem tableValidation = new ValidationItem(tableType: null);
                     tableValidation.Add($"Warning: Unable to load the a type from the assembly '{assembly.FullName}'.{Environment.NewLine}{ex}");
-                    result.TableValidation.Add(tableValidation);
+                    result.Items.Add(tableValidation);
                 }
             }
 
@@ -108,7 +121,7 @@ namespace QueryLite {
 
             foreach(Type type in types) {
 
-                result.TableValidation.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
+                result.Items.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
 
                 if(table != null) {
                     codeTables.Add(table);
@@ -156,7 +169,7 @@ namespace QueryLite {
 
             foreach(Type type in types) {
 
-                result.TableValidation.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
+                result.Items.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
 
                 if(table != null) {
                     codeTables.Add(table);
@@ -187,7 +200,7 @@ namespace QueryLite {
 
             foreach(Type type in types) {
 
-                result.TableValidation.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
+                result.Items.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
 
                 if(table != null) {
                     codeTables.Add(table);
@@ -211,7 +224,7 @@ namespace QueryLite {
             ValidationResult result = new ValidationResult(dbSchema);
 
             foreach(ITable table in tables) {
-                result.TableValidation.Add(ValidateFromType(table.GetType(), database, dbSchema, validationSettings, table: out _));
+                result.Items.Add(ValidateFromType(table.GetType(), database, dbSchema, validationSettings, table: out _));
             }
 
             if(validationSettings.ValidateMissingCodeTables) {
@@ -220,7 +233,7 @@ namespace QueryLite {
             return result;
         }
 
-        public static TableValidation ValidateTable(IDatabase database, ITable table, SchemaValidationSettings validationSettings) {
+        public static ValidationItem ValidateTable(IDatabase database, ITable table, SchemaValidationSettings validationSettings) {
 
             using DbConnection dbConnection = database.GetNewConnection();
 
@@ -247,7 +260,7 @@ namespace QueryLite {
             return new DatabaseSchema(dbTables);
         }
 
-        private static TableValidation ValidateFromType(Type type, IDatabase database, DatabaseSchema dbSchema, SchemaValidationSettings validationSettings, out ITable? table) {
+        private static ValidationItem ValidateFromType(Type type, IDatabase database, DatabaseSchema dbSchema, SchemaValidationSettings validationSettings, out ITable? table) {
 
             FieldInfo? instanceField1 = type.GetField("Instance1");
 
@@ -261,7 +274,7 @@ namespace QueryLite {
                 type.GetProperty("Instance");
             }
 
-            TableValidation tableValidation = new TableValidation(type);
+            ValidationItem tableValidation = new ValidationItem(type);
 
             if(instanceField1 == null && instance1Property == null) {
                 tableValidation.Add($"Table does not have a static field or property called 'Instance' or 'Instance1' which returns an instance of the code table");
@@ -280,7 +293,9 @@ namespace QueryLite {
                 tableValidation.Add($"Unable to load an instance of class table in order to validate table");
             }
             else {
-                tableValidation.Table = table;
+                
+                tableValidation.SetTable(table);
+
                 Validate(database, table, dbSchema, tableValidation, validationSettings);
             }
             return tableValidation;
@@ -304,7 +319,7 @@ namespace QueryLite {
             return foundTables;
         }
 
-        public static void Validate(IDatabase database, ITable table, DatabaseSchema dbSchema, TableValidation tableValidation, SchemaValidationSettings validationSettings) {
+        public static void Validate(IDatabase database, ITable table, DatabaseSchema dbSchema, ValidationItem tableValidation, SchemaValidationSettings validationSettings) {
 
             if(string.IsNullOrWhiteSpace(table.SchemaName)) {
                 tableValidation.Add($"Table schema name cannot be null or empty in code");
@@ -516,7 +531,7 @@ namespace QueryLite {
             }
         }
 
-        private static void ValidatePrimaryKeyForTable(ITable table, DatabaseTable dbTable, TableValidation tableValidation) {
+        private static void ValidatePrimaryKeyForTable(ITable table, DatabaseTable dbTable, ValidationItem tableValidation) {
 
             DatabasePrimaryKey? dbPrimaryKey = dbTable.PrimaryKey;
             PrimaryKey? codePrimaryKey = table.PrimaryKey;
@@ -551,7 +566,7 @@ namespace QueryLite {
             }
         }
 
-        private static void ValidateUniqueConstraintsForTable(ITable table, DatabaseTable dbTable, TableValidation tableValidation) {
+        private static void ValidateUniqueConstraintsForTable(ITable table, DatabaseTable dbTable, ValidationItem tableValidation) {
 
             if(table.UniqueConstraints.Length != dbTable.UniqueConstraints.Count) {
                 tableValidation.Add($"The number of unique constraints between the code and database do not match. '{table.UniqueConstraints.Length}' != '{dbTable.UniqueConstraints.Count}'");
@@ -614,7 +629,7 @@ namespace QueryLite {
             }
         }
 
-        private static void ValidateForeignKeys(ITable table, DatabaseTable dbTable, TableValidation tableValidation) {
+        private static void ValidateForeignKeys(ITable table, DatabaseTable dbTable, ValidationItem tableValidation) {
 
             if(table.ForeignKeys.Length != dbTable.ForeignKeys.Count) {
                 tableValidation.Add($"The number of foreign keys defined in code is different from database. {table.ForeignKeys.Length} foreign keys are defined in code and {dbTable.ForeignKeys.Count} {(dbTable.ForeignKeys.Count == 1 ? "is" : "are")} defined in the database");
@@ -715,15 +730,15 @@ namespace QueryLite {
 
                 if(!codeTableLookup.ContainsKey(key)) {
 
-                    TableValidation validation = new TableValidation(tableType: null);
+                    ValidationItem validation = new ValidationItem(tableType: null, schema: dbTable.Schema.Value, tableName: dbTable.TableName.Value);
 
                     validation.Add($"Code table definition is missing for the database table: '{dbTable.Schema}.{dbTable.TableName}'. This can happen if the table code definition does not exist or the schema names do not match or the table names do not match.");
-                    validationResult.TableValidation.Add(validation);
+                    validationResult.Items.Add(validation);
                 }
             }
         }
 
-        private static List<CodeColumnProperty> LoadTableColumnsProperties(ITable table, TableValidation tableValidation) {
+        private static List<CodeColumnProperty> LoadTableColumnsProperties(ITable table, ValidationItem tableValidation) {
 
             Type tableType = table.GetType();
 

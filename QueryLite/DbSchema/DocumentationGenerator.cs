@@ -59,7 +59,7 @@ namespace QueryLite.DbSchema {
 
         public static string GenerateForTableTypes(List<Type> types, string applicationName, string version) {
 
-            List<TableValidation> validation = new List<TableValidation>();
+            List<ValidationItem> validation = new List<ValidationItem>();
 
             List<Table> tables = new List<Table>();
 
@@ -70,7 +70,7 @@ namespace QueryLite.DbSchema {
                 Table table = new Table((ITable)Activator.CreateInstance(type, nonPublic: true)!);
                 tables.Add(table);
 
-                TableValidation tableValidation = new TableValidation(table.GetType());
+                ValidationItem tableValidation = new ValidationItem(table.GetType());
 
                 List<IColumn> columns = LoadTableColumns(table.TableClass, tableValidation);
 
@@ -325,7 +325,7 @@ a, a:visited {
             return html.ToString();
         }
 
-        private static List<IColumn> LoadTableColumns(ITable table, TableValidation tableValidation) {
+        private static List<IColumn> LoadTableColumns(ITable table, ValidationItem tableValidation) {
 
             Type tableType = table.GetType();
 
