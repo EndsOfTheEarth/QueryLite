@@ -90,12 +90,24 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 name = columnName[Prefix.Length..];
             }
 
-            string first = "" + name[0];
+            StringBuilder nameText = new StringBuilder(name);
 
-            if(first != first.ToUpper() && name.Length > 1) {
-                name = string.Concat(first.ToUpper(), name.AsSpan(1));
+            nameText[0] = char.ToUpper(name[0]);
+
+            char previous = nameText[0];
+
+            for(int index = 1; index < nameText.Length; index++) {  //Replace underscores and make next character uppercase
+
+                char current = nameText[index];
+
+                if(previous == '_' && !char.IsUpper(current)) {
+                    nameText[index] = char.ToUpper(current);
+                }
+                previous = current;
             }
-            return name;
+            nameText.Replace("_", "");
+
+            return nameText.ToString();
         }
     }
 }

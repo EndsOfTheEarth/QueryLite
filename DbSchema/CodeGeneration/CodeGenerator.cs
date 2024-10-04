@@ -26,6 +26,7 @@ using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
@@ -114,9 +115,29 @@ namespace QueryLite.DbSchema.CodeGeneration {
         public static string GetTableName(DatabaseTable table, bool includePostFix) {
 
             string postFix = !table.IsView ? "Table" : "View";
-            string name = table.TableName.Value.Replace(" ", string.Empty) + (includePostFix ? postFix : string.Empty);
 
-            return $"{char.ToUpper(name[0])}{name.Substring(startIndex: 1)}";
+            StringBuilder nameText = new StringBuilder(table.TableName.Value);
+
+            nameText[0] = char.ToUpper(nameText[0]);    //Make first character uppercase
+
+            nameText.Replace(" ", string.Empty);    //Remove space character
+
+            nameText.Append(includePostFix ? postFix : string.Empty);            
+
+            char previous = nameText[0];            
+
+            for(int index = 1; index < nameText.Length; index++) {  //Replace underscores and make next character uppercase
+
+                char current = nameText[index];
+
+                if(previous == '_' && !char.IsUpper(current)) {
+                    nameText[index] = char.ToUpper(current);
+                }
+                previous = current;
+            }            
+            nameText.Replace("_", "");
+
+            return nameText.ToString();
         }
 
         public static void GetColumnName(DatabaseTable table, DatabaseColumn column, IdentifierType useIdentifiers, out Type dotNetType, out string columnTypeName, out bool isKeyColumn) {
