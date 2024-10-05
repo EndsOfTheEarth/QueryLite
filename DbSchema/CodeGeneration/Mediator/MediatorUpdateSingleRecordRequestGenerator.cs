@@ -32,7 +32,7 @@ namespace DbSchema.CodeGeneration {
 
         public static string GetUpdateRequest(DatabaseTable table, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetUpdateRequestName(name);
 
@@ -68,7 +68,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetUpdateHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetUpdateRequestName(name);
             string handlerName = GetUpdateHandlerName(name);
@@ -188,7 +188,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetUpdateHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetUpdateRequestName(name);
             string handlerName = GetUpdateHandlerName(name);

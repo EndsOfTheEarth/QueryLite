@@ -32,7 +32,7 @@ namespace DbSchema.CodeGeneration {
 
         public static string GetLoadRequest(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetLoadListRequestName(name);
 
@@ -88,10 +88,10 @@ namespace DbSchema.CodeGeneration {
         }
 
         private static string GetLoadListRequestName(string name) {
-            return $"Load{name}Request";
+            return $"Load{CodeHelper.FormatNameForClass(name)}Request";
         }
         private static string GetLoadListHandlerName(string name) {
-            return $"Load{name}Handler";
+            return $"Load{CodeHelper.FormatNameForClass(name)}Handler";
         }
 
         public static string GetLoadListHandlerCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
@@ -106,7 +106,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetLoadListRequestName(name);
             string handlerName = GetLoadListHandlerName(name);
@@ -170,7 +170,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetLoadListRequestName(name);
             string handlerName = GetLoadListHandlerName(name);

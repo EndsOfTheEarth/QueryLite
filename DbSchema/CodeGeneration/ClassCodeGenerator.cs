@@ -76,6 +76,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             CodeBuilder classCode = new CodeBuilder();
 
             if(includeUsings) {
+
                 classCode.Append($"namespace {settings.Namespaces.GetClassesNamespace(table.Schema)} {{").EndLine().EndLine();
                 classCode.Indent(1).Append("using System;").EndLine();
                 classCode.Indent(1).Append("using QueryLite;").EndLine();
@@ -111,6 +112,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             classCode.Indent(1).Append($"public sealed class {className} {{").EndLine().EndLine();
 
+            if(table.Columns.Count > 0) {
+                classCode.Indent(2).Append("public ").Append(className).Append("() { }").EndLine().EndLine();
+            }
             classCode.Indent(2).Append("public ").Append(className).Append("(");
 
             CodeBuilder constructor = new CodeBuilder();

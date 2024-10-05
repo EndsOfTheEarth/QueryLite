@@ -31,7 +31,7 @@ namespace DbSchema.CodeGeneration {
 
         public static string GetLoadListRequest(DatabaseTable table) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string code = $@"
     public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name}>> {{
@@ -60,7 +60,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetLoadListRequestName(table, name);
             string handlerName = GetLoadListHandlerName(table, name);
@@ -100,7 +100,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetLoadListRequestName(table, name);
             string handlerName = GetLoadListHandlerName(table, name);
