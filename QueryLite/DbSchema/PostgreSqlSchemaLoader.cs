@@ -75,9 +75,9 @@ namespace QueryLite.DbSchema {
 
                 ColumnsRow columnRow = row.ColumnsRow;
 
-                if(!typelookup.TryGetValue(columnRow.Data_type, out Type? dotNetType)) {
-                    dotNetType = PostgreSqlTypes.GetDotNetType(columnRow.Data_type);
-                    typelookup.Add(columnRow.Data_type, dotNetType);
+                if(!typelookup.TryGetValue(columnRow.Udt_name, out Type? dotNetType)) {
+                    dotNetType = PostgreSqlTypes.GetDotNetType(columnRow.Udt_name);
+                    typelookup.Add(columnRow.Udt_name, dotNetType);
                 }
 
                 DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(IUnknownType)));
@@ -417,6 +417,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("anyarray", null);
             _Lookup.Add("inet", null);
             _Lookup.Add("_text", typeof(string));
+            _Lookup.Add("citext", typeof(string));
             _Lookup.Add("xid", typeof(int));
             _Lookup.Add("_char", typeof(string));
             _Lookup.Add("name", typeof(string));
