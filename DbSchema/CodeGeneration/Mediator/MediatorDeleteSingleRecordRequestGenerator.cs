@@ -32,7 +32,7 @@ namespace DbSchema.CodeGeneration {
 
         public static string GetDeleteRequest(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetDeleteRequestName(name);
 
@@ -106,7 +106,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetDeleteHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetDeleteRequestName(name);
             string handlerName = GetDeleteHandlerName(name);
@@ -173,7 +173,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetDeleteHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string requestName = GetDeleteRequestName(name);
             string handlerName = GetDeleteHandlerName(name);

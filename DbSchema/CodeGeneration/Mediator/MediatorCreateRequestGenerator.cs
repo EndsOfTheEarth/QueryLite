@@ -32,7 +32,7 @@ namespace DbSchema.CodeGeneration {
 
         public static string GetCreateRequest(DatabaseTable table) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             string code = $@"
     public sealed class Create{name}Request : IRequest<Response> {{
@@ -59,7 +59,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetCreateHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             StringBuilder setValues = new StringBuilder();
 
@@ -156,7 +156,7 @@ namespace DbSchema.CodeGeneration {
 
         private static string GetCreateHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = table.TableName.Value.FirstLetterUpperCase();
+            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
             StringBuilder setValues = new StringBuilder();
 

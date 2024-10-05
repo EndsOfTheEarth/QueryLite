@@ -140,6 +140,30 @@ namespace QueryLite.DbSchema.CodeGeneration {
             return nameText.ToString();
         }
 
+        public static string FormatNameForClass(string name) {
+
+            StringBuilder nameText = new StringBuilder(name);
+
+            nameText[0] = char.ToUpper(nameText[0]);    //Make first character uppercase
+
+            nameText.Replace(" ", string.Empty);    //Remove space character
+
+            char previous = nameText[0];
+
+            for(int index = 1; index < nameText.Length; index++) {  //Replace underscores and make next character uppercase
+
+                char current = nameText[index];
+
+                if(previous == '_' && !char.IsUpper(current)) {
+                    nameText[index] = char.ToUpper(current);
+                }
+                previous = current;
+            }
+            nameText.Replace("_", "");
+
+            return nameText.ToString();
+        }
+
         public static void GetColumnName(DatabaseTable table, DatabaseColumn column, IdentifierType useIdentifiers, out Type dotNetType, out string columnTypeName, out bool isKeyColumn) {
 
             string columnType;
