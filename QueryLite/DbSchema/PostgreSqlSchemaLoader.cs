@@ -300,6 +300,24 @@ namespace QueryLite.DbSchema {
             }
         }
 
+        private static void LoadCheckConstraints(IDatabase database) {
+
+            CheckConstraintsView checkConstraintsView = CheckConstraintsView.Instance;
+            ConstraintColumnUsageView constraintColumnUsageView = ConstraintColumnUsageView.Instance;
+
+            var result = Query
+                .Select(
+                    row => row.Get()
+                )
+                .From(checkConstraintsView)
+                .Join(constraintColumnUsageView).On(
+                        checkConstraintsView.ConstraintCatalog == constraintColumnUsageView.Constraint_catalog &
+                        checkConstraintsView.ConstraintSchema == constraintColumnUsageView.Constraint_schema &
+                        checkConstraintsView.ConstraintName == constraintColumnUsageView.Constraint_name
+                )
+                .Execute(database);
+        }
+
         private static void LoadCommentMetaData(List<DatabaseTable> tableList, IDatabase database) {
 
             Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
@@ -417,6 +435,7 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("anyarray", null);
             _Lookup.Add("inet", null);
             _Lookup.Add("_text", typeof(string));
+            _Lookup.Add("citext", typeof(string));
             _Lookup.Add("xid", typeof(int));
             _Lookup.Add("_char", typeof(string));
             _Lookup.Add("name", typeof(string));

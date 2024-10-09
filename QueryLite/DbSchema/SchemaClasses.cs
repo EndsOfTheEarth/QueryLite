@@ -128,6 +128,11 @@ namespace QueryLite.DbSchema {
         public DatabaseColumn PrimaryKeyColumn { get; }
     }
 
+    public sealed class CheckConstraint {
+
+
+    }
+
     public sealed class DataType {
 
         public string Name { get; }

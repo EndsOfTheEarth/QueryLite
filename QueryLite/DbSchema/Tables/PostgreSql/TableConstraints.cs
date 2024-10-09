@@ -39,7 +39,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public Column<string> Is_deferrable { get; }
         public Column<string> Initially_deferred { get; }
 
-        public TableConstraintsTable() : base(tableName: "table_constraints", schemaName: "information_schema") {
+        public TableConstraintsTable() : base(tableName: "table_constraints", schemaName: "information_schema", isView: true) {
 
             Constraint_catalog = new Column<string>(table: this, columnName: "constraint_catalog");
             Constraint_schema = new Column<StringKey<ISchemaName>>(table: this, columnName: "constraint_schema");

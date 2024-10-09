@@ -21,12 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.DbSchema.Tables {
+using QueryLite.Utility;
 
-    public interface ISchemaName { }
-    public interface ITableName { }
-    public interface IColumnName { }
-    public interface IConstraintName { }
-    public interface IConstraintCatalog { }
-    public interface IUnknownType { }
+namespace QueryLite.DbSchema.Tables.PostgreSql {
+
+    public sealed class CheckConstraintsView : ATable {
+
+        public static readonly CheckConstraintsView Instance = new CheckConstraintsView();
+
+        public NullableColumn<StringKey<IConstraintCatalog>> ConstraintCatalog { get; }
+        public NullableColumn<StringKey<ISchemaName>> ConstraintSchema { get; }
+        public NullableColumn<StringKey<IConstraintName>> ConstraintName { get; }
+        public NullableColumn<string> CheckClause { get; }
+
+        private CheckConstraintsView() : base(tableName: "check_constraints", schemaName: "information_schema", isView: true) {
+
+            ConstraintCatalog = new NullableColumn<StringKey<IConstraintCatalog>>(this, columnName: "constraint_catalog");
+            ConstraintSchema = new NullableColumn<StringKey<ISchemaName>>(this, columnName: "constraint_schema");
+            ConstraintName = new NullableColumn<StringKey<IConstraintName>>(this, columnName: "constraint_name");
+            CheckClause = new NullableColumn<string>(this, columnName: "check_clause", length: 1073741824);
+        }
+    }
 }

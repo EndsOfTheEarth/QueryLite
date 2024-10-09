@@ -39,7 +39,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public NullableColumn<string> UPDATE_RULE { get; }
         public NullableColumn<string> DELETE_RULE { get; }
 
-        public ReferentialConstraintsTable() : base(tableName: "REFERENTIAL_CONSTRAINTS", schemaName: "information_schema") {
+        public ReferentialConstraintsTable() : base(tableName: "REFERENTIAL_CONSTRAINTS", schemaName: "information_schema", isView: true) {
 
             CONSTRAINT_CATALOG = new NullableColumn<string>(this, columnName: "CONSTRAINT_CATALOG", length: 128);
             CONSTRAINT_SCHEMA = new NullableColumn<StringKey<ISchemaName>>(this, columnName: "CONSTRAINT_SCHEMA", length: 128);

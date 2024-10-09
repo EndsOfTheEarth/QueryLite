@@ -40,7 +40,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public NullableColumn<int> Ordinal_position { get; }
         public NullableColumn<int> Position_in_unique_constraint { get; }
 
-        public KeyColumnUsageTable() : base(tableName: "key_column_usage", schemaName: "information_schema") {
+        public KeyColumnUsageTable() : base(tableName: "key_column_usage", schemaName: "information_schema", isView: true) {
 
             Constraint_catalog = new Column<string>(table: this, columnName: "constraint_catalog");
             Constraint_schema = new Column<StringKey<ISchemaName>>(table: this, columnName: "constraint_schema");
