@@ -29,17 +29,17 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public static readonly CheckConstraintsView Instance = new CheckConstraintsView();
 
-        public NullableColumn<StringKey<IConstraintCatalog>> ConstraintCatalog { get; }
-        public NullableColumn<StringKey<ISchemaName>> ConstraintSchema { get; }
-        public NullableColumn<StringKey<IConstraintName>> ConstraintName { get; }
-        public NullableColumn<string> CheckClause { get; }
+        public Column<StringKey<IConstraintCatalog>> ConstraintCatalog { get; }
+        public Column<StringKey<ISchemaName>> ConstraintSchema { get; }
+        public Column<StringKey<IConstraintName>> ConstraintName { get; }
+        public Column<string> CheckClause { get; }
 
         private CheckConstraintsView() : base(tableName: "check_constraints", schemaName: "information_schema", isView: true) {
 
-            ConstraintCatalog = new NullableColumn<StringKey<IConstraintCatalog>>(this, columnName: "constraint_catalog");
-            ConstraintSchema = new NullableColumn<StringKey<ISchemaName>>(this, columnName: "constraint_schema");
-            ConstraintName = new NullableColumn<StringKey<IConstraintName>>(this, columnName: "constraint_name");
-            CheckClause = new NullableColumn<string>(this, columnName: "check_clause", length: 1073741824);
+            ConstraintCatalog = new Column<StringKey<IConstraintCatalog>>(this, columnName: "constraint_catalog");
+            ConstraintSchema = new Column<StringKey<ISchemaName>>(this, columnName: "constraint_schema");
+            ConstraintName = new Column<StringKey<IConstraintName>>(this, columnName: "constraint_name");
+            CheckClause = new Column<string>(this, columnName: "check_clause", length: 1073741824);
         }
     }
 }

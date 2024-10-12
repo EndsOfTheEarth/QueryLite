@@ -48,6 +48,7 @@ namespace QueryLite.DbSchema {
         public DatabasePrimaryKey? PrimaryKey { get; set; }
         public List<DatabaseUniqueConstraint> UniqueConstraints { get; set; } = new List<DatabaseUniqueConstraint>();
         public List<DatabaseForeignKey> ForeignKeys { get; } = new List<DatabaseForeignKey>();
+        public List<CheckConstraint> CheckConstraints { get; } = new List<CheckConstraint>();
 
         public DatabaseTable(StringKey<ISchemaName> schema, StringKey<ITableName> tableName, bool isView) {
             Schema = schema;
@@ -56,7 +57,7 @@ namespace QueryLite.DbSchema {
         }
 
         public override string ToString() {
-            return Schema.ToString() + "." + TableName.ToString();
+            return $"{Schema}.{TableName}";
         }
     }
 
@@ -130,7 +131,16 @@ namespace QueryLite.DbSchema {
 
     public sealed class CheckConstraint {
 
+        public CheckConstraint(StringKey<ISchemaName> schema, StringKey<IConstraintName> constraintName, string checkClause) {
+            Schema = schema;
+            ConstraintName = constraintName;
+            CheckClause = checkClause;
+        }
+        public StringKey<ISchemaName> Schema { get; }
+        public StringKey<IConstraintName> ConstraintName { get; }
+        public string CheckClause { get; }
 
+        public List<string> ColumnNames { get; } = new List<string>();
     }
 
     public sealed class DataType {

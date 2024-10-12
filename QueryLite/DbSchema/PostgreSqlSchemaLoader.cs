@@ -26,11 +26,13 @@ using QueryLite.DbSchema.Tables.PostgreSql;
 using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace QueryLite.DbSchema {
 
     using TableColumnKey = Key<StringKey<ISchemaName>, StringKey<ITableName>, StringKey<IColumnName>>;
     using TableKey = Key<StringKey<ISchemaName>, StringKey<ITableName>>;
+    using CheckConstraintKey = Key<StringKey<ISchemaName>, StringKey<IConstraintName>>;
 
     public sealed class PostgreSqlSchemaLoader {
 
@@ -38,7 +40,7 @@ namespace QueryLite.DbSchema {
 
             List<DatabaseTable> tableList = new List<DatabaseTable>();
             Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
-            Dictionary<string, Type?> typelookup = new Dictionary<string, Type?>();
+            Dictionary<string, Type?> typeLookup = new Dictionary<string, Type?>();
 
             /*
              * Load tables and columns
@@ -75,9 +77,9 @@ namespace QueryLite.DbSchema {
 
                 ColumnsRow columnRow = row.ColumnsRow;
 
-                if(!typelookup.TryGetValue(columnRow.Data_type, out Type? dotNetType)) {
+                if(!typeLookup.TryGetValue(columnRow.Data_type, out Type? dotNetType)) {
                     dotNetType = PostgreSqlTypes.GetDotNetType(columnRow.Data_type);
-                    typelookup.Add(columnRow.Data_type, dotNetType);
+                    typeLookup.Add(columnRow.Data_type, dotNetType);
                 }
 
                 DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(IUnknownType)));
@@ -109,8 +111,9 @@ namespace QueryLite.DbSchema {
             }
 
             SetPrimaryKeys(tableList, database);
-            SetUniqueConstraints(tableList, database);
             SetForeignKeys(tableList, database);
+            SetUniqueConstraints(tableList, database);            
+            SetCheckConstraints(tableList, database);
 
             LoadCommentMetaData(tableList, database);
 
@@ -300,22 +303,55 @@ namespace QueryLite.DbSchema {
             }
         }
 
-        private static void LoadCheckConstraints(IDatabase database) {
+        private static void SetCheckConstraints(List<DatabaseTable> tableList, IDatabase database) {
 
-            CheckConstraintsView checkConstraintsView = CheckConstraintsView.Instance;
-            ConstraintColumnUsageView constraintColumnUsageView = ConstraintColumnUsageView.Instance;
+            Dictionary<TableKey, DatabaseTable> tableLookup = tableList.ToDictionary(table => new TableKey(table.Schema, table.TableName), table => table);
+
+            CheckConstraintsView ccView = CheckConstraintsView.Instance;
+            ConstraintColumnUsageView ccuView = ConstraintColumnUsageView.Instance;
 
             var result = Query
                 .Select(
-                    row => row.Get()
+                    row => new {
+                        TableSchema = row.Get(ccuView.Table_schema),
+                        TableName = row.Get(ccuView.Table_name),
+                        ColumnName = row.Get(ccuView.Column_name),
+                        ConstraintSchema = row.Get(ccView.ConstraintSchema),
+                        ConstraintName = row.Get(ccView.ConstraintName),
+                        CheckCaluse = row.Get(ccView.CheckClause)
+                    }
                 )
-                .From(checkConstraintsView)
-                .Join(constraintColumnUsageView).On(
-                        checkConstraintsView.ConstraintCatalog == constraintColumnUsageView.Constraint_catalog &
-                        checkConstraintsView.ConstraintSchema == constraintColumnUsageView.Constraint_schema &
-                        checkConstraintsView.ConstraintName == constraintColumnUsageView.Constraint_name
+                .From(ccView)
+                .Join(ccuView).On(
+                        ccView.ConstraintCatalog == ccuView.Constraint_catalog &
+                        ccView.ConstraintSchema == ccuView.Constraint_schema &
+                        ccView.ConstraintName == ccuView.Constraint_name
                 )
                 .Execute(database);
+
+            Dictionary<CheckConstraintKey, CheckConstraint> constraintLookup = new Dictionary<CheckConstraintKey, CheckConstraint>();
+
+            foreach(var row in result.Rows) {
+
+                CheckConstraintKey constraintKey = new CheckConstraintKey(row.ConstraintSchema, row.ConstraintName);
+
+                if(!constraintLookup.TryGetValue(constraintKey, out CheckConstraint? checkConstraint)) {
+                    
+                    checkConstraint = new CheckConstraint(
+                        schema: row.ConstraintSchema,
+                        constraintName: row.ConstraintName,
+                        checkClause: row.CheckCaluse
+                    );
+                    constraintLookup.Add(constraintKey, checkConstraint);
+
+                    TableKey tableKey = new TableKey(row.TableSchema, row.TableName);
+
+                    if(tableLookup.TryGetValue(tableKey, out DatabaseTable? table)) {
+                        table.CheckConstraints.Add(checkConstraint);
+                    }
+                }                
+                checkConstraint.ColumnNames.Add(row.ColumnName.Value);
+            }
         }
 
         private static void LoadCommentMetaData(List<DatabaseTable> tableList, IDatabase database) {
