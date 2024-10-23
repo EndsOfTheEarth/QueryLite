@@ -396,7 +396,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
             return new AllTypes(
                 id: IntKey<AllTypes>.NotSet,
                 guid: Guid.NewGuid(),
-                @string: "88udskja8adfq23",
+                @string: "88udsk📏ja8ad🖥fq23",
                 smallInt: 7261,
                 @int: 846218432,
                 bigInt: 94377682378523423,

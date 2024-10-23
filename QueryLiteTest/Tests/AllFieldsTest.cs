@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.DbSchema;
@@ -392,7 +392,7 @@ namespace QueryLiteTest.Tests {
             return new AllTypes(
                 id: IntKey<AllTypes>.NotSet,
                 guid: Guid.NewGuid(),
-                @string: "88udskja8adfq23",
+                @string: "88udskj🐘a8adf😀q23",
                 smallInt: 7261,
                 @int: 846218432,
                 bigInt: 94377682378523423,
@@ -943,7 +943,7 @@ namespace QueryLiteTest.Tests {
 
             allTypes.UpdateValues(
                 guid: Guid.NewGuid(),
-                @string: "-4at3=_)(*&_(*#(*Kjs734-g*%lf]|][",
+                @string: "-4at3=🦕_)(*&_(*#(*Kj🐘s734-g*%🦗lf]|][",
                 smallInt: 9794,
                 @int: 7761843,
                 bigInt: 5546328205,
@@ -1006,7 +1006,7 @@ namespace QueryLiteTest.Tests {
 
             allTypes.UpdateValues(
                 guid: Guid.NewGuid(),
-                @string: "-4at3=_)(*&_(*#(*Kjs734-g*%lf]|][",
+                @string: "🦏-4at3=_)(*&_(🌍*#(*Kjs734💻-g*%lf]|][",
                 smallInt: 9794,
                 @int: 7761843,
                 bigInt: 5546328205,
@@ -1433,7 +1433,7 @@ namespace QueryLiteTest.Tests {
             AllTypes newAllTypes = new AllTypes(
                 id: initialAllTypes.Id,
                 guid: Guid.NewGuid(),
-                @string: "F89&sad^&%$Djadsa",
+                @string: "F89&sad💾^&%$Djadsa",
                 smallInt: 1594,
                 @int: 7742143,
                 bigInt: 55461234205,
