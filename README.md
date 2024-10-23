@@ -71,7 +71,7 @@ Query Lite is part of a set of personal projects exploring the optimal design fo
 ## Core features
 
 * Typesafe queries in code
-  - Designed to work with nullable reference types and .net 7.0 - 8.0
+  - Designed to work with nullable reference types and .net 8.0
 * Sql Select, insert, update, delete and truncate queries
 * Supports sql syntax e.g. Join, Left Join, Where, Order By, Group By, Union and Nested Queries
 * Does not do any client side filtering like linq to sql
