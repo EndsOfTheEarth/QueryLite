@@ -51,7 +51,7 @@ namespace QueryLite.Databases.PostgreSql {
 
                 bool useAliases = template.Joins != null && template.Joins.Count > 0;
 
-                GenerateSelectClause(sql, template, useAliases: useAliases, database, parameters);
+                GenerateSelectClause(sql, template, useAliases: useAliases, database);
                 GenerateFromClause(sql, template, useAliases: useAliases, database);
 
                 if(template.Joins != null) {
@@ -60,9 +60,9 @@ namespace QueryLite.Databases.PostgreSql {
                 GenerateWhereClause(sql, template, useAliases: useAliases, database, parameters);
                 GenerateGroupByClause(sql, template, useAliases: useAliases);
                 GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
-                GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
+                GenerateOrderByClause(sql, template, useAliases: useAliases, database);
                 GenerateLimitClause(sql, template);
-                GenerateForCaluse(sql, template, useAliases: useAliases);
+                GenerateForClause(sql, template, useAliases: useAliases);
 
                 if(template.ChildUnion != null) {
 
@@ -84,7 +84,7 @@ namespace QueryLite.Databases.PostgreSql {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
 
             sql.Append(' ');
 
@@ -220,7 +220,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
 
             if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
 
@@ -269,7 +269,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateForCaluse<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases) {
+        private static void GenerateForClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases) {
 
             if(template.ForType != null) {
 
