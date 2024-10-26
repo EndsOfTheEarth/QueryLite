@@ -54,7 +54,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
             string paramName;
 
-            if(ParamNameCache.ParamNames.Length < _counter) {
+            if(_counter < ParamNameCache.ParamNames.Length) {
                 paramName = ParamNameCache.ParamNames[_counter];
             }
             else {
