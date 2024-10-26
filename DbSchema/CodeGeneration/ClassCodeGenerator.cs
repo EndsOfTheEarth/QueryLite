@@ -110,7 +110,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 classCode.Indent(1).Append("[MessagePackObject]").EndLine();
             }
 
-            classCode.Indent(1).Append($"public sealed class {className} {{").EndLine().EndLine();
+            classCode.Indent(1).Append($"public sealed record class {className} {{").EndLine().EndLine();
 
             if(table.Columns.Count > 0) {
                 classCode.Indent(2).Append("public ").Append(className).Append("() { }").EndLine().EndLine();
