@@ -111,7 +111,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return null;
             }
-            return _reader.GetByte(_ordinal) == 1;
+            return _reader.GetBoolean(_ordinal);
         }
 
         public Bit Get(Column<Bit> column) {
@@ -582,7 +582,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return false;
             }
-            return _reader.GetByte(_ordinal) == 1;
+            return _reader.GetBoolean(_ordinal);
         }
         public bool? Get(NullableFunction<bool> function) {
 
@@ -591,7 +591,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return null;
             }
-            return _reader.GetByte(_ordinal) == 1;
+            return _reader.GetBoolean(_ordinal);
         }
 
 
