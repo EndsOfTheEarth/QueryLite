@@ -136,7 +136,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 string nullable = column.IsNullable ? "?" : "";
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
 
-                string paramName = columnName.First().ToString().ToLower() + columnName.Substring(1);
+                string paramName = string.Concat(columnName.First().ToString().ToLower(), columnName.AsSpan(start: 1));
 
                 if(columnName == paramName || CodeHelper.IsCSharpKeyword(paramName)) {
                     paramName = "_" + paramName;

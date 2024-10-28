@@ -37,8 +37,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
             HandlerNamespace = FirstLetterUpperCase(handlerNamespace);
         }
 
-        private string FirstLetterUpperCase(string value) {
-            return !string.IsNullOrEmpty(value) ? $"{char.ToUpper(value[0])}{value.Substring(startIndex: 1)}" : string.Empty;
+        private static string FirstLetterUpperCase(string value) {
+            return !string.IsNullOrEmpty(value) ? $"{char.ToUpper(value[0])}{value[1..]}" : string.Empty;
         }
         public string BaseNamespace { get; set; }
         public string TableNamespace { get; set; }
