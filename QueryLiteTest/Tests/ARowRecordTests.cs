@@ -22,7 +22,7 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void TestRowRecordInvalidValidation() {
 
-            RowValidator.RowValidationResult result = RowValidator.ValidateRowsInCurrentDomain();
+            RowValidator.RowValidationResult result = RowValidator.ValidateRowsInAssembly(typeof(ParentRow).Assembly);
 
             Assert.IsTrue(result.HasMessages);
             Assert.AreEqual(1, result.Messages.Count);

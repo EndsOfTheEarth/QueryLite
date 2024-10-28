@@ -46,6 +46,28 @@ namespace QueryLite {
             return result;
         }
 
+        public static RowValidationResult ValidateRowsInAssembly(Assembly assembly) {
+
+            List<Type> types = new List<Type>();
+
+            RowValidationResult result = new RowValidationResult();
+
+            Type[] assemblyTypes = assembly.GetTypes();
+
+            foreach(Type type in assemblyTypes) {
+
+                if(typeof(ARowRecord).IsAssignableFrom(type) && type != typeof(ARowRecord)) {
+                    types.Add(type);
+                }
+            }
+
+            foreach(Type type in types) {
+                result.TypesValidated.Add(type);
+                ValidateType(type, result.Messages);
+            }
+            return result;
+        }
+
         public static void ValidateType(Type type, List<string> messages) {
 
             if(!typeof(ARowRecord).IsAssignableFrom(type) || type == typeof(ARowRecord)) {
