@@ -1,0 +1,48 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="QueryLite.CodeGeneratorUI.App"
+             xmlns:local="using:QueryLite.CodeGeneratorUI"
+             RequestedThemeVariant="Dark">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
+    <Application.Styles>
+        <!--<FluentTheme />-->
+      <!--<SimpleTheme />-->
+      <FluentTheme>
+        <FluentTheme.Palettes>
+          <!--<ColorPaletteResources x:Key="Light" Accent="Green" RegionColor="White" ErrorText="Red" />-->
+          <!--
+            Accent => CheckBox and Radio button backgrounds when selected
+            BaseHigh => Text colour
+            BaseMedium => TextBox and CheckBox boarders
+            BaseLow => Button Background and number up/down button background
+            AltLow => Unknown
+            AltMedium => Text background when mouse over and control outline when focused
+            AltHigh => Text background when focused
+            AltMediumLow => Text background
+            AltMediumHigh => Unknown
+            
+            BaseMediumHigh = TextBox and check box outline when mouse over
+            BaseMediumLow => Unknown
+            
+            ChromeAltLow => Unknown
+            
+            ChromeBlackHigh => Unknown
+          -->
+          <ColorPaletteResources x:Key="Dark"
+              RegionColor="#181818"
+              BaseHigh="DarkGray"
+              ErrorText="Yellow"
+              AltHigh="#181818"
+              AltMedium = "#181818"
+              AltMediumLow = "#181818"
+          />
+        </FluentTheme.Palettes>
+      </FluentTheme>
+      
+    </Application.Styles>
+</Application>

@@ -1,0 +1,93 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:QueryLite.CodeGeneratorUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="1000"
+        x:Class="QueryLite.CodeGeneratorUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/Icon.ico"
+        Title="Query Lite Code Generator">
+
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
+
+  <Grid Margin="5" ColumnDefinitions="*" RowDefinitions="auto,*,auto">
+
+    <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="3" Padding="3">
+
+      <Grid Margin="1" ColumnDefinitions="120, 120, 120, 80, *, 200" RowDefinitions="Auto,Auto,Auto">
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="1" VerticalAlignment="Center">Connection String</TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="5" Margin="1" Name="txtConnectionString"></TextBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="1" VerticalAlignment="Center">Database Type</TextBlock>
+        <ComboBox Grid.Row="1" Grid.Column="1" Width="120"  Margin="1" SelectedIndex="1" Name="cboDatabaseType"></ComboBox>
+        <Button Grid.Row="1" Grid.Column="2" Margin="2" Width="120" HorizontalContentAlignment="Center" Name="btnLoad" HotKey="Alt+L">_Load</Button>
+        <TextBlock Grid.Row="1" Grid.Column="3" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center">Example</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="4" Margin="2" IsReadOnly="True" Name="txtConnectionStringExample"></TextBox>
+        <CheckBox Grid.Row="1" Grid.Column="5" Margin="2" Name="chkIncludeSystemSchemas">Include System Schemas</CheckBox>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="3" Margin="0,2,0,0" Padding="3">
+
+      <Grid ColumnDefinitions="350, 4, *" RowDefinitions="*">
+
+        <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="3" Margin="0" Padding="0">
+          <TreeView Name="tvwSchema"
+              ItemsSource="{Binding Nodes}"
+              SelectedItems="{Binding SelectedNodes}"
+              SelectionMode="Single" SelectionChanged="TreeNodeSelectionChanged"
+              VerticalAlignment="Stretch"
+              BorderThickness="1">
+            <TreeView.ItemTemplate>
+              <TreeDataTemplate ItemsSource="{Binding Nodes}">
+                <TextBlock Text="{Binding Text}"/>
+              </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+          </TreeView>
+        </Border>
+
+        <GridSplitter Grid.Row="0" Grid.Column="1" ResizeDirection="Columns"/>
+
+        <Grid Grid.Row="0" Grid.Column="2" ColumnDefinitions="*" RowDefinitions="auto,auto,auto,*">
+
+          <WrapPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="4,0,0,0">
+            <TextBlock VerticalAlignment="Center" Margin="0,0,20,0">Namespace</TextBlock>
+            <TextBox Name="txtNamespace" Margin="0,0,20,0" Width="250"></TextBox>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,20,0">Prefix</TextBlock>
+            <TextBox Name="txtPrefix" Width="100" Margin="0,0,20,0"></TextBox>
+            <TextBlock VerticalAlignment="Center" Margin="0,0,20,0"># Of Instance Properties</TextBlock>
+            <NumericUpDown Name="numNumberOfInstanceProperties" Width="110" Margin="0,0,20,0" Minimum="1" Maximum="10" Increment="1" Value="1"></NumericUpDown>
+          </WrapPanel>
+          <WrapPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="4,0,0,0">
+            <CheckBox Name="chkIncludeDescriptions" Margin="0,0,20,0">Include Descriptions</CheckBox>
+            <CheckBox Name="chkIncludeConstraints" Margin="0,0,20,0" IsChecked="true">Include Constraints</CheckBox>
+            <CheckBox Name="chkIncludeMessagePackAttributes" Margin="0,0,20,0">Include Message Pack Attributes</CheckBox>
+            <CheckBox Name="chkIncludeJsonAttributes" Margin="0,0,20,0">Include Json Attributes</CheckBox>
+            <CheckBox Name="chkUsePreparedQueries" Margin="0">Use Prepared Queries</CheckBox>
+          </WrapPanel>
+          <WrapPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="4,0,0,0">
+            <TextBlock VerticalAlignment="Center" Margin="0,0,20,0">Custom Identifiers</TextBlock>
+            <RadioButton Name="radioNone" GroupName="CustomIdentifiers" Margin="0,0,20,0">None</RadioButton>
+            <RadioButton Name="radioIdentifierKeyType" GroupName="CustomIdentifiers" Margin="0,0,20,0">Key Types</RadioButton>
+            <RadioButton Name="radioIdentifierCustom" GroupName="CustomIdentifiers" Margin="0,0,20,0" IsChecked="true">Custom</RadioButton>
+          </WrapPanel>
+          <TextBox Grid.Row="3" Grid.Column="0" Name="txtCode" AcceptsReturn="True" Margin="0" FontFamily="Consolas" VerticalAlignment="Stretch"></TextBox>
+        </Grid>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="*" ColumnDefinitions="auto,auto,auto,auto, *" Margin="0,2,2,0">
+      <Button Name="btnExpandAll" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" Margin="2,0,5,0">Expand All</Button>
+      <Button Name="btnCollapseAll" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" Margin="0,0,5,0">Collapse All</Button>
+      <Button Name="btnOutputAllToFile" Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" Margin="0,0,5,0">Output All To File</Button>
+      <CheckBox Name="chkSingleFiles" Grid.Row="0" Grid.Column="3" Margin="0,0,5,0">Single Files</CheckBox>
+      <Button Name="btnClose" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Width="100" HotKey="Alt+C">_Close</Button>
+    </Grid>
+  </Grid>
+</Window>
