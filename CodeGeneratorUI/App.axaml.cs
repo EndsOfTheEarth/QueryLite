@@ -1,4 +1,4 @@
-﻿/*
+/*
  * MIT License
  *
  * Copyright (c) 2024 EndsOfTheEarth
@@ -22,28 +22,31 @@
  * SOFTWARE.
  **/
 using Avalonia;
-using System;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Data.Core.Plugins;
+using Avalonia.Markup.Xaml;
+using QueryLite.CodeGeneratorUI.ViewModels;
+using QueryLite.CodeGeneratorUI.Views;
 
 namespace QueryLite.CodeGeneratorUI {
 
-    internal sealed class Program {
+    public partial class App : Application {
 
-        [STAThread]
-        public static void Main(string[] args) {
-
-            try {
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            }
-            catch(Exception ex) {
-                throw;
-            }
+        public override void Initialize() {
+            AvaloniaXamlLoader.Load(this);
         }
 
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace();
+        public override void OnFrameworkInitializationCompleted() {
+
+            if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+
+                BindingPlugins.DataValidators.RemoveAt(0);
+
+                desktop.MainWindow = new MainWindow {
+                    DataContext = new MainWindowViewModel(),
+                };
+            }
+            base.OnFrameworkInitializationCompleted();
+        }
     }
 }

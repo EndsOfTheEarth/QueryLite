@@ -1,4 +1,4 @@
-﻿/*
+/*
  * MIT License
  *
  * Copyright (c) 2024 EndsOfTheEarth
@@ -21,29 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Templates;
+using QueryLite.CodeGeneratorUI.ViewModels;
 using System;
 
 namespace QueryLite.CodeGeneratorUI {
 
-    internal sealed class Program {
+    public class ViewLocator : IDataTemplate {
 
-        [STAThread]
-        public static void Main(string[] args) {
+        public Control? Build(object? data) {
 
-            try {
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            if(data is null)
+                return null;
+
+            string name = data.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
+
+            Type? type = Type.GetType(name);
+
+            if(type != null) {
+                Control control = (Control)Activator.CreateInstance(type)!;
+                control.DataContext = data;
+                return control;
             }
-            catch(Exception ex) {
-                throw;
-            }
+
+            return new TextBlock { Text = "Not Found: " + name };
         }
-
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace();
+        public bool Match(object? data) {
+            return data is ViewModelBase;
+        }
     }
 }

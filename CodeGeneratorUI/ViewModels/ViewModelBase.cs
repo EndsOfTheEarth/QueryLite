@@ -21,29 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using Avalonia;
-using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace QueryLite.CodeGeneratorUI {
+namespace QueryLite.CodeGeneratorUI.ViewModels {
+    
+    public class ViewModelBase : ObservableObject {
 
-    internal sealed class Program {
-
-        [STAThread]
-        public static void Main(string[] args) {
-
-            try {
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            }
-            catch(Exception ex) {
-                throw;
-            }
-        }
-
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace();
     }
 }

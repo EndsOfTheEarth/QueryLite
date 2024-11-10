@@ -1,4 +1,4 @@
-﻿/*
+/*
  * MIT License
  *
  * Copyright (c) 2024 EndsOfTheEarth
@@ -21,29 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using Avalonia;
-using System;
+using Avalonia.Controls;
+using System.Threading.Tasks;
 
-namespace QueryLite.CodeGeneratorUI {
+namespace QueryLite.CodeGeneratorUI;
 
-    internal sealed class Program {
+public partial class MessageDialog : Window {
 
-        [STAThread]
-        public static void Main(string[] args) {
+    public MessageDialog() {
 
-            try {
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            }
-            catch(Exception ex) {
-                throw;
-            }
-        }
+        InitializeComponent();
 
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace();
+        WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+        Width = 500;
+        Height = 400;
+
+        btnOk.Click += (sender, e) => Close();
+    }
+
+    public async Task ShowMessage(Window parent, string title, string message) {
+        Title = title;
+        txtMessage.Text = message;
+        await ShowDialog(parent);
     }
 }
