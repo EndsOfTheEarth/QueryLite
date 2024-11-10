@@ -55,7 +55,7 @@ namespace QueryLite.DbSchema {
 
             List<DatabaseTable> tableList = new List<DatabaseTable>();
             Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
-            Dictionary<string, Type?> typelookup = new Dictionary<string, Type?>();
+            Dictionary<string, Type?> typeLookup = new Dictionary<string, Type?>();
 
             /*
              * Load tables and columns
@@ -93,9 +93,9 @@ namespace QueryLite.DbSchema {
 
                 ColumnsRow columnRow = row.Column;
 
-                if(!typelookup.TryGetValue(columnRow.Data_type, out Type? dotNetType)) {
+                if(!typeLookup.TryGetValue(columnRow.Data_type, out Type? dotNetType)) {
                     dotNetType = SqlServerTypes.GetDotNetType(columnRow.Data_type);
-                    typelookup.Add(columnRow.Data_type, dotNetType);
+                    typeLookup.Add(columnRow.Data_type, dotNetType);
                 }
 
                 DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(IUnknownType)));

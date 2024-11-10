@@ -38,7 +38,7 @@ namespace QueryLite.DbSchema {
 
             List<DatabaseTable> tableList = new List<DatabaseTable>();
             Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
-            Dictionary<string, Type?> typelookup = new Dictionary<string, Type?>();
+            Dictionary<string, Type?> typeLookup = new Dictionary<string, Type?>();
 
             /*
              * Load tables and columns
@@ -75,9 +75,9 @@ namespace QueryLite.DbSchema {
 
                 ColumnsRow columnRow = row.ColumnsRow;
 
-                if(!typelookup.TryGetValue(columnRow.Udt_name, out Type? dotNetType)) {
+                if(!typeLookup.TryGetValue(columnRow.Udt_name, out Type? dotNetType)) {
                     dotNetType = PostgreSqlTypes.GetDotNetType(columnRow.Udt_name);
-                    typelookup.Add(columnRow.Udt_name, dotNetType);
+                    typeLookup.Add(columnRow.Udt_name, dotNetType);
                 }
 
                 DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(IUnknownType)));
