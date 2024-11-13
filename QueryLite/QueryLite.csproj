@@ -40,6 +40,6 @@
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="8.0.5" />
     <PackageReference Include="QueryLite.Utility" Version="0.1.4.2-alpha" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
   </ItemGroup>
 </Project>
