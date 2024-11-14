@@ -25,7 +25,7 @@ using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace QueryLite.Databases.SqlServer {
 

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Nullable>Enable</Nullable>
     <AssemblyVersion>0.9.6</AssemblyVersion>
     <FileVersion>0.9.6</FileVersion>
@@ -38,8 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Npgsql" Version="8.0.5" />
     <PackageReference Include="QueryLite.Utility" Version="0.1.4.2-alpha" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
   </ItemGroup>
 </Project>

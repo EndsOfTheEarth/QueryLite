@@ -36,7 +36,6 @@ using QueryLite.DbSchema.Tables;
 using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -140,7 +139,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
             }
             else if(string.Equals(item, SQL_SERVER, StringComparison.OrdinalIgnoreCase)) {
 
-                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(txtConnectionString.Text);
+                Microsoft.Data.SqlClient.SqlConnectionStringBuilder builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(txtConnectionString.Text);
 
                 _database = new SqlServerDatabase(name: builder.InitialCatalog, connectionString: txtConnectionString.Text);
             }
@@ -233,7 +232,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
             string item = cboDatabaseType.SelectedItem?.ToString() ?? string.Empty;
 
             if(string.Equals(item, SQL_SERVER, StringComparison.OrdinalIgnoreCase)) {
-                txtConnectionStringExample.Text = "Server=localhost;Database=Northwind;Trusted_Connection=True;";
+                txtConnectionStringExample.Text = "Server=localhost;Database=Northwind;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;";
             }
             else {
                 txtConnectionStringExample.Text = "Server=127.0.0.1;Port=5432;Database=Northwind;User Id=postgres;Password=password;";
