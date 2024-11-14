@@ -469,9 +469,11 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(selectFunc);
 
-            SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
-            template.Extras = new TemplateExtra<RESULT>();
-            template.Extras.ParentUnion = this;
+            SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc) {
+                Extras = new TemplateExtra<RESULT> {
+                    ParentUnion = this
+                }
+            };
 
             if(Extras == null) {
                 Extras = new TemplateExtra<RESULT>();
@@ -485,9 +487,11 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(selectFunc);
 
-            SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc);
-            template.Extras = new TemplateExtra<RESULT>();
-            template.Extras.ParentUnion = this;
+            SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc) {
+                Extras = new TemplateExtra<RESULT> {
+                    ParentUnion = this
+                }
+            };
 
             if(Extras == null) {
                 Extras = new TemplateExtra<RESULT>();
