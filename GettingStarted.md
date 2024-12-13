@@ -23,7 +23,7 @@ Run the code generator, enter in your database connection string and click the `
 
 Table definitions are generated when a table is selected. Copy the table definition(s) into your project.
 
-![NorthwindCodeGenerator](https://github.com/EndsOfTheEarth/QueryLite/assets/6175921/f5eaea37-53d5-45eb-8cf6-750256d10c7a)
+![AdventureWorksCodeGenerator](https://github.com/user-attachments/assets/f257be9c-bb6c-455e-baaf-8f11fc15ce40)
 
 ## 3) Define A Database Instance
 
