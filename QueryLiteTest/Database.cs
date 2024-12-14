@@ -17,7 +17,7 @@ namespace QueryLiteTest {
 
             TestSettings? settings = JsonSerializer.Deserialize<TestSettings>(File.ReadAllText(filePath));
 
-            DatabaseType databaseType = DatabaseType.SqlServer;
+            DatabaseType databaseType = DatabaseType.PostgreSql;
 
             if(databaseType == DatabaseType.SqlServer) {
                 Database = new SqlServerDatabase(name: "QueryLiteTest", connectionString: settings!.SqlServerConnectionString);

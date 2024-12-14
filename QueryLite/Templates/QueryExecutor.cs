@@ -109,12 +109,14 @@ namespace QueryLite {
                     }
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) { //Ideally we want to open the connection as late a possible and close it immediately after use so it is freed back into the connection pool for other threads to use
                     dbConnection.Open();
@@ -263,12 +265,14 @@ namespace QueryLite {
                     }
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     dbConnection.Open();
@@ -403,12 +407,14 @@ namespace QueryLite {
                     }
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     dbConnection.Open();
@@ -563,12 +569,14 @@ namespace QueryLite {
                     }
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -579,7 +587,7 @@ namespace QueryLite {
 
                 RESULT? result = default;
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -727,12 +735,14 @@ namespace QueryLite {
                     }
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -741,7 +751,7 @@ namespace QueryLite {
 
                 List<RESULT> rowList = new List<RESULT>();
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -885,12 +895,14 @@ namespace QueryLite {
                     }
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -1027,12 +1039,14 @@ namespace QueryLite {
                     command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     dbConnection.Open();
@@ -1180,12 +1194,14 @@ namespace QueryLite {
                     command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     dbConnection.Open();
@@ -1339,12 +1355,14 @@ namespace QueryLite {
                     command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -1354,7 +1372,7 @@ namespace QueryLite {
                 RESULT? result = default;
                 bool isFirst = true;
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -1500,12 +1518,14 @@ namespace QueryLite {
                     command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -1514,7 +1534,7 @@ namespace QueryLite {
 
                 List<RESULT> rowList = new List<RESULT>();
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -1659,12 +1679,14 @@ namespace QueryLite {
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     dbConnection.Open();
@@ -1815,12 +1837,14 @@ namespace QueryLite {
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     dbConnection.Open();
@@ -1977,12 +2001,14 @@ namespace QueryLite {
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -1993,7 +2019,7 @@ namespace QueryLite {
 
                 RESULT? result = default;
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -2142,12 +2168,14 @@ namespace QueryLite {
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -2156,7 +2184,7 @@ namespace QueryLite {
 
                 List<RESULT> rowList = new List<RESULT>();
 
-                DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
                 try {
 
@@ -2300,12 +2328,14 @@ namespace QueryLite {
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     dbConnection.Open();
@@ -2442,12 +2472,14 @@ namespace QueryLite {
                     command.Parameters.Add(param.CreateParameter(parameters));
                 }
 
+#if DEBUG
                 if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
                     if(Debugger.IsAttached) {
                         Debugger.Break();
                     }
                 }
+#endif
 
                 if(oneTimeConnection) {
                     await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
