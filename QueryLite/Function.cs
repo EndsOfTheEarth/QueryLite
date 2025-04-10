@@ -60,7 +60,7 @@ namespace QueryLite {
         }
 
         public IList<IField> GetFields() {
-            return new List<IField>(new IField[] { this });
+            return new List<IField>([this]);
         }
         string IFunction.GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
             return GetSql(database, useAlias, parameters);

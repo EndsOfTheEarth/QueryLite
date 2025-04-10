@@ -112,7 +112,7 @@ namespace QueryLite.Databases {
             DynamicMethod method = new DynamicMethod(
                 name: "",
                 returnType: typeof(ENUM),
-                parameterTypes: new[] { typeof(INTEGER) },
+                parameterTypes: [typeof(INTEGER)],
                 restrictedSkipVisibility: true
             );
             ILGenerator il = method.GetILGenerator();

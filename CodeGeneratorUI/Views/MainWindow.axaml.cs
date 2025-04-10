@@ -43,8 +43,8 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
     public partial class MainWindow : Window {
 
-        private static string SQL_SERVER = "Sql Server";
-        private static string POSTGRESQL = "PostgreSql";
+        private readonly static string SQL_SERVER = "Sql Server";
+        private readonly static string POSTGRESQL = "PostgreSql";
 
         private IDatabase? _database = null;
 

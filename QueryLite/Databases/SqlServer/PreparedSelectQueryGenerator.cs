@@ -61,7 +61,7 @@ namespace QueryLite.Databases.SqlServer {
                 GenerateWhereClause(sql, template, useAliases: useAliases, database, parameters);
                 GenerateGroupByClause(sql, template, useAliases: useAliases);
                 GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
-                GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
+                GenerateOrderByClause(sql, template, useAliases: useAliases, database);
 
                 if(template.ChildUnion != null) {
 
@@ -241,7 +241,7 @@ namespace QueryLite.Databases.SqlServer {
                 template.HavingCondition.GetSql(sql, database, parameters, useAlias: useAliases);
             }
         }
-        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
 
             if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
 

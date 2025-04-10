@@ -70,15 +70,15 @@ namespace QueryLite {
     /// </summary>
     internal static class AliasGenerator {
 
-        private static volatile uint counter = 0;
-        private readonly static object lock_ = new object();
+        private static volatile uint _counter = 0;
+        private readonly static object _lock = new object();
 
         public static string GetAlias() {
 
             uint alias;
 
-            lock(lock_) {
-                alias = counter++;
+            lock(_lock) {
+                alias = _counter++;
             }
             return alias.ToString("X");
         }
@@ -98,8 +98,8 @@ namespace QueryLite {
         public bool IsView { get; }
 
         public virtual PrimaryKey? PrimaryKey => null;
-        public virtual UniqueConstraint[] UniqueConstraints => Array.Empty<UniqueConstraint>();
-        public virtual ForeignKey[] ForeignKeys => Array.Empty<ForeignKey>();
+        public virtual UniqueConstraint[] UniqueConstraints => [];
+        public virtual ForeignKey[] ForeignKeys => [];
 
         /// <summary>
         /// Abstract table

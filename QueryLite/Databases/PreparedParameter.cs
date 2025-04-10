@@ -65,14 +65,14 @@ namespace QueryLite.Databases {
         public PreparedParameter(string name, Func<PARAMETERS, TYPE> getValueFunc, CreateParameterDelegate createParameter) {
             Name = name;
             GetValueFunc = getValueFunc;
-            _createParameter = createParameter;
+            CreateParameter = createParameter;
         }
         public string Name { get; }
         public Func<PARAMETERS, TYPE> GetValueFunc { get; }
-        public CreateParameterDelegate _createParameter { get; }
+        public CreateParameterDelegate CreateParameter { get; }
 
         DbParameter IPreparedParameter<PARAMETERS>.CreateParameter(PARAMETERS parameters) {
-            return _createParameter(name: Name, value: GetValueFunc(parameters));
+            return CreateParameter(name: Name, value: GetValueFunc(parameters));
         }
     }
 }

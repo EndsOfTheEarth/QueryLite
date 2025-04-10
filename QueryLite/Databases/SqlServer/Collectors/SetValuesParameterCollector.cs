@@ -34,11 +34,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         public SqlServerParameters Parameters { get; } = new SqlServerParameters(initParams: 1);
 
         private readonly StringBuilder _sql;
-        private StringBuilder? _paramSql;
+        private readonly StringBuilder? _paramSql;
 
         private readonly IDatabase _database;
         private readonly CollectorMode _collectorMode;
-        private bool _useAlias;
+        private readonly bool _useAlias;
 
         private int _counter;
 
@@ -188,7 +188,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return AddParameter(column, SqlDbType.Bit, value?.Value);
         }
 
-        private SqlDbType GetEnumDbType<ENUM>() where ENUM : notnull, Enum {
+        private static SqlDbType GetEnumDbType<ENUM>() where ENUM : notnull, Enum {
 
             NumericType integerType = EnumHelper.GetNumericType<ENUM>();
 
@@ -211,11 +211,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         }
 
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum {
-            return AddParameter(column, GetEnumDbType<ENUM>(), value);
+            return AddParameter(column, SqlServerSetValuesParameterCollector.GetEnumDbType<ENUM>(), value);
         }
 
         public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
-            return AddParameter(column, GetEnumDbType<ENUM>(), value);
+            return AddParameter(column, SqlServerSetValuesParameterCollector.GetEnumDbType<ENUM>(), value);
         }
 
         public ISetValuesCollector Set(Column<string> column, string value) {

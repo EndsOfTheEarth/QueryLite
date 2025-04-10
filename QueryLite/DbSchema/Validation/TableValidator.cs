@@ -192,7 +192,8 @@ namespace QueryLite {
 
             List<Type> types = assembly.GetTypes()
                 .Select(type => type)
-                .Where(type => typeof(ITable).IsAssignableFrom(type) && type != typeof(ITable) && type != typeof(ATable)).ToList();
+                .Where(type => typeof(ITable).IsAssignableFrom(type) && type != typeof(ITable) && type != typeof(ATable))
+                .ToList();
 
             ValidationResult result = new ValidationResult(dbSchema);
 

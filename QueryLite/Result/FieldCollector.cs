@@ -200,7 +200,7 @@ namespace QueryLite {
 
         public byte[] Get(Column<byte[]> column) {
             Fields.Add(column);
-            return Array.Empty<byte>();
+            return [];
         }
 
         public byte[]? Get(NullableColumn<byte[]> column) {
@@ -410,7 +410,7 @@ namespace QueryLite {
 
         public byte[] Get(Function<byte[]> column) {
             Fields.Add(column);
-            return Array.Empty<byte>();
+            return [];
         }
 
         public byte[]? Get(NullableFunction<byte[]> column) {

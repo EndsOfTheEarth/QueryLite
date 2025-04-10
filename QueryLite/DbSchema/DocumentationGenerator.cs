@@ -40,7 +40,8 @@ namespace QueryLite.DbSchema {
 
                 List<Type> listOfTypes = assembly.GetTypes()
                     .Select(type => type)
-                    .Where(type => typeof(ITable).IsAssignableFrom(type) && type != typeof(ITable) && type != typeof(ATable)).ToList();
+                    .Where(type => typeof(ITable).IsAssignableFrom(type) && type != typeof(ITable) && type != typeof(ATable))
+                    .ToList();
 
                 types.AddRange(listOfTypes);
             }

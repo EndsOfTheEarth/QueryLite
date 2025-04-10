@@ -198,8 +198,9 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(selectFunc);
 
-            PreparedQueryTemplate<PARAMETERS, RESULT> template = new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc);
-            template.ParentUnion = this;
+            PreparedQueryTemplate<PARAMETERS, RESULT> template = new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc) {
+                ParentUnion = this
+            };
             ChildUnion = template;
             ChildUnionType = UnionType.Union;
             return template;
@@ -208,8 +209,9 @@ namespace QueryLite {
         public IPreparedDistinct<PARAMETERS, RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
             ArgumentNullException.ThrowIfNull(selectFunc);
 
-            PreparedQueryTemplate<PARAMETERS, RESULT> template = new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc);
-            template.ParentUnion = this;
+            PreparedQueryTemplate<PARAMETERS, RESULT> template = new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc) {
+                ParentUnion = this
+            };
             ChildUnion = template;
             ChildUnionType = UnionType.UnionAll;
             return template;

@@ -92,7 +92,7 @@ namespace QueryLite {
 
     internal sealed class InNotInCondition<TYPE> : ICondition where TYPE : notnull {
 
-        private IColumn Left { get; }
+        private AColumn<TYPE> Left { get; }
         private bool IsIn { get; }
         private IEnumerable<TYPE> List { get; }
 
@@ -143,7 +143,7 @@ namespace QueryLite {
 
     internal sealed class InNotInNestedQueryCondition<TYPE, RESULT> : ICondition where TYPE : notnull {
 
-        private IColumn Left { get; }
+        private AColumn<TYPE> Left { get; }
         private bool IsIn { get; }
         private IExecute<RESULT> NestedQuery { get; }
 

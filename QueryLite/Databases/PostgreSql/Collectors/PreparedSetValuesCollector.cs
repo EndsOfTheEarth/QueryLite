@@ -31,11 +31,11 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
         public PreparedParameterList<PARAMETERS> Parameters { get; } = new PreparedParameterList<PARAMETERS>();
 
-        private StringBuilder _sql;
-        private StringBuilder? _paramSql;
+        private readonly StringBuilder _sql;
+        private readonly StringBuilder? _paramSql;
 
-        private IDatabase _database;
-        private CollectorMode _collectorMode;
+        private readonly IDatabase _database;
+        private readonly CollectorMode _collectorMode;
 
         private int _counter = 0;
 
