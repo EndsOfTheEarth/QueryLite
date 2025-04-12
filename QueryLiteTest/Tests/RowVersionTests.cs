@@ -31,8 +31,8 @@ namespace QueryLiteTest.Tests {
                     .From(table)
                     .Execute(transaction);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
@@ -62,7 +62,7 @@ namespace QueryLiteTest.Tests {
             TestRowVersions();
         }
 
-        private void TestRowVersions() {
+        private static void TestRowVersions() {
 
             if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
                 return;
@@ -82,7 +82,7 @@ namespace QueryLiteTest.Tests {
                         )
                         .Execute(transaction);
 
-                    Assert.AreEqual(insertResult.RowsEffected, 1);
+                    Assert.AreEqual(1, insertResult.RowsEffected);
                 }
                 transaction.Commit();
             }
@@ -95,7 +95,7 @@ namespace QueryLiteTest.Tests {
                 .OrderBy(table.Id.ASC)
                 .Execute(TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 10);
+            Assert.AreEqual(10, result.Rows.Count);
 
             byte[] previousBytes = new byte[8];
 
@@ -103,7 +103,7 @@ namespace QueryLiteTest.Tests {
 
                 byte[] rowVersion = result.Rows[index];
 
-                Assert.AreEqual(rowVersion.Length, 8);
+                Assert.AreEqual(8, rowVersion.Length);
 
                 bool isEqual = true;
 

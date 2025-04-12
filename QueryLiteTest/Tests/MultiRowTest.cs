@@ -34,8 +34,8 @@ namespace QueryLiteTest.Tests {
                     .From(allTypesTable)
                     .Execute(transaction);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0].Count;
 
@@ -94,8 +94,8 @@ namespace QueryLiteTest.Tests {
                             TimeoutLevel.ShortInsert
                         );
 
-                    Assert.AreEqual(result.Rows.Count, 1);
-                    Assert.AreEqual(result.RowsEffected, 1);
+                    Assert.AreEqual(1, result.Rows.Count);
+                    Assert.AreEqual(1, result.RowsEffected);
 
                     allTypes.Id = result.Rows[0].Id;
                 }
@@ -113,8 +113,8 @@ namespace QueryLiteTest.Tests {
                     .OrderBy(table.Id.ASC)
                     .Execute(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, records);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(records, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 for(short index = 0; index < result.Rows.Count; index++) {
 
@@ -135,8 +135,8 @@ namespace QueryLiteTest.Tests {
                     .OrderBy(table.Id.DESC)
                     .Execute(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, records);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(records, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
 
                 for(short index = 0, allTypesIndex = records - 1; index < result.Rows.Count; index++, allTypesIndex--) {
@@ -162,8 +162,8 @@ namespace QueryLiteTest.Tests {
                     .OrderBy(table.Id.DESC)
                     .Execute(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, records);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(records, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 for(short index = 0, allTypesIndex = records - 1; index < result.Rows.Count; index++, allTypesIndex--) {
                     AssertRow(result.Rows[index].AllTypesRow, list[allTypesIndex]);
@@ -190,8 +190,8 @@ namespace QueryLiteTest.Tests {
                     .OrderBy(table.Id.DESC)
                     .Execute(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, records);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(records, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 for(short index = 0, allTypesIndex = records - 1; index < result.Rows.Count; index++, allTypesIndex--) {
                     AssertRow(result.Rows[index].AllTypesRow, list[allTypesIndex]);
@@ -218,12 +218,12 @@ namespace QueryLiteTest.Tests {
                     .OrderBy(table.Id.DESC)
                     .Execute(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(0, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
             }
         }
 
-        private AllTypes GetAllTypes1(short index) {
+        private static AllTypes GetAllTypes1(short index) {
             return new AllTypes(
                 id: IntKey<AllTypes>.NotSet,
                 guid: Guid.NewGuid(),
@@ -243,7 +243,7 @@ namespace QueryLiteTest.Tests {
                 timeOnly: new TimeOnly(hour: 23, minute: 57, second: 0, millisecond: 1, microsecond: 777)
             );
         }
-        private void AssertRow(AllTypesInfo row, AllTypes allTypes) {
+        private static void AssertRow(AllTypesInfo row, AllTypes allTypes) {
 
             Assert.AreEqual(row.Id, allTypes.Id);
             Assert.AreEqual(row.Guid, allTypes.Guid);

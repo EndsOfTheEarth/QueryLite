@@ -17,10 +17,10 @@
 
         public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Child", Id);
 
-        public override ForeignKey[] ForeignKeys => new ForeignKey[] {
+        public override ForeignKey[] ForeignKeys => [
             new ForeignKey(this, constraintName: "fk_Child_Parent").References(ParentId, ParentTable.Instance.Id),
             new ForeignKey(this, constraintName: "fk_Child_Parent_Id2").References(ParentId, ParentTable.Instance.Id2)
-        };
+        ];
 
         private ChildTable() : base(tableName: "Child", schemaName: "dbo") {
 

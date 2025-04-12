@@ -50,15 +50,12 @@ namespace QueryLite.DbSchema {
 
         public static string GenerateForTables(List<ITable> tables, string applicationName, string version) {
 
-            List<Type> types = new List<Type>();
+            IEnumerable<Type> types = tables.Select(table => table.GetType());
 
-            foreach(ITable table in tables) {
-                types.Add(table.GetType());
-            }
             return GenerateForTableTypes(types, applicationName, version);
         }
 
-        public static string GenerateForTableTypes(List<Type> types, string applicationName, string version) {
+        public static string GenerateForTableTypes(IEnumerable<Type> types, string applicationName, string version) {
 
             List<ValidationItem> validation = new List<ValidationItem>();
 

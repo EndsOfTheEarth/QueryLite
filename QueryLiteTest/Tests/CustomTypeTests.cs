@@ -27,13 +27,12 @@ namespace QueryLiteTest.Tests {
                     .From(table)
                     .Execute(transaction);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
-                int? countValue = result.Rows[0];
+                int countValue = result.Rows[0];
 
-                Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue, 0);
+                Assert.AreEqual(0, countValue);
 
                 transaction.Commit();
             }
@@ -58,7 +57,7 @@ namespace QueryLiteTest.Tests {
             TestInsert();
         }
 
-        private void TestInsert() {
+        private static void TestInsert() {
 
             CustomTypesTable table = CustomTypesTable.Instance;
 
@@ -152,7 +151,7 @@ namespace QueryLiteTest.Tests {
             }
         }
 
-        private void AssertOnlyOneRowExists() {
+        private static void AssertOnlyOneRowExists() {
 
             CustomTypesTable table = CustomTypesTable.Instance;
 
@@ -167,7 +166,8 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(1, result.Rows.Count);
             Assert.AreEqual(1, result.Rows[0]);
         }
-        private void AssertCustomTypes(CustomTypes customTypes) {
+
+        private static void AssertCustomTypes(CustomTypes customTypes) {
 
             CustomTypesTable table = CustomTypesTable.Instance;
 
@@ -211,7 +211,7 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(customTypes.NCustomBool, values.NCustomBool);
         }
 
-        private CustomTypes GetCustomTypesA() => new CustomTypes(
+        private static CustomTypes GetCustomTypesA() => new CustomTypes(
 
             customGuid: CustomGuid.ValueOf(Guid.NewGuid()),
             customShort: CustomShort.ValueOf(12),
@@ -228,7 +228,7 @@ namespace QueryLiteTest.Tests {
             nCustomBool: null
         );
 
-        private CustomTypes GetCustomTypesB() => new CustomTypes(
+        private static CustomTypes GetCustomTypesB() => new CustomTypes(
 
             customGuid: CustomGuid.ValueOf(Guid.NewGuid()),
             customShort: CustomShort.ValueOf(43),

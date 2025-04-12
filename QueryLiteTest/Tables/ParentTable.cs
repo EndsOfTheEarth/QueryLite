@@ -14,9 +14,9 @@
 
         public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Parent", Id);
 
-        public override UniqueConstraint[] UniqueConstraints => new UniqueConstraint[] {
+        public override UniqueConstraint[] UniqueConstraints => [
             new UniqueConstraint(this, constraintName: "unq_parent", Id2)
-        };
+        ];
 
         private ParentTable() : base(tableName: "Parent", schemaName: "dbo") {
 

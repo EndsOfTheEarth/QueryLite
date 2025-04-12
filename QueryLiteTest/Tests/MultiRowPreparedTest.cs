@@ -41,8 +41,8 @@ namespace QueryLiteTest.Tests {
 
                 var result = selectQuery.Execute(parameters: true, transaction);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0].Count;
 
@@ -106,8 +106,8 @@ namespace QueryLiteTest.Tests {
                         TimeoutLevel.ShortInsert
                     );
 
-                    Assert.AreEqual(result.Rows.Count, 1);
-                    Assert.AreEqual(result.RowsEffected, 1);
+                    Assert.AreEqual(1, result.Rows.Count);
+                    Assert.AreEqual(1, result.RowsEffected);
 
                     allTypes.Id = result.Rows[0].Id;
                 }
@@ -127,8 +127,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = selectQueryAsc.Execute(parameters: true, TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, records);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(records, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 for(short index = 0; index < result.Rows.Count; index++) {
 
@@ -151,8 +151,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = selectQueryDesc.Execute(parameters: true, TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, records);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(records, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
 
                 for(short index = 0, allTypesIndex = records - 1; index < result.Rows.Count; index++, allTypesIndex--) {
@@ -179,8 +179,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = selectUnionQuery.Execute(parameters: true, TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, records);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(records, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 for(short index = 0, allTypesIndex = records - 1; index < result.Rows.Count; index++, allTypesIndex--) {
                     AssertRow(result.Rows[index], list[allTypesIndex]);

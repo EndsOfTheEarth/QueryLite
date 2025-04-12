@@ -18,7 +18,7 @@ namespace QueryLiteTest.Tests {
     [TestClass]
     public sealed class AllFieldsPreparedTest {
 
-        private static IPreparedDeleteQuery<bool> _deleteAllQuery = Query
+        private static readonly IPreparedDeleteQuery<bool> _deleteAllQuery = Query
                 .Prepare<bool>()
                 .Delete(AllTypesTable.Instance)
                 .NoWhereCondition()
@@ -35,13 +35,12 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = query1!.Execute(parameters: true, transaction);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int countValue = result.Rows[0];
 
-                Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue, 0);
+                Assert.AreEqual(0, countValue);
 
                 transaction.Commit();
             }
@@ -168,8 +167,8 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void LoadDocumentation() {
 
-            string doc = DocumentationGenerator.GenerateForAssembly(new Assembly[] { Assembly.GetExecutingAssembly() }, applicationName: "Auto Tester", version: "v1.0");
-            Assert.IsNotNull(doc);
+            string doc = DocumentationGenerator.GenerateForAssembly([Assembly.GetExecutingAssembly()], applicationName: "Auto Tester", version: "v1.0");
+            Assert.IsNotEmpty(doc);
         }
 
         [TestMethod]
@@ -217,15 +216,15 @@ namespace QueryLiteTest.Tests {
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
-                Assert.AreEqual(result.Items.Count, 7);
+                Assert.AreEqual(7, result.Items.Count);
             }
             else {
-                Assert.AreEqual(result.Items.Count, 5);
+                Assert.AreEqual(5, result.Items.Count);
             }
 
             foreach(ValidationItem val in result.Items) {
 
-                Assert.AreEqual(val.ValidationMessages.Count, 0);
+                Assert.AreEqual(0, val.ValidationMessages.Count);
             }
         }
 
@@ -326,7 +325,7 @@ namespace QueryLiteTest.Tests {
             }
         }
 
-        private static IPreparedInsertQuery<AllTypes> _insertQueryWithoutReturning = Query
+        private static readonly IPreparedInsertQuery<AllTypes> _insertQueryWithoutReturning = Query
             .Prepare<AllTypes>()
             .Insert(AllTypesTable.Instance)
             .Values(values => values
@@ -351,13 +350,13 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void TestInsertWithoutReturning() {
 
-            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
 
             using Transaction transaction = new Transaction(TestDatabase.Database);
 
             NonQueryResult insertResult = _insertQueryWithoutReturning.Execute(allTypes1, transaction);
 
-            Assert.AreEqual(insertResult.RowsEffected, 1);
+            Assert.AreEqual(1, insertResult.RowsEffected);
 
             transaction.Commit();
 
@@ -370,8 +369,8 @@ namespace QueryLiteTest.Tests {
                 .From(table)
                 .Execute(TestDatabase.Database);
 
-            Assert.AreEqual(queryResult.Rows.Count, 1);
-            Assert.AreEqual(queryResult.RowsEffected, 0);
+            Assert.AreEqual(1, queryResult.Rows.Count);
+            Assert.AreEqual(0, queryResult.RowsEffected);
 
             AllTypesInfo row = queryResult.Rows[0];
             allTypes1.Id = row.Id;
@@ -468,7 +467,7 @@ namespace QueryLiteTest.Tests {
             return;
         }
 
-        private AllTypes GetAllTypes1() {
+        private static AllTypes GetAllTypes1() {
 
             return new AllTypes(
                 id: IntKey<AllTypes>.NotSet,
@@ -481,7 +480,7 @@ namespace QueryLiteTest.Tests {
                 @float: 7324.2521342f,
                 @double: 93234.487213123d,
                 boolean: true,
-                bytes: new byte[] { 5, 43, 23, 7, 8 },
+                bytes: [5, 43, 23, 7, 8],
                 dateTime: new DateTime(year: 2021, month: 12, day: 01, hour: 23, minute: 59, second: 59),
                 dateTimeOffset: new DateTimeOffset(year: 2022, month: 11, day: 02, hour: 20, minute: 55, second: 57, new TimeSpan(hours: 5, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.A,
@@ -494,7 +493,7 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameters: allTypes, TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 1);
+            Assert.AreEqual(1, result.Rows.Count);
 
             AssertRow(result.Rows[0], allTypes);
         }
@@ -503,7 +502,7 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<AllTypesInfo> result = await _selectAllTypesQuery!.ExecuteAsync(parameters: allTypes, TestDatabase.Database, cancellationToken: CancellationToken.None);
 
-            Assert.AreEqual(result.Rows.Count, 1);
+            Assert.AreEqual(1, result.Rows.Count);
 
             AssertRow(result.Rows[0], allTypes);
         }
@@ -513,7 +512,7 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameters: allTypes, transaction);
 
-            Assert.AreEqual(result.Rows.Count, 1);
+            Assert.AreEqual(1, result.Rows.Count);
 
             AssertRow(result.Rows[0], allTypes);
         }
@@ -522,7 +521,7 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameters: allTypes, TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 0);
+            Assert.AreEqual(0, result.Rows.Count);
         }
 
         private void AssertRowDoesNotExists(AllTypes allTypes, Transaction transaction) {
@@ -530,7 +529,7 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<AllTypesInfo> result = _selectAllTypesQuery!.Execute(parameters: allTypes, transaction);
 
-            Assert.AreEqual(result.Rows.Count, 0);
+            Assert.AreEqual(0, result.Rows.Count);
         }
 
         public static void AssertRow(AllTypesInfo row, AllTypes allTypes) {
@@ -559,9 +558,9 @@ namespace QueryLiteTest.Tests {
 
         private void BasicInsertUpdateAndDeleteWithQueries() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             InsertWithQuery(allTypes1);
             InsertWithQuery(allTypes2);
@@ -587,16 +586,16 @@ namespace QueryLiteTest.Tests {
             DeleteWithQuery(allTypes2);
             DeleteWithQueryReturning(allTypes3);
 
-            InsertWithQueryAndRollback(GetAllTypes1());
-            InsertWithQueryAndRollback(GetAllTypes1());
-            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(AllFieldsPreparedTest.GetAllTypes1());
+            InsertWithQueryAndRollback(AllFieldsPreparedTest.GetAllTypes1());
+            InsertWithQueryAndRollback(AllFieldsPreparedTest.GetAllTypes1());
         }
 
         private void BasicInsertAndTruncateWithQueries() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             InsertWithQuery(allTypes1);
             InsertWithQuery(allTypes2);
@@ -607,9 +606,9 @@ namespace QueryLiteTest.Tests {
 
         private async Task BasicInsertAndTruncateWithQueriesAsync() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             InsertWithQuery(allTypes1);
             InsertWithQuery(allTypes2);
@@ -620,9 +619,9 @@ namespace QueryLiteTest.Tests {
 
         private async Task BasicInsertUpdateAndDeleteWithQueriesAsync() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             await InsertWithQueryAsync(allTypes1);
             await InsertWithQueryAsync(allTypes2);
@@ -648,16 +647,16 @@ namespace QueryLiteTest.Tests {
             await DeleteWithQueryAsync(allTypes2);
             await DeleteWithQueryReturningAsync(allTypes3);
 
-            InsertWithQueryAndRollback(GetAllTypes1());
-            InsertWithQueryAndRollback(GetAllTypes1());
-            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(AllFieldsPreparedTest.GetAllTypes1());
+            InsertWithQueryAndRollback(AllFieldsPreparedTest.GetAllTypes1());
+            InsertWithQueryAndRollback(AllFieldsPreparedTest.GetAllTypes1());
         }
 
         private async Task BasicInsertAndDeleteJoinQueriesSqlServerAsync() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             await InsertWithQueryAsync(allTypes1);
             await InsertWithQueryAsync(allTypes2);
@@ -667,7 +666,7 @@ namespace QueryLiteTest.Tests {
 
                 NonQueryResult result = await _deleteQuery1!.ExecuteAsync(parameters: allTypes1, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 transaction.Commit();
             }
@@ -676,21 +675,21 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 2);  //There should be two records left
+                Assert.AreEqual(2, countValue!.Value);  //There should be two records left
             }
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 QueryResult<AllTypesInfo> result = await _deleteQuery4!.ExecuteAsync(parameters: allTypes3.Id, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.RowsEffected);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AssertRow(result.Rows[0], allTypes3);
 
@@ -701,21 +700,21 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = await _selectAllCountQuery.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 1);
+                Assert.AreEqual(1, countValue!.Value);
             }
         }
 
         private async Task BasicInsertAndDeleteJoinQueriesPostgreSqlAsync() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             await InsertWithQueryAsync(allTypes1);
             await InsertWithQueryAsync(allTypes2);
@@ -735,7 +734,7 @@ namespace QueryLiteTest.Tests {
 
                 NonQueryResult result = await deleteQuery5.ExecuteAsync(parameters: allTypes1, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 IPreparedDeleteQuery<AllTypes> deleteQuery6 = Query
                     .Prepare<AllTypes>()
@@ -746,7 +745,7 @@ namespace QueryLiteTest.Tests {
 
                 result = await deleteQuery6.ExecuteAsync(parameters: allTypes2, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 transaction.Commit();
             }
@@ -755,13 +754,13 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 1);  //There should be one record left
+                Assert.AreEqual(1, countValue!.Value);  //There should be one record left
             }
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
@@ -775,8 +774,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = await deleteQuery7.ExecuteAsync(parameters: allTypes3.Id, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.RowsEffected);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AssertRow(result.Rows[0], allTypes3);
 
@@ -787,17 +786,17 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = await _selectAllCountQuery.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 0);
+                Assert.AreEqual(0, countValue!.Value);
             }
         }
 
-        private static IPreparedInsertQuery<AllTypes, AllTypesInfo> _insertQuery1 = Query
+        private static readonly IPreparedInsertQuery<AllTypes, AllTypesInfo> _insertQuery1 = Query
             .Prepare<AllTypes>()
             .Insert(AllTypesTable.Instance)
             .Values(values => values
@@ -823,7 +822,7 @@ namespace QueryLiteTest.Tests {
 
         private void InsertWithQuery(AllTypes allTypes) {
 
-            Assert.IsTrue(!allTypes.Id.IsValid);
+            Assert.IsFalse(allTypes.Id.IsValid);
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -836,8 +835,8 @@ namespace QueryLiteTest.Tests {
 
                 transaction.Commit();
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 allTypes.Id = result.Rows[0].Id;
 
@@ -864,9 +863,9 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<int> result = _selectAllCountQuery!.Execute(parameters: true, TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 1);
+            Assert.AreEqual(1, result.Rows.Count);
 
-            Assert.AreEqual(result.Rows.First(), 0);
+            Assert.AreEqual(0, result.Rows.First());
         }
 
         private async Task TruncateAsync() {
@@ -884,14 +883,14 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
-            Assert.AreEqual(result.Rows.Count, 1);
+            Assert.AreEqual(1, result.Rows.Count);
 
-            Assert.AreEqual(result.Rows.First(), 0);
+            Assert.AreEqual(0, result.Rows.First());
         }
 
         public async Task InsertWithQueryAsync(AllTypes allTypes) {
 
-            Assert.IsTrue(!allTypes.Id.IsValid);
+            Assert.IsFalse(allTypes.Id.IsValid);
 
             AllTypesTable table = AllTypesTable.Instance;
 
@@ -930,8 +929,8 @@ namespace QueryLiteTest.Tests {
 
                 transaction.Commit();
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 allTypes.Id = result.Rows[0].Id;
 
@@ -957,7 +956,7 @@ namespace QueryLiteTest.Tests {
                 @float: 676832.13291f,
                 @double: 552761.997868d,
                 boolean: false,
-                bytes: new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+                bytes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 dateTime: new DateTime(year: 2023, month: 1, day: 2, hour: 3, minute: 4, second: 5),
                 dateTimeOffset: new DateTimeOffset(year: 2030, month: 12, day: 11, hour: 10, minute: 9, second: 8, new TimeSpan(hours: 0, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.B,
@@ -996,8 +995,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = updateQuery.Execute(parameters: allTypes, transaction, TimeoutLevel.ShortUpdate);
 
-                Assert.AreEqual(result.RowsEffected, 1);
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.RowsEffected);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AssertRow(result.Rows[0], allTypes);
 
@@ -1021,7 +1020,7 @@ namespace QueryLiteTest.Tests {
                 @float: 676832.13291f,
                 @double: 552761.997868d,
                 boolean: false,
-                bytes: new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+                bytes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 dateTime: new DateTime(year: 2023, month: 1, day: 2, hour: 3, minute: 4, second: 5),
                 dateTimeOffset: new DateTimeOffset(year: 2030, month: 12, day: 11, hour: 10, minute: 9, second: 8, new TimeSpan(hours: 0, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.B,
@@ -1060,8 +1059,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = await updateQuery.ExecuteAsync(parameters: allTypes, transaction, cancellationToken: null, timeout: TimeoutLevel.ShortUpdate);
 
-                Assert.AreEqual(result.RowsEffected, 1);
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.RowsEffected);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AssertRow(result.Rows[0], allTypes);
 
@@ -1089,7 +1088,7 @@ namespace QueryLiteTest.Tests {
 
                 NonQueryResult result = deleteQuery8.Execute(parameters: allTypes, transaction, timeout: TimeoutLevel.ShortDelete);
 
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 transaction.Commit();
             }
@@ -1098,13 +1097,13 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = _selectAllTypesCountQuery!.Execute(parameters: allTypes, TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 0);
+                Assert.AreEqual(0, countValue!.Value);
             }
             Assert.AreEqual(beginRowCount, GetNumberOfRows() + 1);
         }
@@ -1127,7 +1126,7 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = deleteQuery9.Execute(parameters: allTypes.Id, transaction, TimeoutLevel.ShortDelete);
 
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 AllTypesInfo row = result.Rows.First();
 
@@ -1140,13 +1139,13 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = _selectAllTypesCountQuery!.Execute(parameters: allTypes, TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 0);
+                Assert.AreEqual(0, countValue!.Value);
             }
             Assert.AreEqual(beginRowCount, GetNumberOfRows() + 1);
         }
@@ -1169,7 +1168,7 @@ namespace QueryLiteTest.Tests {
 
                 NonQueryResult result = await deleteQuery10.ExecuteAsync(parameters: allTypes.Id, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 transaction.Commit();
             }
@@ -1178,13 +1177,13 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = await _selectAllTypesCountQuery!.ExecuteAsync(parameters: allTypes, TestDatabase.Database, CancellationToken.None);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 0);
+                Assert.AreEqual(0, countValue!.Value);
             }
             Assert.AreEqual(beginRowCount, await GetNumberOfRowsAsync() + 1);
         }
@@ -1207,7 +1206,7 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = await deleteQuery10.ExecuteAsync(parameters: allTypes.Id, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 AllTypesInfo row = result.Rows.First();
 
@@ -1220,13 +1219,13 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<int> result = await _selectAllTypesCountQuery!.ExecuteAsync(parameters: allTypes, TestDatabase.Database, CancellationToken.None);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue!.Value, 0);
+                Assert.AreEqual(0, countValue!.Value);
             }
             Assert.AreEqual(beginRowCount, await GetNumberOfRowsAsync() + 1);
         }
@@ -1235,8 +1234,8 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<int> result = _selectAllCountQuery!.Execute(parameters: true, TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 1);
-            Assert.AreEqual(result.RowsEffected, 0);
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
 
             int? countValue = result.Rows[0];
 
@@ -1248,8 +1247,8 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, CancellationToken.None);
 
-            Assert.AreEqual(result.Rows.Count, 1);
-            Assert.AreEqual(result.RowsEffected, 0);
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
 
             int? countValue = result.Rows[0];
 
@@ -1281,7 +1280,7 @@ namespace QueryLiteTest.Tests {
             public IntKey<AllTypes> Id { get; }
         }
 
-        private void JoinQuery(AllTypes allTypes) {
+        private static void JoinQuery(AllTypes allTypes) {
 
             IntKey<AllTypes> id = new IntKey<AllTypes>(928756923);
 
@@ -1313,8 +1312,8 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<AllTypesInfoResult4> result = joinQuery1.Execute(parameters: joinQueryParams, TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 1);
-            Assert.AreEqual(result.RowsEffected, 0);
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
 
             AllTypesInfo row1 = result.Rows[0].AllTypesRow1;
             AllTypesInfo row2 = result.Rows[0].AllTypesRow2;
@@ -1324,7 +1323,8 @@ namespace QueryLiteTest.Tests {
             AssertRow(row1, allTypes);
             AssertRow(row2, allTypes);
             AssertRow(row3, allTypes);
-            Assert.IsTrue(!row4.Id.IsValid);
+
+            Assert.IsFalse(row4.Id.IsValid);
         }
 
         private class AllTypesInfoResult3 {
@@ -1338,7 +1338,7 @@ namespace QueryLiteTest.Tests {
             public AllTypesInfo AllTypesRow2 { get; set; }
             public AllTypesInfo AllTypesRow3 { get; set; }
         }
-        private async Task JoinQueryAsync(AllTypes allTypes) {
+        private static async Task JoinQueryAsync(AllTypes allTypes) {
 
             AllTypesTable allTypesTable1 = AllTypesTable.Instance;
             AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
@@ -1361,8 +1361,8 @@ namespace QueryLiteTest.Tests {
 
             QueryResult<AllTypesInfoResult3> result = await joinQuery.ExecuteAsync(parameters: allTypes, TestDatabase.Database, CancellationToken.None);
 
-            Assert.AreEqual(result.Rows.Count, 1);
-            Assert.AreEqual(result.RowsEffected, 0);
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
 
             AllTypesInfo row1 = result.Rows[0].AllTypesRow1;
             AllTypesInfo row2 = result.Rows[0].AllTypesRow2;
@@ -1375,7 +1375,7 @@ namespace QueryLiteTest.Tests {
 
         private void InsertWithQueryAndRollback(AllTypes allTypes) {
 
-            Assert.IsTrue(!allTypes.Id.IsValid);
+            Assert.IsFalse(allTypes.Id.IsValid);
 
             AllTypesTable table = AllTypesTable.Instance;
 
@@ -1411,8 +1411,8 @@ namespace QueryLiteTest.Tests {
                         transaction
                     );
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 allTypes.Id = result.Rows[0].Id;
 
@@ -1445,7 +1445,7 @@ namespace QueryLiteTest.Tests {
                 @float: 612342.142391f,
                 @double: 554231.942368d,
                 boolean: false,
-                bytes: new byte[] { 5, 99, 3, 6, 5, 4, 7, 3, 1, 10 },
+                bytes: [5, 99, 3, 6, 5, 4, 7, 3, 1, 10],
                 dateTime: new DateTime(year: 2019, month: 11, day: 12, hour: 13, minute: 14, second: 15),
                 dateTimeOffset: new DateTimeOffset(year: 2025, month: 11, day: 10, hour: 1, minute: 7, second: 5, new TimeSpan(hours: 3, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.C,
@@ -1484,8 +1484,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = updateQuery.Execute(parameters: newAllTypes, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.RowsEffected);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AssertRow(result.Rows[0], newAllTypes);
                 AssertRowExists(newAllTypes, transaction);
@@ -1513,7 +1513,7 @@ namespace QueryLiteTest.Tests {
 
                 NonQueryResult result = deleteQuery11.Execute(parameters: allTypes.Id, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 AssertRowDoesNotExists(allTypes, transaction);
 
@@ -1529,9 +1529,9 @@ namespace QueryLiteTest.Tests {
          */
         private void UpdateJoinTest() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
@@ -1576,8 +1576,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = updateQuery.Execute(parameters: allTypes1, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 2);
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.RowsEffected);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
@@ -1629,9 +1629,9 @@ namespace QueryLiteTest.Tests {
          */
         private async Task UpdateJoinTestAsync() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
@@ -1676,8 +1676,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = await updateQuery.ExecuteAsync(parameters: allTypes1, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 2);
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.RowsEffected);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
@@ -1729,9 +1729,9 @@ namespace QueryLiteTest.Tests {
          */
         private void UpdateJoinTest2() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
@@ -1780,8 +1780,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = updateQuery.Execute(parameters, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.RowsEffected);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
@@ -1816,9 +1816,9 @@ namespace QueryLiteTest.Tests {
          */
         private async Task UpdateJoinTest2Async() {
 
-            AllTypes allTypes1 = GetAllTypes1();
-            AllTypes allTypes2 = GetAllTypes1();
-            AllTypes allTypes3 = GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsPreparedTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsPreparedTest.GetAllTypes1();
 
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
@@ -1867,8 +1867,8 @@ namespace QueryLiteTest.Tests {
 
                 QueryResult<AllTypesInfo> result = await updateQuery.ExecuteAsync(parameters, transaction);
 
-                Assert.AreEqual(result.RowsEffected, 1);
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.RowsEffected);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values

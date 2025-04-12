@@ -35,8 +35,8 @@ namespace QueryLiteTest.Tests {
                     .From(table)
                     .Execute(transaction);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0];
 
@@ -61,7 +61,7 @@ namespace QueryLiteTest.Tests {
             }
 
             Settings.UseParameters = false;
-            TestGeographyFunctions();
+            GeographyTest.TestGeographyFunctions();
         }
 
         [TestMethod]
@@ -75,14 +75,14 @@ namespace QueryLiteTest.Tests {
 
                 Settings.UseParameters = true;
 
-                TestGeographyFunctions();
+                GeographyTest.TestGeographyFunctions();
             }
             finally {
                 Settings.UseParameters = false;
             }
         }
 
-        private void TestGeographyFunctions() {
+        private static void TestGeographyFunctions() {
 
             GeoTestTable table = GeoTestTable.Instance;
 
@@ -139,22 +139,22 @@ namespace QueryLiteTest.Tests {
                 .Where(new STEquals(table.Geography, geographyPoint) == 1)
                 .Execute(TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 1);
+            Assert.AreEqual(1, result.Rows.Count);
 
             var row = result.Rows[0];
 
             Assert.AreEqual(row.Guid, guid);
-            Assert.AreEqual(row.Distance, 0);
-            Assert.AreEqual(BitConverter.ToString(row.Binary!).Replace("-", ""), "01010000007593180456965EC017D9CEF753D34740");
-            Assert.AreEqual(row.Text, "POINT (-122.349 47.651)");
+            Assert.AreEqual(0, row.Distance);
+            Assert.AreEqual("01010000007593180456965EC017D9CEF753D34740", Convert.ToHexString(row.Binary!).Replace("-", ""));
+            Assert.AreEqual("POINT (-122.349 47.651)", row.Text);
             Assert.AreEqual(row.Longitude, -122.349);
             Assert.AreEqual(row.Latitude, 47.651);
-            Assert.AreEqual(row.STGeomFromTextAsText, "LINESTRING (-121.36 47.646, -122.343 47.601)");
-            Assert.AreEqual(row.STLineFromTextAsText, "LINESTRING (-123.36 47.496, -121.323 47.256)");
-            Assert.AreEqual(row.STPolyFromTextAsText, "POLYGON ((-121.358 47.643, -121.348 47.629, -121.348 47.678, -121.358 47.668, -121.358 47.643))");
-            Assert.AreEqual(row.STMPointFromText, "MULTIPOINT ((-121.361 46.156), (-121.343 47.444))");
-            Assert.AreEqual(row.STMLineFromText, "MULTILINESTRING ((-121.358 47.653, -121.348 47.649, -121.348 47.658, -121.358 47.658, -121.358 47.653), (-121.357 47.654, -121.357 47.657, -121.349 47.657, -121.349 47.651, -121.357 47.654))");
-            Assert.AreEqual(row.STMPolyFromText, "MULTIPOLYGON (((-111.228 47.313, -122.348 47.649, -122.358 47.658, -111.228 47.313)), ((-222.341 27.111, -122.341 46.661, -122.351 46.661, -222.341 27.111)))");
+            Assert.AreEqual("LINESTRING (-121.36 47.646, -122.343 47.601)", row.STGeomFromTextAsText);
+            Assert.AreEqual("LINESTRING (-123.36 47.496, -121.323 47.256)", row.STLineFromTextAsText);
+            Assert.AreEqual("POLYGON ((-121.358 47.643, -121.348 47.629, -121.348 47.678, -121.358 47.668, -121.358 47.643))", row.STPolyFromTextAsText);
+            Assert.AreEqual("MULTIPOINT ((-121.361 46.156), (-121.343 47.444))", row.STMPointFromText);
+            Assert.AreEqual("MULTILINESTRING ((-121.358 47.653, -121.348 47.649, -121.348 47.658, -121.358 47.658, -121.358 47.653), (-121.357 47.654, -121.357 47.657, -121.349 47.657, -121.349 47.651, -121.357 47.654))", row.STMLineFromText);
+            Assert.AreEqual("MULTIPOLYGON (((-111.228 47.313, -122.348 47.649, -122.358 47.658, -111.228 47.313)), ((-222.341 27.111, -122.341 46.661, -122.351 46.661, -222.341 27.111)))", row.STMPolyFromText);
         }
 
         [TestMethod]
@@ -165,7 +165,7 @@ namespace QueryLiteTest.Tests {
             }
 
             Settings.UseParameters = false;
-            TestGeographyDistance();
+            GeographyTest.TestGeographyDistance();
         }
 
         [TestMethod]
@@ -178,14 +178,14 @@ namespace QueryLiteTest.Tests {
             try {
 
                 Settings.UseParameters = true;
-                TestGeographyDistance();
+                GeographyTest.TestGeographyDistance();
             }
             finally {
                 Settings.UseParameters = false;
             }
         }
 
-        private void TestGeographyDistance() {
+        private static void TestGeographyDistance() {
 
             GeoTestTable table = GeoTestTable.Instance;
 
@@ -219,7 +219,7 @@ namespace QueryLiteTest.Tests {
                 .From(table)
                 .Execute(TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 1);
+            Assert.AreEqual(1, result.Rows.Count);
 
             var row = result.Rows[0];
 
@@ -236,7 +236,7 @@ namespace QueryLiteTest.Tests {
             }
 
             Settings.UseParameters = false;
-            TestSTFunctions();
+            GeographyTest.TestSTFunctions();
         }
 
         [TestMethod]
@@ -249,14 +249,14 @@ namespace QueryLiteTest.Tests {
             try {
 
                 Settings.UseParameters = true;
-                TestSTFunctions();
+                GeographyTest.TestSTFunctions();
             }
             finally {
                 Settings.UseParameters = false;
             }
         }
 
-        private void TestSTFunctions() {
+        private static void TestSTFunctions() {
 
             GeoTestTable table = GeoTestTable.Instance;
 
@@ -295,7 +295,7 @@ namespace QueryLiteTest.Tests {
                 .From(table)
                 .Execute(TestDatabase.Database);
 
-            Assert.AreEqual(result.Rows.Count, 1);
+            Assert.AreEqual(1, result.Rows.Count);
 
             var row = result.Rows[0];
 

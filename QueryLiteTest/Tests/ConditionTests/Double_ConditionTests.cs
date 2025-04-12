@@ -33,13 +33,12 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .From(allTypesTable)
                     .Execute(transaction);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int countValue = result.Rows[0];
 
-                Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue, 0);
+                Assert.AreEqual(0, countValue);
 
                 transaction.Commit();
             }
@@ -55,7 +54,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             Settings.UseParameters = true;
 
-            await TestConditions_Async();
+            await Double_ConditionTests.TestConditions_Async();
         }
 
         [TestMethod]
@@ -63,10 +62,10 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             Settings.UseParameters = false;
 
-            await TestConditions_Async();
+            await Double_ConditionTests.TestConditions_Async();
         }
 
-        public async Task TestConditions_Async() {
+        public static async Task TestConditions_Async() {
 
             AllTypes types1 = GetAllType();
             AllTypes types2 = GetAllType();
@@ -92,7 +91,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 3);
+                Assert.AreEqual(3, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
                 AllFieldsTest.AssertRow(result.Rows[1], types2);
@@ -109,7 +108,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
                 AllFieldsTest.AssertRow(result.Rows[1], types2);
@@ -125,7 +124,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types2);
             }
@@ -140,7 +139,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -153,7 +152,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types3);
             }
@@ -168,7 +167,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types2);
                 AllFieldsTest.AssertRow(result.Rows[1], types3);
@@ -187,7 +186,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -200,7 +199,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
             }
@@ -215,7 +214,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types2);
                 AllFieldsTest.AssertRow(result.Rows[1], types3);
@@ -234,7 +233,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -247,7 +246,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -260,7 +259,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
             }
@@ -275,7 +274,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
                 AllFieldsTest.AssertRow(result.Rows[1], types2);
@@ -294,7 +293,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -307,7 +306,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -320,7 +319,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
             }
@@ -335,7 +334,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types2);
                 AllFieldsTest.AssertRow(result.Rows[1], types3);
@@ -354,7 +353,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -367,7 +366,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
             }
@@ -382,7 +381,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types2);
                 AllFieldsTest.AssertRow(result.Rows[1], types3);
@@ -401,7 +400,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -414,7 +413,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 3);
+                Assert.AreEqual(3, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
                 AllFieldsTest.AssertRow(result.Rows[1], types2);
@@ -445,7 +444,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
+                Assert.AreEqual(1, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types1);
             }
@@ -466,7 +465,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types2);
                 AllFieldsTest.AssertRow(result.Rows[1], types3);
@@ -487,7 +486,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 0);
+                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -506,7 +505,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .OrderBy(table.Double.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 2);
+                Assert.AreEqual(2, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types2);
                 AllFieldsTest.AssertRow(result.Rows[1], types3);
@@ -526,7 +525,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                 @float: 7324.2521342f,
                 @double: 93234.487213123d,
                 boolean: true,
-                bytes: new byte[] { 5, 43, 23, 7, 8 },
+                bytes: [5, 43, 23, 7, 8],
                 dateTime: new DateTime(year: 2021, month: 12, day: 01, hour: 23, minute: 59, second: 59),
                 dateTimeOffset: new DateTimeOffset(year: 2022, month: 11, day: 02, hour: 20, minute: 55, second: 57, new TimeSpan(hours: 5, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.A,

@@ -103,7 +103,7 @@ namespace QueryLiteTest.Tests {
         /// Here we are testing the saving and loading of Enums with the types byte, short, int and long.
         /// Note that unsigned types are not supported by Sql Server or PostgreSql.
         /// </summary>
-        private void TestEnumValueColumns(ByteTestEnum byteValue, ShortTestEnum shortValue, IntegerTestEnum intValue, LongTestEnum longValue, ByteTestEnum? byteNullValue, ShortTestEnum? shortNullValue, IntegerTestEnum? intNullValue, LongTestEnum? longNullValue) {
+        private static void TestEnumValueColumns(ByteTestEnum byteValue, ShortTestEnum shortValue, IntegerTestEnum intValue, LongTestEnum longValue, ByteTestEnum? byteNullValue, ShortTestEnum? shortNullValue, IntegerTestEnum? intNullValue, LongTestEnum? longNullValue) {
 
             EnumTestTableTable table = EnumTestTableTable.Instance;
 

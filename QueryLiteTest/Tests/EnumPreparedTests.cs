@@ -7,8 +7,8 @@ namespace QueryLiteTest.Tests {
     [TestClass]
     public sealed class EnumPreparedTests {
 
-        private IPreparedInsertQuery<ByteValues> _InsertQuery;
-        IPreparedUpdateQuery<ByteValues> _UpdateQuery;
+        private readonly IPreparedInsertQuery<ByteValues> _InsertQuery;
+        private readonly IPreparedUpdateQuery<ByteValues> _UpdateQuery;
 
         public EnumPreparedTests() {
 
@@ -162,8 +162,6 @@ namespace QueryLiteTest.Tests {
         /// Note that unsigned types are not supported by Sql Server or PostgreSql.
         /// </summary>
         private void TestEnumValueColumns(ByteValues byteValues) {
-
-            EnumTestTableTable table = EnumTestTableTable.Instance;
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 

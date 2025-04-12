@@ -35,8 +35,8 @@ namespace QueryLiteTest.Tests {
                     .From(allTypesTable)
                     .Execute(transaction);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 int? countValue = result.Rows[0].Count;
 
@@ -66,7 +66,7 @@ namespace QueryLiteTest.Tests {
             InsertWithSetFunctions();
         }
 
-        private void InsertWithSetFunctions() {
+        private static void InsertWithSetFunctions() {
 
             if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
                 return;
@@ -74,7 +74,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable table = AllTypesTable.Instance;
 
-            AllTypes info = GetAllTypes1();
+            AllTypes info = FunctionTests.GetAllTypes1();
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -102,8 +102,8 @@ namespace QueryLiteTest.Tests {
                         TimeoutLevel.ShortInsert
                     );
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 info.Id = result.Rows[0];
                 transaction.Commit();
@@ -122,8 +122,8 @@ namespace QueryLiteTest.Tests {
                     .OrderBy(table.Id.ASC)
                     .Execute(TestDatabase.Database);
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 AllTypesInfo row = result.Rows[0];
 
@@ -178,8 +178,8 @@ namespace QueryLiteTest.Tests {
                         TimeoutLevel.ShortInsert
                     );
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 var row = result.Rows[0];
 
@@ -213,8 +213,8 @@ namespace QueryLiteTest.Tests {
                         TimeoutLevel.ShortInsert
                     );
 
-                Assert.AreEqual(result.Rows.Count, 0);
-                Assert.AreEqual(result.RowsEffected, 0);
+                Assert.AreEqual(0, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
                 transaction.Commit();
             }
@@ -234,8 +234,8 @@ namespace QueryLiteTest.Tests {
                         TimeoutLevel.ShortInsert
                     );
 
-                Assert.AreEqual(result.Rows.Count, 1);
-                Assert.AreEqual(result.RowsEffected, 1);
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(1, result.RowsEffected);
 
                 var row = result.Rows[0];
 
@@ -247,7 +247,7 @@ namespace QueryLiteTest.Tests {
             }
         }
 
-        private AllTypes GetAllTypes1() {
+        private static AllTypes GetAllTypes1() {
             return new AllTypes(
                 id: IntKey<AllTypes>.NotSet,
                 guid: Guid.NewGuid(),
@@ -259,7 +259,7 @@ namespace QueryLiteTest.Tests {
                 @float: 7324.2521342f,
                 @double: 93234.487213123d,
                 boolean: true,
-                bytes: new byte[] { 1, 2, 3 },
+                bytes: [1, 2, 3],
                 dateTime: new DateTime(year: 1800, month: 12, day: 01, hour: 23, minute: 59, second: 59),
                 dateTimeOffset: new DateTimeOffset(year: 1800, month: 11, day: 02, hour: 20, minute: 55, second: 57, new TimeSpan(hours: 5, minutes: 0, seconds: 0)),
                 @enum: AllTypesEnum.A,
@@ -267,7 +267,7 @@ namespace QueryLiteTest.Tests {
                 timeOnly: new TimeOnly(hour: 23, minute: 57, second: 0, millisecond: 1, microsecond: 777)
             );
         }
-        private void AssertRow(AllTypesInfo row, AllTypes allTypes) {
+        private static void AssertRow(AllTypesInfo row, AllTypes allTypes) {
 
             Assert.AreEqual(row.Id, allTypes.Id);
             Assert.AreEqual(row.Guid, allTypes.Guid);

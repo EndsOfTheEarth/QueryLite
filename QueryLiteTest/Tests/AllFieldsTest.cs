@@ -99,7 +99,7 @@ namespace QueryLiteTest.Tests {
         public void LoadDocumentation() {
 
             string doc = DocumentationGenerator.GenerateForAssembly([Assembly.GetExecutingAssembly()], applicationName: "Auto Tester", version: "v1.0");
-            Assert.IsNotNull(doc);
+            Assert.IsNotEmpty(doc);
         }
 
         [TestMethod]

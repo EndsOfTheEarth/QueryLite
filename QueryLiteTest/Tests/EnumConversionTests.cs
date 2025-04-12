@@ -17,11 +17,11 @@ namespace QueryLiteTest.Tests {
 
             NumericType type = EnumHelper.GetNumericType<SByteEnum>();
 
-            Assert.IsTrue(type == NumericType.SByte);
+            Assert.AreEqual(NumericType.SByte, type);
 
-            Assert.AreEqual(EnumHelper.UnsafeConvertToSByte(SByteEnum.A), (sbyte)SByteEnum.A);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToSByte(SByteEnum.B), (sbyte)SByteEnum.B);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToSByte(SByteEnum.C), (sbyte)SByteEnum.C);
+            Assert.AreEqual((sbyte)SByteEnum.A, EnumHelper.UnsafeConvertToSByte(SByteEnum.A));
+            Assert.AreEqual((sbyte)SByteEnum.B, EnumHelper.UnsafeConvertToSByte(SByteEnum.B));
+            Assert.AreEqual((sbyte)SByteEnum.C, EnumHelper.UnsafeConvertToSByte(SByteEnum.C));
         }
 
         public enum ByteEnum : byte {
@@ -35,11 +35,11 @@ namespace QueryLiteTest.Tests {
 
             NumericType type = EnumHelper.GetNumericType<ByteEnum>();
 
-            Assert.IsTrue(type == NumericType.Byte);
+            Assert.AreEqual(NumericType.Byte, type);
 
-            Assert.AreEqual(EnumHelper.UnsafeConvertToByte(ByteEnum.A), (byte)ByteEnum.A);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToByte(ByteEnum.B), (byte)ByteEnum.B);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToByte(ByteEnum.C), (byte)ByteEnum.C);
+            Assert.AreEqual((byte)ByteEnum.A, EnumHelper.UnsafeConvertToByte(ByteEnum.A));
+            Assert.AreEqual((byte)ByteEnum.B, EnumHelper.UnsafeConvertToByte(ByteEnum.B));
+            Assert.AreEqual((byte)ByteEnum.C, EnumHelper.UnsafeConvertToByte(ByteEnum.C));
         }
 
         public enum UShortEnum : ushort {
@@ -53,11 +53,11 @@ namespace QueryLiteTest.Tests {
 
             NumericType type = EnumHelper.GetNumericType<UShortEnum>();
 
-            Assert.IsTrue(type == NumericType.UShort);
+            Assert.AreEqual(NumericType.UShort, type);
 
-            Assert.AreEqual(EnumHelper.UnsafeConvertToUShort(UShortEnum.A), (ushort)UShortEnum.A);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToUShort(UShortEnum.B), (ushort)UShortEnum.B);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToUShort(UShortEnum.C), (ushort)UShortEnum.C);
+            Assert.AreEqual((ushort)UShortEnum.A, EnumHelper.UnsafeConvertToUShort(UShortEnum.A));
+            Assert.AreEqual((ushort)UShortEnum.B, EnumHelper.UnsafeConvertToUShort(UShortEnum.B));
+            Assert.AreEqual((ushort)UShortEnum.C, EnumHelper.UnsafeConvertToUShort(UShortEnum.C));
         }
 
         public enum ShortEnum : short {
@@ -71,11 +71,11 @@ namespace QueryLiteTest.Tests {
 
             NumericType type = EnumHelper.GetNumericType<ShortEnum>();
 
-            Assert.IsTrue(type == NumericType.Short);
+            Assert.AreEqual(NumericType.Short, type);
 
-            Assert.AreEqual(EnumHelper.UnsafeConvertToShort(ShortEnum.A), (short)ShortEnum.A);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToShort(ShortEnum.B), (short)ShortEnum.B);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToShort(ShortEnum.C), (short)ShortEnum.C);
+            Assert.AreEqual((short)ShortEnum.A, EnumHelper.UnsafeConvertToShort(ShortEnum.A));
+            Assert.AreEqual((short)ShortEnum.B, EnumHelper.UnsafeConvertToShort(ShortEnum.B));
+            Assert.AreEqual((short)ShortEnum.C, EnumHelper.UnsafeConvertToShort(ShortEnum.C));
         }
 
         public enum UIntEnum : uint {
@@ -89,11 +89,11 @@ namespace QueryLiteTest.Tests {
 
             NumericType type = EnumHelper.GetNumericType<UIntEnum>();
 
-            Assert.IsTrue(type == NumericType.UInt);
+            Assert.AreEqual(NumericType.UInt, type);
 
-            Assert.AreEqual(EnumHelper.UnsafeConvertToUInt(UIntEnum.A), (uint)UIntEnum.A);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToUInt(UIntEnum.B), (uint)UIntEnum.B);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToUInt(UIntEnum.C), (uint)UIntEnum.C);
+            Assert.AreEqual((uint)UIntEnum.A, EnumHelper.UnsafeConvertToUInt(UIntEnum.A));
+            Assert.AreEqual((uint)UIntEnum.B, EnumHelper.UnsafeConvertToUInt(UIntEnum.B));
+            Assert.AreEqual((uint)UIntEnum.C, EnumHelper.UnsafeConvertToUInt(UIntEnum.C));
         }
 
         public enum IntEnum : int {
@@ -107,11 +107,11 @@ namespace QueryLiteTest.Tests {
 
             NumericType type = EnumHelper.GetNumericType<IntEnum>();
 
-            Assert.IsTrue(type == NumericType.Int);
+            Assert.AreEqual(NumericType.Int, type);
 
-            Assert.AreEqual(EnumHelper.UnsafeConvertToInt(IntEnum.A), (int)IntEnum.A);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToInt(IntEnum.B), (int)IntEnum.B);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToInt(IntEnum.C), (int)IntEnum.C);
+            Assert.AreEqual((int)IntEnum.A, EnumHelper.UnsafeConvertToInt(IntEnum.A));
+            Assert.AreEqual((int)IntEnum.B, EnumHelper.UnsafeConvertToInt(IntEnum.B));
+            Assert.AreEqual((int)IntEnum.C, EnumHelper.UnsafeConvertToInt(IntEnum.C));
         }
 
         public enum ULongEnum : ulong {
@@ -125,11 +125,11 @@ namespace QueryLiteTest.Tests {
 
             NumericType type = EnumHelper.GetNumericType<ULongEnum>();
 
-            Assert.IsTrue(type == NumericType.ULong);
+            Assert.AreEqual(NumericType.ULong, type);
 
-            Assert.AreEqual(EnumHelper.UnsafeConvertToULong(ULongEnum.A), (ulong)ULongEnum.A);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToULong(ULongEnum.B), (ulong)ULongEnum.B);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToULong(ULongEnum.C), (ulong)ULongEnum.C);
+            Assert.AreEqual((ulong)ULongEnum.A, EnumHelper.UnsafeConvertToULong(ULongEnum.A));
+            Assert.AreEqual((ulong)ULongEnum.B, EnumHelper.UnsafeConvertToULong(ULongEnum.B));
+            Assert.AreEqual((ulong)ULongEnum.C, EnumHelper.UnsafeConvertToULong(ULongEnum.C));
         }
 
         public enum LongEnum : long {
@@ -143,11 +143,11 @@ namespace QueryLiteTest.Tests {
 
             NumericType type = EnumHelper.GetNumericType<LongEnum>();
 
-            Assert.IsTrue(type == NumericType.Long);
+            Assert.AreEqual(NumericType.Long, type);
 
-            Assert.AreEqual(EnumHelper.UnsafeConvertToLong(LongEnum.A), (long)LongEnum.A);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToLong(LongEnum.B), (long)LongEnum.B);
-            Assert.AreEqual(EnumHelper.UnsafeConvertToLong(LongEnum.C), (long)LongEnum.C);
+            Assert.AreEqual((long)LongEnum.A, EnumHelper.UnsafeConvertToLong(LongEnum.A));
+            Assert.AreEqual((long)LongEnum.B, EnumHelper.UnsafeConvertToLong(LongEnum.B));
+            Assert.AreEqual((long)LongEnum.C, EnumHelper.UnsafeConvertToLong(LongEnum.C));
         }
     }
 }
