@@ -203,7 +203,7 @@ namespace QueryLite.Databases.PostgreSql {
 
         public static string ToSqlString(Bit value) => value.Value ? "true" : "false";
 
-        public static string ToSqlString(byte[] value) => $"decode('{(BitConverter.ToString(value)).Replace("-", string.Empty)}', 'hex')";
+        public static string ToSqlString(byte[] value) => $"decode('{Convert.ToHexString(value)}', 'hex')";
 
         public static string ToSqlString(byte value) => value.ToString();
 
