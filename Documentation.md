@@ -855,6 +855,16 @@ public sealed class ShipperTable : ATable {
 
 QueryLite has support for custom types. These can be created manually or by using a code generation library.
 
+The following types are supported with custom types:
+
+- Guid
+- short
+- int
+- long
+- string
+- bool
+- decimal
+
 Here is an example of the `ShipperId` as a custom type.
 
 ```C#
@@ -933,6 +943,42 @@ public readonly struct ShipperId : QueryLite.IValueOf<int, ShipperId>, QueryLite
         return Value.ToString() ?? string.Empty;
     }
 }
+```
+
+When querying custom types, the following 'get' methods are available:
+```C#
+var result = Query
+    .Select(
+        row => new {
+            CustomGuid = row.GetGuid(table.Guid),
+            CustomShort = row.GetShort(table.Short),
+            CustomInt = row.GetInt(table.Int),
+            CustomLong = row.GetLong(table.Long),
+            CustomString = row.GetString(table.String),
+            CustomBool = row.GetBool(table.Bool),
+            CustomDecimal = row.GetDecimal(table.Decimal)
+        }
+    )
+    .From(table)
+    .Execute(database);
+```
+
+When inserting and updating custom types, the following 'set' methods are available:
+
+```C#
+NonQueryResult insertResult = Query
+    .Update(table)
+    .Values(values => values
+        .SetGuid(table.Guid, customGuid)
+        .SetShort(table.Short, customShort)
+        .SetInt(table.Int, customInt)
+        .SetLong(table.Long, customLong)
+        .SetString(table.String, customString)
+        .SetBool(table.Bool, customBool)
+        .SetDecimal(table.Decimal, customDecimal)
+    )
+    .Where(table.Guid == guid)
+    .Execute(transaction);
 ```
 
 ## Geography Types
