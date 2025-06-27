@@ -193,6 +193,12 @@ namespace QueryLite.DbSchema.CodeGeneration {
                         else if(column.DataType.DotNetType == typeof(string)) {
                             method = "GetString";
                         }
+                        else if(column.DataType.DotNetType == typeof(bool)) {
+                            method = "GetBool";
+                        }
+                        else if(column.DataType.DotNetType == typeof(decimal)) {
+                            method = "GetDecimal";
+                        }
                     }
                     constructor2.Indent(3).Append($"{columnName} = row.{method}({tableOrViewParamName}.{columnNameForTable});").EndLine();
                 }

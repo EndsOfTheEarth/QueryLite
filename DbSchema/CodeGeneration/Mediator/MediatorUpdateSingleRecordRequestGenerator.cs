@@ -122,6 +122,12 @@ namespace DbSchema.CodeGeneration {
                             else if(column.DataType.DotNetType == typeof(string)) {
                                 method = "SetString";
                             }
+                            else if(column.DataType.DotNetType == typeof(bool)) {
+                                method = "SetBool";
+                            }
+                            else if(column.DataType.DotNetType == typeof(decimal)) {
+                                method = "SetDecimal";
+                            }
                         }
                         setValues.Append($"                    .{method}(table.{columnName}, info => info.{columnName})");
                     }
@@ -240,6 +246,12 @@ namespace DbSchema.CodeGeneration {
                             }
                             else if(column.DataType.DotNetType == typeof(string)) {
                                 method = "SetString";
+                            }
+                            else if(column.DataType.DotNetType == typeof(bool)) {
+                                method = "SetBool";
+                            }
+                            else if(column.DataType.DotNetType == typeof(decimal)) {
+                                method = "SetDecimal";
                             }
                         }
                         setValues.Append($"                        .{method}(table.{columnName}, info.{columnName})");
