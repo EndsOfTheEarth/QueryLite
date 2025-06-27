@@ -72,6 +72,9 @@ namespace QueryLite.Databases.PostgreSql {
                 else if(value is IValue<bool> boolValue) {
                     value = boolValue.Value;
                 }
+                else if(value is IValue<decimal> decimalValue) {
+                    value = decimalValue.Value;
+                }
             }
             else {
                 value = DBNull.Value;

@@ -1104,5 +1104,24 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetByte(_ordinal) == 1);
         }
+
+        public CUSTOM_TYPE GetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<decimal, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return CUSTOM_TYPE.ValueOf(0);
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
+        }
+        public CUSTOM_TYPE? GetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<decimal, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
+        }
     }
 }

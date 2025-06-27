@@ -551,5 +551,14 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+
+        public CUSTOM_TYPE GetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<decimal, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<decimal, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
     }
 }

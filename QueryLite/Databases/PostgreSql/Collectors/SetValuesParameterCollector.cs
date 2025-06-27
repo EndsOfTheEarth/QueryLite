@@ -448,6 +448,13 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
             return AddParameter(column, NpgsqlDbType.Boolean, value?.Value);
         }
+
+        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<decimal> {
+            return AddParameter(column, NpgsqlDbType.Numeric, value.Value);
+        }
+        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
+            return AddParameter(column, NpgsqlDbType.Numeric, value?.Value);
+        }
     }
 
     internal class PostgreSqlSetValuesCollector : ISetValuesCollector {
@@ -907,6 +914,17 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<decimal> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));

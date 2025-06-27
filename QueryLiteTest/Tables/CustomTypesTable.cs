@@ -13,6 +13,7 @@ namespace QueryLiteTest.Tables {
         public Column<CustomLong> Long { get; }
         public Column<CustomString> String { get; }
         public Column<CustomBool> Bool { get; }
+        public Column<CustomDecimal> Decimal { get; }
 
         public NullableColumn<CustomGuid> NGuid { get; }
         public NullableColumn<CustomShort> NShort { get; }
@@ -20,6 +21,7 @@ namespace QueryLiteTest.Tables {
         public NullableColumn<CustomLong> NLong { get; }
         public NullableColumn<CustomString> NString { get; }
         public NullableColumn<CustomBool> NBool { get; }
+        public NullableColumn<CustomDecimal> NDecimal { get; }
 
         private CustomTypesTable() : base(tableName: "CustomTypes", schemaName: "dbo") {
 
@@ -29,6 +31,7 @@ namespace QueryLiteTest.Tables {
             Long = new Column<CustomLong>(this, columnName: "ctLong");
             String = new Column<CustomString>(this, columnName: "ctString", length: 100);
             Bool = new Column<CustomBool>(this, columnName: "ctBool");
+            Decimal = new Column<CustomDecimal>(this, columnName: "ctDecimal");
 
             NGuid = new NullableColumn<CustomGuid>(this, columnName: "ctNGuid");
             NShort = new NullableColumn<CustomShort>(this, columnName: "ctNShort");
@@ -36,6 +39,7 @@ namespace QueryLiteTest.Tables {
             NLong = new NullableColumn<CustomLong>(this, columnName: "ctNLong");
             NString = new NullableColumn<CustomString>(this, columnName: "ctNString", length: 100);
             NBool = new NullableColumn<CustomBool>(this, columnName: "ctNBool");
+            NDecimal = new NullableColumn<CustomDecimal>(this, columnName: "ctNDecimal");
         }
     }
 
@@ -327,6 +331,56 @@ namespace QueryLiteTest.Tables {
         public override bool Equals(object? obj) {
 
             if(obj is CustomBool identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomDecimal : IValueOf<decimal, CustomDecimal>, IValue<decimal>, IEquatable<CustomDecimal> {
+
+        public decimal Value { get; }
+
+        public CustomDecimal(decimal value) {
+            Value = value;
+        }
+        public static CustomDecimal ValueOf(decimal value) {
+            return new CustomDecimal(value);
+        }
+        public bool Equals(CustomDecimal other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomDecimal? pA, CustomDecimal? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomDecimal? pA, CustomDecimal? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomDecimal identifier) {
                 return Value.CompareTo(identifier.Value) == 0;
             }
             return false;

@@ -179,6 +179,9 @@ namespace QueryLite.Databases.PostgreSql {
             if(type.IsAssignableTo(typeof(IValue<bool>))) {
                 return NpgsqlDbType.Boolean;
             }
+            if(type.IsAssignableTo(typeof(IValue<decimal>))) {
+                return NpgsqlDbType.Numeric;
+            }
             throw new Exception($"Unknown PostgreSql parameter type '{type.FullName}'");
         }
 
@@ -330,6 +333,9 @@ namespace QueryLite.Databases.PostgreSql {
             }
             if(value is IValue<bool> boolIValue) {
                 return ToSqlString(boolIValue.Value);
+            }
+            if(value is IValue<decimal> decimalIValue) {
+                return ToSqlString(decimalIValue.Value);
             }
 
             Type type = value.GetType();

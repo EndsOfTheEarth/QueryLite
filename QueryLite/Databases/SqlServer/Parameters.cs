@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using Microsoft.Data.SqlClient;
 using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using Microsoft.Data.SqlClient;
 
 namespace QueryLite.Databases.SqlServer {
 
@@ -72,7 +72,10 @@ namespace QueryLite.Databases.SqlServer {
                 else if(value is IValue<bool> boolValue) {
                     value = boolValue.Value;
                 }
-            }            
+                else if(value is IValue<decimal> decimalValue) {
+                    value = decimalValue.Value;
+                }
+            }
             else {
                 value = DBNull.Value;
             }

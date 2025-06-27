@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using Microsoft.Data.SqlClient;
 using QueryLite.Utility;
 using System;
 using System.Data;
-using Microsoft.Data.SqlClient;
 using System.Text;
 
 namespace QueryLite.Databases.SqlServer.Collectors {
@@ -454,6 +454,13 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         }
         public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
             return AddParameter(column, SqlDbType.Bit, value?.Value);
+        }
+
+        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<decimal> {
+            return AddParameter(column, SqlDbType.Decimal , value.Value);
+        }
+        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
+            return AddParameter(column, SqlDbType.Decimal, value?.Value);
         }
     }
 
@@ -918,6 +925,17 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
+
+            if(value != null) {
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<decimal> {
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+        }
+        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));

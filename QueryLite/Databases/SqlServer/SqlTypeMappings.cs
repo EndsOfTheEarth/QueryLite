@@ -178,6 +178,9 @@ namespace QueryLite.Databases.SqlServer {
             if(type.IsAssignableTo(typeof(IValue<bool>))) {
                 return SqlDbType.Bit;
             }
+            if(type.IsAssignableTo(typeof(IValue<decimal>))) {
+                return SqlDbType.Decimal;
+            }
             throw new Exception($"Unknown SqlServer parameter type '{type.FullName}'");
         }
 
@@ -326,6 +329,9 @@ namespace QueryLite.Databases.SqlServer {
             }
             if(value is IValue<bool> boolIValue) {
                 return ToSqlString(boolIValue.Value);
+            }
+            if(value is IValue<decimal> decimalIValue) {
+                return ToSqlString(decimalIValue.Value);
             }
 
             Type type = value.GetType();

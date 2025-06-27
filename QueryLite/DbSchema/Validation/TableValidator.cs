@@ -294,7 +294,7 @@ namespace QueryLite {
                 tableValidation.Add($"Unable to load an instance of class table in order to validate table");
             }
             else {
-                
+
                 tableValidation.SetTable(table);
 
                 Validate(database, table, dbSchema, tableValidation, validationSettings);
@@ -800,7 +800,7 @@ namespace QueryLite {
                 }
                 else if(type.GetGenericTypeDefinition() == typeof(BoolValue<>)) {
                     type = typeof(bool);
-                }                
+                }
             }
             else if(type.IsAssignableTo(typeof(IValue<Guid>))) {
                 type = typeof(Guid);
@@ -819,6 +819,9 @@ namespace QueryLite {
             }
             else if(type.IsAssignableTo(typeof(IValue<bool>))) {
                 type = typeof(bool);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<decimal>))) {
+                type = typeof(decimal);
             }
             else if(type.IsEnum) {
                 type = typeof(int);
