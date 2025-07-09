@@ -333,6 +333,39 @@ namespace QueryLite {
             Sql = sql;
             RowsEffected = rowsEffected;
         }
+
+        /// <summary>
+        /// Throws an exception if the number of rows in the QueryResult do not equal rows.
+        /// </summary>
+        public void AssertRowCount(int rows) {
+
+            if(rows < 0) {
+                throw new ArgumentException($"{nameof(rows)} must be a positive number. {nameof(rows)} == {rows}");
+            }
+
+            if(Rows.Count != rows) {
+                throw new Exception($"Expected {rows} row{(rows != 1 ? "s" : "")} but {Rows.Count} rows were returned.");
+            }
+        }
+
+        /// <summary>
+        /// Throws an exception if the number of rows in the QueryResult is not between min and max (Inclusive).
+        /// </summary>
+        public void AssertRowCountBetween(int min, int max) {
+
+            if(min < 0) {
+                throw new ArgumentException($"{nameof(min)} must be a positive number. {nameof(min)} == {min}");
+            }
+
+            if(max <= min) {
+                throw new ArgumentException($"{nameof(max)} must be greater than {nameof(min)}. {nameof(min)} == {min}, {nameof(max)} == {max}");
+            }
+
+            if(Rows.Count < min || Rows.Count > max) {
+                throw new Exception($"Expected between {min} and {max} rows but {Rows.Count} rows were returned.");
+            }
+        }
+
         public override string ToString() {
             return $"Rows: {Rows.Count}, Rows Effected: {RowsEffected}";
         }
@@ -352,6 +385,38 @@ namespace QueryLite {
         public NonQueryResult(string sql, int rowsEffected) {
             Sql = sql;
             RowsEffected = rowsEffected;
+        }
+
+        /// <summary>
+        /// Throws an exception if the number of rows in the QueryResult do not equal rows.
+        /// </summary>
+        public void AssertRowsEffected(int rows) {
+
+            if(rows < 0) {
+                throw new ArgumentException($"{nameof(rows)} must be a positive number. {nameof(rows)} == {rows}");
+            }
+
+            if(RowsEffected != rows) {
+                throw new Exception($"Expected {rows} row{(rows != 1 ? "s" : "")} but {RowsEffected} rows were effected.");
+            }
+        }
+
+        /// <summary>
+        /// Throws an exception if the number of rows in the QueryResult is not between min and max (Inclusive).
+        /// </summary>
+        public void AssertRowsEffectedBetween(int min, int max) {
+
+            if(min < 0) {
+                throw new ArgumentException($"{nameof(min)} must be a positive number. {nameof(min)} == {min}");
+            }
+
+            if(max <= min) {
+                throw new ArgumentException($"{nameof(max)} must be greater than {nameof(min)}. {nameof(min)} == {min}, {nameof(max)} == {max}");
+            }
+
+            if(RowsEffected < min || RowsEffected > max) {
+                throw new Exception($"Expected between {min} and {max} rows but {RowsEffected} rows were effected.");
+            }
         }
     }
 }
