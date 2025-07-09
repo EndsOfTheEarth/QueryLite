@@ -180,9 +180,8 @@ namespace DbSchema.CodeGeneration {
 
                 NonQueryResult result = await _query.ExecuteAsync(parameters: request.{name}, transaction, cancellationToken);
 
-                if(result.RowsEffected != 1) {{
-                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
-                }}
+                result.AssertRowsEffected(rows: 1);
+                
                 transaction.Commit();
             }}
             return Response.Success;
@@ -299,9 +298,8 @@ namespace DbSchema.CodeGeneration {
                     .Where({whereClause})
                     .ExecuteAsync(transaction, cancellationToken);
 
-                if(result.RowsEffected != 1) {{
-                    throw new Exception($""Record not found. {{nameof(result.RowsEffected)}} != 1. Value = {{result.RowsEffected}}"");
-                }}
+                result.AssertRowsEffected(rows: 1);
+                
                 transaction.Commit();
             }}
             return Response.Success;

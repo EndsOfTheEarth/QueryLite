@@ -158,9 +158,8 @@ namespace DbSchema.CodeGeneration {
 
             QueryResult<{name}> result = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
 
-            if(result.Rows.Count != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
-            }}
+            result.AssertRowCount(rows: 1);
+            
             return result.Rows[0];
         }}
     }}
@@ -217,9 +216,8 @@ namespace DbSchema.CodeGeneration {
                 .Where({whereClause})
                 .ExecuteAsync(_database, cancellationToken);
 
-            if(result.Rows.Count != 1) {{
-                throw new Exception($""Record not found. {{nameof(result.Rows)}} != 1. Value = {{result.Rows}}"");
-            }}
+            result.AssertRowCount(rows: 1);
+            
             return result.Rows[0];
         }}
     }}
