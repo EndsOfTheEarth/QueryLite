@@ -77,6 +77,8 @@ namespace QueryLiteTest.Tests {
                             .SetString(table.String, customTypesA.CustomString)
                             .SetBool(table.Bool, customTypesA.CustomBool)
                             .SetDecimal(table.Decimal, customTypesA.CustomDecimal)
+                            .SetDateTime(table.DateTime, customTypesA.CustomDateTime)
+                            .SetDateTimeOffset(table.DateTimeOffset, customTypesA.CustomDateTimeOffset)
 
                             .SetGuid(table.NGuid, customTypesA.NCustomGuid)
                             .SetShort(table.NShort, customTypesA.NCustomShort)
@@ -85,6 +87,8 @@ namespace QueryLiteTest.Tests {
                             .SetString(table.NString, customTypesA.NCustomString)
                             .SetBool(table.NBool, customTypesA.NCustomBool)
                             .SetDecimal(table.NDecimal, customTypesA.NCustomDecimal)
+                            .SetDateTime(table.NDateTime, customTypesA.NCustomDateTime)
+                            .SetDateTimeOffset(table.NDateTimeOffset, customTypesA.NCustomDateTimeOffset)
                         )
                         .Execute(transaction);
 
@@ -114,6 +118,8 @@ namespace QueryLiteTest.Tests {
                             .SetString(table.String, customTypesB.CustomString)
                             .SetBool(table.Bool, customTypesB.CustomBool)
                             .SetDecimal(table.Decimal, customTypesB.CustomDecimal)
+                            .SetDateTime(table.DateTime, customTypesA.CustomDateTime)
+                            .SetDateTimeOffset(table.DateTimeOffset, customTypesA.CustomDateTimeOffset)
 
                             .SetGuid(table.NGuid, customTypesB.NCustomGuid)
                             .SetShort(table.NShort, customTypesB.NCustomShort)
@@ -122,6 +128,8 @@ namespace QueryLiteTest.Tests {
                             .SetString(table.NString, customTypesB.NCustomString)
                             .SetBool(table.NBool, customTypesB.NCustomBool)
                             .SetDecimal(table.NDecimal, customTypesB.NCustomDecimal)
+                            .SetDateTime(table.NDateTime, customTypesA.NCustomDateTime)
+                            .SetDateTimeOffset(table.NDateTimeOffset, customTypesA.NCustomDateTimeOffset)
                         )
                         .Where(table.Guid == customTypesA.CustomGuid)
                         .Execute(transaction);
@@ -145,7 +153,9 @@ namespace QueryLiteTest.Tests {
                             table.Long == customTypesB.CustomLong &
                             table.String == customTypesB.CustomString &
                             table.Bool == customTypesB.CustomBool &
-                            table.Decimal == customTypesB.CustomDecimal
+                            table.Decimal == customTypesB.CustomDecimal &
+                            table.DateTime == customTypesB.CustomDateTime &
+                            table.DateTimeOffset == customTypesB.CustomDateTimeOffset
                         )
                         .Execute(transaction);
 
@@ -186,6 +196,8 @@ namespace QueryLiteTest.Tests {
                         customString: row.GetString(table.String),
                         customBool: row.GetBool(table.Bool),
                         customDecimal: row.GetDecimal(table.Decimal),
+                        customDateTime: row.GetDateTime(table.DateTime),
+                        customDateTimeOffset: row.GetDateTimeOffset(table.DateTimeOffset),
 
                         nCustomGuid: row.GetGuid(table.NGuid),
                         nCustomShort: row.GetShort(table.NShort),
@@ -193,7 +205,9 @@ namespace QueryLiteTest.Tests {
                         nCustomLong: row.GetLong(table.NLong),
                         nCustomString: row.GetString(table.NString),
                         nCustomBool: row.GetBool(table.NBool),
-                        nCustomDecimal: row.GetDecimal(table.NDecimal)
+                        nCustomDecimal: row.GetDecimal(table.NDecimal),
+                        nCustomDateTime: row.GetDateTime(table.NDateTime),
+                        nCustomDateTimeOffset: row.GetDateTimeOffset(table.NDateTimeOffset)
                     )
                 )
                 .From(table)
@@ -229,6 +243,8 @@ namespace QueryLiteTest.Tests {
             customString: CustomString.ValueOf(Guid.NewGuid().ToString()),
             customBool: CustomBool.ValueOf(true),
             customDecimal: CustomDecimal.ValueOf(0.22345200m),
+            customDateTime: CustomDateTime.ValueOf(new DateTime(year: 2025, month: 03, day: 10, hour: 15, minute: 01, second: 7)),
+            customDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2024, month: 02, day: 11, hour: 22, minute: 52, second: 12, new TimeSpan(hours: 5, minutes: 0, seconds: 0))),
 
             nCustomGuid: null,
             nCustomShort: null,
@@ -236,7 +252,9 @@ namespace QueryLiteTest.Tests {
             nCustomLong: null,
             nCustomString: null,
             nCustomBool: null,
-            nCustomDecimal: null
+            nCustomDecimal: null,
+            nCustomDateTime: null,
+            nCustomDateTimeOffset: null
         );
 
         private static CustomTypes GetCustomTypesB() => new CustomTypes(
@@ -248,6 +266,8 @@ namespace QueryLiteTest.Tests {
             customString: CustomString.ValueOf(Guid.NewGuid().ToString()),
             customBool: CustomBool.ValueOf(false),
             customDecimal: CustomDecimal.ValueOf(-23452345.65474567m),
+            customDateTime: CustomDateTime.ValueOf(new DateTime(year: 2010, month: 01, day: 30, hour: 17, minute: 02, second: 7)),
+            customDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1990, month: 10, day: 11, hour: 21, minute: 05, second: 01, new TimeSpan(hours: 12, minutes: 0, seconds: 0))),
 
             nCustomGuid: CustomGuid.ValueOf(Guid.NewGuid()),
             nCustomShort: CustomShort.ValueOf(11),
@@ -255,7 +275,9 @@ namespace QueryLiteTest.Tests {
             nCustomLong: CustomLong.ValueOf(2414564),
             nCustomString: CustomString.ValueOf(Guid.NewGuid().ToString()),
             nCustomBool: CustomBool.ValueOf(true),
-            nCustomDecimal: CustomDecimal.ValueOf(2134.45234m)
+            nCustomDecimal: CustomDecimal.ValueOf(2134.45234m),
+            nCustomDateTime: CustomDateTime.ValueOf(new DateTime(year: 2023, month: 9, day: 11, hour: 15, minute: 01, second: 7)),
+            nCustomDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2023, month: 05, day: 12, hour: 10, minute: 52, second: 15, new TimeSpan(hours: 7, minutes: 0, seconds: 0)))
         );
 
         public class CustomTypes {
@@ -267,6 +289,8 @@ namespace QueryLiteTest.Tests {
             public CustomString CustomString { get; set; }
             public CustomBool CustomBool { get; set; }
             public CustomDecimal CustomDecimal { get; set; }
+            public CustomDateTime CustomDateTime { get; set; }
+            public CustomDateTimeOffset CustomDateTimeOffset { get; set; }
 
             public CustomGuid? NCustomGuid { get; set; }
             public CustomShort? NCustomShort { get; set; }
@@ -275,8 +299,16 @@ namespace QueryLiteTest.Tests {
             public CustomString? NCustomString { get; set; }
             public CustomBool? NCustomBool { get; set; }
             public CustomDecimal? NCustomDecimal { get; set; }
+            public CustomDateTime? NCustomDateTime { get; set; }
+            public CustomDateTimeOffset? NCustomDateTimeOffset { get; set; }
 
-            public CustomTypes(CustomGuid customGuid, CustomShort customShort, CustomInt customInt, CustomLong customLong, CustomString customString, CustomBool customBool, CustomDecimal customDecimal, CustomGuid? nCustomGuid, CustomShort? nCustomShort, CustomInt? nCustomInt, CustomLong? nCustomLong, CustomString? nCustomString, CustomBool? nCustomBool, CustomDecimal? nCustomDecimal) {
+            public CustomTypes(CustomGuid customGuid, CustomShort customShort, CustomInt customInt,
+                               CustomLong customLong, CustomString customString, CustomBool customBool,
+                               CustomDecimal customDecimal, CustomDateTime customDateTime,
+                               CustomDateTimeOffset customDateTimeOffset, CustomGuid? nCustomGuid,
+                               CustomShort? nCustomShort, CustomInt? nCustomInt, CustomLong? nCustomLong,
+                               CustomString? nCustomString, CustomBool? nCustomBool, CustomDecimal? nCustomDecimal,
+                               CustomDateTime? nCustomDateTime, CustomDateTimeOffset? nCustomDateTimeOffset) {
                 CustomGuid = customGuid;
                 CustomShort = customShort;
                 CustomInt = customInt;
@@ -284,6 +316,8 @@ namespace QueryLiteTest.Tests {
                 CustomString = customString;
                 CustomBool = customBool;
                 CustomDecimal = customDecimal;
+                CustomDateTime = customDateTime;
+                CustomDateTimeOffset = customDateTimeOffset;
                 NCustomGuid = nCustomGuid;
                 NCustomShort = nCustomShort;
                 NCustomInt = nCustomInt;
@@ -291,6 +325,8 @@ namespace QueryLiteTest.Tests {
                 NCustomString = nCustomString;
                 NCustomBool = nCustomBool;
                 NCustomDecimal = nCustomDecimal;
+                NCustomDateTime = nCustomDateTime;
+                NCustomDateTimeOffset = nCustomDateTimeOffset;
             }
         }
     }

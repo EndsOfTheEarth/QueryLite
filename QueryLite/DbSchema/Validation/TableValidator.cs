@@ -823,6 +823,12 @@ namespace QueryLite {
             else if(type.IsAssignableTo(typeof(IValue<decimal>))) {
                 type = typeof(decimal);
             }
+            else if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                type = typeof(DateTime);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                type = typeof(DateTimeOffset);
+            }
             else if(type.IsEnum) {
                 type = typeof(int);
             }
