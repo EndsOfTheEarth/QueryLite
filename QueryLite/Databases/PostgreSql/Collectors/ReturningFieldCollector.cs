@@ -486,5 +486,61 @@ namespace QueryLite.Databases.PostgreSql {
         public CUSTOM_TYPE? GetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<decimal, CUSTOM_TYPE> {
             return Add(column);
         }
+
+        public CUSTOM_TYPE GetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? GetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE GetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? GetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE GetDateOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? GetDateOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE GetTimeOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? GetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE GetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<float, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? GetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<float, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE GetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<double, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? GetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<double, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE GetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<Bit, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? GetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<Bit, CUSTOM_TYPE> {
+            return Add(column);
+        }
     }
 }

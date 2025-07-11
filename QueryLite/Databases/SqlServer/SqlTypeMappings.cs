@@ -181,6 +181,27 @@ namespace QueryLite.Databases.SqlServer {
             if(type.IsAssignableTo(typeof(IValue<decimal>))) {
                 return SqlDbType.Decimal;
             }
+            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return SqlDbType.DateTime;
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return SqlDbType.DateTimeOffset;
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                return SqlDbType.Date;
+            }
+            if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                return SqlDbType.Time;
+            }
+            if(type.IsAssignableTo(typeof(IValue<float>))) {
+                return SqlDbType.Real;
+            }
+            if(type.IsAssignableTo(typeof(IValue<double>))) {
+                return SqlDbType.Float;
+            }
+            if(type.IsAssignableTo(typeof(IValue<Bit>))) {
+                return SqlDbType.Bit;
+            }
             throw new Exception($"Unknown SqlServer parameter type '{type.FullName}'");
         }
 
@@ -332,6 +353,27 @@ namespace QueryLite.Databases.SqlServer {
             }
             if(value is IValue<decimal> decimalIValue) {
                 return ToSqlString(decimalIValue.Value);
+            }
+            if(value is IValue<DateTime> dateTimeIValue) {
+                return ToSqlString(dateTimeIValue.Value);
+            }
+            if(value is IValue<DateTimeOffset> dateTimeOffsetIValue) {
+                return ToSqlString(dateTimeOffsetIValue.Value);
+            }
+            if(value is IValue<DateOnly> dateOnlyIValue) {
+                return ToSqlString(dateOnlyIValue.Value);
+            }
+            if(value is IValue<TimeOnly> timeOnlyIValue) {
+                return ToSqlString(timeOnlyIValue.Value);
+            }
+            if(value is IValue<float> floatIValue) {
+                return ToSqlString(floatIValue.Value);
+            }
+            if(value is IValue<double> doubleIValue) {
+                return ToSqlString(doubleIValue.Value);
+            }
+            if(value is IValue<Bit> butIValue) {
+                return ToSqlString(butIValue.Value);
             }
 
             Type type = value.GetType();

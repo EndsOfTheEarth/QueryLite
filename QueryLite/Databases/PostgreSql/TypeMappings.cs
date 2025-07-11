@@ -24,7 +24,6 @@
 using NpgsqlTypes;
 using QueryLite.Utility;
 using System;
-using System.Data;
 
 namespace QueryLite.Databases.PostgreSql {
 
@@ -182,6 +181,27 @@ namespace QueryLite.Databases.PostgreSql {
             if(type.IsAssignableTo(typeof(IValue<decimal>))) {
                 return NpgsqlDbType.Numeric;
             }
+            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return NpgsqlDbType.Timestamp;
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return NpgsqlDbType.TimestampTz;
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                return NpgsqlDbType.Date;
+            }
+            if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                return NpgsqlDbType.Time;
+            }
+            if(type.IsAssignableTo(typeof(IValue<float>))) {
+                return NpgsqlDbType.Real;
+            }
+            if(type.IsAssignableTo(typeof(IValue<double>))) {
+                return NpgsqlDbType.Double;
+            }
+            if(type.IsAssignableTo(typeof(IValue<Bit>))) {
+                return NpgsqlDbType.Boolean;
+            }
             throw new Exception($"Unknown PostgreSql parameter type '{type.FullName}'");
         }
 
@@ -336,6 +356,27 @@ namespace QueryLite.Databases.PostgreSql {
             }
             if(value is IValue<decimal> decimalIValue) {
                 return ToSqlString(decimalIValue.Value);
+            }
+            if(value is IValue<DateTime> dateTimeIValue) {
+                return ToSqlString(dateTimeIValue.Value);
+            }
+            if(value is IValue<DateTimeOffset> dateTimeOffsetIValue) {
+                return ToSqlString(dateTimeOffsetIValue.Value);
+            }
+            if(value is IValue<DateOnly> dateOnlyIValue) {
+                return ToSqlString(dateOnlyIValue.Value);
+            }
+            if(value is IValue<TimeOnly> timeOnlyIValue) {
+                return ToSqlString(timeOnlyIValue.Value);
+            }
+            if(value is IValue<float> floatIValue) {
+                return ToSqlString(floatIValue.Value);
+            }
+            if(value is IValue<double> doubleIValue) {
+                return ToSqlString(doubleIValue.Value);
+            }
+            if(value is IValue<Bit> bitIValue) {
+                return ToSqlString(bitIValue.Value);
             }
 
             Type type = value.GetType();

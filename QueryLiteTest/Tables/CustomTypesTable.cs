@@ -14,6 +14,12 @@ namespace QueryLiteTest.Tables {
         public Column<CustomString> String { get; }
         public Column<CustomBool> Bool { get; }
         public Column<CustomDecimal> Decimal { get; }
+        public Column<CustomDateTime> DateTime { get; }
+        public Column<CustomDateTimeOffset> DateTimeOffset { get; }
+        public Column<CustomDateOnly> DateOnly { get; }
+        public Column<CustomTimeOnly> TimeOnly { get; }
+        public Column<CustomFloat> Float { get; }
+        public Column<CustomDouble> Double { get; }
 
         public NullableColumn<CustomGuid> NGuid { get; }
         public NullableColumn<CustomShort> NShort { get; }
@@ -22,6 +28,12 @@ namespace QueryLiteTest.Tables {
         public NullableColumn<CustomString> NString { get; }
         public NullableColumn<CustomBool> NBool { get; }
         public NullableColumn<CustomDecimal> NDecimal { get; }
+        public NullableColumn<CustomDateTime> NDateTime { get; }
+        public NullableColumn<CustomDateTimeOffset> NDateTimeOffset { get; }
+        public NullableColumn<CustomDateOnly> NDateOnly { get; }
+        public NullableColumn<CustomTimeOnly> NTimeOnly { get; }
+        public NullableColumn<CustomFloat> NFloat { get; }
+        public NullableColumn<CustomDouble> NDouble { get; }
 
         private CustomTypesTable() : base(tableName: "CustomTypes", schemaName: "dbo") {
 
@@ -32,6 +44,12 @@ namespace QueryLiteTest.Tables {
             String = new Column<CustomString>(this, columnName: "ctString", length: 100);
             Bool = new Column<CustomBool>(this, columnName: "ctBool");
             Decimal = new Column<CustomDecimal>(this, columnName: "ctDecimal");
+            DateTime = new Column<CustomDateTime>(this, columnName: "ctDateTime");
+            DateTimeOffset = new Column<CustomDateTimeOffset>(this, columnName: "ctDateTimeOffset");
+            DateOnly = new Column<CustomDateOnly>(this, columnName: "ctDateOnly");
+            TimeOnly = new Column<CustomTimeOnly>(this, columnName: "ctTimeOnly");
+            Float = new Column<CustomFloat>(this, columnName: "ctFloat");
+            Double = new Column<CustomDouble>(this, columnName: "ctDouble");
 
             NGuid = new NullableColumn<CustomGuid>(this, columnName: "ctNGuid");
             NShort = new NullableColumn<CustomShort>(this, columnName: "ctNShort");
@@ -40,6 +58,12 @@ namespace QueryLiteTest.Tables {
             NString = new NullableColumn<CustomString>(this, columnName: "ctNString", length: 100);
             NBool = new NullableColumn<CustomBool>(this, columnName: "ctNBool");
             NDecimal = new NullableColumn<CustomDecimal>(this, columnName: "ctNDecimal");
+            NDateTime = new NullableColumn<CustomDateTime>(this, columnName: "ctNDateTime");
+            NDateTimeOffset = new NullableColumn<CustomDateTimeOffset>(this, columnName: "ctNDateTimeOffset");
+            NDateOnly = new NullableColumn<CustomDateOnly>(this, columnName: "ctNDateOnly");
+            NTimeOnly = new NullableColumn<CustomTimeOnly>(this, columnName: "ctNTimeOnly");
+            NFloat = new NullableColumn<CustomFloat>(this, columnName: "ctNFloat");
+            NDouble = new NullableColumn<CustomDouble>(this, columnName: "ctNDouble");
         }
     }
 
@@ -381,6 +405,306 @@ namespace QueryLiteTest.Tables {
         public override bool Equals(object? obj) {
 
             if(obj is CustomDecimal identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomDateTime : IValueOf<DateTime, CustomDateTime>, IValue<DateTime>, IEquatable<CustomDateTime> {
+
+        public DateTime Value { get; }
+
+        public CustomDateTime(DateTime value) {
+            Value = value;
+        }
+        public static CustomDateTime ValueOf(DateTime value) {
+            return new CustomDateTime(value);
+        }
+        public bool Equals(CustomDateTime other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomDateTime? pA, CustomDateTime? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomDateTime? pA, CustomDateTime? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomDateTime identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomDateTimeOffset : IValueOf<DateTimeOffset, CustomDateTimeOffset>, IValue<DateTimeOffset>, IEquatable<CustomDateTimeOffset> {
+
+        public DateTimeOffset Value { get; }
+
+        public CustomDateTimeOffset(DateTimeOffset value) {
+            Value = value;
+        }
+        public static CustomDateTimeOffset ValueOf(DateTimeOffset value) {
+            return new CustomDateTimeOffset(value);
+        }
+        public bool Equals(CustomDateTimeOffset other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomDateTimeOffset? pA, CustomDateTimeOffset? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomDateTimeOffset? pA, CustomDateTimeOffset? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomDateTimeOffset identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomDateOnly : IValueOf<DateOnly, CustomDateOnly>, IValue<DateOnly>, IEquatable<CustomDateOnly> {
+
+        public DateOnly Value { get; }
+
+        public CustomDateOnly(DateOnly value) {
+            Value = value;
+        }
+        public static CustomDateOnly ValueOf(DateOnly value) {
+            return new CustomDateOnly(value);
+        }
+        public bool Equals(CustomDateOnly other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomDateOnly? pA, CustomDateOnly? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomDateOnly? pA, CustomDateOnly? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomDateOnly identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomTimeOnly : IValueOf<TimeOnly, CustomTimeOnly>, IValue<TimeOnly>, IEquatable<CustomTimeOnly> {
+
+        public TimeOnly Value { get; }
+
+        public CustomTimeOnly(TimeOnly value) {
+            Value = value;
+        }
+        public static CustomTimeOnly ValueOf(TimeOnly value) {
+            return new CustomTimeOnly(value);
+        }
+        public bool Equals(CustomTimeOnly other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomTimeOnly? pA, CustomTimeOnly? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomTimeOnly? pA, CustomTimeOnly? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomTimeOnly identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomFloat : IValueOf<float, CustomFloat>, IValue<float>, IEquatable<CustomFloat> {
+
+        public float Value { get; }
+
+        public CustomFloat(float value) {
+            Value = value;
+        }
+        public static CustomFloat ValueOf(float value) {
+            return new CustomFloat(value);
+        }
+        public bool Equals(CustomFloat other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomFloat? pA, CustomFloat? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomFloat? pA, CustomFloat? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomFloat identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomDouble : IValueOf<double, CustomDouble>, IValue<double>, IEquatable<CustomDouble> {
+
+        public double Value { get; }
+
+        public CustomDouble(double value) {
+            Value = value;
+        }
+        public static CustomDouble ValueOf(double value) {
+            return new CustomDouble(value);
+        }
+        public bool Equals(CustomDouble other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomDouble? pA, CustomDouble? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomDouble? pA, CustomDouble? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomDouble identifier) {
                 return Value.CompareTo(identifier.Value) == 0;
             }
             return false;

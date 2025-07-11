@@ -75,6 +75,27 @@ namespace QueryLite.Databases.PostgreSql {
                 else if(value is IValue<decimal> decimalValue) {
                     value = decimalValue.Value;
                 }
+                else if(value is IValue<DateTime> dateTimeValue) {
+                    value = dateTimeValue.Value;
+                }
+                else if(value is IValue<DateTimeOffset> dateTimeOffsetValue) {
+                    value = dateTimeOffsetValue.Value;
+                }
+                else if(value is IValue<DateOnly> dateOnlyValue) {
+                    value = dateOnlyValue.Value;
+                }
+                else if(value is IValue<TimeOnly> timeOnlyValue) {
+                    value = timeOnlyValue.Value;
+                }
+                else if(value is IValue<float> floatValue) {
+                    value = floatValue.Value;
+                }
+                else if(value is IValue<double> doubleValue) {
+                    value = doubleValue.Value;
+                }
+                else if(value is IValue<Bit> bitIValue) {
+                    value = bitIValue.Value;
+                }
             }
             else {
                 value = DBNull.Value;

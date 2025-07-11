@@ -861,9 +861,16 @@ The following types are supported with custom types:
 - short
 - int
 - long
+- float
+- double
 - string
 - bool
 - decimal
+- DateTime
+- DateTimeOffset
+- DateOnly
+- TimeOnly
+- Bit
 
 Here is an example of the `ShipperId` as a custom type.
 

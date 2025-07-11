@@ -823,6 +823,27 @@ namespace QueryLite {
             else if(type.IsAssignableTo(typeof(IValue<decimal>))) {
                 type = typeof(decimal);
             }
+            else if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                type = typeof(DateTime);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                type = typeof(DateTimeOffset);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                type = typeof(DateOnly);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                type = typeof(TimeOnly);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<float>))) {
+                type = typeof(float);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<double>))) {
+                type = typeof(double);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<Bit>))) {
+                type = typeof(Bit);
+            }
             else if(type.IsEnum) {
                 type = typeof(int);
             }

@@ -1123,5 +1123,149 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
         }
+
+        public CUSTOM_TYPE GetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDateTime(_ordinal));
+        }
+
+        public CUSTOM_TYPE? GetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDateTime(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDateTimeOffset(_ordinal));
+        }
+
+        public CUSTOM_TYPE? GetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDateTimeOffset(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetDateOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return CUSTOM_TYPE.ValueOf(DateOnly.FromDateTime(value));
+        }
+
+        public CUSTOM_TYPE? GetDateOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return CUSTOM_TYPE.ValueOf(DateOnly.FromDateTime(value));
+        }
+
+        public CUSTOM_TYPE GetTimeOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return CUSTOM_TYPE.ValueOf(TimeOnly.FromTimeSpan(value));
+        }
+
+        public CUSTOM_TYPE? GetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return CUSTOM_TYPE.ValueOf(TimeOnly.FromTimeSpan(value));
+        }
+
+        public CUSTOM_TYPE GetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<float, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetFloat(_ordinal));
+        }
+
+        public CUSTOM_TYPE? GetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<float, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetFloat(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<double, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDouble(_ordinal));
+        }
+
+        public CUSTOM_TYPE? GetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<double, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDouble(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<Bit, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE);
+        }
+
+        public CUSTOM_TYPE? GetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<Bit, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE);
+        }
     }
 }
