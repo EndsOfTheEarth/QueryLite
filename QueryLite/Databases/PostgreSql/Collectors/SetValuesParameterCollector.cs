@@ -464,11 +464,11 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
-            return AddParameter(column, NpgsqlDbType.TimestampTz, value.Value);
+            return AddParameter(column, NpgsqlDbType.TimestampTz, new DateTimeOffset(value.Value.UtcDateTime));
         }
 
         public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
-            return AddParameter(column, NpgsqlDbType.TimestampTz, value?.Value);
+            return AddParameter(column, NpgsqlDbType.TimestampTz, value != null ? new DateTimeOffset(value.Value.Value.UtcDateTime) : null);
         }
     }
 
