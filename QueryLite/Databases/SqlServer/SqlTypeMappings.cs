@@ -181,6 +181,12 @@ namespace QueryLite.Databases.SqlServer {
             if(type.IsAssignableTo(typeof(IValue<decimal>))) {
                 return SqlDbType.Decimal;
             }
+            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return SqlDbType.DateTime;
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return SqlDbType.DateTimeOffset;
+            }
             throw new Exception($"Unknown SqlServer parameter type '{type.FullName}'");
         }
 
@@ -332,6 +338,12 @@ namespace QueryLite.Databases.SqlServer {
             }
             if(value is IValue<decimal> decimalIValue) {
                 return ToSqlString(decimalIValue.Value);
+            }
+            if(value is IValue<DateTime> dateTime) {
+                return ToSqlString(dateTime.Value);
+            }
+            if(value is IValue<DateTimeOffset> dateTimeOffset) {
+                return ToSqlString(dateTimeOffset.Value);
             }
 
             Type type = value.GetType();

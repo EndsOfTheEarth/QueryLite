@@ -174,5 +174,11 @@ namespace QueryLite {
 
         public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<decimal>;
         public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal>;
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTime>;
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTime>;
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset>;
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset>;
     }
 }

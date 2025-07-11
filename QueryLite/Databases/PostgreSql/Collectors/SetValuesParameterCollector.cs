@@ -25,7 +25,6 @@ using Npgsql;
 using NpgsqlTypes;
 using QueryLite.Utility;
 using System;
-using System.Data;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql.Collectors {
@@ -454,6 +453,22 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
         public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
             return AddParameter(column, NpgsqlDbType.Numeric, value?.Value);
+        }
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+            return AddParameter(column, NpgsqlDbType.Timestamp, value.Value);
+        }
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+            return AddParameter(column, NpgsqlDbType.Timestamp, value?.Value);
+        }
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+            return AddParameter(column, NpgsqlDbType.TimestampTz, value.Value);
+        }
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+            return AddParameter(column, NpgsqlDbType.TimestampTz, value?.Value);
         }
     }
 
@@ -925,6 +940,30 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));

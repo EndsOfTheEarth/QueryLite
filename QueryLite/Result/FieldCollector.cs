@@ -560,5 +560,25 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+
+        public CUSTOM_TYPE GetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? GetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? GetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
     }
 }

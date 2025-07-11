@@ -182,6 +182,12 @@ namespace QueryLite.Databases.PostgreSql {
             if(type.IsAssignableTo(typeof(IValue<decimal>))) {
                 return NpgsqlDbType.Numeric;
             }
+            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return NpgsqlDbType.Timestamp;
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return NpgsqlDbType.TimestampTz;
+            }
             throw new Exception($"Unknown PostgreSql parameter type '{type.FullName}'");
         }
 
@@ -336,6 +342,12 @@ namespace QueryLite.Databases.PostgreSql {
             }
             if(value is IValue<decimal> decimalIValue) {
                 return ToSqlString(decimalIValue.Value);
+            }
+            if(value is IValue<DateTime> dateTime) {
+                return ToSqlString(dateTime.Value);
+            }
+            if(value is IValue<DateTimeOffset> dateTimeOffset) {
+                return ToSqlString(dateTimeOffset.Value);
             }
 
             Type type = value.GetType();

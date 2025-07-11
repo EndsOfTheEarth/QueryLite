@@ -75,6 +75,12 @@ namespace QueryLite.Databases.PostgreSql {
                 else if(value is IValue<decimal> decimalValue) {
                     value = decimalValue.Value;
                 }
+                else if(value is IValue<DateTime> dateTime) {
+                    value = dateTime.Value;
+                }
+                else if(value is IValue<DateTimeOffset> dateTimeOffset) {
+                    value = dateTimeOffset.Value;
+                }
             }
             else {
                 value = DBNull.Value;

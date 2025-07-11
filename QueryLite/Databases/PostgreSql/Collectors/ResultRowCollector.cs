@@ -1128,5 +1128,49 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
         }
+
+        public CUSTOM_TYPE GetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDateTime(_ordinal));
+        }
+
+        public CUSTOM_TYPE? GetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDateTime(_ordinal));
+        }
+
+        public CUSTOM_TYPE GetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            //PostgreSql returns dates in UTC even though they were saved in a different time zone
+            DateTime dateInUtc = _reader.GetDateTime(_ordinal);
+            return CUSTOM_TYPE.ValueOf(new DateTimeOffset(dateInUtc));
+        }
+
+        public CUSTOM_TYPE? GetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            //PostgreSql returns dates in UTC even though they were saved in a different time zone
+            DateTime dateInUtc = _reader.GetDateTime(_ordinal);
+            return CUSTOM_TYPE.ValueOf(new DateTimeOffset(dateInUtc));
+        }
     }
 }

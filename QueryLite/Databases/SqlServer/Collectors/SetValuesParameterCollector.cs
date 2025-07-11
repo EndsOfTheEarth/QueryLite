@@ -462,6 +462,22 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
             return AddParameter(column, SqlDbType.Decimal, value?.Value);
         }
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+            return AddParameter(column, SqlDbType.DateTime, value.Value);
+        }
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+            return AddParameter(column, SqlDbType.DateTime, value?.Value);
+        }
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+            return AddParameter(column, SqlDbType.DateTimeOffset, value.Value);
+        }
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+            return AddParameter(column, SqlDbType.DateTimeOffset, value?.Value);
+        }
     }
 
     internal sealed class SqlServerSetValuesCollector : ISetValuesCollector {
@@ -936,6 +952,30 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
+
+            if(value != null) {
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+
+            if(value != null) {
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
