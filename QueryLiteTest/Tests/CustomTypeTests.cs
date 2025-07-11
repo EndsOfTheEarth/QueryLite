@@ -224,6 +224,8 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(customTypes.CustomString, values.CustomString);
             Assert.AreEqual(customTypes.CustomBool, values.CustomBool);
             Assert.AreEqual(customTypes.CustomDecimal, values.CustomDecimal);
+            Assert.AreEqual(customTypes.CustomDateTime, values.CustomDateTime);
+            Assert.AreEqual(customTypes.CustomDateTimeOffset, values.CustomDateTimeOffset);
 
             Assert.AreEqual(customTypes.NCustomGuid, values.NCustomGuid);
             Assert.AreEqual(customTypes.NCustomShort, values.NCustomShort);
@@ -232,6 +234,8 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(customTypes.NCustomString, values.NCustomString);
             Assert.AreEqual(customTypes.NCustomBool, values.NCustomBool);
             Assert.AreEqual(customTypes.NCustomDecimal, values.NCustomDecimal);
+            Assert.AreEqual(customTypes.NCustomDateTime, values.NCustomDateTime);
+            Assert.AreEqual(customTypes.NCustomDateTimeOffset, values.NCustomDateTimeOffset);
         }
 
         private static CustomTypes GetCustomTypesA() => new CustomTypes(
