@@ -21,10 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using Microsoft.Data.SqlClient;
 using Npgsql;
 using NpgsqlTypes;
 using QueryLite.Utility;
 using System;
+using System.Data;
 
 namespace QueryLite.Databases.SqlServer {
 
@@ -180,7 +182,164 @@ namespace QueryLite.Databases.SqlServer {
                 };
             }
 
-            else if(type.IsAssignableTo(typeof(IGuidType))) {
+            Type? underlyingType = Nullable.GetUnderlyingType(type);
+
+            if(type.IsAssignableTo(typeof(IValue<Guid>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Uuid) {
+                    Value = value != null ? ((IValue<Guid>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<Guid>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Uuid) {
+                    Value = value != null ? ((IValue<Guid>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<short>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Smallint) {
+                    Value = value != null ? ((IValue<short>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<short>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Smallint) {
+                    Value = value != null ? ((IValue<short>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<int>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Integer) {
+                    Value = value != null ? ((IValue<int>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<int>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Integer) {
+                    Value = value != null ? ((IValue<int>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<long>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Bigint) {
+                    Value = value != null ? ((IValue<long>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<long>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Bigint) {
+                    Value = value != null ? ((IValue<long>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<string>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Varchar) {
+                    Value = value != null ? ((IValue<string>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<string>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Varchar) {
+                    Value = value != null ? ((IValue<string>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<bool>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Boolean) {
+                    Value = value != null ? ((IValue<bool>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<bool>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Boolean) {
+                    Value = value != null ? ((IValue<bool>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<decimal>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Numeric) {
+                    Value = value != null ? ((IValue<decimal>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<decimal>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Numeric) {
+                    Value = value != null ? ((IValue<decimal>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Timestamp) {
+                    Value = value != null ? ((IValue<DateTime>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Timestamp) {
+                    Value = value != null ? ((IValue<DateTime>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.TimestampTz) {
+                    Value = value != null ? new DateTimeOffset(((IValue<DateTimeOffset>)value).Value.UtcDateTime) : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.TimestampTz) {
+                    Value = value != null ? new DateTimeOffset(((IValue<DateTimeOffset>)value).Value.UtcDateTime) : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Date) {
+                    Value = value != null ? ((IValue<DateOnly>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Date) {
+                    Value = value != null ? ((IValue<DateOnly>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Time) {
+                    Value = value != null ? ((IValue<TimeOnly>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Time) {
+                    Value = value != null ? ((IValue<TimeOnly>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<float>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Real) {
+                    Value = value != null ? ((IValue<float>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<float>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Real) {
+                    Value = value != null ? ((IValue<float>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<double>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Double) {
+                    Value = value != null ? ((IValue<double>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<double>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Double) {
+                    Value = value != null ? ((IValue<double>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<Bit>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Boolean) {
+                    Value = value != null ? ((IValue<Bit>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<Bit>))) {
+                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Boolean) {
+                    Value = value != null ? ((IValue<Bit>)value).Value : DBNull.Value
+                };
+            }
+
+
+            if(type.IsAssignableTo(typeof(IGuidType))) {
 
                 return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Uuid) {
                     Value = value != null ? ((IGuidType)value).Value : DBNull.Value
@@ -228,8 +387,6 @@ namespace QueryLite.Databases.SqlServer {
                 enumType = type;
             }
             else {  //Check to see if this is a nullable enum type
-
-                Type? underlyingType = Nullable.GetUnderlyingType(type);
 
                 if(underlyingType != null && underlyingType.IsEnum) {
                     enumType = underlyingType;

@@ -359,5 +359,103 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<byte[]> column, AFunction<byte[]> value) {
             return AddFunction(column, value);
         }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetGuid<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<Guid, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetGuid<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<Guid, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetShort<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<short, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetShort<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<short, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetInt<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<int, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetInt<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<int, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetLong<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<long, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetLong<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<long, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetString<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<string, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetString<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<string, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<bool, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<bool, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<decimal, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<decimal, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<DateTime, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetDateOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetDateOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetTimeOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<float, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<float, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<double, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<double, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> SetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, IValueOf<Bit, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> SetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, IValueOf<Bit, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
     }
 }

@@ -222,14 +222,168 @@ namespace QueryLite.Databases.SqlServer {
                 };
             }
 
+            Type? underlyingType = Nullable.GetUnderlyingType(type);
+
+            if(type.IsAssignableTo(typeof(IValue<Guid>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.UniqueIdentifier) {
+                    Value = value != null ? ((IValue<Guid>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<Guid>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.UniqueIdentifier) {
+                    Value = value != null ? ((IValue<Guid>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<short>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) {
+                    Value = value != null ? ((IValue<short>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<short>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) {
+                    Value = value != null ? ((IValue<short>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<int>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) {
+                    Value = value != null ? ((IValue<int>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<int>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) {
+                    Value = value != null ? ((IValue<int>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<long>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) {
+                    Value = value != null ? ((IValue<long>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<long>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) {
+                    Value = value != null ? ((IValue<long>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<string>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.NVarChar) {
+                    Value = value != null ? ((IValue<string>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<string>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.NVarChar) {
+                    Value = value != null ? ((IValue<string>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<bool>))) {                
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) {
+                    Value = value != null ? ((IValue<bool>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<bool>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) {
+                    Value = value != null ? ((IValue<bool>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<decimal>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Decimal) {
+                    Value = value != null ? ((IValue<decimal>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<decimal>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Decimal) {
+                    Value = value != null ? ((IValue<decimal>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTime) {
+                    Value = value != null ? ((IValue<DateTime>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTime) {
+                    Value = value != null ? ((IValue<DateTime>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTimeOffset) {
+                    Value = value != null ? ((IValue<DateTimeOffset>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTimeOffset) {
+                    Value = value != null ? ((IValue<DateTimeOffset>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Date) {
+                    Value = value != null ? ((IValue<DateOnly>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Date) {
+                    Value = value != null ? ((IValue<DateOnly>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Time) {
+                    Value = value != null ? ((IValue<TimeOnly>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Time) {
+                    Value = value != null ? ((IValue<TimeOnly>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<float>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Real) {
+                    Value = value != null ? ((IValue<float>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<float>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Real) {
+                    Value = value != null ? ((IValue<float>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<double>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Float) {
+                    Value = value != null ? ((IValue<double>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<double>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Float) {
+                    Value = value != null ? ((IValue<double>)value).Value : DBNull.Value
+                };
+            }
+
+            if(type.IsAssignableTo(typeof(IValue<Bit>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Bit) {
+                    Value = value != null ? ((IValue<Bit>)value).Value : DBNull.Value
+                };
+            }
+            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<Bit>))) {
+                return (string name, object? value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Bit) {
+                    Value = value != null ? ((IValue<Bit>)value).Value : DBNull.Value
+                };
+            }
+
             Type? enumType = null;
 
             if(type.IsEnum) {
                 enumType = type;
             }
             else {  //Check to see if this is a nullable enum type
-
-                Type? underlyingType = Nullable.GetUnderlyingType(type);
 
                 if(underlyingType != null && underlyingType.IsEnum) {
                     enumType = underlyingType;

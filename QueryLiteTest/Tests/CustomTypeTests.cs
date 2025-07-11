@@ -174,11 +174,155 @@ namespace QueryLiteTest.Tests {
                             table.DateTimeOffset == customTypesB.CustomDateTimeOffset &
                             table.DateOnly == customTypesB.CustomDateOnly &
                             table.TimeOnly == customTypesB.CustomTimeOnly
-                            //Note: Comparing floats and doubles is problematic so this is excluded from the tests.
-                            //table.Float == customTypesB.CustomFloat & 
-                            //table.Double == customTypesB.CustomDouble
+                        //Note: Comparing floats and doubles is problematic so this is excluded from the tests.
+                        //table.Float == customTypesB.CustomFloat & 
+                        //table.Double == customTypesB.CustomDouble
                         )
                         .Execute(transaction);
+
+                    transaction.Commit();
+
+                    Assert.AreEqual(1, insertResult.RowsEffected);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestPreparedInsert() {
+
+            CustomTypesTable table = CustomTypesTable.Instance;
+
+            CustomTypes customTypesA = GetCustomTypesA();
+
+            {
+
+                IPreparedInsertQuery<CustomTypes> preparedInsertQuery = Query
+                    .Prepare<CustomTypes>()
+                    .Insert(table)
+                    .Values(values => values
+
+                        .SetGuid(table.Guid, t => t.CustomGuid)
+                        .SetShort(table.Short, t => t.CustomShort)
+                        .SetInt(table.Int, t => t.CustomInt)
+                        .SetLong(table.Long, t => t.CustomLong)
+                        .SetString(table.String, t => t.CustomString)
+                        .SetBool(table.Bool, t => t.CustomBool)
+                        .SetDecimal(table.Decimal, t => t.CustomDecimal)
+                        .SetDateTime(table.DateTime, t => t.CustomDateTime)
+                        .SetDateTimeOffset(table.DateTimeOffset, t => t.CustomDateTimeOffset)
+                        .SetDateOnly(table.DateOnly, t => t.CustomDateOnly)
+                        .SetTimeOnly(table.TimeOnly, t => t.CustomTimeOnly)
+                        .SetFloat(table.Float, t => t.CustomFloat)
+                        .SetDouble(table.Double, t => t.CustomDouble)
+
+                        .SetGuid(table.NGuid, t => t.NCustomGuid)
+                        .SetShort(table.NShort, t => t.NCustomShort)
+                        .SetInt(table.NInt, t => t.NCustomInt)
+                        .SetLong(table.NLong, t => t.NCustomLong)
+                        .SetString(table.NString, t => t.NCustomString)
+                        .SetBool(table.NBool, t => t.NCustomBool)
+                        .SetDecimal(table.NDecimal, t => t.NCustomDecimal)
+                        .SetDateTime(table.NDateTime, t => t.NCustomDateTime)
+                        .SetDateTimeOffset(table.NDateTimeOffset, t => t.NCustomDateTimeOffset)
+                        .SetDateOnly(table.NDateOnly, t => t.NCustomDateOnly)
+                        .SetTimeOnly(table.NTimeOnly, t => t.NCustomTimeOnly)
+                        .SetFloat(table.NFloat, t => t.NCustomFloat)
+                        .SetDouble(table.NDouble, t => t.NCustomDouble)
+                    )
+                    .Build();
+
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    NonQueryResult insertResult = preparedInsertQuery.Execute(customTypesA, transaction);
+
+                    transaction.Commit();
+
+                    Assert.AreEqual(1, insertResult.RowsEffected);
+                }
+            }
+
+            AssertOnlyOneRowExists();
+
+            AssertCustomTypes(customTypesA);
+
+            CustomTypes customTypesB = GetCustomTypesB();
+
+            {
+
+                IPreparedUpdateQuery<CustomTypes> preparedUpdateQuery = Query
+                    .Prepare<CustomTypes>()
+                    .Update(table)
+                    .Values(values => values
+
+                        .SetGuid(table.Guid, t => t.CustomGuid)
+                        .SetShort(table.Short, t => t.CustomShort)
+                        .SetInt(table.Int, t => t.CustomInt)
+                        .SetLong(table.Long, t => t.CustomLong)
+                        .SetString(table.String, t => t.CustomString)
+                        .SetBool(table.Bool, t => t.CustomBool)
+                        .SetDecimal(table.Decimal, t => t.CustomDecimal)
+                        .SetDateTime(table.DateTime, t => t.CustomDateTime)
+                        .SetDateTimeOffset(table.DateTimeOffset, t => t.CustomDateTimeOffset)
+                        .SetDateOnly(table.DateOnly, t => t.CustomDateOnly)
+                        .SetTimeOnly(table.TimeOnly, t => t.CustomTimeOnly)
+                        .SetFloat(table.Float, t => t.CustomFloat)
+                        .SetDouble(table.Double, t => t.CustomDouble)
+
+                        .SetGuid(table.NGuid, t => t.NCustomGuid)
+                        .SetShort(table.NShort, t => t.NCustomShort)
+                        .SetInt(table.NInt, t => t.NCustomInt)
+                        .SetLong(table.NLong, t => t.NCustomLong)
+                        .SetString(table.NString, t => t.NCustomString)
+                        .SetBool(table.NBool, t => t.NCustomBool)
+                        .SetDecimal(table.NDecimal, t => t.NCustomDecimal)
+                        .SetDateTime(table.NDateTime, t => t.NCustomDateTime)
+                        .SetDateTimeOffset(table.NDateTimeOffset, t => t.NCustomDateTimeOffset)
+                        .SetDateOnly(table.NDateOnly, t => t.NCustomDateOnly)
+                        .SetTimeOnly(table.NTimeOnly, t => t.NCustomTimeOnly)
+                        .SetFloat(table.NFloat, t => t.NCustomFloat)
+                        .SetDouble(table.NDouble, t => t.NCustomDouble)
+                    )
+                    .Where(where => where.EQUALS(table.Guid, t => t.PreviousCustomGuid))
+                    .Build();
+
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    customTypesB.PreviousCustomGuid = customTypesA.CustomGuid;
+
+                    NonQueryResult insertResult = preparedUpdateQuery.Execute(customTypesB, transaction);
+
+                    transaction.Commit();
+
+                    Assert.AreEqual(1, insertResult.RowsEffected);
+                }
+            }
+            AssertCustomTypes(customTypesB);
+
+            {
+
+                IPreparedDeleteQuery<CustomTypes> preparedDeleteQuery = Query.Prepare<CustomTypes>()
+                    .Delete(table)
+                    .Where(where =>
+                        where.EQUALS(table.Guid, t => t.CustomGuid) &
+                        where.EQUALS(table.Short, t => t.CustomShort) &
+                        where.EQUALS(table.Int, t => t.CustomInt) &
+                        where.EQUALS(table.Long, t => t.CustomLong) &
+                        where.EQUALS(table.String, t => t.CustomString) &
+                        where.EQUALS(table.Bool, t => t.CustomBool) &
+                        where.EQUALS(table.Decimal, t => t.CustomDecimal) &
+                        where.EQUALS(table.DateTime, t => t.CustomDateTime) &
+                        where.EQUALS(table.DateTimeOffset, t => t.CustomDateTimeOffset) &
+                        where.EQUALS(table.DateOnly, t => t.CustomDateOnly) &
+                        where.EQUALS(table.TimeOnly, t => t.CustomTimeOnly)
+                    //Note: Comparing floats and doubles is problematic so this is excluded from the tests.
+                    //where.EQUALS(table.Float, t => t.CustomFloat) &
+                    //where.EQUALS(table.Double, t => t.CustomDouble)
+                    )
+                    .Build();
+
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    NonQueryResult insertResult = preparedDeleteQuery.Execute(customTypesB, transaction);
 
                     transaction.Commit();
 
@@ -338,7 +482,9 @@ namespace QueryLiteTest.Tests {
         );
 
         public class CustomTypes {
-            
+
+            public CustomGuid PreviousCustomGuid { get; set; }
+
             public CustomGuid CustomGuid { get; set; }
             public CustomShort CustomShort { get; set; }
             public CustomInt CustomInt { get; set; }
