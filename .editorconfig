@@ -78,6 +78,12 @@ csharp_style_deconstructed_variable_declaration = true:suggestion
 csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
 csharp_space_around_binary_operators = before_and_after
+csharp_prefer_system_threading_lock = true:suggestion
+csharp_style_prefer_implicitly_typed_lambda_expression = true:suggestion
+csharp_style_prefer_unbound_generic_type_in_nameof = true:suggestion
+
+# MSTEST0003: Test methods should have valid layout
+dotnet_diagnostic.MSTEST0003.severity = error
 
 [*.{cs,vb}]
 #### Naming styles ####
