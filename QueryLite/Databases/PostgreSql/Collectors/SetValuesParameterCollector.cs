@@ -486,6 +486,30 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector SetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<TimeOnly> {
             return AddParameter(column, NpgsqlDbType.Time, value?.Value.ToTimeSpan());
         }
+
+        public ISetValuesCollector SetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<float> {
+            return AddParameter(column, NpgsqlDbType.Real, value.Value);
+        }
+
+        public ISetValuesCollector SetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<float> {
+            return AddParameter(column, NpgsqlDbType.Real, value?.Value);
+        }
+
+        public ISetValuesCollector SetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<double> {
+            return AddParameter(column, NpgsqlDbType.Double, value.Value);
+        }
+
+        public ISetValuesCollector SetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<double> {
+            return AddParameter(column, NpgsqlDbType.Double, value?.Value);
+        }
+
+        public ISetValuesCollector SetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Bit> {
+            return AddParameter(column, NpgsqlDbType.Boolean, value.Value);
+        }
+
+        public ISetValuesCollector SetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Bit> {
+            return AddParameter(column, NpgsqlDbType.Boolean, value?.Value);
+        }
     }
 
     internal class PostgreSqlSetValuesCollector : ISetValuesCollector {
@@ -1005,6 +1029,42 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector SetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<TimeOnly> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<float> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector SetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<float> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<double> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector SetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<double> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector SetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Bit> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector SetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Bit> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlString(value.Value.Value));

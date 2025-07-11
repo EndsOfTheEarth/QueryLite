@@ -600,5 +600,35 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+
+        public CUSTOM_TYPE GetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<float, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? GetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<float, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<double, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? GetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<double, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<Bit, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? GetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<Bit, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
     }
 }

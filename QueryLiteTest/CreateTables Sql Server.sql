@@ -78,6 +78,8 @@ CREATE TABLE CustomTypes (
 	ctDateTimeOffset DATETIMEOFFSET NOT NULL,
 	ctDateOnly DATE NOT NULL,
 	ctTimeOnly TIME NOT NULL,
+	ctFloat REAL NOT NULL,
+	ctDouble FLOAT NOT NULL,
 
 	ctNGuid UNIQUEIDENTIFIER NULL,
 	ctNShort SMALLINT NULL,
@@ -89,5 +91,7 @@ CREATE TABLE CustomTypes (
 	ctNDateTime DATETIME NULL,
 	ctNDateTimeOffset DATETIMEOFFSET NULL,
 	ctNDateOnly DATE NULL,
-	ctNTimeOnly TIME NULL
+	ctNTimeOnly TIME NULL,
+	ctNFloat REAL NULL,
+	ctNDouble FLOAT NULL
 );

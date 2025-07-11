@@ -193,6 +193,15 @@ namespace QueryLite.Databases.SqlServer {
             if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
                 return SqlDbType.Time;
             }
+            if(type.IsAssignableTo(typeof(IValue<float>))) {
+                return SqlDbType.Real;
+            }
+            if(type.IsAssignableTo(typeof(IValue<double>))) {
+                return SqlDbType.Float;
+            }
+            if(type.IsAssignableTo(typeof(IValue<Bit>))) {
+                return SqlDbType.Bit;
+            }
             throw new Exception($"Unknown SqlServer parameter type '{type.FullName}'");
         }
 
@@ -345,17 +354,26 @@ namespace QueryLite.Databases.SqlServer {
             if(value is IValue<decimal> decimalIValue) {
                 return ToSqlString(decimalIValue.Value);
             }
-            if(value is IValue<DateTime> dateTime) {
-                return ToSqlString(dateTime.Value);
+            if(value is IValue<DateTime> dateTimeIValue) {
+                return ToSqlString(dateTimeIValue.Value);
             }
-            if(value is IValue<DateTimeOffset> dateTimeOffset) {
-                return ToSqlString(dateTimeOffset.Value);
+            if(value is IValue<DateTimeOffset> dateTimeOffsetIValue) {
+                return ToSqlString(dateTimeOffsetIValue.Value);
             }
-            if(value is IValue<DateOnly> dateOnly_) {
-                return ToSqlString(dateOnly_.Value);
+            if(value is IValue<DateOnly> dateOnlyIValue) {
+                return ToSqlString(dateOnlyIValue.Value);
             }
-            if(value is IValue<TimeOnly> timeOnly_) {
-                return ToSqlString(timeOnly_.Value);
+            if(value is IValue<TimeOnly> timeOnlyIValue) {
+                return ToSqlString(timeOnlyIValue.Value);
+            }
+            if(value is IValue<float> floatIValue) {
+                return ToSqlString(floatIValue.Value);
+            }
+            if(value is IValue<double> doubleIValue) {
+                return ToSqlString(doubleIValue.Value);
+            }
+            if(value is IValue<Bit> butIValue) {
+                return ToSqlString(butIValue.Value);
             }
 
             Type type = value.GetType();

@@ -18,6 +18,8 @@ namespace QueryLiteTest.Tables {
         public Column<CustomDateTimeOffset> DateTimeOffset { get; }
         public Column<CustomDateOnly> DateOnly { get; }
         public Column<CustomTimeOnly> TimeOnly { get; }
+        public Column<CustomFloat> Float { get; }
+        public Column<CustomDouble> Double { get; }
 
         public NullableColumn<CustomGuid> NGuid { get; }
         public NullableColumn<CustomShort> NShort { get; }
@@ -30,6 +32,8 @@ namespace QueryLiteTest.Tables {
         public NullableColumn<CustomDateTimeOffset> NDateTimeOffset { get; }
         public NullableColumn<CustomDateOnly> NDateOnly { get; }
         public NullableColumn<CustomTimeOnly> NTimeOnly { get; }
+        public NullableColumn<CustomFloat> NFloat { get; }
+        public NullableColumn<CustomDouble> NDouble { get; }
 
         private CustomTypesTable() : base(tableName: "CustomTypes", schemaName: "dbo") {
 
@@ -44,6 +48,8 @@ namespace QueryLiteTest.Tables {
             DateTimeOffset = new Column<CustomDateTimeOffset>(this, columnName: "ctDateTimeOffset");
             DateOnly = new Column<CustomDateOnly>(this, columnName: "ctDateOnly");
             TimeOnly = new Column<CustomTimeOnly>(this, columnName: "ctTimeOnly");
+            Float = new Column<CustomFloat>(this, columnName: "ctFloat");
+            Double = new Column<CustomDouble>(this, columnName: "ctDouble");
 
             NGuid = new NullableColumn<CustomGuid>(this, columnName: "ctNGuid");
             NShort = new NullableColumn<CustomShort>(this, columnName: "ctNShort");
@@ -56,6 +62,8 @@ namespace QueryLiteTest.Tables {
             NDateTimeOffset = new NullableColumn<CustomDateTimeOffset>(this, columnName: "ctNDateTimeOffset");
             NDateOnly = new NullableColumn<CustomDateOnly>(this, columnName: "ctNDateOnly");
             NTimeOnly = new NullableColumn<CustomTimeOnly>(this, columnName: "ctNTimeOnly");
+            NFloat = new NullableColumn<CustomFloat>(this, columnName: "ctNFloat");
+            NDouble = new NullableColumn<CustomDouble>(this, columnName: "ctNDouble");
         }
     }
 
@@ -597,6 +605,106 @@ namespace QueryLiteTest.Tables {
         public override bool Equals(object? obj) {
 
             if(obj is CustomTimeOnly identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomFloat : IValueOf<float, CustomFloat>, IValue<float>, IEquatable<CustomFloat> {
+
+        public float Value { get; }
+
+        public CustomFloat(float value) {
+            Value = value;
+        }
+        public static CustomFloat ValueOf(float value) {
+            return new CustomFloat(value);
+        }
+        public bool Equals(CustomFloat other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomFloat? pA, CustomFloat? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomFloat? pA, CustomFloat? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomFloat identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomDouble : IValueOf<double, CustomDouble>, IValue<double>, IEquatable<CustomDouble> {
+
+        public double Value { get; }
+
+        public CustomDouble(double value) {
+            Value = value;
+        }
+        public static CustomDouble ValueOf(double value) {
+            return new CustomDouble(value);
+        }
+        public bool Equals(CustomDouble other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomDouble? pA, CustomDouble? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomDouble? pA, CustomDouble? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomDouble identifier) {
                 return Value.CompareTo(identifier.Value) == 0;
             }
             return false;

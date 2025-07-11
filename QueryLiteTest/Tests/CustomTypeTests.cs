@@ -81,6 +81,8 @@ namespace QueryLiteTest.Tests {
                             .SetDateTimeOffset(table.DateTimeOffset, customTypesA.CustomDateTimeOffset)
                             .SetDateOnly(table.DateOnly, customTypesA.CustomDateOnly)
                             .SetTimeOnly(table.TimeOnly, customTypesA.CustomTimeOnly)
+                            .SetFloat(table.Float, customTypesA.CustomFloat)
+                            .SetDouble(table.Double, customTypesA.CustomDouble)
 
                             .SetGuid(table.NGuid, customTypesA.NCustomGuid)
                             .SetShort(table.NShort, customTypesA.NCustomShort)
@@ -93,6 +95,8 @@ namespace QueryLiteTest.Tests {
                             .SetDateTimeOffset(table.NDateTimeOffset, customTypesA.NCustomDateTimeOffset)
                             .SetDateOnly(table.NDateOnly, customTypesA.NCustomDateOnly)
                             .SetTimeOnly(table.NTimeOnly, customTypesA.NCustomTimeOnly)
+                            .SetFloat(table.NFloat, customTypesA.NCustomFloat)
+                            .SetDouble(table.NDouble, customTypesA.NCustomDouble)
                         )
                         .Execute(transaction);
 
@@ -126,6 +130,8 @@ namespace QueryLiteTest.Tests {
                             .SetDateTimeOffset(table.DateTimeOffset, customTypesB.CustomDateTimeOffset)
                             .SetDateOnly(table.DateOnly, customTypesB.CustomDateOnly)
                             .SetTimeOnly(table.TimeOnly, customTypesB.CustomTimeOnly)
+                            .SetFloat(table.Float, customTypesB.CustomFloat)
+                            .SetDouble(table.Double, customTypesB.CustomDouble)
 
                             .SetGuid(table.NGuid, customTypesB.NCustomGuid)
                             .SetShort(table.NShort, customTypesB.NCustomShort)
@@ -138,6 +144,8 @@ namespace QueryLiteTest.Tests {
                             .SetDateTimeOffset(table.NDateTimeOffset, customTypesB.NCustomDateTimeOffset)
                             .SetDateOnly(table.NDateOnly, customTypesB.NCustomDateOnly)
                             .SetTimeOnly(table.NTimeOnly, customTypesB.NCustomTimeOnly)
+                            .SetFloat(table.NFloat, customTypesB.NCustomFloat)
+                            .SetDouble(table.NDouble, customTypesB.NCustomDouble)
                         )
                         .Where(table.Guid == customTypesA.CustomGuid)
                         .Execute(transaction);
@@ -166,6 +174,9 @@ namespace QueryLiteTest.Tests {
                             table.DateTimeOffset == customTypesB.CustomDateTimeOffset &
                             table.DateOnly == customTypesB.CustomDateOnly &
                             table.TimeOnly == customTypesB.CustomTimeOnly
+                            //Note: Comparing floats and doubles is problematic so this is excluded from the tests.
+                            //table.Float == customTypesB.CustomFloat & 
+                            //table.Double == customTypesB.CustomDouble
                         )
                         .Execute(transaction);
 
@@ -210,6 +221,8 @@ namespace QueryLiteTest.Tests {
                     customDateTimeOffset: row.GetDateTimeOffset(table.DateTimeOffset),
                     customDateOnly: row.GetDateOnly(table.DateOnly),
                     customTimeOnly: row.GetTimeOnly(table.TimeOnly),
+                    customFloat: row.GetFloat(table.Float),
+                    customDouble: row.GetDouble(table.Double),
 
                     nCustomGuid: row.GetGuid(table.NGuid),
                     nCustomShort: row.GetShort(table.NShort),
@@ -221,7 +234,9 @@ namespace QueryLiteTest.Tests {
                     nCustomDateTime: row.GetDateTime(table.NDateTime),
                     nCustomDateTimeOffset: row.GetDateTimeOffset(table.NDateTimeOffset),
                     nCustomDateOnly: row.GetDateOnly(table.NDateOnly),
-                    nCustomTimeOnly: row.GetTimeOnly(table.NTimeOnly)
+                    nCustomTimeOnly: row.GetTimeOnly(table.NTimeOnly),
+                    nCustomFloat: row.GetFloat(table.NFloat),
+                    nCustomDouble: row.GetDouble(table.NDouble)
                 )
             )
             .From(table)
@@ -242,6 +257,8 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(customTypes.CustomDateTimeOffset, values.CustomDateTimeOffset);
             Assert.AreEqual(customTypes.CustomDateOnly, values.CustomDateOnly);
             Assert.AreEqual(customTypes.CustomTimeOnly, values.CustomTimeOnly);
+            Assert.AreEqual(customTypes.CustomFloat, values.CustomFloat);
+            Assert.AreEqual(customTypes.CustomDouble, values.CustomDouble);
 
             Assert.AreEqual(customTypes.NCustomGuid, values.NCustomGuid);
             Assert.AreEqual(customTypes.NCustomShort, values.NCustomShort);
@@ -254,6 +271,8 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(customTypes.NCustomDateTimeOffset, values.NCustomDateTimeOffset);
             Assert.AreEqual(customTypes.NCustomDateOnly, values.NCustomDateOnly);
             Assert.AreEqual(customTypes.NCustomTimeOnly, values.NCustomTimeOnly);
+            Assert.AreEqual(customTypes.NCustomFloat, values.NCustomFloat);
+            Assert.AreEqual(customTypes.NCustomDouble, values.NCustomDouble);
         }
 
         private static CustomTypes GetCustomTypesA() => new CustomTypes(
@@ -269,6 +288,8 @@ namespace QueryLiteTest.Tests {
             customDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2024, month: 02, day: 11, hour: 22, minute: 52, second: 12, new TimeSpan(hours: 5, minutes: 0, seconds: 0))),
             customDateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 2025, month: 05, day: 12)),
             customTimeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 01, minute: 00, second: 25)),
+            customFloat: CustomFloat.ValueOf(342.1234423f),
+            customDouble: CustomDouble.ValueOf(45152345234.234523452345d),
 
             nCustomGuid: null,
             nCustomShort: null,
@@ -280,7 +301,9 @@ namespace QueryLiteTest.Tests {
             nCustomDateTime: null,
             nCustomDateTimeOffset: null,
             nCustomDateOnly: null,
-            nCustomTimeOnly: null
+            nCustomTimeOnly: null,
+            nCustomFloat: null,
+            nCustomDouble: null
         );
 
         private static CustomTypes GetCustomTypesB() => new CustomTypes(
@@ -296,6 +319,8 @@ namespace QueryLiteTest.Tests {
             customDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1990, month: 10, day: 11, hour: 21, minute: 05, second: 01, new TimeSpan(hours: 12, minutes: 0, seconds: 0))),
             customDateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 2024, month: 06, day: 13)),
             customTimeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 04, minute: 01, second: 27)),
+            customFloat: CustomFloat.ValueOf(3.14535f),
+            customDouble: CustomDouble.ValueOf(92345234523.98726452345d),
 
             nCustomGuid: CustomGuid.ValueOf(Guid.NewGuid()),
             nCustomShort: CustomShort.ValueOf(11),
@@ -307,7 +332,9 @@ namespace QueryLiteTest.Tests {
             nCustomDateTime: CustomDateTime.ValueOf(new DateTime(year: 2023, month: 9, day: 11, hour: 15, minute: 01, second: 7)),
             nCustomDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2023, month: 05, day: 12, hour: 10, minute: 52, second: 15, new TimeSpan(hours: 7, minutes: 0, seconds: 0))),
             nCustomDateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 1990, month: 12, day: 31)),
-            nCustomTimeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 23, minute: 59, second: 59))
+            nCustomTimeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 23, minute: 59, second: 59)),
+            nCustomFloat: CustomFloat.ValueOf(123423.2345234f),
+            nCustomDouble: CustomDouble.ValueOf(73458.22347589234d)
         );
 
         public class CustomTypes {
@@ -323,6 +350,8 @@ namespace QueryLiteTest.Tests {
             public CustomDateTimeOffset CustomDateTimeOffset { get; set; }
             public CustomDateOnly CustomDateOnly { get; set; }
             public CustomTimeOnly CustomTimeOnly { get; set; }
+            public CustomFloat CustomFloat { get; set; }
+            public CustomDouble CustomDouble { get; set; }
 
             public CustomGuid? NCustomGuid { get; set; }
             public CustomShort? NCustomShort { get; set; }
@@ -335,16 +364,19 @@ namespace QueryLiteTest.Tests {
             public CustomDateTimeOffset? NCustomDateTimeOffset { get; set; }
             public CustomDateOnly? NCustomDateOnly { get; set; }
             public CustomTimeOnly? NCustomTimeOnly { get; set; }
+            public CustomFloat? NCustomFloat { get; set; }
+            public CustomDouble? NCustomDouble { get; set; }
 
             public CustomTypes(CustomGuid customGuid, CustomShort customShort, CustomInt customInt,
                                CustomLong customLong, CustomString customString, CustomBool customBool,
                                CustomDecimal customDecimal, CustomDateTime customDateTime,
                                CustomDateTimeOffset customDateTimeOffset, CustomDateOnly customDateOnly,
-                               CustomTimeOnly customTimeOnly, CustomGuid? nCustomGuid, CustomShort? nCustomShort,
-                               CustomInt? nCustomInt, CustomLong? nCustomLong, CustomString? nCustomString,
-                               CustomBool? nCustomBool, CustomDecimal? nCustomDecimal, CustomDateTime? nCustomDateTime,
+                               CustomTimeOnly customTimeOnly, CustomFloat customFloat, CustomDouble customDouble,
+                               CustomGuid? nCustomGuid, CustomShort? nCustomShort, CustomInt? nCustomInt,
+                               CustomLong? nCustomLong, CustomString? nCustomString, CustomBool? nCustomBool,
+                               CustomDecimal? nCustomDecimal, CustomDateTime? nCustomDateTime,
                                CustomDateTimeOffset? nCustomDateTimeOffset, CustomDateOnly? nCustomDateOnly,
-                               CustomTimeOnly? nCustomTimeOnly) {
+                               CustomTimeOnly? nCustomTimeOnly, CustomFloat? nCustomFloat, CustomDouble? nCustomDouble) {
                 CustomGuid = customGuid;
                 CustomShort = customShort;
                 CustomInt = customInt;
@@ -356,6 +388,8 @@ namespace QueryLiteTest.Tests {
                 CustomDateTimeOffset = customDateTimeOffset;
                 CustomDateOnly = customDateOnly;
                 CustomTimeOnly = customTimeOnly;
+                CustomFloat = customFloat;
+                CustomDouble = customDouble;
                 NCustomGuid = nCustomGuid;
                 NCustomShort = nCustomShort;
                 NCustomInt = nCustomInt;
@@ -367,6 +401,8 @@ namespace QueryLiteTest.Tests {
                 NCustomDateTimeOffset = nCustomDateTimeOffset;
                 NCustomDateOnly = nCustomDateOnly;
                 NCustomTimeOnly = nCustomTimeOnly;
+                NCustomFloat = nCustomFloat;
+                NCustomDouble = nCustomDouble;
             }
         }
     }
