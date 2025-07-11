@@ -118,8 +118,8 @@ namespace QueryLiteTest.Tests {
                             .SetString(table.String, customTypesB.CustomString)
                             .SetBool(table.Bool, customTypesB.CustomBool)
                             .SetDecimal(table.Decimal, customTypesB.CustomDecimal)
-                            .SetDateTime(table.DateTime, customTypesA.CustomDateTime)
-                            .SetDateTimeOffset(table.DateTimeOffset, customTypesA.CustomDateTimeOffset)
+                            .SetDateTime(table.DateTime, customTypesB.CustomDateTime)
+                            .SetDateTimeOffset(table.DateTimeOffset, customTypesB.CustomDateTimeOffset)
 
                             .SetGuid(table.NGuid, customTypesB.NCustomGuid)
                             .SetShort(table.NShort, customTypesB.NCustomShort)
@@ -128,8 +128,8 @@ namespace QueryLiteTest.Tests {
                             .SetString(table.NString, customTypesB.NCustomString)
                             .SetBool(table.NBool, customTypesB.NCustomBool)
                             .SetDecimal(table.NDecimal, customTypesB.NCustomDecimal)
-                            .SetDateTime(table.NDateTime, customTypesA.NCustomDateTime)
-                            .SetDateTimeOffset(table.NDateTimeOffset, customTypesA.NCustomDateTimeOffset)
+                            .SetDateTime(table.NDateTime, customTypesB.NCustomDateTime)
+                            .SetDateTimeOffset(table.NDateTimeOffset, customTypesB.NCustomDateTimeOffset)
                         )
                         .Where(table.Guid == customTypesA.CustomGuid)
                         .Execute(transaction);
