@@ -76,6 +76,8 @@ CREATE TABLE CustomTypes (
 	ctDecimal DECIMAL(19,8) NOT NULL,
 	ctDateTime DATETIME NOT NULL,
 	ctDateTimeOffset DATETIMEOFFSET NOT NULL,
+	ctDateOnly DATE NOT NULL,
+	ctTimeOnly TIME NOT NULL,
 
 	ctNGuid UNIQUEIDENTIFIER NULL,
 	ctNShort SMALLINT NULL,
@@ -86,4 +88,6 @@ CREATE TABLE CustomTypes (
 	ctNDecimal DECIMAL(19,8) NULL,
 	ctNDateTime DATETIME NULL,
 	ctNDateTimeOffset DATETIMEOFFSET NULL,
+	ctNDateOnly DATE NULL,
+	ctNTimeOnly TIME NULL
 );

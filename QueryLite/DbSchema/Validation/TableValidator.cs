@@ -829,6 +829,12 @@ namespace QueryLite {
             else if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
                 type = typeof(DateTimeOffset);
             }
+            else if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                type = typeof(DateOnly);
+            }
+            else if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                type = typeof(TimeOnly);
+            }
             else if(type.IsEnum) {
                 type = typeof(int);
             }

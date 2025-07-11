@@ -81,6 +81,12 @@ namespace QueryLite.Databases.SqlServer {
                 else if(value is IValue<DateTimeOffset> dateTimeOffset) {
                     value = dateTimeOffset.Value;
                 }
+                else if(value is IValue<DateOnly> dateOnly) {
+                    value = dateOnly.Value;
+                }
+                else if(value is IValue<TimeOnly> timeOnly) {
+                    value = timeOnly.Value;
+                }
             }
             else {
                 value = DBNull.Value;

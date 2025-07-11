@@ -326,5 +326,11 @@ namespace QueryLite {
 
         public CUSTOM_TYPE GetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE>;
         public CUSTOM_TYPE? GetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateTimeOffset, CUSTOM_TYPE>;
+
+        public CUSTOM_TYPE GetDateOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? GetDateOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE>;
+
+        public CUSTOM_TYPE GetTimeOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? GetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE>;
     }
 }

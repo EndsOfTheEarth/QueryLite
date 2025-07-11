@@ -187,6 +187,12 @@ namespace QueryLite.Databases.SqlServer {
             if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
                 return SqlDbType.DateTimeOffset;
             }
+            if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                return SqlDbType.Date;
+            }
+            if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                return SqlDbType.Time;
+            }
             throw new Exception($"Unknown SqlServer parameter type '{type.FullName}'");
         }
 
@@ -344,6 +350,12 @@ namespace QueryLite.Databases.SqlServer {
             }
             if(value is IValue<DateTimeOffset> dateTimeOffset) {
                 return ToSqlString(dateTimeOffset.Value);
+            }
+            if(value is IValue<DateOnly> dateOnly_) {
+                return ToSqlString(dateOnly_.Value);
+            }
+            if(value is IValue<TimeOnly> timeOnly_) {
+                return ToSqlString(timeOnly_.Value);
             }
 
             Type type = value.GetType();

@@ -580,5 +580,25 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+
+        public CUSTOM_TYPE GetDateOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? GetDateOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<DateOnly, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE GetTimeOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? GetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column) where CUSTOM_TYPE : struct, IValueOf<TimeOnly, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
     }
 }

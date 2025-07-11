@@ -16,6 +16,8 @@ namespace QueryLiteTest.Tables {
         public Column<CustomDecimal> Decimal { get; }
         public Column<CustomDateTime> DateTime { get; }
         public Column<CustomDateTimeOffset> DateTimeOffset { get; }
+        public Column<CustomDateOnly> DateOnly { get; }
+        public Column<CustomTimeOnly> TimeOnly { get; }
 
         public NullableColumn<CustomGuid> NGuid { get; }
         public NullableColumn<CustomShort> NShort { get; }
@@ -26,6 +28,8 @@ namespace QueryLiteTest.Tables {
         public NullableColumn<CustomDecimal> NDecimal { get; }
         public NullableColumn<CustomDateTime> NDateTime { get; }
         public NullableColumn<CustomDateTimeOffset> NDateTimeOffset { get; }
+        public NullableColumn<CustomDateOnly> NDateOnly { get; }
+        public NullableColumn<CustomTimeOnly> NTimeOnly { get; }
 
         private CustomTypesTable() : base(tableName: "CustomTypes", schemaName: "dbo") {
 
@@ -38,6 +42,8 @@ namespace QueryLiteTest.Tables {
             Decimal = new Column<CustomDecimal>(this, columnName: "ctDecimal");
             DateTime = new Column<CustomDateTime>(this, columnName: "ctDateTime");
             DateTimeOffset = new Column<CustomDateTimeOffset>(this, columnName: "ctDateTimeOffset");
+            DateOnly = new Column<CustomDateOnly>(this, columnName: "ctDateOnly");
+            TimeOnly = new Column<CustomTimeOnly>(this, columnName: "ctTimeOnly");
 
             NGuid = new NullableColumn<CustomGuid>(this, columnName: "ctNGuid");
             NShort = new NullableColumn<CustomShort>(this, columnName: "ctNShort");
@@ -48,6 +54,8 @@ namespace QueryLiteTest.Tables {
             NDecimal = new NullableColumn<CustomDecimal>(this, columnName: "ctNDecimal");
             NDateTime = new NullableColumn<CustomDateTime>(this, columnName: "ctNDateTime");
             NDateTimeOffset = new NullableColumn<CustomDateTimeOffset>(this, columnName: "ctNDateTimeOffset");
+            NDateOnly = new NullableColumn<CustomDateOnly>(this, columnName: "ctNDateOnly");
+            NTimeOnly = new NullableColumn<CustomTimeOnly>(this, columnName: "ctNTimeOnly");
         }
     }
 
@@ -489,6 +497,106 @@ namespace QueryLiteTest.Tables {
         public override bool Equals(object? obj) {
 
             if(obj is CustomDateTimeOffset identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomDateOnly : IValueOf<DateOnly, CustomDateOnly>, IValue<DateOnly>, IEquatable<CustomDateOnly> {
+
+        public DateOnly Value { get; }
+
+        public CustomDateOnly(DateOnly value) {
+            Value = value;
+        }
+        public static CustomDateOnly ValueOf(DateOnly value) {
+            return new CustomDateOnly(value);
+        }
+        public bool Equals(CustomDateOnly other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomDateOnly? pA, CustomDateOnly? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomDateOnly? pA, CustomDateOnly? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomDateOnly identifier) {
+                return Value.CompareTo(identifier.Value) == 0;
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+        public override string ToString() {
+            return Value.ToString() ?? string.Empty;
+        }
+    }
+
+    public readonly struct CustomTimeOnly : IValueOf<TimeOnly, CustomTimeOnly>, IValue<TimeOnly>, IEquatable<CustomTimeOnly> {
+
+        public TimeOnly Value { get; }
+
+        public CustomTimeOnly(TimeOnly value) {
+            Value = value;
+        }
+        public static CustomTimeOnly ValueOf(TimeOnly value) {
+            return new CustomTimeOnly(value);
+        }
+        public bool Equals(CustomTimeOnly other) {
+            return Value == other.Value;
+        }
+
+        public static bool operator ==(CustomTimeOnly? pA, CustomTimeOnly? pB) {
+
+            if(pA is null && pB is null) {
+                return true;
+            }
+            if(pA is not null) {
+                return pA.Equals(pB);
+            }
+            return false;
+        }
+        public static bool operator !=(CustomTimeOnly? pA, CustomTimeOnly? pB) {
+
+            if(pA is null && pB is null) {
+                return false;
+            }
+            if(pA is not null) {
+                return !pA.Equals(pB);
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj) {
+
+            if(obj is CustomTimeOnly identifier) {
                 return Value.CompareTo(identifier.Value) == 0;
             }
             return false;
