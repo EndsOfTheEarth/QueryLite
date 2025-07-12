@@ -279,20 +279,6 @@ namespace QueryLite.Databases.SqlServer {
             throw new Exception($"Unknown SqlServer parameter type '{type.FullName}'");
         }
 
-        public static object ConvertToRawType(object value) {
-
-            if(value is Enum) {
-                return (int)value;
-            }
-            if(value is DateOnly dateOnly) {
-                return dateOnly.ToDateTime(TimeOnly.MinValue);
-            }
-            if(value is TimeOnly timeOnly) {
-                return timeOnly.ToTimeSpan();
-            }
-            return value;
-        }
-
         public static string ToSqlString(bool value) => value ? "1" : "0";
 
         public static string ToSqlString(Bit value) => value.Value ? "1" : "0";

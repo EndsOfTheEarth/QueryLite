@@ -274,25 +274,7 @@ namespace QueryLite.Databases.PostgreSql {
                     throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
                 }
             }
-
             throw new Exception($"Unknown PostgreSql parameter type '{type.FullName}'");
-        }
-
-        public static object ConvertToRawType(object value) {
-
-            if(value is DateTimeOffset dateTimeOffsetValue) {   //time stamp with time zone must be sent in UTC for Npgsql to work
-                return new DateTimeOffset(dateTimeOffsetValue.UtcDateTime);
-            }
-            if(value is Enum) {
-                return (int)value;
-            }
-            if(value is DateOnly dateOnly) {
-                return dateOnly.ToDateTime(TimeOnly.MinValue);
-            }
-            if(value is TimeOnly timeOnly) {
-                return timeOnly.ToTimeSpan();
-            }
-            return value;
         }
 
         public static string ToSqlString(bool value) => value ? "true" : "false";

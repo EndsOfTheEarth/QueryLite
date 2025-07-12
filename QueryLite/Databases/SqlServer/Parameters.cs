@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using Microsoft.Data.SqlClient;
-using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -47,64 +46,16 @@ namespace QueryLite.Databases.SqlServer {
             }
 
             if(value != null) {
-
-                if(value is IKeyValue keyValue) {
-                    value = keyValue.GetValueAsObject();
-                }
-                else if(value is Bit bitValue) {
-                    value = bitValue.Value;
-                }
-                else if(value is IValue<Guid> guidValue) {
-                    value = guidValue.Value;
-                }
-                else if(value is IValue<short> shortValue) {
-                    value = shortValue.Value;
-                }
-                else if(value is IValue<int> intValue) {
-                    value = intValue.Value;
-                }
-                else if(value is IValue<long> longValue) {
-                    value = longValue.Value;
-                }
-                else if(value is IValue<string> stringValue) {
-                    value = stringValue.Value;
-                }
-                else if(value is IValue<bool> boolValue) {
-                    value = boolValue.Value;
-                }
-                else if(value is IValue<decimal> decimalValue) {
-                    value = decimalValue.Value;
-                }
-                else if(value is IValue<DateTime> dateTimeValue) {
-                    value = dateTimeValue.Value;
-                }
-                else if(value is IValue<DateTimeOffset> dateTimeOffsetValue) {
-                    value = dateTimeOffsetValue.Value;
-                }
-                else if(value is IValue<DateOnly> dateOnlyValue) {
-                    value = dateOnlyValue.Value;
-                }
-                else if(value is IValue<TimeOnly> timeOnlyValue) {
-                    value = timeOnlyValue.Value;
-                }
-                else if(value is IValue<float> floatValue) {
-                    value = floatValue.Value;
-                }
-                else if(value is IValue<double> doubleValue) {
-                    value = doubleValue.Value;
-                }
-                else if(value is IValue<Bit> bitIValue) {
-                    value = bitIValue.Value;
-                }
+                CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
+                ParameterList.Add(createParameter(name: paramName, value));
             }
             else {
-                value = DBNull.Value;
+                ParameterList.Add(
+                    new SqlParameter(parameterName: paramName, value: DBNull.Value) {
+                        SqlDbType = SqlServerSqlTypeMappings.GetDbType(type)
+                    }
+                );
             }
-            ParameterList.Add(
-                new SqlParameter(parameterName: paramName, value: SqlServerSqlTypeMappings.ConvertToRawType(value)) {
-                    SqlDbType = SqlServerSqlTypeMappings.GetDbType(type)
-                }
-            );
         }
     }
 }

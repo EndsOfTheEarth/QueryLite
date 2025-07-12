@@ -30,7 +30,7 @@ namespace QueryLiteTest.Tests {
 
             foreach(Type type in types) {
                 Assert.IsNotNull(mapper.GetCreateParameterDelegate(type));
-            }            
+            }
         }
 
         [TestMethod]
@@ -52,7 +52,6 @@ namespace QueryLiteTest.Tests {
                 PostgreSqlTypeMappings.GetNpgsqlDbType(type);
             }
         }
-
 
         private static List<Type> GetTypes() {
 
