@@ -71,7 +71,7 @@ namespace QueryLite.Databases.SqlServer {
             return new SqlServerParameters(initParams);
         }
         public string? GetCSharpCodeSet(Type dotNetType) {
-            return SqlServerSqlTypeMappings.GetCSharpCodeSet(dotNetType);
+            return SqlServerSqlTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
         }
     }
 }

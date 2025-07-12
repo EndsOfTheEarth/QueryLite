@@ -39,7 +39,7 @@ namespace QueryLiteTest.Tests {
             List<Type> types = GetTypes();
 
             foreach(Type type in types) {
-                SqlServerSqlTypeMappings.GetDbType(type);
+                SqlServerSqlTypeMappings.TypeMapper.GetDbType(type);
             }
         }
 
@@ -49,7 +49,7 @@ namespace QueryLiteTest.Tests {
             List<Type> types = GetTypes();
 
             foreach(Type type in types) {
-                PostgreSqlTypeMappings.GetNpgsqlDbType(type);
+                PostgreSqlTypeMappings.TypeMapper.GetDbType(type);
             }
         }
 

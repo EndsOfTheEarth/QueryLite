@@ -52,7 +52,7 @@ namespace QueryLite.Databases.SqlServer {
             else {
                 ParameterList.Add(
                     new SqlParameter(parameterName: paramName, value: DBNull.Value) {
-                        SqlDbType = SqlServerSqlTypeMappings.GetDbType(type)
+                        SqlDbType = SqlServerSqlTypeMappings.TypeMapper.GetDbType(type)
                     }
                 );
             }

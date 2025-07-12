@@ -52,7 +52,7 @@ namespace QueryLite.Databases.PostgreSql {
             else {
                 ParameterList.Add(
                     new NpgsqlParameter(parameterName: paramName, value: DBNull.Value) {
-                        NpgsqlDbType = PostgreSqlTypeMappings.GetNpgsqlDbType(type)
+                        NpgsqlDbType = PostgreSqlTypeMappings.TypeMapper.GetDbType(type)
                     }
                 );
             }

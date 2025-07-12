@@ -75,7 +75,7 @@ namespace QueryLite.Databases.PostgreSql {
         }
 
         public string? GetCSharpCodeSet(Type dotNetType) {
-            return PostgreSqlTypeMappings.GetCSharpCodeSet(dotNetType);
+            return PostgreSqlTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
         }
     }
 }

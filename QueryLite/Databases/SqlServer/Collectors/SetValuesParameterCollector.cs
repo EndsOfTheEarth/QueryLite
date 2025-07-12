@@ -581,192 +581,192 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
             ArgumentNullException.ThrowIfNull(value);
 
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<string> column, string? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<Guid> column, Guid value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<Guid> column, Guid? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<bool> column, bool value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<bool> column, bool? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<Bit> column, Bit value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<Bit> column, Bit? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<decimal> column, decimal value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<decimal> column, decimal? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<short> column, short value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<short> column, short? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<int> column, int value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<int> column, int? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<long> column, long value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<long> column, long? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<float> column, float value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<float> column, float? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<double> column, double value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<double> column, double? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<TimeOnly> column, TimeOnly value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<TimeOnly> column, TimeOnly? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<DateTime> column, DateTime value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<DateTime> column, DateTime? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<DateOnly> column, DateOnly value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<DateOnly> column, DateOnly? value) {
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<DateTimeOffset> column, DateTimeOffset value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<DateTimeOffset> column, DateTimeOffset? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<byte> column, byte value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<byte> column, byte? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set(Column<byte[]> column, byte[] value) {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set(NullableColumn<byte[]> column, byte[]? value) {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
@@ -784,73 +784,73 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         }
 
         public ISetValuesCollector Set<TYPE>(Column<StringKey<TYPE>> column, StringKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<StringKey<TYPE>> column, StringKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<GuidKey<TYPE>> column, GuidKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<GuidKey<TYPE>> column, GuidKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<ShortKey<TYPE>> column, ShortKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<ShortKey<TYPE>> column, ShortKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<IntKey<TYPE>> column, IntKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<IntKey<TYPE>> column, IntKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<LongKey<TYPE>> column, LongKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<LongKey<TYPE>> column, LongKey<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector Set<TYPE>(Column<BoolValue<TYPE>> column, BoolValue<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
         public ISetValuesCollector Set<TYPE>(NullableColumn<BoolValue<TYPE>> column, BoolValue<TYPE>? value) where TYPE : notnull {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
             }
             return SetValue(column, "null");
         }
@@ -924,162 +924,162 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         }
 
         public ISetValuesCollector SetGuid<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Guid> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetGuid<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Guid> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetShort<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<short> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetShort<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<short> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetInt<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<int> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetInt<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<int> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetLong<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<long> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetLong<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<long> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetString<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<string> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetString<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<string> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<bool> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<decimal> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
         public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTime> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
         public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTime> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
         public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetDateOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateOnly> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
         public ISetValuesCollector SetDateOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateOnly> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetTimeOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<TimeOnly> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
         public ISetValuesCollector SetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<TimeOnly> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<float> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
         public ISetValuesCollector SetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<float> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<double> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
         public ISetValuesCollector SetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<double> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
 
         public ISetValuesCollector SetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Bit> {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value));
+            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
         public ISetValuesCollector SetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Bit> {
 
             if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlString(value.Value.Value));
+                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }
