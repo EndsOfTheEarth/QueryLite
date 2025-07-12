@@ -106,64 +106,64 @@ namespace QueryLite.Databases {
 
             ToSqlStringDelegate? toSqlStringDelegate = null;
 
-            if(value is IGuidType guidType) {
+            if(value is IGuidType) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IGuidType)value).Value);
             }
-            else if(value is IStringType stringType) {
+            else if(value is IStringType) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IStringType)value).Value);
             }
-            else if(value is IInt16Type int16Type) {
+            else if(value is IInt16Type) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IInt16Type)value).Value);
             }
-            else if(value is IInt32Type int32Type) {
+            else if(value is IInt32Type) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IInt32Type)value).Value);
             }
-            else if(value is IInt64Type int64Type) {
+            else if(value is IInt64Type) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IInt64Type)value).Value);
             }
-            else if(value is IBoolType boolType) {
+            else if(value is IBoolType) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IBoolType)value).Value);
             }
-            else if(value is IValue<Guid> guidIValue) {
+            else if(value is IValue<Guid>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<Guid>)value).Value);
             }
-            else if(value is IValue<short> shortIValue) {
+            else if(value is IValue<short>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<short>)value).Value);
             }
-            else if(value is IValue<int> intIValue) {
+            else if(value is IValue<int>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<int>)value).Value);
             }
-            else if(value is IValue<long> longIValue) {
+            else if(value is IValue<long>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<long>)value).Value);
             }
-            else if(value is IValue<string> stringIValue) {
+            else if(value is IValue<string>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<string>)value).Value);
             }
-            else if(value is IValue<bool> boolIValue) {
+            else if(value is IValue<bool>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<bool>)value).Value);
             }
-            else if(value is IValue<decimal> decimalIValue) {
+            else if(value is IValue<decimal>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<decimal>)value).Value);
             }
-            else if(value is IValue<DateTime> dateTimeIValue) {
+            else if(value is IValue<DateTime>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<DateTime>)value).Value);
             }
-            else if(value is IValue<DateTimeOffset> dateTimeOffsetIValue) {
+            else if(value is IValue<DateTimeOffset>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<DateTimeOffset>)value).Value);
             }
-            else if(value is IValue<DateOnly> dateOnlyIValue) {
+            else if(value is IValue<DateOnly>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<DateOnly>)value).Value);
             }
-            else if(value is IValue<TimeOnly> timeOnlyIValue) {
+            else if(value is IValue<TimeOnly>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<TimeOnly>)value).Value);
             }
-            else if(value is IValue<float> floatIValue) {
+            else if(value is IValue<float>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<float>)value).Value);
             }
-            else if(value is IValue<double> doubleIValue) {
+            else if(value is IValue<double>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<double>)value).Value);
             }
-            else if(value is IValue<Bit> bitIValue) {
+            else if(value is IValue<Bit>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<Bit>)value).Value);
             }
             else {
@@ -183,7 +183,7 @@ namespace QueryLite.Databases {
     /// <summary>
     /// Map csharp type to Database type
     /// </summary>
-    public abstract class ATypeMap<DBTYPE> {
+    public abstract class ATypeMap<DBTYPE> where DBTYPE : struct {
 
         public abstract DBTYPE Guid { get; }
         public abstract DBTYPE String { get; }
@@ -219,13 +219,111 @@ namespace QueryLite.Databases {
 
         public DBTYPE GetDbType(Type type) {
 
-            if(DbTypeLookup.TryGetValue(type, out DBTYPE? dbType)) {
-                return dbType;
+            if(DbTypeLookup.TryGetValue(type, out DBTYPE dbt)) {
+                return dbt;
             }
 
             /*
              *  Map Key Types
              */
+            DBTYPE? dbType = TryGetDbTypeForKeyType(type);
+
+            if(dbType != null) {
+                return dbType.Value;
+            }
+
+            dbType = TryGetDbTypeForCustomType(type);
+
+            if(dbType != null) {
+                return dbType.Value;
+            }
+
+            Type? underlyingType = Nullable.GetUnderlyingType(type);
+
+            if(underlyingType != null) {
+
+                /*
+                 *  Map Nullable Key Types
+                 */
+                dbType = TryGetDbTypeForKeyType(underlyingType);
+
+                if(dbType != null) {
+                    return dbType.Value;
+                }
+
+                /*
+                 *  Map Nullable Custom Types
+                 */
+                dbType = TryGetDbTypeForCustomType(underlyingType);
+
+                if(dbType != null) {
+                    return dbType.Value;
+                }
+            }
+
+            /*
+             * Map Enum Types
+             */
+            dbType = TryGetDbTypeForEnumType(type, underlyingType);
+
+            if(dbType != null) {
+                return dbType.Value;
+            }
+
+            throw new Exception($"Unknown parameter type '{type.FullName}'");
+        }
+
+        private DBTYPE? TryGetDbTypeForEnumType(Type type, Type? underlyingType) {
+
+            Type? enumType = null;
+
+            if(type.IsEnum) {
+                enumType = type;
+            }
+            else {  //Check to see if this is a nullable enum type
+
+                if(underlyingType != null && underlyingType.IsEnum) {
+                    enumType = underlyingType;
+                }
+            }
+
+            if(enumType != null) {
+
+                NumericType integerType = EnumHelper.GetNumericType(enumType);
+
+                if(integerType == NumericType.UShort) {
+                    return AddDbType(type, Short);
+                }
+                else if(integerType == NumericType.Short) {
+                    return AddDbType(type, Short);
+                }
+                else if(integerType == NumericType.UInt) {
+                    return AddDbType(type, Integer);
+                }
+                else if(integerType == NumericType.Int) {
+                    return AddDbType(type, Integer);
+                }
+                else if(integerType == NumericType.ULong) {
+                    return AddDbType(type, Long);
+                }
+                else if(integerType == NumericType.Long) {
+                    return AddDbType(type, Long);
+                }
+                else if(integerType == NumericType.SByte) {
+                    return AddDbType(type, Byte);
+                }
+                else if(integerType == NumericType.Byte) {
+                    return AddDbType(type, Byte);
+                }
+                else {
+                    throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
+                }                
+            }
+            return null;
+        }
+
+        private DBTYPE? TryGetDbTypeForKeyType(Type type) {
+
             if(type.IsAssignableTo(typeof(IGuidType))) {
                 return AddDbType(type, Guid);
             }
@@ -244,6 +342,10 @@ namespace QueryLite.Databases {
             if(type.IsAssignableTo(typeof(IBoolType))) {
                 return AddDbType(type, Boolean);
             }
+            return null;
+        }
+
+        private DBTYPE? TryGetDbTypeForCustomType(Type type) {
 
             /*
              *  Map Custom Types
@@ -290,130 +392,12 @@ namespace QueryLite.Databases {
             if(type.IsAssignableTo(typeof(IValue<Bit>))) {
                 return AddDbType(type, Bit);
             }
-
-            Type? underlyingType = Nullable.GetUnderlyingType(type);
-
-            if(underlyingType != null) {
-
-                /*
-                 *  Map Nullable Key Types
-                 */
-                if(underlyingType.IsAssignableTo(typeof(IGuidType))) {
-                    return AddDbType(underlyingType, Guid);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IStringType))) {
-                    return AddDbType(underlyingType, String);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IInt16Type))) {
-                    return AddDbType(underlyingType, Short);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IInt32Type))) {
-                    return AddDbType(underlyingType, Integer);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IInt64Type))) {
-                    return AddDbType(underlyingType, Long);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IBoolType))) {
-                    return AddDbType(underlyingType, Boolean);
-                }
-
-                /*
-                 *  Map Nullable Custom Types
-                 */
-                if(underlyingType.IsAssignableTo(typeof(IValue<Guid>))) {
-                    return AddDbType(underlyingType, Guid);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<short>))) {
-                    return AddDbType(underlyingType, Short);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<int>))) {
-                    return AddDbType(underlyingType, Integer);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<long>))) {
-                    return AddDbType(underlyingType, Long);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<string>))) {
-                    return AddDbType(underlyingType, String);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<bool>))) {
-                    return AddDbType(underlyingType, Boolean);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<decimal>))) {
-                    return AddDbType(underlyingType, Decimal);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<DateTime>))) {
-                    return AddDbType(underlyingType, DateTime);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
-                    return AddDbType(underlyingType, DateTimeOffset);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<DateOnly>))) {
-                    return AddDbType(underlyingType, DateOnly);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<TimeOnly>))) {
-                    return AddDbType(underlyingType, TimeOnly);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<float>))) {
-                    return AddDbType(underlyingType, Float);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<double>))) {
-                    return AddDbType(underlyingType, Double);
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<Bit>))) {
-                    return AddDbType(underlyingType, Bit);
-                }
-            }
-
-            /*
-             * Map Enum Types
-             */
-            Type? enumType = null;
-
-            if(type.IsEnum) {
-                enumType = type;
-            }
-            else {  //Check to see if this is a nullable enum type
-
-                if(underlyingType != null && underlyingType.IsEnum) {
-                    enumType = underlyingType;
-                }
-            }
-
-            if(enumType != null) {
-
-                NumericType integerType = EnumHelper.GetNumericType(enumType);
-
-                if(integerType == NumericType.UShort) {
-                    return AddDbType(type, Short);
-                }
-                else if(integerType == NumericType.Short) {
-                    return AddDbType(type, Short);
-                }
-                else if(integerType == NumericType.UInt) {
-                    return AddDbType(type, Integer);
-                }
-                else if(integerType == NumericType.Int) {
-                    return AddDbType(type, Integer);
-                }
-                else if(integerType == NumericType.ULong) {
-                    return AddDbType(type, Long);
-                }
-                else if(integerType == NumericType.Long) {
-                    return AddDbType(type, Long);
-                }
-                else if(integerType == NumericType.SByte) {
-                    return AddDbType(type, Byte);
-                }
-                else if(integerType == NumericType.Byte) {
-                    return AddDbType(type, Byte);
-                }
-                else {
-                    throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
-                }
-            }
-            throw new Exception($"Unknown PostgreSql parameter type '{type.FullName}'");
+            return null;
         }
 
+        /// <summary>
+        /// Returns default csharp / DB Type enum.
+        /// </summary>
         private static Dictionary<Type, DBTYPE> GetDbTypeLookup(ATypeMap<DBTYPE> TypeMapper) {
 
             Dictionary<Type, DBTYPE> lookup = new Dictionary<Type, DBTYPE>() {
@@ -455,7 +439,7 @@ namespace QueryLite.Databases {
     /// <summary>
     /// Abstract class for creating sql parameters for the supported csharp types.
     /// </summary>
-    public abstract class AParameterMap<PARAMETER, DBTYPE> where PARAMETER : DbParameter {
+    public abstract class AParameterMap<PARAMETER, DBTYPE> where PARAMETER : DbParameter where DBTYPE : struct {
 
         private Dictionary<Type, CreateParameterDelegate> CreateParameterDelegateLookup { get; }
 
@@ -520,6 +504,9 @@ namespace QueryLite.Databases {
         protected abstract PARAMETER CreateParameter(string name, IInt64Type? value);
         protected abstract PARAMETER CreateParameter(string name, IBoolType? value);
 
+        /// <summary>
+        /// Returns default type / create parameter delegate mappings.
+        /// </summary>
         protected Dictionary<Type, CreateParameterDelegate> LoadCreateParameterDelegateLookup() {
 
             Dictionary<Type, CreateParameterDelegate> lookup = new Dictionary<Type, CreateParameterDelegate>() {
@@ -614,6 +601,22 @@ namespace QueryLite.Databases {
                 }
             }
 
+            /*
+             * Map Enum Types
+             */
+            createParameterDelegate = TryGetEnumCreateParameterDelegate(type, underlyingType);
+
+            if(createParameterDelegate != null) {
+                return createParameterDelegate;
+            }
+            throw new Exception($"Unsupported Type: '{type.FullName}' type);");
+        }
+
+        /// <summary>
+        /// Returns a create parameter delegate if 'type' is an enum.
+        /// </summary>
+        private CreateParameterDelegate? TryGetEnumCreateParameterDelegate(Type type, Type? underlyingType) {
+
             Type? enumType = null;
 
             if(type.IsEnum) {
@@ -649,11 +652,12 @@ namespace QueryLite.Databases {
                     throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
                 }
             }
-            else {
-                throw new Exception($"Unsupported Type: '{type.FullName}' type);");
-            }
+            return null;
         }
 
+        /// <summary>
+        /// Returns a create parameter delegate if 'type' is a custom 'IValue<>' type.
+        /// </summary>
         private CreateParameterDelegate? TryGetCustomTypeCreateParameterDelegate(Type type) {
 
             if(type.IsAssignableTo(typeof(IValue<Guid>))) {
@@ -701,6 +705,9 @@ namespace QueryLite.Databases {
             return null;
         }
 
+        /// <summary>
+        /// Returns a create parameter delegate if 'type' is a key value type.
+        /// </summary>
         private CreateParameterDelegate? TryGetKeyTypeCreateParameterDelegate(Type type) {
 
             if(type.IsAssignableTo(typeof(IGuidType))) {
