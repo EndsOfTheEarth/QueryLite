@@ -42,7 +42,7 @@ namespace QueryLite.Databases.PostgreSql {
         IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new PostgreSqlDeleteQueryGenerator();
         ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
 
-        IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMapper();
+        IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMap();
 
         IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
         IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator { get; } = new PostgreSqlPreparedUpdateQueryGenerator();
@@ -68,14 +68,14 @@ namespace QueryLite.Databases.PostgreSql {
         }
 
         public string ConvertToSql(object value) {
-            return PostgreSqlTypeMappings.ConvertToSql(value);
+            return PostgreSqlTypeMappings.ToSqlStringFunctions.ConvertToSql(value);
         }
         public IParametersBuilder CreateParameters(int initParams) {
             return new PostgreSqlParameters(initParams);
         }
 
         public string? GetCSharpCodeSet(Type dotNetType) {
-            return PostgreSqlTypeMappings.GetCSharpCodeSet(dotNetType);
+            return PostgreSqlTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
         }
     }
 }

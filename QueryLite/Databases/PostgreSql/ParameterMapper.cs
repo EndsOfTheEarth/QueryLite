@@ -21,436 +21,222 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using Microsoft.Data.SqlClient;
 using Npgsql;
 using NpgsqlTypes;
+using QueryLite.Databases.PostgreSql;
 using QueryLite.Utility;
 using System;
-using System.Data;
 
 namespace QueryLite.Databases.SqlServer {
 
-    public sealed class PostgreSqlParameterMapper : IPreparedParameterMapper {
+    /// <summary>
+    /// Creates PostgreSql parameters for the supported csharp types.
+    /// </summary>
+    public sealed class PostgreSqlParameterMap : AParameterMap<NpgsqlParameter, NpgsqlDbType>, IPreparedParameterMapper {
 
-        public CreateParameterDelegate GetCreateParameterDelegate(Type type) {
+        public PostgreSqlParameterMap() : base(new PostgreSqlTypeMap()) { }
 
-            if(type == typeof(Guid)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Uuid) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(Guid?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Uuid) {
-                    Value = value ?? DBNull.Value
-                };
-            }
-            else if(type == typeof(string)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Varchar) {
-                    Value = value ?? DBNull.Value
-                };
-            }
-            else if(type == typeof(short)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(short?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                    Value = value ?? DBNull.Value
-                };
-            }
-            else if(type == typeof(int)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Integer) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(int?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Integer) {
-                    Value = value ?? DBNull.Value
-                };
-            }
-            else if(type == typeof(long)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bigint) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(long?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bigint) {
-                    Value = value ?? DBNull.Value
-                };
-            }
-            else if(type == typeof(bool)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Boolean) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(bool?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Boolean) {
-                    Value = value ?? DBNull.Value
-                };
-            }
-            else if(type == typeof(Bit)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Boolean) {
-                    Value = ((Bit)value!).Value
-                };
-            }
-            else if(type == typeof(Bit?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Boolean) {
-                    Value = value != null ? ((Bit?)value).Value.Value : DBNull.Value
-                };
-            }
-            else if(type == typeof(decimal)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Numeric) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(decimal?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Numeric) {
-                    Value = value ?? DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, Bit? value) {
 
-            else if(type == typeof(float)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Real) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(float?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Real) {
-                    Value = value ?? DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(Bit))) {
+                Value = (value != null ? value.Value.Value : DBNull.Value)
+            };
+        }
 
-            else if(type == typeof(double)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Double) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(double?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Double) {
-                    Value = value ?? DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, bool? value) {
 
-            else if(type == typeof(byte[])) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bytea) {
-                    Value = value ?? DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(bool))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            else if(type == typeof(DateTime)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Timestamp) {
-                    Value = value
-                };
-            }
-            else if(type == typeof(DateTime?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Timestamp) {
-                    Value = value ?? DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, byte[]? value) {
 
-            else if(type == typeof(DateTimeOffset)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.TimestampTz) {
-                    Value = value != null ? new DateTimeOffset(((DateTimeOffset)value).UtcDateTime) : DBNull.Value
-                };
-            }
-            else if(type == typeof(DateTimeOffset?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.TimestampTz) {
-                    Value = value != null ? new DateTimeOffset(((DateTimeOffset)value).UtcDateTime) : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(byte[]))) {
+                Value = (value != null ? value : DBNull.Value)
+            };
+        }
 
-            else if(type == typeof(DateOnly)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Date) {
-                    Value = ((DateOnly)value!).ToDateTime(TimeOnly.MinValue)
-                };
-            }
-            else if(type == typeof(DateOnly?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Date) {
-                    Value = value != null ? ((DateOnly?)value).Value.ToDateTime(TimeOnly.MinValue) : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, DateOnly? value) {
 
-            else if(type == typeof(TimeOnly)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Time) {
-                    Value = ((TimeOnly)value!).ToTimeSpan()
-                };
-            }
-            else if(type == typeof(TimeOnly?)) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Time) {
-                    Value = value != null ? ((TimeOnly?)value).Value.ToTimeSpan() : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(DateOnly))) {
+                Value = (value != null ? value.Value.ToDateTime(TimeOnly.MinValue) : DBNull.Value)
+            };
+        }
 
-            Type? underlyingType = Nullable.GetUnderlyingType(type);
+        protected override NpgsqlParameter CreateParameter(string name, DateTime? value) {
 
-            if(type.IsAssignableTo(typeof(IValue<Guid>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Uuid) {
-                    Value = value != null ? ((IValue<Guid>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<Guid>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Uuid) {
-                    Value = value != null ? ((IValue<Guid>)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(DateTime))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            if(type.IsAssignableTo(typeof(IValue<short>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Smallint) {
-                    Value = value != null ? ((IValue<short>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<short>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Smallint) {
-                    Value = value != null ? ((IValue<short>)value).Value : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, DateTimeOffset? value) {
 
-            if(type.IsAssignableTo(typeof(IValue<int>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Integer) {
-                    Value = value != null ? ((IValue<int>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<int>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Integer) {
-                    Value = value != null ? ((IValue<int>)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(DateTimeOffset))) {
+                Value = (value != null ? new DateTimeOffset(value.Value.UtcDateTime) : DBNull.Value)
+            };
+        }
 
-            if(type.IsAssignableTo(typeof(IValue<long>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Bigint) {
-                    Value = value != null ? ((IValue<long>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<long>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Bigint) {
-                    Value = value != null ? ((IValue<long>)value).Value : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, decimal? value) {
 
-            if(type.IsAssignableTo(typeof(IValue<string>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Varchar) {
-                    Value = value != null ? ((IValue<string>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<string>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Varchar) {
-                    Value = value != null ? ((IValue<string>)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(decimal))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            if(type.IsAssignableTo(typeof(IValue<bool>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Boolean) {
-                    Value = value != null ? ((IValue<bool>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<bool>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Boolean) {
-                    Value = value != null ? ((IValue<bool>)value).Value : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, double? value) {
 
-            if(type.IsAssignableTo(typeof(IValue<decimal>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Numeric) {
-                    Value = value != null ? ((IValue<decimal>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<decimal>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Numeric) {
-                    Value = value != null ? ((IValue<decimal>)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(double))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Timestamp) {
-                    Value = value != null ? ((IValue<DateTime>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateTime>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Timestamp) {
-                    Value = value != null ? ((IValue<DateTime>)value).Value : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, float? value) {
 
-            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.TimestampTz) {
-                    Value = value != null ? new DateTimeOffset(((IValue<DateTimeOffset>)value).Value.UtcDateTime) : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.TimestampTz) {
-                    Value = value != null ? new DateTimeOffset(((IValue<DateTimeOffset>)value).Value.UtcDateTime) : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(float))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Date) {
-                    Value = value != null ? ((IValue<DateOnly>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateOnly>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Date) {
-                    Value = value != null ? ((IValue<DateOnly>)value).Value : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, Guid? value) {
 
-            if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Time) {
-                    Value = value != null ? ((IValue<TimeOnly>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<TimeOnly>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Time) {
-                    Value = value != null ? ((IValue<TimeOnly>)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(Guid))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            if(type.IsAssignableTo(typeof(IValue<float>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Real) {
-                    Value = value != null ? ((IValue<float>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<float>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Real) {
-                    Value = value != null ? ((IValue<float>)value).Value : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, int? value) {
 
-            if(type.IsAssignableTo(typeof(IValue<double>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Double) {
-                    Value = value != null ? ((IValue<double>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<double>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Double) {
-                    Value = value != null ? ((IValue<double>)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(int))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            if(type.IsAssignableTo(typeof(IValue<Bit>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Boolean) {
-                    Value = value != null ? ((IValue<Bit>)value).Value : DBNull.Value
-                };
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<Bit>))) {
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, NpgsqlDbType.Boolean) {
-                    Value = value != null ? ((IValue<Bit>)value).Value : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, long? value) {
 
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(long))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            if(type.IsAssignableTo(typeof(IGuidType))) {
+        protected override NpgsqlParameter CreateParameter(string name, short? value) {
 
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Uuid) {
-                    Value = value != null ? ((IGuidType)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(short))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            else if(type.IsAssignableTo(typeof(IStringType))) {
+        protected override NpgsqlParameter CreateParameter(string name, string? value) {
 
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Varchar) {
-                    Value = value != null ? ((IStringType)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(string))) {
+                Value = (value != null ? value : DBNull.Value)
+            };
+        }
 
-            else if(type.IsAssignableTo(typeof(IInt16Type))) {
+        protected override NpgsqlParameter CreateParameter(string name, TimeOnly? value) {
 
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                    Value = value != null ? ((IInt16Type)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(TimeOnly))) {
+                Value = (value != null ? value.Value.ToTimeSpan() : DBNull.Value)
+            };
+        }
 
-            else if(type.IsAssignableTo(typeof(IInt32Type))) {
+        protected override NpgsqlParameter CreateParameter(string name, byte? value) {
 
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Integer) {
-                    Value = value != null ? ((IInt32Type)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(byte))) {
+                Value = value != null ? value.Value : DBNull.Value
+            };
+        }
 
-            else if(type.IsAssignableTo(typeof(IInt64Type))) {
+        protected override NpgsqlParameter CreateParameter(string name, sbyte? value) {
 
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bigint) {
-                    Value = value != null ? ((IInt64Type)value).Value : DBNull.Value
-                };
-            }
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(sbyte))) {
+                Value = value != null ? value.Value : DBNull.Value
+            };
+        }
 
-            else if(type.IsAssignableTo(typeof(IBoolType))) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<Guid>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Boolean) {
-                    Value = value != null ? ((IBoolType)value).Value : DBNull.Value
-                };
-            }
+        protected override NpgsqlParameter CreateParameter(string name, IValue<string>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-            Type? enumType = null;
+        protected override NpgsqlParameter CreateParameter(string name, IValue<short>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-            if(type.IsEnum) {
-                enumType = type;
-            }
-            else {  //Check to see if this is a nullable enum type
+        protected override NpgsqlParameter CreateParameter(string name, IValue<int>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                if(underlyingType != null && underlyingType.IsEnum) {
-                    enumType = underlyingType;
-                }
-            }
+        protected override NpgsqlParameter CreateParameter(string name, IValue<long>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-            if(enumType != null) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<bool>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                NumericType integerType = EnumHelper.GetNumericType(enumType);
+        protected override NpgsqlParameter CreateParameter(string name, IValue<Bit>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                if(integerType == NumericType.UShort) {
-                    return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                        Value = value != null ? (short)value : DBNull.Value
-                    };
-                }
-                else if(integerType == NumericType.Short) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<decimal>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                        Value = value != null ? (short)value : DBNull.Value
-                    };
-                }
-                else if(integerType == NumericType.UInt) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<float>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Integer) {
-                        Value = value != null ? (int)value : DBNull.Value
-                    };
-                }
-                else if(integerType == NumericType.Int) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<double>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Integer) {
-                        Value = value != null ? (int)value : DBNull.Value
-                    };
-                }
-                else if(integerType == NumericType.ULong) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<byte[]>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bigint) {
-                        Value = value != null ? (long)value : DBNull.Value
-                    };
-                }
-                else if(integerType == NumericType.Long) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<DateTime>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bigint) {
-                        Value = value != null ? (long)value : DBNull.Value
-                    };
-                }
-                else if(integerType == NumericType.SByte) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<DateTimeOffset>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Bit) {
-                        Value = value != null ? (short)value : DBNull.Value
-                    };
-                }
-                else if(integerType == NumericType.Byte) {
+        protected override NpgsqlParameter CreateParameter(string name, IValue<DateOnly>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return (string name, object? value) => new NpgsqlParameter(parameterName: name, parameterType: NpgsqlDbType.Smallint) {
-                        Value = value != null ? (byte)value : DBNull.Value
-                    };
-                }
-                else {
-                    throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
-                }
-            }
-            else {
-                throw new Exception($"Unsupported Type: '{type.FullName}' type);");
-            }
+        protected override NpgsqlParameter CreateParameter(string name, IValue<TimeOnly>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, IGuidType? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, IStringType? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, IInt16Type? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, IInt32Type? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, IInt64Type? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, IBoolType? value) {
+            return CreateParameter(name, value?.Value);
         }
     }
 }
