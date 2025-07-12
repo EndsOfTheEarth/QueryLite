@@ -24,6 +24,7 @@
 using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 
 namespace QueryLite.Databases {
 
@@ -188,6 +189,7 @@ namespace QueryLite.Databases {
         public abstract DBTYPE String { get; }
         public abstract DBTYPE Boolean { get; }
         public abstract DBTYPE ByteArray { get; }
+        public abstract DBTYPE SByte { get; }
         public abstract DBTYPE Byte { get; }
         public abstract DBTYPE DateTimeOffset { get; }
         public abstract DBTYPE DateTime { get; }
@@ -447,6 +449,276 @@ namespace QueryLite.Databases {
                 { typeof(string), TypeMapper.String }
             };
             return lookup;
+        }
+    }
+
+    public abstract class AParameterMap<PARAMETER, DBTYPE> where PARAMETER : DbParameter {
+
+        private Dictionary<Type, CreateParameterDelegate> CreateParameterDelegateLookup { get; }
+
+        protected ATypeMap<DBTYPE> TypeMap { get; }
+
+        protected AParameterMap(ATypeMap<DBTYPE> typeMap) {
+            TypeMap = typeMap;
+            CreateParameterDelegateLookup = LoadCreateParameterDelegateLookup();
+        }
+
+        protected abstract PARAMETER CreateParameter(string name, Guid? value);
+        protected abstract PARAMETER CreateParameter(string name, string? value);
+
+        protected abstract PARAMETER CreateParameter(string name, short? value);
+        protected abstract PARAMETER CreateParameter(string name, int? value);
+        protected abstract PARAMETER CreateParameter(string name, long? value);
+
+        protected abstract PARAMETER CreateParameter(string name, bool? value);
+        protected abstract PARAMETER CreateParameter(string name, Bit? value);
+
+        protected abstract PARAMETER CreateParameter(string name, byte? value);
+        protected abstract PARAMETER CreateParameter(string name, sbyte? value);
+
+        protected abstract PARAMETER CreateParameter(string name, decimal? value);
+        protected abstract PARAMETER CreateParameter(string name, float? value);
+        protected abstract PARAMETER CreateParameter(string name, double? value);
+
+        protected abstract PARAMETER CreateParameter(string name, byte[]? value);
+
+        protected abstract PARAMETER CreateParameter(string name, DateTime? value);
+        protected abstract PARAMETER CreateParameter(string name, DateTimeOffset? value);
+
+        protected abstract PARAMETER CreateParameter(string name, DateOnly? value);
+        protected abstract PARAMETER CreateParameter(string name, TimeOnly? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IValue<Guid>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<string>? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IValue<short>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<int>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<long>? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IValue<bool>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<Bit>? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IValue<decimal>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<float>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<double>? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IValue<byte[]>? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IValue<DateTime>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<DateTimeOffset>? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IValue<DateOnly>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<TimeOnly>? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IGuidType? value);
+        protected abstract PARAMETER CreateParameter(string name, IStringType? value);
+        protected abstract PARAMETER CreateParameter(string name, IInt16Type? value);
+        protected abstract PARAMETER CreateParameter(string name, IInt32Type? value);
+        protected abstract PARAMETER CreateParameter(string name, IInt64Type? value);
+        protected abstract PARAMETER CreateParameter(string name, IBoolType? value);
+
+        protected Dictionary<Type, CreateParameterDelegate> LoadCreateParameterDelegateLookup() {
+
+            Dictionary<Type, CreateParameterDelegate> lookup = new Dictionary<Type, CreateParameterDelegate>() {
+                { typeof(Guid), (name, value) => CreateParameter(name: name, value: (Guid?)value) },
+                { typeof(Guid?), (name, value) => CreateParameter(name: name, value: (Guid?)value) },
+                { typeof(string), (name, value) => CreateParameter(name: name, value: value != null ? (string)value : null) },
+                { typeof(short), (name, value) => CreateParameter(name: name, value: (short?)value) },
+                { typeof(short?), (name, value) => CreateParameter(name: name, value: (short?)value) },
+                { typeof(int), (name, value) => CreateParameter(name: name, value: (int?)value) },
+                { typeof(int?), (name, value) => CreateParameter(name: name, value: (int?)value) },
+                { typeof(long), (name, value) => CreateParameter(name: name, value: (long?)value) },
+                { typeof(long?), (name, value) => CreateParameter(name: name, value: (long?)value) },
+                { typeof(bool), (name, value) => CreateParameter(name: name, value: (bool?)value) },
+                { typeof(bool?), (name, value) => CreateParameter(name: name, value: (bool?)value) },
+                { typeof(Bit), (name, value) => CreateParameter(name: name, value: (Bit?)value) },
+                { typeof(Bit?), (name, value) => CreateParameter(name: name, value: (Bit?)value) },
+                { typeof(decimal), (name, value) => CreateParameter(name: name, value: (decimal?)value) },
+                { typeof(decimal?), (name, value) => CreateParameter(name: name, value: (decimal?)value) },
+                { typeof(float), (name, value) => CreateParameter(name: name, value: (float?)value) },
+                { typeof(float?),  (name, value) => CreateParameter(name: name, value: (float?)value) },
+                { typeof(double), (name, value) => CreateParameter(name: name, value: (double?)value) },
+                { typeof(double?), (name, value) => CreateParameter(name: name, value: (double?)value) },
+                { typeof(byte[]), (name, value) => CreateParameter(name: name, value: (byte[]?) value) },
+                { typeof(DateTime), (name, value) => CreateParameter(name: name, value: (DateTime?)value) },
+                { typeof(DateTime?), (name, value) => CreateParameter(name: name, value: (DateTime?)value) },
+                { typeof(DateTimeOffset), (name, value) => CreateParameter(name: name, value: (DateTimeOffset?) value) },
+                { typeof(DateTimeOffset?), (name, value) => CreateParameter(name: name, value: (DateTimeOffset?) value) },
+                { typeof(DateOnly), (name, value) => CreateParameter(name: name, value: (DateOnly?)value) },
+                { typeof(DateOnly?), (name, value) => CreateParameter(name: name, value: (DateOnly?)value) },
+                { typeof(TimeOnly), (name, value) => CreateParameter(name: name, value: (TimeOnly?)value) },
+                { typeof(TimeOnly?), (name, value) => CreateParameter(name: name, value: (TimeOnly?)value) }
+            };
+            return lookup;
+        }
+
+        private CreateParameterDelegate AddParameterDelegate(Type type, CreateParameterDelegate @delegate) {
+
+            lock(CreateParameterDelegateLookup) {
+                CreateParameterDelegateLookup.TryAdd(type, @delegate);
+            }
+            return @delegate;
+        }
+
+        public CreateParameterDelegate GetCreateParameterDelegate(Type type) {
+
+            if(CreateParameterDelegateLookup.TryGetValue(type, out CreateParameterDelegate? createParameterDelegate)) {
+                return createParameterDelegate!;
+            }
+
+            /*
+             * Map Custom Types
+             */
+            createParameterDelegate = TryGetCustomTypeCreateParameterDelegate(type);
+
+            if(createParameterDelegate != null) {
+                return createParameterDelegate;
+            }
+
+
+            Type? underlyingType = Nullable.GetUnderlyingType(type);
+
+            /*
+             * Map Nullable Custom Types
+             */
+            if(underlyingType != null) {
+
+                createParameterDelegate = TryGetCustomTypeCreateParameterDelegate(underlyingType);
+
+                if(createParameterDelegate != null) {
+                    return createParameterDelegate;
+                }
+            }
+
+            /*
+             * Map Key Types
+             */
+            createParameterDelegate = TryGetKeyTypeCreateParameterDelegate(type);
+
+            if(createParameterDelegate != null) {
+                return createParameterDelegate;
+            }
+
+            /*
+             * Map Nullable Key Types
+             */
+            if(underlyingType != null) {
+
+                createParameterDelegate = TryGetKeyTypeCreateParameterDelegate(underlyingType);
+
+                if(createParameterDelegate != null) {
+                    return createParameterDelegate;
+                }
+            }
+
+            Type? enumType = null;
+
+            if(type.IsEnum) {
+                enumType = type;
+            }
+            else {  //Check to see if this is a nullable enum type
+
+                if(underlyingType != null && underlyingType.IsEnum) {
+                    enumType = underlyingType;
+                }
+            }
+
+            if(enumType != null) {
+
+                NumericType integerType = EnumHelper.GetNumericType(enumType);
+
+                if(integerType == NumericType.UShort || integerType == NumericType.Short) {
+                    return AddParameterDelegate(type, (name, value) => CreateParameter(name, value != null ? (short)value : null));
+                }
+                else if(integerType == NumericType.UInt || integerType == NumericType.Int) {
+                    return AddParameterDelegate(type, (name, value) => CreateParameter(name, value != null ? (int)value : null));
+                }
+                else if(integerType == NumericType.ULong || integerType == NumericType.Long) {
+                    return AddParameterDelegate(type, (name, value) => CreateParameter(name, value != null ? (long)value : null));
+                }
+                else if(integerType == NumericType.SByte) {
+                    return AddParameterDelegate(type, (name, value) => CreateParameter(name, value != null ? (sbyte)value : null));
+                }
+                else if(integerType == NumericType.Byte) {
+                    return AddParameterDelegate(type, (name, value) => CreateParameter(name, value != null ? (byte)value : null));
+                }
+                else {
+                    throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
+                }
+            }
+            else {
+                throw new Exception($"Unsupported Type: '{type.FullName}' type);");
+            }
+        }
+
+        private CreateParameterDelegate? TryGetCustomTypeCreateParameterDelegate(Type type) {
+
+            if(type.IsAssignableTo(typeof(IValue<Guid>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<Guid>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<short>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<short>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<int>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<int>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<long>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<long>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<string>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<string>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<bool>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<bool>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<decimal>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<decimal>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<DateTime>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<DateTimeOffset>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<DateOnly>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<TimeOnly>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<float>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<float>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<double>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<double>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<Bit>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<Bit>?)value));
+            }
+            return null;
+        }
+
+        private CreateParameterDelegate? TryGetKeyTypeCreateParameterDelegate(Type type) {
+
+            if(type.IsAssignableTo(typeof(IGuidType))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IGuidType?)value));
+            }
+            if(type.IsAssignableTo(typeof(IStringType))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IStringType?)value));
+            }
+            if(type.IsAssignableTo(typeof(IInt16Type))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IInt16Type?)value));
+            }
+            if(type.IsAssignableTo(typeof(IInt32Type))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IInt32Type?)value));
+            }
+            if(type.IsAssignableTo(typeof(IInt64Type))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IInt64Type?)value));
+            }
+            if(type.IsAssignableTo(typeof(IBoolType))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IBoolType?)value));
+            }
+            return null;
         }
     }
 }

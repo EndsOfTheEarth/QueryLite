@@ -29,7 +29,7 @@ namespace QueryLite.Databases.PostgreSql {
 
     public static class PostgreSqlTypeMappings {
 
-        public readonly static PostgreSqlTypeMapper TypeMapper = new PostgreSqlTypeMapper();
+        public readonly static PostgreSqlTypeMap TypeMapper = new PostgreSqlTypeMap();
 
         public static PostgreSqlToStringFunctions ToSqlStringFunctions { get; } = new PostgreSqlToStringFunctions();
     }
@@ -80,12 +80,13 @@ namespace QueryLite.Databases.PostgreSql {
     /// <summary>
     /// Map of csharp types to their PostgreSql NpgsqlDbType value.
     /// </summary>
-    public class PostgreSqlTypeMapper : ATypeMap<NpgsqlDbType> {
+    public class PostgreSqlTypeMap : ATypeMap<NpgsqlDbType> {
 
         public override NpgsqlDbType Guid => NpgsqlDbType.Uuid;
         public override NpgsqlDbType String => NpgsqlDbType.Varchar;
         public override NpgsqlDbType Boolean => NpgsqlDbType.Boolean;
         public override NpgsqlDbType ByteArray => NpgsqlDbType.Bytea;
+        public override NpgsqlDbType SByte => NpgsqlDbType.Smallint;
         public override NpgsqlDbType Byte => NpgsqlDbType.Smallint;
         public override NpgsqlDbType DateTimeOffset => NpgsqlDbType.TimestampTz;
         public override NpgsqlDbType DateTime => NpgsqlDbType.Timestamp;

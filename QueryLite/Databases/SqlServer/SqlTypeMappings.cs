@@ -86,6 +86,7 @@ namespace QueryLite.Databases.SqlServer {
         public override SqlDbType String => SqlDbType.NVarChar;
         public override SqlDbType Boolean => SqlDbType.Bit;
         public override SqlDbType ByteArray => SqlDbType.Binary;
+        public override SqlDbType SByte => SqlDbType.SmallInt;
         public override SqlDbType Byte => SqlDbType.SmallInt;
         public override SqlDbType DateTimeOffset => SqlDbType.DateTimeOffset;
         public override SqlDbType DateTime => SqlDbType.DateTime;
