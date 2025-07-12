@@ -1,4 +1,27 @@
-﻿using QueryLite.Utility;
+﻿/*
+ * MIT License
+ *
+ * Copyright (c) 2025 EndsOfTheEarth
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ **/
+using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 
@@ -7,39 +30,78 @@ namespace QueryLite.Databases {
     /// <summary>
     /// Functions to convert supported data types into sql string values.
     /// </summary>
-    public interface IToSqlStringFunctions {
+    public abstract class AToSqlStringFunctions {
 
-        string ToSqlString(bool value);
-        string ToSqlString(Bit value);
-        string ToSqlString(byte[] value);
-        string ToSqlString(byte value);
-        string ToSqlString(DateTimeOffset value);
-        string ToSqlString(DateTime value);
-        string ToSqlString(TimeOnly value);
-        string ToSqlString(DateOnly value);
-        string ToSqlString(decimal value);
-        string ToSqlString(double value);
-        string ToSqlString(float value);
-        string ToSqlString(Guid value);
-        string ToSqlString(short value);
-        string ToSqlString(int value);
-        string ToSqlString(long value);
-        string ToSqlString(string value);
-        string ToSqlString(IGuidType value);
-        string ToSqlString(IStringType value);
-        string ToSqlString(IInt16Type value);
-        string ToSqlString(IInt32Type value);
-        string ToSqlString(IInt64Type value);
-        string ToSqlString(IBoolType value);
+        public abstract string ToSqlString(bool value);
+        public abstract string ToSqlString(Bit value);
+        public abstract string ToSqlString(byte[] value);
+        public abstract string ToSqlString(byte value);
+        public abstract string ToSqlString(DateTimeOffset value);
+        public abstract string ToSqlString(DateTime value);
+        public abstract string ToSqlString(TimeOnly value);
+        public abstract string ToSqlString(DateOnly value);
+        public abstract string ToSqlString(decimal value);
+        public abstract string ToSqlString(double value);
+        public abstract string ToSqlString(float value);
+        public abstract string ToSqlString(Guid value);
+        public abstract string ToSqlString(short value);
+        public abstract string ToSqlString(int value);
+        public abstract string ToSqlString(long value);
+        public abstract string ToSqlString(string value);
 
-        string? GetCSharpCodeSet(Type dotNetType);
+        public abstract string? GetCSharpCodeSet(Type dotNetType);
+
+        private Dictionary<Type, ToSqlStringDelegate> ToSqlStringLookup { get; }
+
+        protected AToSqlStringFunctions() {
+            ToSqlStringLookup = GetSqlStringDelegateLookup(this);
+        }
+
+        public string ConvertToSql(object value) {
+
+            Type type = value.GetType();
+
+            if(ToSqlStringLookup.TryGetValue(type, out ToSqlStringDelegate? toSqlStringDelegate)) {
+                return toSqlStringDelegate(value);
+            }
+
+            toSqlStringDelegate = ToSqlStringMapper.GetMapping(value, this);
+
+            lock(ToSqlStringLookup) {
+                ToSqlStringLookup.TryAdd(type, toSqlStringDelegate);
+            }
+            return toSqlStringDelegate(value);
+        }
+
+        private static Dictionary<Type, ToSqlStringDelegate> GetSqlStringDelegateLookup(AToSqlStringFunctions toSql) {
+
+            Dictionary<Type, ToSqlStringDelegate> lookup = new Dictionary<Type, ToSqlStringDelegate>() {
+                { typeof(bool), value => toSql.ToSqlString((bool)value) },
+                { typeof(Bit), value => toSql.ToSqlString((Bit)value) },
+                { typeof(byte[]), value => toSql.ToSqlString((byte[])value) },
+                { typeof(byte), value => toSql.ToSqlString((byte)value) },
+                { typeof(DateTimeOffset), value => toSql.ToSqlString((DateTimeOffset)value) },
+                { typeof(DateTime), value => toSql.ToSqlString((DateTime)value) },
+                { typeof(TimeOnly), value => toSql.ToSqlString((TimeOnly)value) },
+                { typeof(DateOnly), value => toSql.ToSqlString((DateOnly)value) },
+                { typeof(decimal), value => toSql.ToSqlString((decimal)value) },
+                { typeof(double), value => toSql.ToSqlString((double)value) },
+                { typeof(float), value => toSql.ToSqlString((float)value) },
+                { typeof(Guid), value => toSql.ToSqlString((Guid)value) },
+                { typeof(short), value => toSql.ToSqlString((short)value) },
+                { typeof(int), value => toSql.ToSqlString((int)value) },
+                { typeof(long), value => toSql.ToSqlString((long)value) },
+                { typeof(string), value => toSql.ToSqlString((string)value) }
+            };
+            return lookup;
+        }
     }
 
     public delegate string ToSqlStringDelegate(object value);
 
     public static class ToSqlStringMapper {
 
-        public static ToSqlStringDelegate GetMapping(object value, IToSqlStringFunctions toSql) {
+        public static ToSqlStringDelegate GetMapping(object value, AToSqlStringFunctions toSql) {
 
             ToSqlStringDelegate? toSqlStringDelegate = null;
 
@@ -120,25 +182,30 @@ namespace QueryLite.Databases {
     /// <summary>
     /// Map csharp type to Database type
     /// </summary>
-    public interface ITypeMap<DBTYPE> {
+    public abstract class ATypeMap<DBTYPE> {
 
-        DBTYPE Guid { get; }
-        DBTYPE String { get; }
-        DBTYPE Boolean { get; }
-        DBTYPE ByteArray { get; }
-        DBTYPE Byte { get; }
-        DBTYPE DateTimeOffset { get; }
-        DBTYPE DateTime { get; }
-        DBTYPE TimeOnly { get; }
-        DBTYPE DateOnly { get; }
-        DBTYPE Decimal { get; }
-        DBTYPE Double { get; }
-        DBTYPE Float { get; }
-        DBTYPE Short { get; }
-        DBTYPE Integer { get; }
-        DBTYPE Long { get; }
-        DBTYPE Bit { get; }
+        public abstract DBTYPE Guid { get; }
+        public abstract DBTYPE String { get; }
+        public abstract DBTYPE Boolean { get; }
+        public abstract DBTYPE ByteArray { get; }
+        public abstract DBTYPE Byte { get; }
+        public abstract DBTYPE DateTimeOffset { get; }
+        public abstract DBTYPE DateTime { get; }
+        public abstract DBTYPE TimeOnly { get; }
+        public abstract DBTYPE DateOnly { get; }
+        public abstract DBTYPE Decimal { get; }
+        public abstract DBTYPE Double { get; }
+        public abstract DBTYPE Float { get; }
+        public abstract DBTYPE Short { get; }
+        public abstract DBTYPE Integer { get; }
+        public abstract DBTYPE Long { get; }
+        public abstract DBTYPE Bit { get; }
 
+        private Dictionary<Type, DBTYPE> DbTypeLookup { get; }
+
+        protected ATypeMap() {
+            DbTypeLookup = GetDbTypeLookup(this);
+        }
 
         private DBTYPE AddDbType(Type type, DBTYPE dbType) {
 
@@ -148,7 +215,7 @@ namespace QueryLite.Databases {
             return dbType;
         }
 
-        internal DBTYPE GetDbTypeProtected(Type type) {
+        public DBTYPE GetDbType(Type type) {
 
             if(DbTypeLookup.TryGetValue(type, out DBTYPE? dbType)) {
                 return dbType;
@@ -345,9 +412,7 @@ namespace QueryLite.Databases {
             throw new Exception($"Unknown PostgreSql parameter type '{type.FullName}'");
         }
 
-        Dictionary<Type, DBTYPE> DbTypeLookup { get; }
-
-        public static Dictionary<Type, DBTYPE> GetDbTypeLookup(ITypeMap<DBTYPE> TypeMapper) {
+        private static Dictionary<Type, DBTYPE> GetDbTypeLookup(ATypeMap<DBTYPE> TypeMapper) {
 
             Dictionary<Type, DBTYPE> lookup = new Dictionary<Type, DBTYPE>() {
                 { typeof(Guid), TypeMapper.Guid },
