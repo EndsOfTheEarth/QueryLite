@@ -15,13 +15,13 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void SqlServerCreateParameterDelegateTypes() {
 
-            TestCreateParameterDelegateTypes(new SqlServerParameterMapper());
+            TestCreateParameterDelegateTypes(new SqlServerParameterMap());
         }
 
         [TestMethod]
         public void PostgreSqlCreateParameterDelegateTypes() {
 
-            TestCreateParameterDelegateTypes(new PostgreSqlParameterMapper());
+            TestCreateParameterDelegateTypes(new PostgreSqlParameterMap());
         }
 
         private static void TestCreateParameterDelegateTypes(IPreparedParameterMapper mapper) {

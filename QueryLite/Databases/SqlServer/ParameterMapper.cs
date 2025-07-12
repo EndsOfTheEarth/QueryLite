@@ -24,383 +24,218 @@
 using Microsoft.Data.SqlClient;
 using QueryLite.Utility;
 using System;
-using System.Collections.Generic;
 using System.Data;
-
-#if NET9_0_OR_GREATER
-using System.Threading;
-#endif
 
 namespace QueryLite.Databases.SqlServer {
 
-    public sealed class SqlServerParameterMapper : IPreparedParameterMapper {
+    /// <summary>
+    /// Creates Sql Server parameters for the supported csharp types.
+    /// </summary>
+    public sealed class SqlServerParameterMap : AParameterMap<SqlParameter, SqlDbType>, IPreparedParameterMapper {
 
-#if NET9_0_OR_GREATER
-        private static readonly Lock _lock = new Lock();
-#else
-        private static readonly object _lock = new object();
-#endif
+        public SqlServerParameterMap() : base(new SqlServerTypeMap()) { }
 
-        private readonly static Dictionary<Type, CreateParameterDelegate> CreateParameterDelegateLookup = new Dictionary<Type, CreateParameterDelegate>() {
-            { typeof(Guid), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.UniqueIdentifier) { Value = value } },
-            { typeof(Guid?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.UniqueIdentifier) { Value = value ?? DBNull.Value } },
-            { typeof(string), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.NVarChar) { Value = value ?? DBNull.Value } },
-            { typeof(short), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) { Value = value} },
-            { typeof(short?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) { Value = value ?? DBNull.Value } },
-            { typeof(int), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) { Value = value } },
-            { typeof(int?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) { Value = value ?? DBNull.Value } },
-            { typeof(long), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) { Value = value } },
-            { typeof(long?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) { Value = value ?? DBNull.Value } },
-            { typeof(bool), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) { Value = value } },
-            { typeof(bool?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) { Value = value ?? DBNull.Value } },
-            { typeof(Bit), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Bit) { Value = ((Bit)value!).Value } },
-            { typeof(Bit?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Bit) { Value = value != null ? ((Bit?)value).Value.Value : DBNull.Value } },
-            { typeof(decimal), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Decimal) { Value = value } },
-            { typeof(decimal?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Decimal) { Value = value ?? DBNull.Value } },
-            { typeof(float), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Real) { Value = value } },
-            { typeof(float?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Real) { Value = value ?? DBNull.Value } },
-            { typeof(double), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Float) { Value = value } },
-            { typeof(double?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Float) { Value = value ?? DBNull.Value } },
-            { typeof(byte[]), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Binary) { Value = value ?? DBNull.Value } },
-            { typeof(DateTime), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTime) { Value = value } },
-            { typeof(DateTime?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTime) { Value = value ?? DBNull.Value } },
-            { typeof(DateTimeOffset), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTimeOffset) { Value = value } },
-            { typeof(DateTimeOffset?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTimeOffset) { Value = value ?? DBNull.Value } },
-            { typeof(DateOnly), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Date) { Value = ((DateOnly)value!).ToDateTime(TimeOnly.MinValue) } },
-            { typeof(DateOnly?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Date) { Value = value != null ? ((DateOnly?)value).Value.ToDateTime(TimeOnly.MinValue) : DBNull.Value } },
-            { typeof(TimeOnly), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Time) { Value = ((TimeOnly)value!).ToTimeSpan() } },
-            { typeof(TimeOnly?), (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Time) { Value = value != null ? ((TimeOnly?)value).Value.ToTimeSpan() : DBNull.Value } }
-        };
+        protected override SqlParameter CreateParameter(string name, Bit? value) {
 
-        private static CreateParameterDelegate AddParameterDelegate(Type type, CreateParameterDelegate @delegate) {
-
-            lock(_lock) {
-                CreateParameterDelegateLookup.TryAdd(type, @delegate);
-            }
-            return @delegate;
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(Bit))) {
+                Value = (value != null ? value.Value.Value : DBNull.Value)
+            };
         }
-        public CreateParameterDelegate GetCreateParameterDelegate(Type type) {
 
-            if(CreateParameterDelegateLookup.TryGetValue(type, out CreateParameterDelegate? @delegate)) {
-                return @delegate!;
-            }
+        protected override SqlParameter CreateParameter(string name, bool? value) {
 
-            /*
-             * Map Key Types
-             */
-            if(type.IsAssignableTo(typeof(IGuidType))) {
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(bool))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.UniqueIdentifier) {
-                    Value = value != null ? ((IGuidType)value).Value : DBNull.Value
-                });
-            }
+        protected override SqlParameter CreateParameter(string name, byte[]? value) {
 
-            if(type.IsAssignableTo(typeof(IStringType))) {
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(byte[]))) {
+                Value = (value != null ? value : DBNull.Value)
+            };
+        }
 
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.NVarChar) {
-                    Value = value != null ? ((IStringType)value).Value : DBNull.Value
-                });
-            }
+        protected override SqlParameter CreateParameter(string name, DateOnly? value) {
 
-            if(type.IsAssignableTo(typeof(IInt16Type))) {
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateOnly))) {
+                Value = (value != null ? value.Value.ToDateTime(TimeOnly.MinValue) : DBNull.Value)
+            };
+        }
 
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) {
-                    Value = value != null ? ((IInt16Type)value).Value : DBNull.Value
-                });
-            }
+        protected override SqlParameter CreateParameter(string name, DateTime? value) {
 
-            if(type.IsAssignableTo(typeof(IInt32Type))) {
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateTime))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) {
-                    Value = value != null ? ((IInt32Type)value).Value : DBNull.Value
-                });
-            }
+        protected override SqlParameter CreateParameter(string name, DateTimeOffset? value) {
 
-            if(type.IsAssignableTo(typeof(IInt64Type))) {
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateTimeOffset))) {
+                Value = (value != null ? value : DBNull.Value)
+            };
+        }
 
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) {
-                    Value = value != null ? ((IInt64Type)value).Value : DBNull.Value
-                });
-            }
+        protected override SqlParameter CreateParameter(string name, decimal? value) {
 
-            if(type.IsAssignableTo(typeof(IBoolType))) {
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(decimal))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) {
-                    Value = value != null ? ((IBoolType)value).Value : DBNull.Value
-                });
-            }
+        protected override SqlParameter CreateParameter(string name, double? value) {
 
-            /*
-             * Map Custom Types
-             */
-            if(type.IsAssignableTo(typeof(IValue<Guid>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.UniqueIdentifier) {
-                    Value = value != null ? ((IValue<Guid>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<short>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) {
-                    Value = value != null ? ((IValue<short>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<int>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) {
-                    Value = value != null ? ((IValue<int>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<long>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) {
-                    Value = value != null ? ((IValue<long>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<string>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.NVarChar) {
-                    Value = value != null ? ((IValue<string>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<bool>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) {
-                    Value = value != null ? ((IValue<bool>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<decimal>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Decimal) {
-                    Value = value != null ? ((IValue<decimal>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTime) {
-                    Value = value != null ? ((IValue<DateTime>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTimeOffset) {
-                    Value = value != null ? ((IValue<DateTimeOffset>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Date) {
-                    Value = value != null ? ((IValue<DateOnly>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Time) {
-                    Value = value != null ? ((IValue<TimeOnly>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<float>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Real) {
-                    Value = value != null ? ((IValue<float>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<double>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Float) {
-                    Value = value != null ? ((IValue<double>)value).Value : DBNull.Value
-                });
-            }
-            if(type.IsAssignableTo(typeof(IValue<Bit>))) {
-                return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Bit) {
-                    Value = value != null ? ((IValue<Bit>)value).Value : DBNull.Value
-                });
-            }
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(double))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-            Type? underlyingType = Nullable.GetUnderlyingType(type);
+        protected override SqlParameter CreateParameter(string name, float? value) {
 
-            /*
-             * Map Nullable Key Types
-             */
-            if(underlyingType != null) {
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(float))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-                if(underlyingType.IsAssignableTo(typeof(IGuidType))) {
+        protected override SqlParameter CreateParameter(string name, Guid? value) {
 
-                    return AddParameterDelegate(underlyingType, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.UniqueIdentifier) {
-                        Value = value != null ? ((IGuidType)value).Value : DBNull.Value
-                    });
-                }
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(Guid))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-                if(underlyingType.IsAssignableTo(typeof(IStringType))) {
+        protected override SqlParameter CreateParameter(string name, int? value) {
 
-                    return AddParameterDelegate(underlyingType, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.NVarChar) {
-                        Value = value != null ? ((IStringType)value).Value : DBNull.Value
-                    });
-                }
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(int))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-                if(underlyingType.IsAssignableTo(typeof(IInt16Type))) {
+        protected override SqlParameter CreateParameter(string name, long? value) {
 
-                    return AddParameterDelegate(underlyingType, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) {
-                        Value = value != null ? ((IInt16Type)value).Value : DBNull.Value
-                    });
-                }
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(long))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-                if(underlyingType.IsAssignableTo(typeof(IInt32Type))) {
+        protected override SqlParameter CreateParameter(string name, short? value) {
 
-                    return AddParameterDelegate(underlyingType, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) {
-                        Value = value != null ? ((IInt32Type)value).Value : DBNull.Value
-                    });
-                }
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(short))) {
+                Value = (value != null ? value.Value : DBNull.Value)
+            };
+        }
 
-                if(underlyingType.IsAssignableTo(typeof(IInt64Type))) {
+        protected override SqlParameter CreateParameter(string name, string? value) {
 
-                    return AddParameterDelegate(underlyingType, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) {
-                        Value = value != null ? ((IInt64Type)value).Value : DBNull.Value
-                    });
-                }
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(string))) {
+                Value = (value != null ? value : DBNull.Value)
+            };
+        }
 
-                if(underlyingType.IsAssignableTo(typeof(IBoolType))) {
+        protected override SqlParameter CreateParameter(string name, TimeOnly? value) {
 
-                    return AddParameterDelegate(underlyingType, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) {
-                        Value = value != null ? ((IBoolType)value).Value : DBNull.Value
-                    });
-                }
-            }
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(TimeOnly))) {
+                Value = (value != null ? value.Value.ToTimeSpan() : DBNull.Value)
+            };
+        }
 
-            /*
-             * Map Nullable Custom Types
-             */
-            if(underlyingType != null) {
+        protected override SqlParameter CreateParameter(string name, byte? value) {
 
-                if(underlyingType.IsAssignableTo(typeof(IValue<Guid>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.UniqueIdentifier) {
-                        Value = value != null ? ((IValue<Guid>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<short>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) {
-                        Value = value != null ? ((IValue<short>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<int>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) {
-                        Value = value != null ? ((IValue<int>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<long>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) {
-                        Value = value != null ? ((IValue<long>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<string>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.NVarChar) {
-                        Value = value != null ? ((IValue<string>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<bool>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) {
-                        Value = value != null ? ((IValue<bool>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<decimal>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Decimal) {
-                        Value = value != null ? ((IValue<decimal>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<DateTime>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTime) {
-                        Value = value != null ? ((IValue<DateTime>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.DateTimeOffset) {
-                        Value = value != null ? ((IValue<DateTimeOffset>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<DateOnly>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Date) {
-                        Value = value != null ? ((IValue<DateOnly>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<TimeOnly>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Time) {
-                        Value = value != null ? ((IValue<TimeOnly>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<float>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Real) {
-                        Value = value != null ? ((IValue<float>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<double>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Float) {
-                        Value = value != null ? ((IValue<double>)value).Value : DBNull.Value
-                    });
-                }
-                if(underlyingType.IsAssignableTo(typeof(IValue<Bit>))) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Bit) {
-                        Value = value != null ? ((IValue<Bit>)value).Value : DBNull.Value
-                    });
-                }
-            }
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(byte))) {
+                Value = value != null ? value.Value : DBNull.Value
+            };
+        }
 
-            Type? enumType = null;
+        protected override SqlParameter CreateParameter(string name, sbyte? value) {
 
-            if(type.IsEnum) {
-                enumType = type;
-            }
-            else {  //Check to see if this is a nullable enum type
+            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(sbyte))) {
+                Value = value != null ? value.Value : DBNull.Value
+            };
+        }
 
-                if(underlyingType != null && underlyingType.IsEnum) {
-                    enumType = underlyingType;
-                }
-            }
+        protected override SqlParameter CreateParameter(string name, IValue<Guid>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-            if(enumType != null) {
+        protected override SqlParameter CreateParameter(string name, IValue<string>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                NumericType integerType = EnumHelper.GetNumericType(enumType);
+        protected override SqlParameter CreateParameter(string name, IValue<short>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                if(integerType == NumericType.UShort) {
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) {
-                        Value = value ?? DBNull.Value
-                    });
-                }
-                else if(integerType == NumericType.Short) {
+        protected override SqlParameter CreateParameter(string name, IValue<int>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.SmallInt) {
-                        Value = value ?? DBNull.Value
-                    });
-                }
-                else if(integerType == NumericType.UInt) {
+        protected override SqlParameter CreateParameter(string name, IValue<long>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) {
-                        Value = value ?? DBNull.Value
-                    });
-                }
-                else if(integerType == NumericType.Int) {
+        protected override SqlParameter CreateParameter(string name, IValue<bool>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.Int) {
-                        Value = value ?? DBNull.Value
-                    });
-                }
-                else if(integerType == NumericType.ULong) {
+        protected override SqlParameter CreateParameter(string name, IValue<Bit>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) {
-                        Value = value ?? DBNull.Value
-                    });
-                }
-                else if(integerType == NumericType.Long) {
+        protected override SqlParameter CreateParameter(string name, IValue<decimal>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.BigInt) {
-                        Value = value ?? DBNull.Value
-                    });
-                }
-                else if(integerType == NumericType.SByte) {
+        protected override SqlParameter CreateParameter(string name, IValue<float>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) {
-                        Value = value ?? DBNull.Value
-                    });
-                }
-                else if(integerType == NumericType.Byte) {
+        protected override SqlParameter CreateParameter(string name, IValue<double>? value) {
+            return CreateParameter(name, value?.Value);
+        }
 
-                    return AddParameterDelegate(type, (name, value) => new SqlParameter(parameterName: name, dbType: SqlDbType.TinyInt) {
-                        Value = value ?? DBNull.Value
-                    });
-                }
-                else {
-                    throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
-                }
-            }
-            else {
-                throw new Exception($"Unsupported Type: '{type.FullName}' type);");
-            }
+        protected override SqlParameter CreateParameter(string name, IValue<byte[]>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IValue<DateTime>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IValue<DateTimeOffset>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IValue<DateOnly>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IValue<TimeOnly>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IGuidType? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IStringType? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IInt16Type? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IInt32Type? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IInt64Type? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IBoolType? value) {
+            return CreateParameter(name, value?.Value);
         }
     }
 }

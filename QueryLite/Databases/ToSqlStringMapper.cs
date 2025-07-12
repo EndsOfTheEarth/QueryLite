@@ -452,6 +452,9 @@ namespace QueryLite.Databases {
         }
     }
 
+    /// <summary>
+    /// Abstract class for creating sql parameters for the supported csharp types.
+    /// </summary>
     public abstract class AParameterMap<PARAMETER, DBTYPE> where PARAMETER : DbParameter {
 
         private Dictionary<Type, CreateParameterDelegate> CreateParameterDelegateLookup { get; }

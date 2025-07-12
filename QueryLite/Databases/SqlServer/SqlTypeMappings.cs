@@ -29,7 +29,7 @@ namespace QueryLite.Databases.SqlServer {
 
     public static class SqlServerSqlTypeMappings {
 
-        public readonly static SqlServerTypeMapper TypeMapper = new SqlServerTypeMapper();
+        public readonly static SqlServerTypeMap TypeMapper = new SqlServerTypeMap();
 
         public static SqlServerToStringFunctions ToSqlStringFunctions { get; } = new SqlServerToStringFunctions();
     }
@@ -80,7 +80,7 @@ namespace QueryLite.Databases.SqlServer {
     /// <summary>
     /// Map of csharp types to their SQL Server SqlDbType value.
     /// </summary>
-    public class SqlServerTypeMapper : ATypeMap<SqlDbType> {
+    public class SqlServerTypeMap : ATypeMap<SqlDbType> {
 
         public override SqlDbType Guid => SqlDbType.UniqueIdentifier;
         public override SqlDbType String => SqlDbType.NVarChar;

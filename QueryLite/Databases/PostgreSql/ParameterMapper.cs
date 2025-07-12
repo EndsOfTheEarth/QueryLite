@@ -29,36 +29,24 @@ using System;
 
 namespace QueryLite.Databases.SqlServer {
 
-    public sealed class PostgreSqlParameterMapper : IPreparedParameterMapper {
+    /// <summary>
+    /// Creates PostgreSql parameters for the supported csharp types.
+    /// </summary>
+    public sealed class PostgreSqlParameterMap : AParameterMap<NpgsqlParameter, NpgsqlDbType>, IPreparedParameterMapper {
 
-        private readonly static PostgreSqlTypeMap TypeMap = new PostgreSqlTypeMap();
-
-        public readonly static PostgreSqlParameterMap ParameterMap = new PostgreSqlParameterMap(TypeMap);
-
-        public CreateParameterDelegate GetCreateParameterDelegate(Type type) {
-            return ParameterMap.GetCreateParameterDelegate(type);
-        }
-    }
-
-    public sealed class PostgreSqlParameterMap : AParameterMap<NpgsqlParameter, NpgsqlDbType> {
-
-        private ATypeMap<NpgsqlDbType> TypeMap { get; }
-
-        public PostgreSqlParameterMap(ATypeMap<NpgsqlDbType> typeMap) : base(typeMap) {
-            TypeMap = typeMap;
-        }
+        public PostgreSqlParameterMap() : base(new PostgreSqlTypeMap()) { }
 
         protected override NpgsqlParameter CreateParameter(string name, Bit? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(Bit))) {
-                Value = (value != null ? ((Bit)value).Value : DBNull.Value)
+                Value = (value != null ? value.Value.Value : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, bool? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(bool))) {
-                Value = (value != null ? ((bool)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
@@ -72,70 +60,70 @@ namespace QueryLite.Databases.SqlServer {
         protected override NpgsqlParameter CreateParameter(string name, DateOnly? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(DateOnly))) {
-                Value = (value != null ? ((DateOnly)value).ToDateTime(TimeOnly.MinValue) : DBNull.Value)
+                Value = (value != null ? value.Value.ToDateTime(TimeOnly.MinValue) : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, DateTime? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(DateTime))) {
-                Value = (value != null ? ((DateTime)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, DateTimeOffset? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(DateTimeOffset))) {
-                Value = (value != null ? new DateTimeOffset(((DateTimeOffset)value).UtcDateTime) : DBNull.Value)
+                Value = (value != null ? new DateTimeOffset(value.Value.UtcDateTime) : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, decimal? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(decimal))) {
-                Value = (value != null ? ((decimal)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, double? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(double))) {
-                Value = (value != null ? ((double)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, float? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(float))) {
-                Value = (value != null ? ((float)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, Guid? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(Guid))) {
-                Value = (value != null ? ((Guid)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, int? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(int))) {
-                Value = (value != null ? ((int)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, long? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(long))) {
-                Value = (value != null ? ((long)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, short? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(short))) {
-                Value = (value != null ? ((short)value) : DBNull.Value)
+                Value = (value != null ? value.Value : DBNull.Value)
             };
         }
 
@@ -149,21 +137,21 @@ namespace QueryLite.Databases.SqlServer {
         protected override NpgsqlParameter CreateParameter(string name, TimeOnly? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(TimeOnly))) {
-                Value = (value != null ? ((TimeOnly)value!).ToTimeSpan() : DBNull.Value)
+                Value = (value != null ? value.Value.ToTimeSpan() : DBNull.Value)
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, byte? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(byte))) {
-                Value = value != null ? ((byte)value) : DBNull.Value
+                Value = value != null ? value.Value : DBNull.Value
             };
         }
 
         protected override NpgsqlParameter CreateParameter(string name, sbyte? value) {
 
             return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(sbyte))) {
-                Value = value != null ? ((sbyte)value) : DBNull.Value
+                Value = value != null ? value.Value : DBNull.Value
             };
         }
 
