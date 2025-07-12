@@ -85,6 +85,10 @@ csharp_style_prefer_unbound_generic_type_in_nameof = true:suggestion
 # MSTEST0003: Test methods should have valid layout
 dotnet_diagnostic.MSTEST0003.severity = error
 
+# MSTEST0030: Type containing '[TestMethod]' should be marked with '[TestClass]'
+dotnet_diagnostic.MSTEST0030.severity = error
+
+
 [*.{cs,vb}]
 #### Naming styles ####
 
