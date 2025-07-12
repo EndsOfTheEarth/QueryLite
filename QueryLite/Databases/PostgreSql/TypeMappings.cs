@@ -24,184 +24,257 @@
 using NpgsqlTypes;
 using QueryLite.Utility;
 using System;
+using System.Collections.Generic;
+
+#if NET9_0_OR_GREATER
+using System.Threading;
+#endif
 
 namespace QueryLite.Databases.PostgreSql {
 
     public static class PostgreSqlTypeMappings {
 
+#if NET9_0_OR_GREATER
+        private static readonly Lock _lock = new Lock();
+#else
+        private static readonly object _lock = new object();
+#endif
+        private static readonly Dictionary<Type, NpgsqlDbType> DbTypeLookup = new Dictionary<Type, NpgsqlDbType>() {
+            { typeof(Guid), NpgsqlDbType.Uuid },
+            { typeof(Guid?), NpgsqlDbType.Uuid },
+            { typeof(bool), NpgsqlDbType.Boolean },
+            { typeof(bool?), NpgsqlDbType.Boolean },
+            { typeof(Bit), NpgsqlDbType.Boolean },
+            { typeof(Bit?), NpgsqlDbType.Boolean },
+            { typeof(byte[]), NpgsqlDbType.Bytea },
+            { typeof(byte?[]), NpgsqlDbType.Bytea },
+            { typeof(byte), NpgsqlDbType.Smallint },
+            { typeof(DateTimeOffset), NpgsqlDbType.TimestampTz },
+            { typeof(DateTimeOffset?), NpgsqlDbType.TimestampTz },
+            { typeof(DateTime), NpgsqlDbType.Timestamp },
+            { typeof(DateTime?), NpgsqlDbType.Timestamp },
+            { typeof(TimeOnly), NpgsqlDbType.Time },
+            { typeof(TimeOnly?), NpgsqlDbType.Time },
+            { typeof(DateOnly), NpgsqlDbType.Date },
+            { typeof(DateOnly?), NpgsqlDbType.Date },
+            { typeof(decimal), NpgsqlDbType.Numeric },
+            { typeof(decimal?), NpgsqlDbType.Numeric },
+            { typeof(double), NpgsqlDbType.Double },
+            { typeof(double?), NpgsqlDbType.Double },
+            { typeof(float), NpgsqlDbType.Real },
+            { typeof(float?), NpgsqlDbType.Real },
+            { typeof(short), NpgsqlDbType.Smallint },
+            { typeof(short?), NpgsqlDbType.Smallint },
+            { typeof(int), NpgsqlDbType.Integer },
+            { typeof(int?), NpgsqlDbType.Integer },
+            { typeof(long), NpgsqlDbType.Bigint },
+            { typeof(long?), NpgsqlDbType.Bigint },
+            { typeof(string), NpgsqlDbType.Varchar }
+        };
+
+        private static NpgsqlDbType AddDbType(Type type, NpgsqlDbType dbType) {
+
+            lock(_lock) {
+                DbTypeLookup.TryAdd(type, dbType);
+            }
+            return dbType;
+        }
+
         public static NpgsqlDbType GetNpgsqlDbType(Type type) {
 
-            if(type == typeof(Guid)) {
-                return NpgsqlDbType.Uuid;
-            }
-            if(type == typeof(Guid?)) {
-                return NpgsqlDbType.Uuid;
+            if(DbTypeLookup.TryGetValue(type, out NpgsqlDbType dbType)) {
+                return dbType;
             }
 
-            if(type == typeof(bool)) {
-                return NpgsqlDbType.Boolean;
-            }
-            if(type == typeof(bool?)) {
-                return NpgsqlDbType.Boolean;
-            }
-
-            if(type == typeof(Bit)) {
-                return NpgsqlDbType.Boolean;
-            }
-            if(type == typeof(Bit?)) {
-                return NpgsqlDbType.Boolean;
-            }
-
-            if(type == typeof(byte[])) {
-                return NpgsqlDbType.Bytea;
-            }
-            if(type == typeof(byte?[])) {
-                return NpgsqlDbType.Bytea;
-            }
-
-            if(type == typeof(byte)) {
-                return NpgsqlDbType.Smallint;
-            }
-
-            if(type == typeof(DateTimeOffset)) {
-                return NpgsqlDbType.TimestampTz;
-            }
-            if(type == typeof(DateTimeOffset?)) {
-                return NpgsqlDbType.TimestampTz;
-            }
-
-            if(type == typeof(DateTime)) {
-                return NpgsqlDbType.Timestamp;
-            }
-            if(type == typeof(DateTime?)) {
-                return NpgsqlDbType.Timestamp;
-            }
-
-            if(type == typeof(TimeOnly)) {
-                return NpgsqlDbType.Time;
-            }
-            if(type == typeof(TimeOnly?)) {
-                return NpgsqlDbType.Time;
-            }
-
-            if(type == typeof(DateOnly)) {
-                return NpgsqlDbType.Date;
-            }
-            if(type == typeof(DateOnly?)) {
-                return NpgsqlDbType.Date;
-            }
-
-            if(type == typeof(decimal)) {
-                return NpgsqlDbType.Numeric;
-            }
-            if(type == typeof(decimal?)) {
-                return NpgsqlDbType.Numeric;
-            }
-
-            if(type == typeof(double)) {
-                return NpgsqlDbType.Double;
-            }
-            if(type == typeof(double?)) {
-                return NpgsqlDbType.Double;
-            }
-
-            if(type == typeof(float)) {
-                return NpgsqlDbType.Real;
-            }
-            if(type == typeof(float?)) {
-                return NpgsqlDbType.Real;
-            }
-
-            if(type.IsEnum) {
-                return NpgsqlDbType.Integer;
-            }
-
-            if(type == typeof(short)) {
-                return NpgsqlDbType.Smallint;
-            }
-            if(type == typeof(short?)) {
-                return NpgsqlDbType.Smallint;
-            }
-
-            if(type == typeof(int)) {
-                return NpgsqlDbType.Integer;
-            }
-            if(type == typeof(int?)) {
-                return NpgsqlDbType.Integer;
-            }
-
-            if(type == typeof(long)) {
-                return NpgsqlDbType.Bigint;
-            }
-            if(type == typeof(long?)) {
-                return NpgsqlDbType.Bigint;
-            }
-
-            if(type == typeof(string)) {
-                return NpgsqlDbType.Varchar;
-            }
-
+            /*
+             *  Map Key Types
+             */
             if(type.IsAssignableTo(typeof(IGuidType))) {
-                return NpgsqlDbType.Uuid;
+                return AddDbType(type, NpgsqlDbType.Uuid);
             }
             if(type.IsAssignableTo(typeof(IStringType))) {
-                return NpgsqlDbType.Varchar;
+                return AddDbType(type, NpgsqlDbType.Varchar);
             }
             if(type.IsAssignableTo(typeof(IInt16Type))) {
-                return NpgsqlDbType.Smallint;
+                return AddDbType(type, NpgsqlDbType.Smallint);
             }
             if(type.IsAssignableTo(typeof(IInt32Type))) {
-                return NpgsqlDbType.Integer;
+                return AddDbType(type, NpgsqlDbType.Integer);
             }
             if(type.IsAssignableTo(typeof(IInt64Type))) {
-                return NpgsqlDbType.Bigint;
+                return AddDbType(type, NpgsqlDbType.Bigint);
             }
             if(type.IsAssignableTo(typeof(IBoolType))) {
-                return NpgsqlDbType.Boolean;
+                return AddDbType(type, NpgsqlDbType.Boolean);
             }
 
+            /*
+             *  Map Custom Types
+             */
             if(type.IsAssignableTo(typeof(IValue<Guid>))) {
-                return NpgsqlDbType.Uuid;
+                return AddDbType(type, NpgsqlDbType.Uuid);
             }
             if(type.IsAssignableTo(typeof(IValue<short>))) {
-                return NpgsqlDbType.Smallint;
+                return AddDbType(type, NpgsqlDbType.Smallint);
             }
             if(type.IsAssignableTo(typeof(IValue<int>))) {
-                return NpgsqlDbType.Integer;
+                return AddDbType(type, NpgsqlDbType.Integer);
             }
             if(type.IsAssignableTo(typeof(IValue<long>))) {
-                return NpgsqlDbType.Bigint;
+                return AddDbType(type, NpgsqlDbType.Bigint);
             }
             if(type.IsAssignableTo(typeof(IValue<string>))) {
-                return NpgsqlDbType.Varchar;
+                return AddDbType(type, NpgsqlDbType.Varchar);
             }
             if(type.IsAssignableTo(typeof(IValue<bool>))) {
-                return NpgsqlDbType.Boolean;
+                return AddDbType(type, NpgsqlDbType.Boolean);
             }
             if(type.IsAssignableTo(typeof(IValue<decimal>))) {
-                return NpgsqlDbType.Numeric;
+                return AddDbType(type, NpgsqlDbType.Numeric);
             }
             if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
-                return NpgsqlDbType.Timestamp;
+                return AddDbType(type, NpgsqlDbType.Timestamp);
             }
             if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
-                return NpgsqlDbType.TimestampTz;
+                return AddDbType(type, NpgsqlDbType.TimestampTz);
             }
             if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
-                return NpgsqlDbType.Date;
+                return AddDbType(type, NpgsqlDbType.Date);
             }
             if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
-                return NpgsqlDbType.Time;
+                return AddDbType(type, NpgsqlDbType.Time);
             }
             if(type.IsAssignableTo(typeof(IValue<float>))) {
-                return NpgsqlDbType.Real;
+                return AddDbType(type, NpgsqlDbType.Real);
             }
             if(type.IsAssignableTo(typeof(IValue<double>))) {
-                return NpgsqlDbType.Double;
+                return AddDbType(type, NpgsqlDbType.Double);
             }
             if(type.IsAssignableTo(typeof(IValue<Bit>))) {
-                return NpgsqlDbType.Boolean;
+                return AddDbType(type, NpgsqlDbType.Boolean);
             }
+
+            Type? underlyingType = Nullable.GetUnderlyingType(type);
+
+            if(underlyingType != null) {
+
+                /*
+                 *  Map Nullable Key Types
+                 */
+                if(underlyingType.IsAssignableTo(typeof(IGuidType))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Uuid);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IStringType))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Varchar);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IInt16Type))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Smallint);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IInt32Type))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Integer);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IInt64Type))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Bigint);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IBoolType))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Boolean);
+                }
+
+                /*
+                 *  Map Nullable Custom Types
+                 */
+                if(underlyingType.IsAssignableTo(typeof(IValue<Guid>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Uuid);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<short>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Smallint);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<int>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Integer);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<long>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Bigint);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<string>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Varchar);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<bool>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Boolean);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<decimal>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Numeric);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<DateTime>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Timestamp);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.TimestampTz);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Date);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Time);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<float>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Real);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<double>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Double);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<Bit>))) {
+                    return AddDbType(underlyingType, NpgsqlDbType.Boolean);
+                }
+            }
+
+            /*
+             * Map Enum Types
+             */
+            Type? enumType = null;
+
+            if(type.IsEnum) {
+                enumType = type;
+            }
+            else {  //Check to see if this is a nullable enum type
+
+                if(underlyingType != null && underlyingType.IsEnum) {
+                    enumType = underlyingType;
+                }
+            }
+
+            if(enumType != null) {
+
+                NumericType integerType = EnumHelper.GetNumericType(enumType);
+
+                if(integerType == NumericType.UShort) {
+                    return AddDbType(type, NpgsqlDbType.Smallint);
+                }
+                else if(integerType == NumericType.Short) {
+                    return AddDbType(type, NpgsqlDbType.Smallint);
+                }
+                else if(integerType == NumericType.UInt) {
+                    return AddDbType(type, NpgsqlDbType.Integer);
+                }
+                else if(integerType == NumericType.Int) {
+                    return AddDbType(type, NpgsqlDbType.Integer);
+                }
+                else if(integerType == NumericType.ULong) {
+                    return AddDbType(type, NpgsqlDbType.Bigint);
+                }
+                else if(integerType == NumericType.Long) {
+                    return AddDbType(type, NpgsqlDbType.Bigint);
+                }
+                else if(integerType == NumericType.SByte) {
+                    return AddDbType(type, NpgsqlDbType.Smallint);
+                }
+                else if(integerType == NumericType.Byte) {
+                    return AddDbType(type, NpgsqlDbType.Smallint);
+                }
+                else {
+                    throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
+                }
+            }
+
             throw new Exception($"Unknown PostgreSql parameter type '{type.FullName}'");
         }
 

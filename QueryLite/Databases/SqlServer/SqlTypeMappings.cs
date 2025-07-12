@@ -88,10 +88,6 @@ namespace QueryLite.Databases.SqlServer {
                 return dbType;
             }
 
-            if(type.IsEnum) {
-                return AddDbType(type, SqlDbType.Int);
-            }
-
             /*
              *  Map Key Types
              */
@@ -165,71 +161,121 @@ namespace QueryLite.Databases.SqlServer {
             /*
              *  Map Nullable Key Types
              */
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IGuidType))) {
-                return AddDbType(underlyingType, SqlDbType.UniqueIdentifier);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IStringType))) {
-                return AddDbType(underlyingType, SqlDbType.NVarChar);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IInt16Type))) {
-                return AddDbType(underlyingType, SqlDbType.SmallInt);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IInt32Type))) {
-                return AddDbType(underlyingType, SqlDbType.Int);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IInt64Type))) {
-                return AddDbType(underlyingType, SqlDbType.BigInt);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IBoolType))) {
-                return AddDbType(underlyingType, SqlDbType.Bit);
+            if(underlyingType != null) {
+
+                if(underlyingType.IsAssignableTo(typeof(IGuidType))) {
+                    return AddDbType(underlyingType, SqlDbType.UniqueIdentifier);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IStringType))) {
+                    return AddDbType(underlyingType, SqlDbType.NVarChar);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IInt16Type))) {
+                    return AddDbType(underlyingType, SqlDbType.SmallInt);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IInt32Type))) {
+                    return AddDbType(underlyingType, SqlDbType.Int);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IInt64Type))) {
+                    return AddDbType(underlyingType, SqlDbType.BigInt);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IBoolType))) {
+                    return AddDbType(underlyingType, SqlDbType.Bit);
+                }
+
+                /*
+                 *  Map Nullable Custom Types
+                 */
+                if(underlyingType.IsAssignableTo(typeof(IValue<Guid>))) {
+                    return AddDbType(underlyingType, SqlDbType.UniqueIdentifier);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<short>))) {
+                    return AddDbType(underlyingType, SqlDbType.SmallInt);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<int>))) {
+                    return AddDbType(underlyingType, SqlDbType.Int);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<long>))) {
+                    return AddDbType(underlyingType, SqlDbType.BigInt);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<string>))) {
+                    return AddDbType(underlyingType, SqlDbType.NVarChar);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<bool>))) {
+                    return AddDbType(underlyingType, SqlDbType.Bit);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<decimal>))) {
+                    return AddDbType(underlyingType, SqlDbType.Decimal);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<DateTime>))) {
+                    return AddDbType(underlyingType, SqlDbType.DateTime);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+                    return AddDbType(underlyingType, SqlDbType.DateTimeOffset);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<DateOnly>))) {
+                    return AddDbType(underlyingType, SqlDbType.Date);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+                    return AddDbType(underlyingType, SqlDbType.Time);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<float>))) {
+                    return AddDbType(underlyingType, SqlDbType.Real);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<double>))) {
+                    return AddDbType(underlyingType, SqlDbType.Float);
+                }
+                if(underlyingType.IsAssignableTo(typeof(IValue<Bit>))) {
+                    return AddDbType(underlyingType, SqlDbType.Bit);
+                }
             }
 
             /*
-             *  Map Nullable Custom Types
+             * Map Enum Types
              */
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<Guid>))) {
-                return AddDbType(underlyingType, SqlDbType.UniqueIdentifier);
+            Type? enumType = null;
+
+            if(type.IsEnum) {
+                enumType = type;
             }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<short>))) {
-                return AddDbType(underlyingType, SqlDbType.SmallInt);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<int>))) {
-                return AddDbType(underlyingType, SqlDbType.Int);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<long>))) {
-                return AddDbType(underlyingType, SqlDbType.BigInt);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<string>))) {
-                return AddDbType(underlyingType, SqlDbType.NVarChar);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<bool>))) {
-                return AddDbType(underlyingType, SqlDbType.Bit);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<decimal>))) {
-                return AddDbType(underlyingType, SqlDbType.Decimal);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateTime>))) {
-                return AddDbType(underlyingType, SqlDbType.DateTime);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
-                return AddDbType(underlyingType, SqlDbType.DateTimeOffset);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<DateOnly>))) {
-                return AddDbType(underlyingType, SqlDbType.Date);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<TimeOnly>))) {
-                return AddDbType(underlyingType, SqlDbType.Time);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<float>))) {
-                return AddDbType(underlyingType, SqlDbType.Real);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<double>))) {
-                return AddDbType(underlyingType, SqlDbType.Float);
-            }
-            if(underlyingType != null && underlyingType.IsAssignableTo(typeof(IValue<Bit>))) {
-                return AddDbType(underlyingType, SqlDbType.Bit);
+            else {  //Check to see if this is a nullable enum type
+
+                if(underlyingType != null && underlyingType.IsEnum) {
+                    enumType = underlyingType;
+                }
             }
 
+            if(enumType != null) {
+
+                NumericType integerType = EnumHelper.GetNumericType(enumType);
+
+                if(integerType == NumericType.UShort) {
+                    return AddDbType(type, SqlDbType.SmallInt);
+                }
+                else if(integerType == NumericType.Short) {
+                    return AddDbType(type, SqlDbType.SmallInt);
+                }
+                else if(integerType == NumericType.UInt) {
+                    return AddDbType(type, SqlDbType.Int);
+                }
+                else if(integerType == NumericType.Int) {
+                    return AddDbType(type, SqlDbType.Int);
+                }
+                else if(integerType == NumericType.ULong) {
+                    return AddDbType(type, SqlDbType.BigInt);
+                }
+                else if(integerType == NumericType.Long) {
+                    return AddDbType(type, SqlDbType.BigInt);
+                }
+                else if(integerType == NumericType.SByte) {
+                    return AddDbType(type, SqlDbType.TinyInt);
+                }
+                else if(integerType == NumericType.Byte) {
+                    return AddDbType(type, SqlDbType.TinyInt);
+                }
+                else {
+                    throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
+                }
+            }
             throw new Exception($"Unknown SqlServer parameter type '{type.FullName}'");
         }
 

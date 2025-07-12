@@ -1,9 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite.Databases;
+using QueryLite.Databases.PostgreSql;
 using QueryLite.Databases.SqlServer;
 using QueryLite.Utility;
 using QueryLiteTest.Tables;
 using System;
+using System.Collections.Generic;
 
 namespace QueryLiteTest.Tests {
 
@@ -11,138 +13,176 @@ namespace QueryLiteTest.Tests {
     public class TypeMappingTests {
 
         [TestMethod]
-        public void TestCreateParameterDelegateTypes() {
+        public void SqlServerCreateParameterDelegateTypes() {
 
             TestCreateParameterDelegateTypes(new SqlServerParameterMapper());
+        }
+
+        [TestMethod]
+        public void PostgreSqlCreateParameterDelegateTypes() {
+
             TestCreateParameterDelegateTypes(new PostgreSqlParameterMapper());
         }
 
         private static void TestCreateParameterDelegateTypes(IPreparedParameterMapper mapper) {
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(Guid)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(Guid?)));
+            List<Type> types = GetTypes();
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(short)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(short?)));
+            foreach(Type type in types) {
+                Assert.IsNotNull(mapper.GetCreateParameterDelegate(type));
+            }            
+        }
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(int)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(int?)));
+        [TestMethod]
+        public void TestSqlServerTypeMappings() {
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(long)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(long?)));
+            List<Type> types = GetTypes();
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(string)));
+            foreach(Type type in types) {
+                SqlServerSqlTypeMappings.GetDbType(type);
+            }
+        }
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(bool)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(bool?)));
+        [TestMethod]
+        public void TestPostgreSqlTypeMappings() {
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(decimal)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(decimal?)));
+            List<Type> types = GetTypes();
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(DateTime)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(DateTime?)));
+            foreach(Type type in types) {
+                PostgreSqlTypeMappings.GetNpgsqlDbType(type);
+            }
+        }
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(DateTimeOffset)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(DateTimeOffset?)));
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(DateOnly)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(DateOnly?)));
+        private static List<Type> GetTypes() {
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(TimeOnly)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(TimeOnly?)));
+            List<Type> list = new List<Type>() {
+                typeof(Guid),
+                typeof(Guid?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(float)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(float?)));
+                typeof(short),
+                typeof(short?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(double)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(double?)));
+                typeof(int),
+                typeof(int?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(Bit)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(Bit?)));
+                typeof(long),
+                typeof(long?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomGuid)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomGuid?)));
+                typeof(string),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomShort)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomShort?)));
+                typeof(bool),
+                typeof(bool?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomInt)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomInt?)));
+                typeof(decimal),
+                typeof(decimal?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomLong)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomLong?)));
+                typeof(DateTime),
+                typeof(DateTime?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomString)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomString?)));
+                typeof(DateTimeOffset),
+                typeof(DateTimeOffset?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomBool)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomBool?)));
+                typeof(DateOnly),
+                typeof(DateOnly?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDecimal)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDecimal?)));
+                typeof(TimeOnly),
+                typeof(TimeOnly?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDateTime)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDateTime?)));
+                typeof(float),
+                typeof(float?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDateTimeOffset)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDateTimeOffset?)));
+                typeof(double),
+                typeof(double?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDateOnly)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDateOnly?)));
+                typeof(Bit),
+                typeof(Bit?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomTimeOnly)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomTimeOnly?)));
+                typeof(CustomGuid),
+                typeof(CustomGuid?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomFloat)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomFloat?)));
+                typeof(CustomShort),
+                typeof(CustomShort?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDouble)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(CustomDouble?)));
+                typeof(CustomInt),
+                typeof(CustomInt?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(GuidKey<TestingType>)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(GuidKey<TestingType>?)));
+                typeof(CustomLong),
+                typeof(CustomLong?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(ShortKey<TestingType>)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(ShortKey<TestingType>?)));
+                typeof(CustomString),
+                typeof(CustomString?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(IntKey<TestingType>)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(IntKey<TestingType>?)));
+                typeof(CustomBool),
+                typeof(CustomBool?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(LongKey<TestingType>)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(LongKey<TestingType>?)));
+                typeof(CustomDecimal),
+                typeof(CustomDecimal?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(StringKey<TestingType>)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(StringKey<TestingType>?)));
+                typeof(CustomDateTime),
+                typeof(CustomDateTime?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(BoolValue<TestingType>)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(BoolValue<TestingType>?)));
+                typeof(CustomDateTimeOffset),
+                typeof(CustomDateTimeOffset?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(Bit)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(Bit?)));
+                typeof(CustomDateOnly),
+                typeof(CustomDateOnly?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(UShortEnum)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(UShortEnum?)));
+                typeof(CustomTimeOnly),
+                typeof(CustomTimeOnly?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(ShortEnum)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(ShortEnum?)));
+                typeof(CustomFloat),
+                typeof(CustomFloat?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(UIntEnum)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(UIntEnum?)));
+                typeof(CustomDouble),
+                typeof(CustomDouble?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(IntEnum)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(IntEnum?)));
+                typeof(GuidKey<TestingType>),
+                typeof(GuidKey<TestingType>?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(ULongEnum)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(ULongEnum?)));
+                typeof(ShortKey<TestingType>),
+                typeof(ShortKey<TestingType>?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(LongEnum)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(LongEnum?)));
+                typeof(IntKey<TestingType>),
+                typeof(IntKey<TestingType>?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(SByteEnum)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(SByteEnum?)));
+                typeof(LongKey<TestingType>),
+                typeof(LongKey<TestingType>?),
 
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(ByteEnum)));
-            Assert.IsNotNull(mapper.GetCreateParameterDelegate(typeof(ByteEnum?)));
+                typeof(StringKey<TestingType>),
+                typeof(StringKey<TestingType>?),
+
+                typeof(BoolValue<TestingType>),
+                typeof(BoolValue<TestingType>?),
+
+                typeof(Bit),
+                typeof(Bit?),
+
+                typeof(UShortEnum),
+                typeof(UShortEnum?),
+
+                typeof(ShortEnum),
+                typeof(ShortEnum?),
+
+                typeof(UIntEnum),
+                typeof(UIntEnum?),
+
+                typeof(IntEnum),
+                typeof(IntEnum?),
+
+                typeof(ULongEnum),
+                typeof(ULongEnum?),
+
+                typeof(LongEnum),
+                typeof(LongEnum?),
+
+                typeof(SByteEnum),
+                typeof(SByteEnum?),
+
+                typeof(ByteEnum),
+                typeof(ByteEnum?)
+            };
+            return list;
         }
 
         private class TestingType { }
