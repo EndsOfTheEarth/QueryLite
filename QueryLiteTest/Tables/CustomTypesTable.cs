@@ -7,67 +7,67 @@ namespace QueryLiteTest.Tables {
 
         public static readonly CustomTypesTable Instance = new CustomTypesTable();
 
-        public Column<CustomGuid> Guid { get; }
-        public Column<CustomShort> Short { get; }
-        public Column<CustomInt> Int { get; }
-        public Column<CustomLong> Long { get; }
-        public Column<CustomString> String { get; }
-        public Column<CustomBool> Bool { get; }
-        public Column<CustomDecimal> Decimal { get; }
-        public Column<CustomDateTime> DateTime { get; }
-        public Column<CustomDateTimeOffset> DateTimeOffset { get; }
-        public Column<CustomDateOnly> DateOnly { get; }
-        public Column<CustomTimeOnly> TimeOnly { get; }
-        public Column<CustomFloat> Float { get; }
-        public Column<CustomDouble> Double { get; }
+        public Column<CustomGuid, Guid> Guid { get; }
+        public Column<CustomShort, short> Short { get; }
+        public Column<CustomInt, int> Int { get; }
+        public Column<CustomLong, long> Long { get; }
+        public Column<CustomString, string> String { get; }
+        public Column<CustomBool, bool> Bool { get; }
+        public Column<CustomDecimal, decimal> Decimal { get; }
+        public Column<CustomDateTime, DateTime> DateTime { get; }
+        public Column<CustomDateTimeOffset, DateTimeOffset> DateTimeOffset { get; }
+        public Column<CustomDateOnly, DateOnly> DateOnly { get; }
+        public Column<CustomTimeOnly, TimeOnly> TimeOnly { get; }
+        public Column<CustomFloat, float> Float { get; }
+        public Column<CustomDouble, double> Double { get; }
 
-        public NullableColumn<CustomGuid> NGuid { get; }
-        public NullableColumn<CustomShort> NShort { get; }
-        public NullableColumn<CustomInt> NInt { get; }
-        public NullableColumn<CustomLong> NLong { get; }
-        public NullableColumn<CustomString> NString { get; }
-        public NullableColumn<CustomBool> NBool { get; }
-        public NullableColumn<CustomDecimal> NDecimal { get; }
-        public NullableColumn<CustomDateTime> NDateTime { get; }
-        public NullableColumn<CustomDateTimeOffset> NDateTimeOffset { get; }
-        public NullableColumn<CustomDateOnly> NDateOnly { get; }
-        public NullableColumn<CustomTimeOnly> NTimeOnly { get; }
-        public NullableColumn<CustomFloat> NFloat { get; }
-        public NullableColumn<CustomDouble> NDouble { get; }
+        public NullableColumn<CustomGuid, Guid> NGuid { get; }
+        public NullableColumn<CustomShort, short> NShort { get; }
+        public NullableColumn<CustomInt, int> NInt { get; }
+        public NullableColumn<CustomLong, long> NLong { get; }
+        public NullableColumn<CustomString, string> NString { get; }
+        public NullableColumn<CustomBool, bool> NBool { get; }
+        public NullableColumn<CustomDecimal, decimal> NDecimal { get; }
+        public NullableColumn<CustomDateTime, DateTime> NDateTime { get; }
+        public NullableColumn<CustomDateTimeOffset, DateTimeOffset> NDateTimeOffset { get; }
+        public NullableColumn<CustomDateOnly, DateOnly> NDateOnly { get; }
+        public NullableColumn<CustomTimeOnly, TimeOnly> NTimeOnly { get; }
+        public NullableColumn<CustomFloat, float> NFloat { get; }
+        public NullableColumn<CustomDouble, double> NDouble { get; }
 
         private CustomTypesTable() : base(tableName: "CustomTypes", schemaName: "dbo") {
 
-            Guid = new Column<CustomGuid>(this, columnName: "ctGuid");
-            Short = new Column<CustomShort>(this, columnName: "ctShort");
-            Int = new Column<CustomInt>(this, columnName: "ctInt");
-            Long = new Column<CustomLong>(this, columnName: "ctLong");
-            String = new Column<CustomString>(this, columnName: "ctString", length: 100);
-            Bool = new Column<CustomBool>(this, columnName: "ctBool");
-            Decimal = new Column<CustomDecimal>(this, columnName: "ctDecimal");
-            DateTime = new Column<CustomDateTime>(this, columnName: "ctDateTime");
-            DateTimeOffset = new Column<CustomDateTimeOffset>(this, columnName: "ctDateTimeOffset");
-            DateOnly = new Column<CustomDateOnly>(this, columnName: "ctDateOnly");
-            TimeOnly = new Column<CustomTimeOnly>(this, columnName: "ctTimeOnly");
-            Float = new Column<CustomFloat>(this, columnName: "ctFloat");
-            Double = new Column<CustomDouble>(this, columnName: "ctDouble");
+            Guid = new Column<CustomGuid, Guid>(this, columnName: "ctGuid");
+            Short = new Column<CustomShort, short>(this, columnName: "ctShort");
+            Int = new Column<CustomInt, int>(this, columnName: "ctInt");
+            Long = new Column<CustomLong, long>(this, columnName: "ctLong");
+            String = new Column<CustomString, string>(this, columnName: "ctString", length: 100);
+            Bool = new Column<CustomBool, bool>(this, columnName: "ctBool");
+            Decimal = new Column<CustomDecimal, decimal>(this, columnName: "ctDecimal");
+            DateTime = new Column<CustomDateTime, DateTime>(this, columnName: "ctDateTime");
+            DateTimeOffset = new Column<CustomDateTimeOffset, DateTimeOffset>(this, columnName: "ctDateTimeOffset");
+            DateOnly = new Column<CustomDateOnly, DateOnly>(this, columnName: "ctDateOnly");
+            TimeOnly = new Column<CustomTimeOnly, TimeOnly>(this, columnName: "ctTimeOnly");
+            Float = new Column<CustomFloat, float>(this, columnName: "ctFloat");
+            Double = new Column<CustomDouble, double>(this, columnName: "ctDouble");
 
-            NGuid = new NullableColumn<CustomGuid>(this, columnName: "ctNGuid");
-            NShort = new NullableColumn<CustomShort>(this, columnName: "ctNShort");
-            NInt = new NullableColumn<CustomInt>(this, columnName: "ctNInt");
-            NLong = new NullableColumn<CustomLong>(this, columnName: "ctNLong");
-            NString = new NullableColumn<CustomString>(this, columnName: "ctNString", length: 100);
-            NBool = new NullableColumn<CustomBool>(this, columnName: "ctNBool");
-            NDecimal = new NullableColumn<CustomDecimal>(this, columnName: "ctNDecimal");
-            NDateTime = new NullableColumn<CustomDateTime>(this, columnName: "ctNDateTime");
-            NDateTimeOffset = new NullableColumn<CustomDateTimeOffset>(this, columnName: "ctNDateTimeOffset");
-            NDateOnly = new NullableColumn<CustomDateOnly>(this, columnName: "ctNDateOnly");
-            NTimeOnly = new NullableColumn<CustomTimeOnly>(this, columnName: "ctNTimeOnly");
-            NFloat = new NullableColumn<CustomFloat>(this, columnName: "ctNFloat");
-            NDouble = new NullableColumn<CustomDouble>(this, columnName: "ctNDouble");
+            NGuid = new NullableColumn<CustomGuid, Guid>(this, columnName: "ctNGuid");
+            NShort = new NullableColumn<CustomShort, short>(this, columnName: "ctNShort");
+            NInt = new NullableColumn<CustomInt, int>(this, columnName: "ctNInt");
+            NLong = new NullableColumn<CustomLong, long>(this, columnName: "ctNLong");
+            NString = new NullableColumn<CustomString, string>(this, columnName: "ctNString", length: 100);
+            NBool = new NullableColumn<CustomBool, bool>(this, columnName: "ctNBool");
+            NDecimal = new NullableColumn<CustomDecimal, decimal>(this, columnName: "ctNDecimal");
+            NDateTime = new NullableColumn<CustomDateTime, DateTime>(this, columnName: "ctNDateTime");
+            NDateTimeOffset = new NullableColumn<CustomDateTimeOffset, DateTimeOffset>(this, columnName: "ctNDateTimeOffset");
+            NDateOnly = new NullableColumn<CustomDateOnly, DateOnly>(this, columnName: "ctNDateOnly");
+            NTimeOnly = new NullableColumn<CustomTimeOnly, TimeOnly>(this, columnName: "ctNTimeOnly");
+            NFloat = new NullableColumn<CustomFloat, float>(this, columnName: "ctNFloat");
+            NDouble = new NullableColumn<CustomDouble, double>(this, columnName: "ctNDouble");
         }
     }
 
-    public readonly struct CustomGuid : IValueOf<Guid, CustomGuid>, IValue<Guid>, IEquatable<CustomGuid> {
+    public readonly struct CustomGuid : ICustomType<Guid, CustomGuid>, IEquatable<CustomGuid> {
 
         public Guid Value { get; }
 
@@ -117,7 +117,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomShort : IValueOf<short, CustomShort>, IValue<short>, IEquatable<CustomShort> {
+    public readonly struct CustomShort : ICustomType<short, CustomShort>, IEquatable<CustomShort> {
 
         public short Value { get; }
 
@@ -167,7 +167,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomInt : IValueOf<int, CustomInt>, IValue<int>, IEquatable<CustomInt> {
+    public readonly struct CustomInt : ICustomType<int, CustomInt>, IEquatable<CustomInt> {
 
         public int Value { get; }
 
@@ -217,7 +217,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomLong : IValueOf<long, CustomLong>, IValue<long>, IEquatable<CustomLong> {
+    public readonly struct CustomLong : ICustomType<long, CustomLong>, IEquatable<CustomLong> {
 
         public long Value { get; }
 
@@ -267,7 +267,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomString : IValueOf<string, CustomString>, IValue<string>, IEquatable<CustomString> {
+    public readonly struct CustomString : ICustomType<string, CustomString>, IEquatable<CustomString> {
 
         public string Value { get; }
 
@@ -317,7 +317,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomBool : IValueOf<bool, CustomBool>, IValue<bool>, IEquatable<CustomBool> {
+    public readonly struct CustomBool : ICustomType<bool, CustomBool>, IEquatable<CustomBool> {
 
         public bool Value { get; }
 
@@ -367,7 +367,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomDecimal : IValueOf<decimal, CustomDecimal>, IValue<decimal>, IEquatable<CustomDecimal> {
+    public readonly struct CustomDecimal : ICustomType<decimal, CustomDecimal>, IEquatable<CustomDecimal> {
 
         public decimal Value { get; }
 
@@ -417,7 +417,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomDateTime : IValueOf<DateTime, CustomDateTime>, IValue<DateTime>, IEquatable<CustomDateTime> {
+    public readonly struct CustomDateTime : ICustomType<DateTime, CustomDateTime>, IEquatable<CustomDateTime> {
 
         public DateTime Value { get; }
 
@@ -467,7 +467,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomDateTimeOffset : IValueOf<DateTimeOffset, CustomDateTimeOffset>, IValue<DateTimeOffset>, IEquatable<CustomDateTimeOffset> {
+    public readonly struct CustomDateTimeOffset : ICustomType<DateTimeOffset, CustomDateTimeOffset>, IEquatable<CustomDateTimeOffset> {
 
         public DateTimeOffset Value { get; }
 
@@ -517,7 +517,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomDateOnly : IValueOf<DateOnly, CustomDateOnly>, IValue<DateOnly>, IEquatable<CustomDateOnly> {
+    public readonly struct CustomDateOnly : ICustomType<DateOnly, CustomDateOnly>, IEquatable<CustomDateOnly> {
 
         public DateOnly Value { get; }
 
@@ -567,7 +567,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomTimeOnly : IValueOf<TimeOnly, CustomTimeOnly>, IValue<TimeOnly>, IEquatable<CustomTimeOnly> {
+    public readonly struct CustomTimeOnly : ICustomType<TimeOnly, CustomTimeOnly>, IEquatable<CustomTimeOnly> {
 
         public TimeOnly Value { get; }
 
@@ -617,7 +617,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomFloat : IValueOf<float, CustomFloat>, IValue<float>, IEquatable<CustomFloat> {
+    public readonly struct CustomFloat : ICustomType<float, CustomFloat>, IEquatable<CustomFloat> {
 
         public float Value { get; }
 
@@ -667,7 +667,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    public readonly struct CustomDouble : IValueOf<double, CustomDouble>, IValue<double>, IEquatable<CustomDouble> {
+    public readonly struct CustomDouble : ICustomType<double, CustomDouble>, IEquatable<CustomDouble> {
 
         public double Value { get; }
 

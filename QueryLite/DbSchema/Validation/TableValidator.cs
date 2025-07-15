@@ -474,8 +474,8 @@ namespace QueryLite {
 
                 string tablePropertyDetail = $"Table Property '{tableProperty.Name}'";
 
-                if(underlyingPropertyType != typeof(Column<>) && underlyingPropertyType != typeof(NullableColumn<>)) {
-                    tableValidation.Add($"{tablePropertyDetail} (Type: '{underlyingPropertyType}') is not a column type. All table instance properties must inherit from either {typeof(Column<>).Name}<> or {typeof(NullableColumn<>).Name}<>");
+                if(underlyingPropertyType != typeof(Column<>) && underlyingPropertyType != typeof(Column<,>) && underlyingPropertyType != typeof(NullableColumn<>) && underlyingPropertyType != typeof(NullableColumn<,>)) {
+                    tableValidation.Add($"{tablePropertyDetail} (Type: '{underlyingPropertyType}') is not a column type. All table instance properties must inherit from either {typeof(Column<>).Name}<>, {typeof(Column<>).Name}<,>, {typeof(NullableColumn<>).Name}<> or {typeof(NullableColumn<,>).Name}<>");
                 }
                 else {
 
@@ -751,7 +751,7 @@ namespace QueryLite {
 
                 Type underlyingPropertyType = property.PropertyType.IsGenericType ? property.PropertyType.GetGenericTypeDefinition() : property.PropertyType;
 
-                if(underlyingPropertyType == typeof(Column<>) || underlyingPropertyType == typeof(NullableColumn<>)) {
+                if(underlyingPropertyType == typeof(Column<>) || underlyingPropertyType == typeof(Column<,>) || underlyingPropertyType == typeof(NullableColumn<>) || underlyingPropertyType == typeof(NullableColumn<,>)) {
 
                     object? column = property.GetValue(table);
 

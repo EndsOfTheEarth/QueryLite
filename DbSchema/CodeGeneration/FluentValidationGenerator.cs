@@ -119,11 +119,13 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     continue;
                 }
 
-                CodeHelper.GetColumnName(table, column, useIdentifiers: settings.UseIdentifiers, dotNetType: out Type dotNetType, columnTypeName: out string _, out bool isKeyColumn);
+                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: null);
 
                 string columnNameFirstLetterLowerCase = columnName.Length > 1 ? string.Concat(columnName[0].ToString().ToLower(), columnName.AsSpan(1)) : columnName;
+
+                bool isKeyColumn = columnInfo.IdentifierType == IdentifierType.Key || columnInfo.IdentifierType == IdentifierType.Custom;
 
                 if(!column.IsNullable) {
 
@@ -155,7 +157,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 if(column.Length != null) {
 
-                    if(dotNetType == typeof(string) && !isKeyColumn) {
+                    if(columnInfo.DotNetType == typeof(string) && !isKeyColumn) {
                         rule.Append($".Length(min:0, max: {CodeHelper.GetTableName(table, includePostFix: true)}.Instance.{columnName}.Length!.Value)");
                     }
                     else {
@@ -171,7 +173,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                             string valueType = string.Empty;
 
-                            if(dotNetType.IsValueType) {
+                            if(columnInfo.DotNetType.IsValueType) {
                                 valueType = ".Value";
                             }
                             if(isKeyColumn) {

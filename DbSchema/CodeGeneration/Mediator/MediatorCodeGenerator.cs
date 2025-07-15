@@ -37,7 +37,6 @@ namespace DbSchema.CodeGeneration {
             CodeBuilder code = new CodeBuilder();
 
             code.Append("using QueryLite;").EndLine();
-            code.Append("using MediatR;").EndLine();
             code.Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
 
@@ -55,6 +54,23 @@ namespace {settings.Namespaces.BaseNamespace} {{
         public Response(bool successful, FluentValidation.Results.ValidationResult? validation) {{
             Successful = successful;
             Validation = validation;
+        }}
+    }}
+
+    public interface IRequest<RESPONSE> {{
+
+    }}
+    public interface IRequestHandler<REQUEST, RESPONSE> {{
+
+        Task<RESPONSE> Handle(REQUEST request, CancellationToken cancellationToken);
+    }}
+    
+    public interface IMyDatabase : IDatabase {{ }}
+
+    public class MyDatabase : QueryLite.Databases.SqlServer.SqlServerDatabase, IMyDatabase {{
+
+        public MyDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) : base(name, connectionString, schemaMap) {{
+
         }}
     }}
 }}
@@ -109,7 +125,6 @@ namespace {settings.Namespaces.BaseNamespace} {{
                 code.Append($"namespace {settings.Namespaces.GetRequestsNamespace(table.Schema)} {{").EndLine().EndLine();
 
                 code.Indent(1).Append("using QueryLite;").EndLine();
-                code.Indent(1).Append("using MediatR;").EndLine();
                 code.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
                 string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
@@ -137,7 +152,6 @@ namespace {settings.Namespaces.BaseNamespace} {{
 
             code.Append("using FluentValidation;").EndLine();
             code.Append("using QueryLite;").EndLine();
-            code.Append("using MediatR;").EndLine();
             code.Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
             List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
@@ -189,10 +203,7 @@ namespace {settings.Namespaces.BaseNamespace} {{
 
                 code.Append($"namespace {settings.Namespaces.GetHandlersNamespace(table.Schema)} {{").EndLine().EndLine();
 
-                //code.Indent(1).Append("using FluentValidation;").EndLine();
                 code.Indent(1).Append("using QueryLite;").EndLine();
-                code.Indent(1).Append("using MediatR;").EndLine();
-                //code.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
                 string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
 

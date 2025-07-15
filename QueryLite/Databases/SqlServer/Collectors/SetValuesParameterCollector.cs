@@ -414,109 +414,109 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return AddFunction(column, value);
         }
 
-        public ISetValuesCollector SetGuid<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Guid> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.UniqueIdentifier, value.Value);
         }
-        public ISetValuesCollector SetGuid<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Guid> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.UniqueIdentifier, value?.Value);
         }
 
-        public ISetValuesCollector SetShort<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<short> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.SmallInt, value.Value);
         }
-        public ISetValuesCollector SetShort<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<short> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, short> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.SmallInt, value?.Value);
         }
 
-        public ISetValuesCollector SetInt<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<int> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Int, value.Value);
         }
-        public ISetValuesCollector SetInt<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<int> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, int> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Int, value?.Value);
         }
 
-        public ISetValuesCollector SetLong<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<long> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.BigInt, value.Value);
         }
-        public ISetValuesCollector SetLong<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<long> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, long> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.BigInt, value?.Value);
         }
 
-        public ISetValuesCollector SetString<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<string> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.NVarChar, value.Value);
         }
-        public ISetValuesCollector SetString<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<string> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, string> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.NVarChar, value?.Value);
         }
 
-        public ISetValuesCollector SetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<bool> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Bit, value.Value);
         }
-        public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, bool> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Bit, value?.Value);
         }
 
-        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<decimal> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Decimal , value.Value);
         }
-        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Decimal, value?.Value);
         }
 
-        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.DateTime, value.Value);
         }
 
-        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.DateTime, value?.Value);
         }
 
-        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.DateTimeOffset, value.Value);
         }
 
-        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.DateTimeOffset, value?.Value);
         }
 
-        public ISetValuesCollector SetDateOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateOnly> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
 
             return AddParameter(column, SqlDbType.Date, value.Value.ToDateTime(TimeOnly.MinValue));
         }
 
-        public ISetValuesCollector SetDateOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateOnly> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Date, value?.Value.ToDateTime(TimeOnly.MinValue));
         }
 
-        public ISetValuesCollector SetTimeOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<TimeOnly> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Time, value.Value.ToTimeSpan());
         }
 
-        public ISetValuesCollector SetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<TimeOnly> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Time, value?.Value.ToTimeSpan());
         }
 
-        public ISetValuesCollector SetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<float> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Real, value.Value);
         }
 
-        public ISetValuesCollector SetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<float> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, float> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Real, value?.Value);
         }
 
-        public ISetValuesCollector SetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<double> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Float, value.Value);
         }
 
-        public ISetValuesCollector SetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<double> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, double> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Float, value?.Value);
         }
 
-        public ISetValuesCollector SetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Bit> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Bit, value.Value);
         }
 
-        public ISetValuesCollector SetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Bit> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
             return AddParameter(column, SqlDbType.Bit, value?.Value);
         }
     }
@@ -923,10 +923,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
         }
 
-        public ISetValuesCollector SetGuid<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Guid> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector SetGuid<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Guid> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -934,10 +934,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetShort<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<short> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector SetShort<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<short> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, short> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -945,10 +945,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetInt<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<int> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector SetInt<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<int> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, int> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -956,10 +956,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetLong<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<long> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector SetLong<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<long> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, long> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -967,10 +967,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetString<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<string> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector SetString<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<string> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, string> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -978,10 +978,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetBool<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<bool> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector SetBool<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<bool> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, bool> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -989,10 +989,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<decimal> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector SetDecimal<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<decimal> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -1000,11 +1000,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector SetDateTime<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTime> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -1012,11 +1012,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector SetDateTimeOffset<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateTimeOffset> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -1024,11 +1024,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetDateOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<DateOnly> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector SetDateOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<DateOnly> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -1036,11 +1036,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetTimeOnly<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<TimeOnly> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector SetTimeOnly<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<TimeOnly> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -1048,11 +1048,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetFloat<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<float> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector SetFloat<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<float> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, float> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -1060,11 +1060,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetDouble<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<double> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector SetDouble<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<double> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, double> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -1072,11 +1072,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return SetValue(column, "null");
         }
 
-        public ISetValuesCollector SetBit<CUSTOM_TYPE>(Column<CUSTOM_TYPE> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, IValue<Bit> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
             return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector SetBit<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, IValue<Bit> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));

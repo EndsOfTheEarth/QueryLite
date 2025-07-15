@@ -131,7 +131,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 }
                 count++;
 
-                CodeHelper.GetColumnName(table, column, useIdentifiers: settings.UseIdentifiers, dotNetType: out Type dotNetType, columnTypeName: out string columnTypeName, out bool isKeyColumn);
+                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
                 string nullable = column.IsNullable ? "?" : "";
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
@@ -142,7 +142,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     paramName = "_" + paramName;
                 }
 
-                classCode.Append($"{columnTypeName}{nullable} {paramName}");
+                classCode.Append($"{columnInfo.ColumnTypeName}{nullable} {paramName}");
 
                 constructor.Indent(3).Append($"{columnName} = {paramName};").EndLine();
             }
@@ -170,41 +170,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 string columnNameForTable = prefix.GetColumnName(column.ColumnName.Value, className: tableOrViewClassName);
 
-                if(settings.UseIdentifiers == IdentifierType.Custom) {
-
-                    DatabaseTable? referencedTable = GetReferenceTable(table, column);
-
-                    string method = "Get";
-
-                    if(referencedTable != null || column.IsPrimaryKey) {
-
-                        if(column.DataType.DotNetType == typeof(Guid)) {
-                            method = "GetGuid";
-                        }
-                        else if(column.DataType.DotNetType == typeof(short)) {
-                            method = "GetShort";
-                        }
-                        else if(column.DataType.DotNetType == typeof(int)) {
-                            method = "GetInt";
-                        }
-                        else if(column.DataType.DotNetType == typeof(long)) {
-                            method = "GetLong";
-                        }
-                        else if(column.DataType.DotNetType == typeof(string)) {
-                            method = "GetString";
-                        }
-                        else if(column.DataType.DotNetType == typeof(bool)) {
-                            method = "GetBool";
-                        }
-                        else if(column.DataType.DotNetType == typeof(decimal)) {
-                            method = "GetDecimal";
-                        }
-                    }
-                    constructor2.Indent(3).Append($"{columnName} = row.{method}({tableOrViewParamName}.{columnNameForTable});").EndLine();
-                }
-                else {
-                    constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{columnNameForTable});").EndLine();
-                }
+                constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{columnNameForTable});").EndLine();
             }
             classCode.Append(constructor2.ToString());
             classCode.Indent(2).Append("}").EndLine();
@@ -219,7 +185,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 classCode.EndLine();
 
-                CodeHelper.GetColumnName(table, column, useIdentifiers: settings.UseIdentifiers, dotNetType: out Type dotNetType, columnTypeName: out string columnTypeName, out bool isKeyColumn);
+                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
 
@@ -234,11 +200,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     classCode.Indent(2).Append($"[JsonPropertyName(\"{columnName}\")]").EndLine();
                 }
 
-                classCode.Indent(2).Append($"public {columnTypeName}{(column.IsNullable ? "?" : "")} {columnName} {{ get; set; }}");
+                classCode.Indent(2).Append($"public {columnInfo.ColumnTypeName}{(column.IsNullable ? "?" : "")} {columnName} {{ get; set; }}");
 
-                if(!column.IsNullable && (!dotNetType.IsPrimitive) && !isKeyColumn) {
+                if(!column.IsNullable && (!columnInfo.DotNetType.IsPrimitive) && columnInfo.IdentifierType == IdentifierType.None) {
 
-                    string? propSet = database.GetCSharpCodeSet(dotNetType);
+                    string? propSet = database.GetCSharpCodeSet(columnInfo.DotNetType);
 
                     if(propSet != null) {
                         classCode.Append(" = ").Append(propSet).Append(";");
