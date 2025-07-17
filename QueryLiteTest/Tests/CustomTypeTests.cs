@@ -70,33 +70,33 @@ namespace QueryLiteTest.Tests {
                         .Insert(table)
                         .Values(values => values
 
-                            .SetGuid(table.Guid, customTypesA.CustomGuid)
-                            .SetShort(table.Short, customTypesA.CustomShort)
-                            .SetInt(table.Int, customTypesA.CustomInt)
-                            .SetLong(table.Long, customTypesA.CustomLong)
-                            .SetString(table.String, customTypesA.CustomString)
-                            .SetBool(table.Bool, customTypesA.CustomBool)
-                            .SetDecimal(table.Decimal, customTypesA.CustomDecimal)
-                            .SetDateTime(table.DateTime, customTypesA.CustomDateTime)
-                            .SetDateTimeOffset(table.DateTimeOffset, customTypesA.CustomDateTimeOffset)
-                            .SetDateOnly(table.DateOnly, customTypesA.CustomDateOnly)
-                            .SetTimeOnly(table.TimeOnly, customTypesA.CustomTimeOnly)
-                            .SetFloat(table.Float, customTypesA.CustomFloat)
-                            .SetDouble(table.Double, customTypesA.CustomDouble)
+                            .Set(table.Guid, customTypesA.CustomGuid)
+                            .Set(table.Short, customTypesA.CustomShort)
+                            .Set(table.Int, customTypesA.CustomInt)
+                            .Set(table.Long, customTypesA.CustomLong)
+                            .Set(table.String, customTypesA.CustomString)
+                            .Set(table.Bool, customTypesA.CustomBool)
+                            .Set(table.Decimal, customTypesA.CustomDecimal)
+                            .Set(table.DateTime, customTypesA.CustomDateTime)
+                            .Set(table.DateTimeOffset, customTypesA.CustomDateTimeOffset)
+                            .Set(table.DateOnly, customTypesA.CustomDateOnly)
+                            .Set(table.TimeOnly, customTypesA.CustomTimeOnly)
+                            .Set(table.Float, customTypesA.CustomFloat)
+                            .Set(table.Double, customTypesA.CustomDouble)
 
-                            .SetGuid(table.NGuid, customTypesA.NCustomGuid)
-                            .SetShort(table.NShort, customTypesA.NCustomShort)
-                            .SetInt(table.NInt, customTypesA.NCustomInt)
-                            .SetLong(table.NLong, customTypesA.NCustomLong)
-                            .SetString(table.NString, customTypesA.NCustomString)
-                            .SetBool(table.NBool, customTypesA.NCustomBool)
-                            .SetDecimal(table.NDecimal, customTypesA.NCustomDecimal)
-                            .SetDateTime(table.NDateTime, customTypesA.NCustomDateTime)
-                            .SetDateTimeOffset(table.NDateTimeOffset, customTypesA.NCustomDateTimeOffset)
-                            .SetDateOnly(table.NDateOnly, customTypesA.NCustomDateOnly)
-                            .SetTimeOnly(table.NTimeOnly, customTypesA.NCustomTimeOnly)
-                            .SetFloat(table.NFloat, customTypesA.NCustomFloat)
-                            .SetDouble(table.NDouble, customTypesA.NCustomDouble)
+                            .Set(table.NGuid, customTypesA.NCustomGuid)
+                            .Set(table.NShort, customTypesA.NCustomShort)
+                            .Set(table.NInt, customTypesA.NCustomInt)
+                            .Set(table.NLong, customTypesA.NCustomLong)
+                            .Set(table.NString, customTypesA.NCustomString)
+                            .Set(table.NBool, customTypesA.NCustomBool)
+                            .Set(table.NDecimal, customTypesA.NCustomDecimal)
+                            .Set(table.NDateTime, customTypesA.NCustomDateTime)
+                            .Set(table.NDateTimeOffset, customTypesA.NCustomDateTimeOffset)
+                            .Set(table.NDateOnly, customTypesA.NCustomDateOnly)
+                            .Set(table.NTimeOnly, customTypesA.NCustomTimeOnly)
+                            .Set(table.NFloat, customTypesA.NCustomFloat)
+                            .Set(table.NDouble, customTypesA.NCustomDouble)
                         )
                         .Execute(transaction);
 
@@ -119,33 +119,33 @@ namespace QueryLiteTest.Tests {
                         .Update(table)
                         .Values(values => values
 
-                            .SetGuid(table.Guid, customTypesB.CustomGuid)
-                            .SetShort(table.Short, customTypesB.CustomShort)
-                            .SetInt(table.Int, customTypesB.CustomInt)
-                            .SetLong(table.Long, customTypesB.CustomLong)
-                            .SetString(table.String, customTypesB.CustomString)
-                            .SetBool(table.Bool, customTypesB.CustomBool)
-                            .SetDecimal(table.Decimal, customTypesB.CustomDecimal)
-                            .SetDateTime(table.DateTime, customTypesB.CustomDateTime)
-                            .SetDateTimeOffset(table.DateTimeOffset, customTypesB.CustomDateTimeOffset)
-                            .SetDateOnly(table.DateOnly, customTypesB.CustomDateOnly)
-                            .SetTimeOnly(table.TimeOnly, customTypesB.CustomTimeOnly)
-                            .SetFloat(table.Float, customTypesB.CustomFloat)
-                            .SetDouble(table.Double, customTypesB.CustomDouble)
+                            .Set(table.Guid, customTypesB.CustomGuid)
+                            .Set(table.Short, customTypesB.CustomShort)
+                            .Set(table.Int, customTypesB.CustomInt)
+                            .Set(table.Long, customTypesB.CustomLong)
+                            .Set(table.String, customTypesB.CustomString)
+                            .Set(table.Bool, customTypesB.CustomBool)
+                            .Set(table.Decimal, customTypesB.CustomDecimal)
+                            .Set(table.DateTime, customTypesB.CustomDateTime)
+                            .Set(table.DateTimeOffset, customTypesB.CustomDateTimeOffset)
+                            .Set(table.DateOnly, customTypesB.CustomDateOnly)
+                            .Set(table.TimeOnly, customTypesB.CustomTimeOnly)
+                            .Set(table.Float, customTypesB.CustomFloat)
+                            .Set(table.Double, customTypesB.CustomDouble)
 
-                            .SetGuid(table.NGuid, customTypesB.NCustomGuid)
-                            .SetShort(table.NShort, customTypesB.NCustomShort)
-                            .SetInt(table.NInt, customTypesB.NCustomInt)
-                            .SetLong(table.NLong, customTypesB.NCustomLong)
-                            .SetString(table.NString, customTypesB.NCustomString)
-                            .SetBool(table.NBool, customTypesB.NCustomBool)
-                            .SetDecimal(table.NDecimal, customTypesB.NCustomDecimal)
-                            .SetDateTime(table.NDateTime, customTypesB.NCustomDateTime)
-                            .SetDateTimeOffset(table.NDateTimeOffset, customTypesB.NCustomDateTimeOffset)
-                            .SetDateOnly(table.NDateOnly, customTypesB.NCustomDateOnly)
-                            .SetTimeOnly(table.NTimeOnly, customTypesB.NCustomTimeOnly)
-                            .SetFloat(table.NFloat, customTypesB.NCustomFloat)
-                            .SetDouble(table.NDouble, customTypesB.NCustomDouble)
+                            .Set(table.NGuid, customTypesB.NCustomGuid)
+                            .Set(table.NShort, customTypesB.NCustomShort)
+                            .Set(table.NInt, customTypesB.NCustomInt)
+                            .Set(table.NLong, customTypesB.NCustomLong)
+                            .Set(table.NString, customTypesB.NCustomString)
+                            .Set(table.NBool, customTypesB.NCustomBool)
+                            .Set(table.NDecimal, customTypesB.NCustomDecimal)
+                            .Set(table.NDateTime, customTypesB.NCustomDateTime)
+                            .Set(table.NDateTimeOffset, customTypesB.NCustomDateTimeOffset)
+                            .Set(table.NDateOnly, customTypesB.NCustomDateOnly)
+                            .Set(table.NTimeOnly, customTypesB.NCustomTimeOnly)
+                            .Set(table.NFloat, customTypesB.NCustomFloat)
+                            .Set(table.NDouble, customTypesB.NCustomDouble)
                         )
                         .Where(table.Guid == customTypesA.CustomGuid)
                         .Execute(transaction);
@@ -201,33 +201,33 @@ namespace QueryLiteTest.Tests {
                     .Insert(table)
                     .Values(values => values
 
-                        .SetGuid(table.Guid, t => t.CustomGuid)
-                        .SetShort(table.Short, t => t.CustomShort)
-                        .SetInt(table.Int, t => t.CustomInt)
-                        .SetLong(table.Long, t => t.CustomLong)
-                        .SetString(table.String, t => t.CustomString)
-                        .SetBool(table.Bool, t => t.CustomBool)
-                        .SetDecimal(table.Decimal, t => t.CustomDecimal)
-                        .SetDateTime(table.DateTime, t => t.CustomDateTime)
-                        .SetDateTimeOffset(table.DateTimeOffset, t => t.CustomDateTimeOffset)
-                        .SetDateOnly(table.DateOnly, t => t.CustomDateOnly)
-                        .SetTimeOnly(table.TimeOnly, t => t.CustomTimeOnly)
-                        .SetFloat(table.Float, t => t.CustomFloat)
-                        .SetDouble(table.Double, t => t.CustomDouble)
+                        .Set(table.Guid, t => t.CustomGuid)
+                        .Set(table.Short, t => t.CustomShort)
+                        .Set(table.Int, t => t.CustomInt)
+                        .Set(table.Long, t => t.CustomLong)
+                        .Set(table.String, t => t.CustomString)
+                        .Set(table.Bool, t => t.CustomBool)
+                        .Set(table.Decimal, t => t.CustomDecimal)
+                        .Set(table.DateTime, t => t.CustomDateTime)
+                        .Set(table.DateTimeOffset, t => t.CustomDateTimeOffset)
+                        .Set(table.DateOnly, t => t.CustomDateOnly)
+                        .Set(table.TimeOnly, t => t.CustomTimeOnly)
+                        .Set(table.Float, t => t.CustomFloat)
+                        .Set(table.Double, t => t.CustomDouble)
 
-                        .SetGuid(table.NGuid, t => t.NCustomGuid)
-                        .SetShort(table.NShort, t => t.NCustomShort)
-                        .SetInt(table.NInt, t => t.NCustomInt)
-                        .SetLong(table.NLong, t => t.NCustomLong)
-                        .SetString(table.NString, t => t.NCustomString)
-                        .SetBool(table.NBool, t => t.NCustomBool)
-                        .SetDecimal(table.NDecimal, t => t.NCustomDecimal)
-                        .SetDateTime(table.NDateTime, t => t.NCustomDateTime)
-                        .SetDateTimeOffset(table.NDateTimeOffset, t => t.NCustomDateTimeOffset)
-                        .SetDateOnly(table.NDateOnly, t => t.NCustomDateOnly)
-                        .SetTimeOnly(table.NTimeOnly, t => t.NCustomTimeOnly)
-                        .SetFloat(table.NFloat, t => t.NCustomFloat)
-                        .SetDouble(table.NDouble, t => t.NCustomDouble)
+                        .Set(table.NGuid, t => t.NCustomGuid)
+                        .Set(table.NShort, t => t.NCustomShort)
+                        .Set(table.NInt, t => t.NCustomInt)
+                        .Set(table.NLong, t => t.NCustomLong)
+                        .Set(table.NString, t => t.NCustomString)
+                        .Set(table.NBool, t => t.NCustomBool)
+                        .Set(table.NDecimal, t => t.NCustomDecimal)
+                        .Set(table.NDateTime, t => t.NCustomDateTime)
+                        .Set(table.NDateTimeOffset, t => t.NCustomDateTimeOffset)
+                        .Set(table.NDateOnly, t => t.NCustomDateOnly)
+                        .Set(table.NTimeOnly, t => t.NCustomTimeOnly)
+                        .Set(table.NFloat, t => t.NCustomFloat)
+                        .Set(table.NDouble, t => t.NCustomDouble)
                     )
                     .Build();
 
@@ -254,33 +254,33 @@ namespace QueryLiteTest.Tests {
                     .Update(table)
                     .Values(values => values
 
-                        .SetGuid(table.Guid, t => t.CustomGuid)
-                        .SetShort(table.Short, t => t.CustomShort)
-                        .SetInt(table.Int, t => t.CustomInt)
-                        .SetLong(table.Long, t => t.CustomLong)
-                        .SetString(table.String, t => t.CustomString)
-                        .SetBool(table.Bool, t => t.CustomBool)
-                        .SetDecimal(table.Decimal, t => t.CustomDecimal)
-                        .SetDateTime(table.DateTime, t => t.CustomDateTime)
-                        .SetDateTimeOffset(table.DateTimeOffset, t => t.CustomDateTimeOffset)
-                        .SetDateOnly(table.DateOnly, t => t.CustomDateOnly)
-                        .SetTimeOnly(table.TimeOnly, t => t.CustomTimeOnly)
-                        .SetFloat(table.Float, t => t.CustomFloat)
-                        .SetDouble(table.Double, t => t.CustomDouble)
+                        .Set(table.Guid, t => t.CustomGuid)
+                        .Set(table.Short, t => t.CustomShort)
+                        .Set(table.Int, t => t.CustomInt)
+                        .Set(table.Long, t => t.CustomLong)
+                        .Set(table.String, t => t.CustomString)
+                        .Set(table.Bool, t => t.CustomBool)
+                        .Set(table.Decimal, t => t.CustomDecimal)
+                        .Set(table.DateTime, t => t.CustomDateTime)
+                        .Set(table.DateTimeOffset, t => t.CustomDateTimeOffset)
+                        .Set(table.DateOnly, t => t.CustomDateOnly)
+                        .Set(table.TimeOnly, t => t.CustomTimeOnly)
+                        .Set(table.Float, t => t.CustomFloat)
+                        .Set(table.Double, t => t.CustomDouble)
 
-                        .SetGuid(table.NGuid, t => t.NCustomGuid)
-                        .SetShort(table.NShort, t => t.NCustomShort)
-                        .SetInt(table.NInt, t => t.NCustomInt)
-                        .SetLong(table.NLong, t => t.NCustomLong)
-                        .SetString(table.NString, t => t.NCustomString)
-                        .SetBool(table.NBool, t => t.NCustomBool)
-                        .SetDecimal(table.NDecimal, t => t.NCustomDecimal)
-                        .SetDateTime(table.NDateTime, t => t.NCustomDateTime)
-                        .SetDateTimeOffset(table.NDateTimeOffset, t => t.NCustomDateTimeOffset)
-                        .SetDateOnly(table.NDateOnly, t => t.NCustomDateOnly)
-                        .SetTimeOnly(table.NTimeOnly, t => t.NCustomTimeOnly)
-                        .SetFloat(table.NFloat, t => t.NCustomFloat)
-                        .SetDouble(table.NDouble, t => t.NCustomDouble)
+                        .Set(table.NGuid, t => t.NCustomGuid)
+                        .Set(table.NShort, t => t.NCustomShort)
+                        .Set(table.NInt, t => t.NCustomInt)
+                        .Set(table.NLong, t => t.NCustomLong)
+                        .Set(table.NString, t => t.NCustomString)
+                        .Set(table.NBool, t => t.NCustomBool)
+                        .Set(table.NDecimal, t => t.NCustomDecimal)
+                        .Set(table.NDateTime, t => t.NCustomDateTime)
+                        .Set(table.NDateTimeOffset, t => t.NCustomDateTimeOffset)
+                        .Set(table.NDateOnly, t => t.NCustomDateOnly)
+                        .Set(table.NTimeOnly, t => t.NCustomTimeOnly)
+                        .Set(table.NFloat, t => t.NCustomFloat)
+                        .Set(table.NDouble, t => t.NCustomDouble)
                     )
                     .Where(where => where.EQUALS(table.Guid, t => t.PreviousCustomGuid))
                     .Build();
@@ -354,33 +354,33 @@ namespace QueryLiteTest.Tests {
             QueryResult<CustomTypes> result = Query.Select(
                 row => new CustomTypes(
 
-                    customGuid: row.GetGuid(table.Guid),
-                    customShort: row.GetShort(table.Short),
-                    customInt: row.GetInt(table.Int),
-                    customLong: row.GetLong(table.Long),
-                    customString: row.GetString(table.String),
-                    customBool: row.GetBool(table.Bool),
-                    customDecimal: row.GetDecimal(table.Decimal),
-                    customDateTime: row.GetDateTime(table.DateTime),
-                    customDateTimeOffset: row.GetDateTimeOffset(table.DateTimeOffset),
-                    customDateOnly: row.GetDateOnly(table.DateOnly),
-                    customTimeOnly: row.GetTimeOnly(table.TimeOnly),
-                    customFloat: row.GetFloat(table.Float),
-                    customDouble: row.GetDouble(table.Double),
+                    customGuid: row.Get(table.Guid),
+                    customShort: row.Get(table.Short),
+                    customInt: row.Get(table.Int),
+                    customLong: row.Get(table.Long),
+                    customString: row.Get(table.String),
+                    customBool: row.Get(table.Bool),
+                    customDecimal: row.Get(table.Decimal),
+                    customDateTime: row.Get(table.DateTime),
+                    customDateTimeOffset: row.Get(table.DateTimeOffset),
+                    customDateOnly: row.Get(table.DateOnly),
+                    customTimeOnly: row.Get(table.TimeOnly),
+                    customFloat: row.Get(table.Float),
+                    customDouble: row.Get(table.Double),
 
-                    nCustomGuid: row.GetGuid(table.NGuid),
-                    nCustomShort: row.GetShort(table.NShort),
-                    nCustomInt: row.GetInt(table.NInt),
-                    nCustomLong: row.GetLong(table.NLong),
-                    nCustomString: row.GetString(table.NString),
-                    nCustomBool: row.GetBool(table.NBool),
-                    nCustomDecimal: row.GetDecimal(table.NDecimal),
-                    nCustomDateTime: row.GetDateTime(table.NDateTime),
-                    nCustomDateTimeOffset: row.GetDateTimeOffset(table.NDateTimeOffset),
-                    nCustomDateOnly: row.GetDateOnly(table.NDateOnly),
-                    nCustomTimeOnly: row.GetTimeOnly(table.NTimeOnly),
-                    nCustomFloat: row.GetFloat(table.NFloat),
-                    nCustomDouble: row.GetDouble(table.NDouble)
+                    nCustomGuid: row.Get(table.NGuid),
+                    nCustomShort: row.Get(table.NShort),
+                    nCustomInt: row.Get(table.NInt),
+                    nCustomLong: row.Get(table.NLong),
+                    nCustomString: row.Get(table.NString),
+                    nCustomBool: row.Get(table.NBool),
+                    nCustomDecimal: row.Get(table.NDecimal),
+                    nCustomDateTime: row.Get(table.NDateTime),
+                    nCustomDateTimeOffset: row.Get(table.NDateTimeOffset),
+                    nCustomDateOnly: row.Get(table.NDateOnly),
+                    nCustomTimeOnly: row.Get(table.NTimeOnly),
+                    nCustomFloat: row.Get(table.NFloat),
+                    nCustomDouble: row.Get(table.NDouble)
                 )
             )
             .From(table)

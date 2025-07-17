@@ -122,9 +122,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             nameText.Replace(" ", string.Empty);    //Remove space character
 
-            nameText.Append(includePostFix ? postFix : string.Empty);            
+            nameText.Append(includePostFix ? postFix : string.Empty);
 
-            char previous = nameText[0];            
+            char previous = nameText[0];
 
             for(int index = 1; index < nameText.Length; index++) {  //Replace underscores and make next character uppercase
 
@@ -134,7 +134,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     nameText[index] = char.ToUpper(current);
                 }
                 previous = current;
-            }            
+            }
             nameText.Replace("_", "");
 
             return nameText.ToString();
@@ -164,101 +164,42 @@ namespace QueryLite.DbSchema.CodeGeneration {
             return nameText.ToString();
         }
 
-        public static void GetColumnName(DatabaseTable table, DatabaseColumn column, IdentifierType useIdentifiers, out Type dotNetType, out string columnTypeName, out bool isKeyColumn) {
+        public struct ColumnInfo {
 
-            string columnType;
-            string defaultValue;
+            public ColumnInfo() { }
 
-            isKeyColumn = false;
+            public required Type DotNetType { get; set; }
+            public string ColumnTypeName { get; set; } = string.Empty;
+            public string UnderlyingTypeName { get; set; } = string.Empty;
+            public IdentifierType IdentifierType { get; set; }
+        }
 
-            dotNetType = column.DataType.DotNetType;
+        public static ColumnInfo GetColumnInfo(DatabaseTable table, DatabaseColumn column, IdentifierType useIdentifiers) {
 
-            if(dotNetType.IsArray && dotNetType.GetElementType() == typeof(byte)) {
-                columnType = "byte[]";
-                defaultValue = "";
+            ColumnInfo columnInfo = new ColumnInfo {
+                IdentifierType = IdentifierType.None,
+                DotNetType = column.DataType.DotNetType
+            };
+
+            TypeDefaultLookup.TryGetValue(columnInfo.DotNetType, out TypeDefaults? typeDefaults);
+
+            if(columnInfo.DotNetType.IsArray && columnInfo.DotNetType.GetElementType() == typeof(byte)) {
+                columnInfo.ColumnTypeName = "byte[]";
             }
-            else if(dotNetType == typeof(string)) {
-                columnType = "string";
-                defaultValue = "string.Empty";
-            }
-            else if(dotNetType == typeof(Guid)) {
-                columnType = "Guid";
-                defaultValue = "Guid.Empty";
-            }
-            else if(dotNetType == typeof(short)) {
-                columnType = "short";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(int)) {
-                columnType = "int";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(long)) {
-                columnType = "long";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(ushort)) {
-                columnType = "ushort";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(uint)) {
-                columnType = "uint";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(ulong)) {
-                columnType = "ulong";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(bool)) {
-                columnType = "bool";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(Bit)) {
-                columnType = "Bit";
-                defaultValue = "";
-            }
-            else if(dotNetType == typeof(decimal)) {
-                columnType = "decimal";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(float)) {
-                columnType = "float";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(double)) {
-                columnType = "double";
-                defaultValue = "0";
-            }
-            else if(dotNetType == typeof(DateTime)) {
-                columnType = "DateTime";
-                defaultValue = "";
-            }
-            else if(dotNetType == typeof(DateTimeOffset)) {
-                columnType = "DateTimeOffset";
-                defaultValue = "";
-            }
-            else if(dotNetType == typeof(DateOnly)) {
-                columnType = "DateOnly";
-                defaultValue = "";
-            }
-            else if(dotNetType == typeof(TimeOnly)) {
-                columnType = "TimeOnly";
-                defaultValue = "";
-            }
-            else if(dotNetType == typeof(IUnknownType)) {
-                columnType = "__UnknownType__";
-                defaultValue = "__UnknownType__";
+            else if(typeDefaults != null) {
+                columnInfo.ColumnTypeName = typeDefaults.ColumnType;
             }
             else {
-                columnType = column.DataType.DotNetType.ToString();
-                defaultValue = "???";
+                columnInfo.ColumnTypeName = column.DataType.DotNetType.ToString();
             }
 
             DatabaseTable? referencedTable = ClassCodeGenerator.GetReferenceTable(table, column);
 
-            if(useIdentifiers == IdentifierType.Key && (referencedTable != null || column.IsPrimaryKey)) {
+            bool isPrimaryOrForeignKey = referencedTable != null || column.IsPrimaryKey;
 
-                isKeyColumn = true;
+            if(useIdentifiers == IdentifierType.Key && isPrimaryOrForeignKey) {
+
+                columnInfo.IdentifierType = IdentifierType.Key;
 
                 string keyName;
 
@@ -269,73 +210,78 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     keyName = $"I{GetTableName(table, includePostFix: false)}Id";
                 }
 
-                if(dotNetType == typeof(string)) {
-                    columnType = $"StringKey<{keyName}>";
-                    defaultValue = $"{columnType}.NotValid";
+                if(columnInfo.DotNetType == typeof(string)) {
+                    columnInfo.ColumnTypeName = $"StringKey<{keyName}>";
                 }
-                if(dotNetType == typeof(Guid)) {
-                    columnType = $"GuidKey<{keyName}>";
-                    defaultValue = $"{columnType}.NotValid";
+                if(columnInfo.DotNetType == typeof(Guid)) {
+                    columnInfo.ColumnTypeName = $"GuidKey<{keyName}>";
                 }
-                if(dotNetType == typeof(short)) {
-                    columnType = $"ShortKey<{keyName}>";
-                    defaultValue = $"{columnType}.NotValid";
+                if(columnInfo.DotNetType == typeof(short)) {
+                    columnInfo.ColumnTypeName = $"ShortKey<{keyName}>";
                 }
-                if(dotNetType == typeof(int)) {
-                    columnType = $"IntKey<{keyName}>";
-                    defaultValue = $"{columnType}.NotValid";
+                if(columnInfo.DotNetType == typeof(int)) {
+                    columnInfo.ColumnTypeName = $"IntKey<{keyName}>";
                 }
-                if(dotNetType == typeof(long)) {
-                    columnType = $"LongKey<{keyName}>";
-                    defaultValue = $"{columnType}.NotValid";
+                if(columnInfo.DotNetType == typeof(long)) {
+                    columnInfo.ColumnTypeName = $"LongKey<{keyName}>";
                 }
-                columnTypeName = columnType;
-            }            
-            else if(useIdentifiers == IdentifierType.Custom && (referencedTable != null || column.IsPrimaryKey)) {
+            }
+            else if(useIdentifiers == IdentifierType.Custom && isPrimaryOrForeignKey) {
 
-                isKeyColumn = true;
+                columnInfo.IdentifierType = IdentifierType.Custom;
+                columnInfo.UnderlyingTypeName = typeDefaults?.ColumnType ?? string.Empty;
 
-                string keyName;
+                if(typeDefaults != null) {
 
-                if(referencedTable != null) {
-                    keyName = $"{GetTableName(referencedTable, includePostFix: false)}";
-                }
-                else {
-                    keyName = $"{GetTableName(table, includePostFix: false)}";
-                }
+                    string tableName;
 
-                if(dotNetType == typeof(string)) {
-                    columnType = $"{keyName}";
-                    defaultValue = $"{columnType}.NotValid";
+                    if(referencedTable != null) {
+                        tableName = GetTableName(referencedTable, includePostFix: false);
+                    }
+                    else {
+                        tableName = GetTableName(table, includePostFix: false);
+                    }
+                    columnInfo.ColumnTypeName = $"{typeDefaults.TypePrefix}{tableName}{typeDefaults.TypePostfix}";
                 }
-                else if(dotNetType == typeof(Guid)) {
-                    columnType = $"{keyName}Guid";
-                    defaultValue = $"{columnType}.NotValid";
-                }
-                else if(dotNetType == typeof(short)) {
-                    columnType = $"{keyName}Id";
-                    defaultValue = $"{columnType}.NotValid";
-                }
-                else if(dotNetType == typeof(int)) {
-                    columnType = $"{keyName}Id";
-                    defaultValue = $"{columnType}.NotValid";
-                }
-                else if(dotNetType == typeof(long)) {
-                    columnType = $"{keyName}Id";
-                    defaultValue = $"{columnType}.NotValid";
-                }
-                else if(dotNetType == typeof(string)) {
-                    columnType = $"{keyName}";
-                    defaultValue = $"string.Empty";
-                }
-                columnTypeName = columnType;
-            }            
+            }
             else if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
-                columnTypeName = $"{nameof(IGeography)}";
+                columnInfo.ColumnTypeName = $"{nameof(IGeography)}";
             }
-            else {
-                columnTypeName = columnType;
+            return columnInfo;
+        }
+
+        private readonly static Dictionary<Type, TypeDefaults> TypeDefaultLookup = new Dictionary<Type, TypeDefaults> {
+
+            { typeof(string), new TypeDefaults(columnType: "string", typePrefix: "", typePostfix: "") },
+            { typeof(Guid), new TypeDefaults(columnType: "Guid", typePrefix: "", typePostfix: "Guid") },
+            { typeof(short), new TypeDefaults(columnType: "short", typePrefix: "", typePostfix: "Id") },
+            { typeof(int), new TypeDefaults(columnType: "int", typePrefix: "", typePostfix: "Id") },
+            { typeof(long), new TypeDefaults(columnType: "long", typePrefix: "", typePostfix: "Id") },
+            { typeof(ushort), new TypeDefaults(columnType: "ushort", typePrefix: "", typePostfix: "Id") },
+            { typeof(uint), new TypeDefaults(columnType: "uint", typePrefix: "", typePostfix: "Id") },
+            { typeof(ulong), new TypeDefaults(columnType: "ulong", typePrefix: "", typePostfix: "Id") },
+            { typeof(bool), new TypeDefaults(columnType: "bool", typePrefix: "", typePostfix: "") },
+            { typeof(Bit), new TypeDefaults(columnType: "Bit", typePrefix: "", typePostfix: "") },
+            { typeof(decimal), new TypeDefaults(columnType: "decimal", typePrefix: "", typePostfix: "") },
+            { typeof(float), new TypeDefaults(columnType: "float", typePrefix: "", typePostfix: "") },
+            { typeof(double), new TypeDefaults(columnType: "double", typePrefix: "", typePostfix: "") },
+            { typeof(DateTime), new TypeDefaults(columnType: "DateTime", typePrefix: "", typePostfix: "") },
+            { typeof(DateTimeOffset), new TypeDefaults(columnType: "DateTimeOffset", typePrefix: "", typePostfix: "") },
+            { typeof(DateOnly), new TypeDefaults(columnType: "DateOnly", typePrefix: "", typePostfix: "") },
+            { typeof(TimeOnly), new TypeDefaults(columnType: "TimeOnly", typePrefix: "", typePostfix: "") },
+            { typeof(IUnknownType), new TypeDefaults(columnType: "__UnknownType__", typePrefix: "", typePostfix: "") }
+        };
+
+        public class TypeDefaults {
+
+            public TypeDefaults(string columnType, string typePrefix, string typePostfix) {
+                ColumnType = columnType;
+                TypePrefix = typePrefix;
+                TypePostfix = typePostfix;
             }
+            public string ColumnType { get; }
+            public string TypePrefix { get; }
+            public string TypePostfix { get; }
         }
 
         private readonly static HashSet<string> _KeyWordLookup = new HashSet<string>() {

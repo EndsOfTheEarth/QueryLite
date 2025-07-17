@@ -81,9 +81,9 @@ namespace DbSchema.CodeGeneration {
                 .Build();
         }}
 
-        private readonly __IDatabase__ _database;
+        private readonly IMyDatabase _database;
 
-        public {handlerName}(__IDatabase__ database) {{
+        public {handlerName}(IMyDatabase database) {{
             _database = database;
         }}
 
@@ -108,9 +108,9 @@ namespace DbSchema.CodeGeneration {
             string code = $@"
     public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
 
-        private readonly __IDatabase__ _database;
+        private readonly IMyDatabase _database;
 
-        public {handlerName}(__IDatabase__ database) {{
+        public {handlerName}(IMyDatabase database) {{
             _database = database;
         }}
 

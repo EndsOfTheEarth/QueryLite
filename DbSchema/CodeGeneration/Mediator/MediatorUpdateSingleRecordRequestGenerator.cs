@@ -99,41 +99,7 @@ namespace DbSchema.CodeGeneration {
 
                     string columnName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
-                    if(settings.UseIdentifiers == IdentifierType.Custom) {
-
-                        DatabaseTable? referencedTable = ClassCodeGenerator.GetReferenceTable(table, column);
-
-                        string method = "Set";
-
-                        if(referencedTable != null || column.IsPrimaryKey) {
-
-                            if(column.DataType.DotNetType == typeof(Guid)) {
-                                method = "SetGuid";
-                            }
-                            else if(column.DataType.DotNetType == typeof(short)) {
-                                method = "SetShort";
-                            }
-                            else if(column.DataType.DotNetType == typeof(int)) {
-                                method = "SetInt";
-                            }
-                            else if(column.DataType.DotNetType == typeof(long)) {
-                                method = "SetLong";
-                            }
-                            else if(column.DataType.DotNetType == typeof(string)) {
-                                method = "SetString";
-                            }
-                            else if(column.DataType.DotNetType == typeof(bool)) {
-                                method = "SetBool";
-                            }
-                            else if(column.DataType.DotNetType == typeof(decimal)) {
-                                method = "SetDecimal";
-                            }
-                        }
-                        setValues.Append($"                    .{method}(table.{columnName}, info => info.{columnName})");
-                    }
-                    else {
-                        setValues.Append($"                    .Set(table.{columnName}, info => info.{columnName})");
-                    }
+                    setValues.Append($"                    .Set(table.{columnName}, info => info.{columnName})");
                 }
             }
 
@@ -162,9 +128,9 @@ namespace DbSchema.CodeGeneration {
                 .Build();
         }}
 
-        private readonly __IDatabase__ _database;
+        private readonly IMyDatabase _database;
 
-        public {handlerName}(__IDatabase__ database) {{
+        public {handlerName}(IMyDatabase database) {{
             _database = database;
         }}
 
@@ -223,41 +189,7 @@ namespace DbSchema.CodeGeneration {
 
                     string columnName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
-                    if(settings.UseIdentifiers == IdentifierType.Custom) {
-
-                        DatabaseTable? referencedTable = ClassCodeGenerator.GetReferenceTable(table, column);
-
-                        string method = "Set";
-
-                        if(referencedTable != null || column.IsPrimaryKey) {
-
-                            if(column.DataType.DotNetType == typeof(Guid)) {
-                                method = "SetGuid";
-                            }
-                            else if(column.DataType.DotNetType == typeof(short)) {
-                                method = "SetShort";
-                            }
-                            else if(column.DataType.DotNetType == typeof(int)) {
-                                method = "SetInt";
-                            }
-                            else if(column.DataType.DotNetType == typeof(long)) {
-                                method = "SetLong";
-                            }
-                            else if(column.DataType.DotNetType == typeof(string)) {
-                                method = "SetString";
-                            }
-                            else if(column.DataType.DotNetType == typeof(bool)) {
-                                method = "SetBool";
-                            }
-                            else if(column.DataType.DotNetType == typeof(decimal)) {
-                                method = "SetDecimal";
-                            }
-                        }
-                        setValues.Append($"                        .{method}(table.{columnName}, info.{columnName})");
-                    }
-                    else {
-                        setValues.Append($"                        .Set(table.{columnName}, info.{columnName})");
-                    }
+                    setValues.Append($"                        .Set(table.{columnName}, info.{columnName})");
                 }
             }
 
@@ -270,9 +202,9 @@ namespace DbSchema.CodeGeneration {
 
         private static readonly {name}Validator _validator = new {name}Validator(isNew: false);
 
-        private readonly __IDatabase__ _database;
+        private readonly IMyDatabase _database;
 
-        public {handlerName}(__IDatabase__ database) {{
+        public {handlerName}(IMyDatabase database) {{
             _database = database;
         }}
 

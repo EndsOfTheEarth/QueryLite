@@ -44,7 +44,7 @@ namespace DbSchema.CodeGeneration {
 
                 if(column.IsPrimaryKey) {
 
-                    CodeHelper.GetColumnName(table, column, useIdentifiers: settings.UseIdentifiers, dotNetType: out Type dotNetType, columnTypeName: out string columnTypeName, out bool isKeyColumn);
+                    CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
                     if(parametersText.Length > 0) {
                         parametersText.Append(", ");
@@ -55,7 +55,7 @@ namespace DbSchema.CodeGeneration {
                     string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
                     string parameterName = propertyName.FirstLetterLowerCase();
 
-                    parametersText.Append($"{columnTypeName} {parameterName}");
+                    parametersText.Append($"{columnInfo.ColumnTypeName} {parameterName}");
 
                     if(settersText.Length > 0) {
                         settersText.Append(Environment.NewLine);
@@ -71,7 +71,7 @@ namespace DbSchema.CodeGeneration {
                     if(propertiesText.Length > 0) {
                         propertiesText.Append(Environment.NewLine);
                     }
-                    propertiesText.Append($"        public {columnTypeName} {propertyName} {{ get; set; }}");
+                    propertiesText.Append($"        public {columnInfo.ColumnTypeName} {propertyName} {{ get; set; }}");
                 }
             }
 
@@ -147,9 +147,9 @@ namespace DbSchema.CodeGeneration {
                 .Build();
         }}
 
-        private readonly __IDatabase__ _database;
+        private readonly IMyDatabase _database;
 
-        public {handlerName}(__IDatabase__ database) {{
+        public {handlerName}(IMyDatabase database) {{
             _database = database;
         }}
 
@@ -200,9 +200,9 @@ namespace DbSchema.CodeGeneration {
             string code = $@"
     public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
-        private readonly __IDatabase__ _database;
+        private readonly IMyDatabase _database;
 
-        public {handlerName}(__IDatabase__ database) {{
+        public {handlerName}(IMyDatabase database) {{
             _database = database;
         }}
 
