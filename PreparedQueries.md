@@ -83,10 +83,10 @@ var result = query.Execute(parameters: person, _database);  //Provide the person
 public sealed class ProductCostHandler {
 
     /*
-     *  The prepared query is defined to receive a parameter of type 'IntKey<IProduct>' on every call
+     *  The prepared query is defined to receive a parameter of type 'ProductId' on every call
      *  to execute query and return 'rows' of the type 'ProductCostHistory'
      */
-    private readonly static IPreparedQueryExecute<IntKey<IProduct>, ProductCostHistory> _loadCostHistoryQuery;
+    private readonly static IPreparedQueryExecute<ProductId, ProductCostHistory> _loadCostHistoryQuery;
 
     static ProductCostHandler() {
 
@@ -97,7 +97,7 @@ public sealed class ProductCostHandler {
         ProductCostHistoryTable costHistoryTable = ProductCostHistoryTable.Instance;
 
         _loadCostHistoryQuery = Query
-            .Prepare<IntKey<IProduct>>()        //This line defines that IntKey<IProduct> is a query parameter type.
+            .Prepare<ProductId>()        //This line defines that ProductId is a query parameter type.
             .Select(
                 row => new ProductCostHistory(
                     productID: row.Get(productTable.ProductID),
@@ -109,7 +109,7 @@ public sealed class ProductCostHandler {
             )
             .From(productTable)
             .Join(costHistoryTable).On(on => on.EQUALS(productTable.ProductID, costHistoryTable.ProductID))
-            .Where(where => where.EQUALS(productTable.ProductID, id => id))    //The function id => id returns the provided 'IntKey<IProduct>' for the underlying sql parameter
+            .Where(where => where.EQUALS(productTable.ProductID, id => id))    //The function id => id returns the provided 'ProductId' for the underlying sql parameter
             .OrderBy(costHistoryTable.StartDate, costHistoryTable.EndDate)
             .Build();
     }
@@ -120,7 +120,7 @@ public sealed class ProductCostHandler {
         _database = database;
     }
 
-    public async Task<IList<ProductCostHistory>> LoadProductCostHistory(IntKey<IProduct> productId, CancellationToken cancellationToken) {
+    public async Task<IList<ProductCostHistory>> LoadProductCostHistory(ProductId productId, CancellationToken cancellationToken) {
 
         /*
          *  Execute the prepared query and passing 'productId' in as a parameter
@@ -137,7 +137,7 @@ public sealed class ProductCostHandler {
 ```C#
 public sealed class AddProductHandler {
 
-    private readonly static IPreparedInsertQuery<Product, IntKey<IProduct>> _insertProductQuery;
+    private readonly static IPreparedInsertQuery<Product, ProductId> _insertProductQuery;
 
     /*
      * Create prepared insert query in the static constructor
@@ -186,18 +186,18 @@ public sealed class AddProductHandler {
         _database = database;
     }
 
-    public async Task<IntKey<IProduct>> AddProduct(Product product, CancellationToken cancellationToken) {
+    public async Task<ProductId> AddProduct(Product product, CancellationToken cancellationToken) {
         
         /*
          *  Execute the prepared query and passing 'product' in as a parameter
          */
         using Transaction transaction = new Transaction(_database);
 
-        QueryResult<IntKey<IProduct>> result = await _insertProductQuery.ExecuteAsync(parameters: product, transaction, cancellationToken);
+        QueryResult<ProductId> result = await _insertProductQuery.ExecuteAsync(parameters: product, transaction, cancellationToken);
 
         transaction.Commit();
 
-        IntKey<IProduct> productId = result.Rows[0];
+        ProductId productId = result.Rows[0];
 
         return productId;
     }
@@ -276,14 +276,14 @@ public class UpdateProductHandler {
 ```C#
 public sealed class DeleteProductHandler {
 
-    private readonly static IPreparedDeleteQuery<IntKey<IProduct>> _deleteProductQuery;
+    private readonly static IPreparedDeleteQuery<ProductId> _deleteProductQuery;
 
     static DeleteProductHandler() {
 
         ProductTable table = ProductTable.Instance;
 
         _deleteProductQuery = Query
-            .Prepare<IntKey<IProduct>>()
+            .Prepare<ProductId>()
             .Delete(table)
             .Where(where => where.EQUALS(table.ProductID, productId => productId))
             .Build();
@@ -295,7 +295,7 @@ public sealed class DeleteProductHandler {
         _database = database;
     }
 
-    public async Task DeleteProduct(IntKey<IProduct> productId, CancellationToken cancellationToken) {
+    public async Task DeleteProduct(ProductId productId, CancellationToken cancellationToken) {
 
         using Transaction transaction = new Transaction(_database);
 
