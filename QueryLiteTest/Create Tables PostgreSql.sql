@@ -53,6 +53,7 @@ CREATE TABLE EnumTestTable (
 CREATE TABLE CustomTypes (
 
 	ctGuid UUID NOT NULL,
+	ctIdentifier BIGSERIAL NOT NULL,
 	ctShort SMALLINT NOT NULL,
 	ctInt INTEGER NOT NULL,
 	ctLong BIGINT NOT NULL,

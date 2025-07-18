@@ -21,10 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace QueryLite {
 
@@ -335,7 +331,7 @@ namespace QueryLite {
         }
 
         /// <summary>
-        /// Throws an exception if the number of rows in the QueryResult do not equal rows.
+        /// Throws an exception if the number of rows in the QueryResult does not equal rows.
         /// </summary>
         public void AssertRowCount(int rows) {
 

@@ -51,6 +51,7 @@ Global
 		{A9FB52B5-C2CB-451E-8429-EAFBD31A8A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9FB52B5-C2CB-451E-8429-EAFBD31A8A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9FB52B5-C2CB-451E-8429-EAFBD31A8A5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCD22648-D78D-F7E3-1299-795D55F218DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
