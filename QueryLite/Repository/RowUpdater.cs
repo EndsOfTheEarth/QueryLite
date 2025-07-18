@@ -23,7 +23,6 @@
  **/
 using QueryLite.Databases;
 using System.Data.Common;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace QueryLite {
@@ -262,7 +261,7 @@ namespace QueryLite {
             sql.Append("DELETE FROM [").Append(table.TableName).Append("] ");
 
             GenerateWhereClause(whereClauseColumns, sql);
-            
+
             return sql.ToString();
         }
     }

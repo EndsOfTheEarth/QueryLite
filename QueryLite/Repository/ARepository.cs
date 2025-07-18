@@ -56,7 +56,7 @@ namespace QueryLite {
 
         bool TryGetRowState(ROW row, [MaybeNullWhen(false)] out RowUpdateState? state);
 
-        IDataTableWhere<TABLE, ROW> SelectAll { get; }
+        IDataTableWhere<TABLE, ROW> SelectRows { get; }
 
         void PopulateWithExistingRows(IEnumerable<ROW> rows);
 
@@ -156,6 +156,24 @@ namespace QueryLite {
             return rowState.State;
         }
 
+        /// <summary>
+        /// Returns true if changes to the row require the records to be inserted, updated or deleted.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool RequiresUpdate(ROW row) {
+
+            if(!StateLookup.TryGetValue(row, out RowState? rowState)) {
+                throw new Exception("Row does not exist in data table");
+            }
+            return rowState.State switch {
+                RowUpdateState.PendingAdd or RowUpdateState.PendingDelete => true,
+                RowUpdateState.Existing => rowState.OldRow != null && !rowState.OldRow.Equals(rowState.NewRow),
+                _ => false,
+            };
+        }
+
         public bool TryGetRowState(ROW row, [MaybeNullWhen(false)] out RowUpdateState? state) {
 
             state = null;
@@ -189,7 +207,7 @@ namespace QueryLite {
             return [.. Table.PrimaryKey.Columns.Select(pkColumn => lookup[pkColumn.ColumnName])];
         }
 
-        public IDataTableWhere<TABLE, ROW> SelectAll {
+        public IDataTableWhere<TABLE, ROW> SelectRows {
             get { return new DataTableQueryTemplate(this, Table); }
         }
 

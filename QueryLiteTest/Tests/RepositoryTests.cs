@@ -43,7 +43,7 @@ namespace QueryLiteTest.Tests {
         }
 
         [TestMethod]
-        public async Task Test01() {
+        public async Task TestAddUpdateAndDelete() {
 
             CustomTypesRow rowA = GetCustomTypesA();
             
@@ -59,6 +59,8 @@ namespace QueryLiteTest.Tests {
                 }
                 AssertOnlyOneRowExists();
                 await AssertCustomTypesAsync(rowA);
+
+                Assert.IsFalse(repository.RequiresUpdate(rowA));
             }
 
             CustomTypesRow rowB = GetCustomTypesB();
@@ -74,6 +76,19 @@ namespace QueryLiteTest.Tests {
                 }
                 AssertOnlyOneRowExists();
                 await AssertCustomTypesAsync(rowA);
+                Assert.IsFalse(repository.RequiresUpdate(rowA));
+            }
+
+            {   //Test delete
+
+                repository.Delete(rowA);
+
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await transaction.CommitAsync();
+                }
+                AssertZeroRowsExist();
             }
         }
 
@@ -91,6 +106,22 @@ namespace QueryLiteTest.Tests {
 
             Assert.AreEqual(1, result.Rows.Count);
             Assert.AreEqual(1, result.Rows[0]);
+        }
+
+        private static void AssertZeroRowsExist() {
+
+            CustomTypesTable table = CustomTypesTable.Instance;
+
+            COUNT_ALL count = COUNT_ALL.Instance;
+
+            QueryResult<int> result = Query.Select(
+                    row => row.Get(count)
+                )
+                .From(table)
+                .Execute(TestDatabase.Database);
+
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.Rows[0]);
         }
 
         private static void CopyValuesTo(CustomTypesRow from, CustomTypesRow to) {
@@ -129,7 +160,7 @@ namespace QueryLiteTest.Tests {
             CustomTypesRepository repository = new CustomTypesRepository();
 
             await repository
-                .SelectAll
+                .SelectRows
                 .Where(repository.Table.Guid == row.CustomGuid)
                 .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
 
@@ -258,7 +289,6 @@ namespace QueryLiteTest.Tests {
                 (table.TimeOnly, (row) => row.CustomTimeOnly),
                 (table.Float, (row) => row.CustomFloat),
                 (table.Double, (row) => row.CustomDouble),
-
                 (table.NGuid, (row) => row.NCustomGuid),
                 (table.NShort, (row) => row.NCustomShort),
                 (table.NInt, (row) => row.NCustomInt),
@@ -291,7 +321,6 @@ namespace QueryLiteTest.Tests {
                     customTimeOnly: resultRow.Get(table.TimeOnly),
                     customFloat: resultRow.Get(table.Float),
                     customDouble: resultRow.Get(table.Double),
-
                     nCustomGuid: resultRow.Get(table.NGuid),
                     nCustomShort: resultRow.Get(table.NShort),
                     nCustomInt: resultRow.Get(table.NInt),
