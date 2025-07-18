@@ -130,13 +130,20 @@ namespace QueryLite.Databases {
     /// </summary>
     internal static class ParamNameCache {
 
-        public static string[] ParamNames = new string[50];
+        public static string[] ParamNames = new string[150];
 
         static ParamNameCache() {
 
             for(int index = 0; index < ParamNames.Length; index++) {
                 ParamNames[index] = $"@{index}";
             }
+        }
+        public static string GetName(int count) {
+
+            if(count >= 0 && count < ParamNames.Length) {
+                return ParamNames[count];
+            }
+            return $"@{count}";
         }
     }
 
