@@ -23,6 +23,7 @@
  **/
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace QueryLite {
 
@@ -73,7 +74,7 @@ namespace QueryLite {
 
         private bool ConcurrencyCheck { get; }
 
-        private Dictionary<ROW, RowState> StateLookup { get; set; } = [];
+        private Dictionary<RefCompare<ROW>, RowState> StateLookup { get; set; } = [];
         private List<RowState> Rows { get; set; } = [];
 
         protected ARepository(TABLE table, bool concurrencyCheck) {
@@ -150,7 +151,7 @@ namespace QueryLite {
 
         public RowUpdateState GetRowState(ROW row) {
 
-            if(!StateLookup.TryGetValue(row, out RowState? rowState)) {
+            if(!StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
                 throw new Exception("Row does not exist in data table");
             }
             return rowState.State;
@@ -164,7 +165,7 @@ namespace QueryLite {
         /// <exception cref="Exception"></exception>
         public bool RequiresUpdate(ROW row) {
 
-            if(!StateLookup.TryGetValue(row, out RowState? rowState)) {
+            if(!StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
                 throw new Exception("Row does not exist in data table");
             }
             return rowState.State switch {
@@ -178,7 +179,7 @@ namespace QueryLite {
 
             state = null;
 
-            if(StateLookup.TryGetValue(row, out RowState? rowState)) {
+            if(StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
                 state = rowState.State;
                 return true;
             }
@@ -219,23 +220,22 @@ namespace QueryLite {
         public void PopulateWithExistingRows(IEnumerable<ROW> rows) {
 
             foreach(ROW row in rows) {
-
                 RowState rowState = new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row), newRow: row);
-                StateLookup.Add(row, rowState);
-                Rows.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row), newRow: row));
+                StateLookup.Add(new RefCompare<ROW>(row), rowState);
+                Rows.Add(rowState);
             }
         }
 
         public ROW AddNewRow(ROW row) {
             RowState rowState = new RowState(state: RowUpdateState.PendingAdd, oldRow: null, newRow: row);
-            StateLookup.Add(row, rowState);
+            StateLookup.Add(new RefCompare<ROW>(row), rowState);
             Rows.Add(rowState);
             return row;
         }
 
         public void Delete(ROW row) {
 
-            if(!StateLookup.TryGetValue(row, out RowState? rowState)) {
+            if(!StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
                 throw new Exception("Row does not exist in data table");
             }
 
@@ -301,7 +301,7 @@ namespace QueryLite {
                     }
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => rowState.NewRow);
+            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
             Rows = newState;
         }
 
@@ -387,5 +387,33 @@ namespace QueryLite {
         public string? ParameterName { get; internal set; }
         public IColumn Column { get; }
         public Func<ROW, object?> Setter { get; }
+    }
+
+    /// <summary>
+    /// RefCompare is a struct that compares records by instance rather than equality.
+    /// </summary>
+    public readonly struct RefCompare<ROW> where ROW : class {
+
+        private ROW Row { get; }
+
+        public RefCompare(ROW row) {
+            Row = row;
+        }
+        public override bool Equals([NotNullWhen(true)] object? obj) {
+
+            if(obj is RefCompare<ROW> refCompare) {
+                return object.ReferenceEquals(Row, refCompare.Row);
+            }
+            return false;
+        }
+        public override int GetHashCode() {
+            return RuntimeHelpers.GetHashCode(Row);
+        }
+        public static bool operator ==(RefCompare<ROW> left, RefCompare<ROW> right) {
+            return left.Equals(right);
+        }
+        public static bool operator !=(RefCompare<ROW> left, RefCompare<ROW> right) {
+            return !(left == right);
+        }
     }
 }
