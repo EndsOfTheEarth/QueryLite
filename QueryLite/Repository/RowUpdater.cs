@@ -75,7 +75,7 @@ namespace QueryLite {
         public RowUpdater(TABLE table, List<ColumnAndSetter<ROW>> insertColumnAndSetters,
                            List<ColumnAndSetter<ROW>> updateColumnAndSetters,
                            List<ColumnAndSetter<ROW>> whereColumns,
-                           IPreparedParameterMapper parameterMapper) {
+                           IDatabase database) {
 
             int count = 0;
 
@@ -89,14 +89,14 @@ namespace QueryLite {
                 cs.ParameterName = ParamNameCache.GetName(count++);
             }
 
-            InsertSql = CreateInsertSql(table, insertColumnAndSetters);
-            InsertParameterCreators = GenerateParameterCreators(insertColumnAndSetters, parameterMapper);
+            InsertSql = CreateInsertSql(database, table, insertColumnAndSetters);
+            InsertParameterCreators = GenerateParameterCreators(insertColumnAndSetters, database.ParameterMapper);
 
-            UpdateSql = CreateUpdateSql(table, updateColumnAndSetters, whereColumns);
-            UpdateParameterCreators = GenerateParameterCreators(updateColumnAndSetters, parameterMapper);
-            WhereClauseParameterCreators = GenerateParameterCreators(whereColumns, parameterMapper);
+            UpdateSql = CreateUpdateSql(database, table, updateColumnAndSetters, whereColumns);
+            UpdateParameterCreators = GenerateParameterCreators(updateColumnAndSetters, database.ParameterMapper);
+            WhereClauseParameterCreators = GenerateParameterCreators(whereColumns, database.ParameterMapper);
 
-            DeleteSql = CreateDeleteSql(table, whereColumns);
+            DeleteSql = CreateDeleteSql(database, table, whereColumns);
         }
 
         /// <summary>
@@ -133,13 +133,47 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-        public static string CreateInsertSql(TABLE table, List<ColumnAndSetter<ROW>> insertColumns) {
+        public async Task<int> UpdateAsync(ROW oldRow, ROW newRow, Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
 
-            StringBuilder sql = new StringBuilder();
+            using DbCommand command = transaction.CreateCommand(timeout);
+
+            command.CommandText = UpdateSql;
+
+            SetParameters(newRow, command.Parameters, UpdateParameterCreators);
+
+            SetParameters(oldRow, command.Parameters, WhereClauseParameterCreators);
+
+            int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken);
+
+            return rowsEffected;
+        }
+
+        public async Task<int> DeleteAsync(ROW existingRow, Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+
+            using DbCommand command = transaction.CreateCommand(timeout);
+
+            command.CommandText = DeleteSql;
+
+            SetParameters(existingRow, command.Parameters, WhereClauseParameterCreators);
+
+            int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken);
+
+            return rowsEffected;
+        }
+
+        public static string CreateInsertSql(IDatabase database, TABLE table, List<ColumnAndSetter<ROW>> insertColumns) {
+
+            StringBuilder sql = StringBuilderCache.Acquire();
 
             sql.Append("INSERT INTO ");
 
-            SqlHelper.AppendEncloseTableName(sql, table);
+            string schemaName = database.SchemaMap(table.SchemaName);
+
+            if(!string.IsNullOrWhiteSpace(schemaName)) {
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                sql.Append('.');
+            }
+            SqlHelper.AppendEncloseTableName(sql, table);            
 
             sql.Append('(');
 
@@ -164,30 +198,25 @@ namespace QueryLite {
             }
             sql.Append(')');
 
-            return sql.ToString();
+            string insertSql =  sql.ToString();
+
+            StringBuilderCache.Release(sql);
+            return insertSql;
         }
 
-        public async Task<int> UpdateAsync(ROW oldRow, ROW newRow, Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public static string CreateUpdateSql(IDatabase database, TABLE table, List<ColumnAndSetter<ROW>> updateColumns, List<ColumnAndSetter<ROW>> whereClauseColumns) {
 
-            using DbCommand command = transaction.CreateCommand(timeout);
-
-            command.CommandText = UpdateSql;
-
-            SetParameters(newRow, command.Parameters, UpdateParameterCreators);
-
-            SetParameters(oldRow, command.Parameters, WhereClauseParameterCreators);
-
-            int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken);
-
-            return rowsEffected;
-        }
-
-        public static string CreateUpdateSql(TABLE table, List<ColumnAndSetter<ROW>> updateColumns, List<ColumnAndSetter<ROW>> whereClauseColumns) {
-
-            StringBuilder sql = new StringBuilder();
+            StringBuilder sql = StringBuilderCache.Acquire();
 
             sql.Append("UPDATE ");
 
+            string schemaName = database.SchemaMap(table.SchemaName);
+
+            if(!string.IsNullOrWhiteSpace(schemaName)) {
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                sql.Append('.');
+            }
+            
             SqlHelper.AppendEncloseTableName(sql, table);
             
             sql.Append(" SET ");
@@ -206,7 +235,11 @@ namespace QueryLite {
                 sql.Append('=').Append(cs.ParameterName);
             }
             GenerateWhereClause(whereClauseColumns, sql);
-            return sql.ToString();
+
+            string updateSql = sql.ToString();
+
+            StringBuilderCache.Release(sql);
+            return updateSql;
         }
 
         private static void GenerateWhereClause(List<ColumnAndSetter<ROW>> whereClauseColumns, StringBuilder sql) {
@@ -253,30 +286,27 @@ namespace QueryLite {
             }
         }
 
-        public async Task<int> DeleteAsync(ROW existingRow, Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public static string CreateDeleteSql(IDatabase database, TABLE table, List<ColumnAndSetter<ROW>> whereClauseColumns) {
 
-            using DbCommand command = transaction.CreateCommand(timeout);
-
-            command.CommandText = DeleteSql;
-
-            SetParameters(existingRow, command.Parameters, WhereClauseParameterCreators);
-
-            int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken);
-
-            return rowsEffected;
-        }
-
-        public static string CreateDeleteSql(TABLE table, List<ColumnAndSetter<ROW>> whereClauseColumns) {
-
-            StringBuilder sql = new StringBuilder();
+            StringBuilder sql = StringBuilderCache.Acquire();
 
             sql.Append("DELETE FROM ");
-            
+
+            string schemaName = database.SchemaMap(table.SchemaName);
+
+            if(!string.IsNullOrWhiteSpace(schemaName)) {
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                sql.Append('.');
+            }
+
             SqlHelper.AppendEncloseTableName(sql, table);
 
             GenerateWhereClause(whereClauseColumns, sql);
 
-            return sql.ToString();
+            string deleteSql = sql.ToString();
+
+            StringBuilderCache.Release(sql);
+            return deleteSql;
         }
     }
 }

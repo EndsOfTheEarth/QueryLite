@@ -49,23 +49,67 @@ namespace QueryLite {
 
     public interface IRepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRepositoryRow<TABLE, ROW>, IEquatable<ROW> {
 
+        /// <summary>
+        /// Returns number of rows in repository.
+        /// </summary>
         public int Count { get; }
 
+        /// <summary>
+        /// Returns row at index.
+        /// </summary>
         ROW this[int index] { get; }
 
+        /// <summary>
+        /// Returns the row state for given row.
+        /// </summary>
+        /// <exception cref="Exception">Throws an exception when row does not exist in repository.</exception>
         RowUpdateState GetRowState(ROW row);
 
+        /// <summary>
+        /// Returns the row state for given row.
+        /// </summary>
         bool TryGetRowState(ROW row, [MaybeNullWhen(false)] out RowUpdateState? state);
 
+        /// <summary>
+        /// Select rows from database.
+        /// </summary>
         IDataTableWhere<TABLE, ROW> SelectRows { get; }
 
+        /// <summary>
+        /// Populate repository with rows that already exist in the database and are unchanged.
+        /// </summary>
         void PopulateWithExistingRows(IEnumerable<ROW> rows);
 
+        /// <summary>
+        /// Adds row to repository to be inserted when UpdateAsync(...) or PersistInsertsOnlyAsync(...) is called.
+        /// </summary>
         ROW AddNewRow(ROW row);
 
+        /// <summary>
+        /// Flags row to be deleted when repository is updated.
+        /// </summary>
         void DeleteRow(ROW row);
 
-        Task UpdateAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// Deleted row objects are removed from the repository.
+        /// </summary>
+        Task<int> UpdateAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
     }
 
     public abstract class ARepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRepositoryRow<TABLE, ROW>, IEquatable<ROW> {
@@ -82,6 +126,10 @@ namespace QueryLite {
         private Dictionary<RefCompare<ROW>, RowState> StateLookup { get; set; } = [];
         private List<RowState> Rows { get; set; } = [];
 
+        /// <summary>
+        /// ARepository constructor.
+        /// </summary>
+        /// <param name="concurrencyCheck">Forces row updates and deletes to compare all column values and fail if they are different or the record is missing.</param>
         protected ARepository(TABLE table, bool concurrencyCheck) {
             Table = table;
             ConcurrencyCheck = concurrencyCheck;
@@ -99,7 +147,7 @@ namespace QueryLite {
 
             List<ColumnAndSetter<ROW>> whereColumnAndSetters = GetWhereClauseColumnsAndSettersMap();
 
-            updaters = new RowUpdater<TABLE, ROW>(Table, insertAndUpdateColumnAndSetters, insertAndUpdateColumnAndSetters, whereColumnAndSetters, database.ParameterMapper);
+            updaters = new RowUpdater<TABLE, ROW>(Table, insertAndUpdateColumnAndSetters, insertAndUpdateColumnAndSetters, whereColumnAndSetters, database);
 
             SetUpdater(database.DatabaseType, updaters);
             return updaters;
@@ -230,7 +278,7 @@ namespace QueryLite {
                 Rows.Add(rowState);
             }
         }
-
+        
         public ROW AddNewRow(ROW row) {
             RowState rowState = new RowState(state: RowUpdateState.PendingAdd, oldRow: null, newRow: row);
             StateLookup.Add(new RefCompare<ROW>(row), rowState);
@@ -241,7 +289,6 @@ namespace QueryLite {
         /// <summary>
         /// Flags row to be deleted when repository is updated.
         /// </summary>
-        /// <param name="row"></param>
         public void DeleteRow(ROW row) {
 
             if(!StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
@@ -256,22 +303,21 @@ namespace QueryLite {
             }
         }
 
-        public async Task UpdateAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// </summary>
+        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database);
 
+            int totalRowsEffected = 0;
+
             foreach(RowState row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
-
-                    int rowsEffected = await updater.InsertAsync(row.NewRow, transaction, timeout, cancellationToken);
-
-                    if(rowsEffected != 1) {
-                        throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
-                    }
-                    newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row.NewRow), newRow: row.NewRow));
+                    totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, cancellationToken);
                 }
                 else if(row.State == RowUpdateState.Existing) {
 
@@ -282,16 +328,7 @@ namespace QueryLite {
                     bool rowHasChanged = !row.OldRow.Equals(row.NewRow);
 
                     if(rowHasChanged) {
-
-                        int rowsEffected = await updater.UpdateAsync(oldRow: row.OldRow, newRow: row.NewRow, transaction, timeout, cancellationToken);
-
-                        if(rowsEffected == 0) {
-                            throw new Exception("Concurrency violation. Maybe row was changed in the database?");
-                        }
-                        if(rowsEffected != 1) {
-                            throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
-                        }
-                        newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row.NewRow), newRow: row.NewRow));
+                        totalRowsEffected += await PerformUpdateAsync(transaction, timeout, newState, updater, row, cancellationToken);
                     }
                     else {
                         newState.Add(row);  //Add unchanged row
@@ -302,16 +339,136 @@ namespace QueryLite {
                     if(row.OldRow == null) {
                         throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
                     }
+                    totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, cancellationToken);
+                }
+            }
+            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            Rows = newState;
+            return totalRowsEffected;
+        }
 
-                    int rowsEffected = await updater.DeleteAsync(existingRow: row.OldRow!, transaction, timeout, cancellationToken);
+        private static async Task<int> PerformInsertAsync(Transaction transaction, QueryTimeout timeout, List<RowState> newState,
+                                                    RowUpdater<TABLE, ROW> updater,
+                                                    RowState rowState, CancellationToken cancellationToken) {
 
-                    if(rowsEffected != 1) {
-                        throw new Exception($"Delete failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
+            int rowsEffected = await updater.InsertAsync(rowState.NewRow, transaction, timeout, cancellationToken);
+
+            if(rowsEffected != 1) {
+                throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
+            }
+            newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(rowState.NewRow), newRow: rowState.NewRow));
+            return rowsEffected;
+        }
+
+
+        private static async Task<int> PerformUpdateAsync(Transaction transaction, QueryTimeout timeout,
+                                                  List<RowState> newState, RowUpdater<TABLE, ROW> updater,
+                                                  RowState row, CancellationToken cancellationToken) {
+
+            int rowsEffected = await updater.UpdateAsync(oldRow: row.OldRow!, newRow: row.NewRow, transaction, timeout, cancellationToken);
+
+            if(rowsEffected == 0) {
+                throw new Exception("Concurrency violation. Maybe row was changed in the database?");
+            }
+            if(rowsEffected != 1) {
+                throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
+            }
+            newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row.NewRow), newRow: row.NewRow));
+            return rowsEffected;
+        }
+
+        private static async Task<int> PerformDeleteAsync(Transaction transaction, QueryTimeout timeout,
+                                                          RowUpdater<TABLE, ROW> updater, RowState row,
+                                                          CancellationToken cancellationToken) {
+
+            int rowsEffected = await updater.DeleteAsync(existingRow: row.OldRow!, transaction, timeout, cancellationToken);
+
+            if(rowsEffected != 1) {
+                throw new Exception($"Delete failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
+            }
+            return rowsEffected;
+        }
+
+        /// <summary>
+        /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+
+            List<RowState> newState = new List<RowState>(Rows.Count);
+
+            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database);
+
+            int totalRowsEffected = 0;
+
+            foreach(RowState row in Rows) {
+
+                if(row.State == RowUpdateState.PendingAdd) {
+                    totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, cancellationToken);
+                }
+            }
+            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            Rows = newState;
+            return totalRowsEffected;
+        }
+
+        /// <summary>
+        /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+
+            List<RowState> newState = new List<RowState>(Rows.Count);
+
+            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database);
+
+            int totalRowsEffected = 0;
+
+            foreach(RowState row in Rows) {
+
+                if(row.State == RowUpdateState.Existing) {
+
+                    if(row.OldRow == null) {
+                        throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
+                    }
+
+                    bool rowHasChanged = !row.OldRow.Equals(row.NewRow);
+
+                    if(rowHasChanged) {
+                        totalRowsEffected += await PerformUpdateAsync(transaction, timeout, newState, updater, row, cancellationToken);
+                    }
+                    else {
+                        newState.Add(row);  //Add unchanged row
                     }
                 }
             }
             StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
             Rows = newState;
+            return totalRowsEffected;
+        }
+
+        /// <summary>
+        /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+
+            List<RowState> newState = new List<RowState>(Rows.Count);
+
+            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database);
+
+            int totalRowsEffected = 0;
+
+            foreach(RowState row in Rows) {
+
+                if(row.State == RowUpdateState.PendingDelete) {
+
+                    if(row.OldRow == null) {
+                        throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
+                    }
+                    totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, cancellationToken);
+                }
+            }
+            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            Rows = newState;
+            return totalRowsEffected;
         }
 
         private class RowState {
@@ -401,16 +558,16 @@ namespace QueryLite {
     /// <summary>
     /// RefCompare is a struct that compares records by instance rather than equality.
     /// </summary>
-    public readonly struct RefCompare<ROW> where ROW : class {
+    public readonly struct RefCompare<TYPE> where TYPE : class {
 
-        private ROW Row { get; }
+        private TYPE Row { get; }
 
-        public RefCompare(ROW row) {
+        public RefCompare(TYPE row) {
             Row = row;
         }
         public override bool Equals([NotNullWhen(true)] object? obj) {
 
-            if(obj is RefCompare<ROW> refCompare) {
+            if(obj is RefCompare<TYPE> refCompare) {
                 return object.ReferenceEquals(Row, refCompare.Row);
             }
             return false;
@@ -418,10 +575,10 @@ namespace QueryLite {
         public override int GetHashCode() {
             return RuntimeHelpers.GetHashCode(Row);
         }
-        public static bool operator ==(RefCompare<ROW> left, RefCompare<ROW> right) {
+        public static bool operator ==(RefCompare<TYPE> left, RefCompare<TYPE> right) {
             return left.Equals(right);
         }
-        public static bool operator !=(RefCompare<ROW> left, RefCompare<ROW> right) {
+        public static bool operator !=(RefCompare<TYPE> left, RefCompare<TYPE> right) {
             return !(left == right);
         }
     }
