@@ -106,7 +106,7 @@ namespace QueryLiteTest.Tests {
 
             {   //Test delete
 
-                repository.Delete(rowA);
+                repository.DeleteRow(rowA);
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -220,18 +220,187 @@ namespace QueryLiteTest.Tests {
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
             }
 
+            {   //Test Update when no changes are required
+
+                Assert.AreEqual(2, repository.Count);
+
+                CustomTypesRow loadedRowA = repository[0];
+                CustomTypesRow loadedRowB = repository[1];
+
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await transaction.CommitAsync();
+                }
+
+                Assert.AreEqual(2, repository.Count);
+
+                AssertNumberOfRowsExists(rows: 2);
+
+                await AssertCustomTypesAsync(loadedRowA);
+                await AssertCustomTypesAsync(loadedRowB);
+
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+            }
 
 
+            {   //Test update rowB
 
+                Assert.AreEqual(2, repository.Count);
 
+                CustomTypesRow loadedRowA = repository[0];
+                CustomTypesRow loadedRowB = repository[1];
 
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
 
+                loadedRowB.CustomGuid = CustomGuid.ValueOf(Guid.NewGuid());
+                loadedRowB.CustomShort = CustomShort.ValueOf(4324);
+                loadedRowB.CustomInt = CustomInt.ValueOf(33842141);
+                loadedRowB.CustomLong = CustomLong.ValueOf(4315234);
+                loadedRowB.CustomString = CustomString.ValueOf(Guid.NewGuid().ToString());
+                loadedRowB.CustomBool = CustomBool.ValueOf(true);
+                loadedRowB.CustomDecimal = CustomDecimal.ValueOf(1231252345.61123144m);
+                loadedRowB.CustomDateTime = CustomDateTime.ValueOf(new DateTime(year: 2012, month: 02, day: 20, hour: 07, minute: 03, second: 08));
+                loadedRowB.CustomDateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1992, month: 11, day: 10, hour: 20, minute: 06, second: 02, new TimeSpan(hours: 13, minutes: 00, seconds: 00)));
+                loadedRowB.CustomDateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 2026, month: 07, day: 14));
+                loadedRowB.CustomTimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 01, minute: 05, second: 29));
+                loadedRowB.CustomFloat = CustomFloat.ValueOf(8923.53454535f);
+                loadedRowB.CustomDouble = CustomDouble.ValueOf(5345634.35634564d);
 
+                loadedRowB.NCustomGuid = null;
+                loadedRowB.NCustomShort = null;
+                loadedRowB.NCustomInt = null;
+                loadedRowB.NCustomLong = null;
+                loadedRowB.NCustomString = null;
+                loadedRowB.NCustomBool = null;
+                loadedRowB.NCustomDecimal = null;
+                loadedRowB.NCustomDateTime = null;
+                loadedRowB.NCustomDateTimeOffset = null;
+                loadedRowB.NCustomDateOnly = null;
+                loadedRowB.NCustomTimeOnly = null;
+                loadedRowB.NCustomFloat = null;
+                loadedRowB.NCustomDouble = null;
 
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsTrue(repository.RequiresUpdate(loadedRowB));
 
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
+                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await transaction.CommitAsync();
+                }
+                Assert.AreEqual(2, repository.Count);
 
+                AssertNumberOfRowsExists(rows: 2);
+                await AssertCustomTypesAsync(loadedRowA);
+                await AssertCustomTypesAsync(loadedRowB);
 
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+            }
+
+            {   //Test update rowB when nullable values are null
+
+                Assert.AreEqual(2, repository.Count);
+
+                CustomTypesRow loadedRowA = repository[0];
+                CustomTypesRow loadedRowB = repository[1];
+
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+
+                loadedRowB.CustomGuid = CustomGuid.ValueOf(Guid.NewGuid());
+                loadedRowB.CustomShort = CustomShort.ValueOf(6324);
+                loadedRowB.CustomInt = CustomInt.ValueOf(3534141);
+                loadedRowB.CustomLong = CustomLong.ValueOf(5324523415234);
+                loadedRowB.CustomString = CustomString.ValueOf(Guid.NewGuid().ToString());
+                loadedRowB.CustomBool = CustomBool.ValueOf(false);
+                loadedRowB.CustomDecimal = CustomDecimal.ValueOf(22345.52345234m);
+                loadedRowB.CustomDateTime = CustomDateTime.ValueOf(new DateTime(year: 2014, month: 02, day: 20, hour: 07, minute: 03, second: 08));
+                loadedRowB.CustomDateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1993, month: 11, day: 10, hour: 20, minute: 06, second: 02, new TimeSpan(hours: 13, minutes: 00, seconds: 00)));
+                loadedRowB.CustomDateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 2027, month: 07, day: 14));
+                loadedRowB.CustomTimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 02, minute: 05, second: 29));
+                loadedRowB.CustomFloat = CustomFloat.ValueOf(18923.253454535f);
+                loadedRowB.CustomDouble = CustomDouble.ValueOf(15345634.3563456445d);
+
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsTrue(repository.RequiresUpdate(loadedRowB));
+
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await transaction.CommitAsync();
+                }
+                AssertNumberOfRowsExists(rows: 2);
+                await AssertCustomTypesAsync(loadedRowA);
+                await AssertCustomTypesAsync(loadedRowB);
+
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+            }
+
+            {   //Test delete rowA
+
+                Assert.AreEqual(2, repository.Count);
+
+                CustomTypesRow loadedRowA = repository[0];
+                CustomTypesRow loadedRowB = repository[1];
+
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+
+                repository.DeleteRow(loadedRowA);
+
+                Assert.IsTrue(repository.RequiresUpdate(loadedRowA));
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await transaction.CommitAsync();
+                }
+
+                Assert.AreEqual(1, repository.Count);
+
+                AssertNumberOfRowsExists(rows: 1);
+
+                await AssertCustomTypesAsync(loadedRowB);
+
+                Assert.IsFalse(repository.TryGetRowState(loadedRowA, out RowUpdateState? state));
+                Assert.IsNull(state);
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+            }
+
+            {   //Test delete rowB
+
+                Assert.AreEqual(1, repository.Count);
+
+                CustomTypesRow loadedRowB = repository[0];
+
+                Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
+
+                repository.DeleteRow(loadedRowB);
+
+                Assert.IsTrue(repository.RequiresUpdate(loadedRowB));
+
+                using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await transaction.CommitAsync();
+                }
+
+                Assert.AreEqual(0, repository.Count);
+
+                AssertNumberOfRowsExists(rows: 0);
+
+                Assert.IsFalse(repository.TryGetRowState(loadedRowB, out RowUpdateState? state));
+                Assert.IsNull(state);
+            }
         }
 
         private static void AssertNumberOfRowsExists(int rows) {

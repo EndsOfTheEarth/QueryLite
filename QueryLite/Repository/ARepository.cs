@@ -63,7 +63,7 @@ namespace QueryLite {
 
         ROW AddNewRow(ROW row);
 
-        void Delete(ROW row);
+        void DeleteRow(ROW row);
 
         Task UpdateAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
     }
@@ -74,6 +74,11 @@ namespace QueryLite {
 
         private bool ConcurrencyCheck { get; }
 
+        /*
+         *  Note: We use RefCompare<ROW> to compare the ROW by reference rather than equality.
+         *  Otherwise, if a property value on a ROW instance changes, the ROW cannot be found
+         *  in the Dictionary. 
+         */
         private Dictionary<RefCompare<ROW>, RowState> StateLookup { get; set; } = [];
         private List<RowState> Rows { get; set; } = [];
 
@@ -233,7 +238,11 @@ namespace QueryLite {
             return row;
         }
 
-        public void Delete(ROW row) {
+        /// <summary>
+        /// Flags row to be deleted when repository is updated.
+        /// </summary>
+        /// <param name="row"></param>
+        public void DeleteRow(ROW row) {
 
             if(!StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
                 throw new Exception("Row does not exist in data table");

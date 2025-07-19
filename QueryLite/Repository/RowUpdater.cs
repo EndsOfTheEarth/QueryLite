@@ -137,7 +137,11 @@ namespace QueryLite {
 
             StringBuilder sql = new StringBuilder();
 
-            sql.Append("INSERT [").Append(table.TableName).Append("](");
+            sql.Append("INSERT INTO ");
+
+            SqlHelper.AppendEncloseTableName(sql, table);
+
+            sql.Append('(');
 
             for(int index = 0; index < insertColumns.Count; index++) {
 
@@ -145,11 +149,10 @@ namespace QueryLite {
                     sql.Append(',');
                 }
                 ColumnAndSetter<ROW> cs = insertColumns[index];
-
-                sql.Append('[').Append(cs.Column.ColumnName).Append(']');
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
             }
 
-            sql.Append(") VALUES(");
+            sql.Append(")VALUES(");
 
             for(int index = 0; index < insertColumns.Count; index++) {
 
@@ -183,7 +186,11 @@ namespace QueryLite {
 
             StringBuilder sql = new StringBuilder();
 
-            sql.Append("UPDATE [").Append(table.TableName).Append("] SET ");
+            sql.Append("UPDATE ");
+
+            SqlHelper.AppendEncloseTableName(sql, table);
+            
+            sql.Append(" SET ");
 
             int columnCount = 0;
 
@@ -195,8 +202,8 @@ namespace QueryLite {
                     sql.Append(',');
                 }
                 columnCount++;
-
-                sql.Append('[').Append(cs.Column.ColumnName).Append("]=").Append(cs.ParameterName);
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                sql.Append('=').Append(cs.ParameterName);
             }
             GenerateWhereClause(whereClauseColumns, sql);
             return sql.ToString();
@@ -225,15 +232,20 @@ namespace QueryLite {
                 cs.Column.UnderlyingType == typeof(double?);
 
             if(cs.Column.IsNullable) {
-                sql.Append("(([").Append(cs.Column.ColumnName).Append("] IS NULL AND ").Append(cs.ParameterName).Append(" IS NULL) OR (");
+                sql.Append("((");
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                sql.Append(" IS NULL AND ").Append(cs.ParameterName).Append(" IS NULL) OR (");
             }
 
             // Floating point comparison is not reliable so we need to take that into consideration
             if(isFloatingPoint) {
-                sql.Append("ABS([").Append(cs.Column.ColumnName).Append("] - ").Append(cs.ParameterName).Append(") < 0.0000001");   //TODO: Check this value - Maybe different for float and double
+                sql.Append("ABS(");
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                sql.Append('-').Append(cs.ParameterName).Append(") < 0.0000001");   //TODO: Check this value - Maybe different for float and double
             }
             else {
-                sql.Append('[').Append(cs.Column.ColumnName).Append("] = ").Append(cs.ParameterName);
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                sql.Append('=').Append(cs.ParameterName);
             }
 
             if(cs.Column.IsNullable) {
@@ -258,7 +270,9 @@ namespace QueryLite {
 
             StringBuilder sql = new StringBuilder();
 
-            sql.Append("DELETE FROM [").Append(table.TableName).Append("] ");
+            sql.Append("DELETE FROM ");
+            
+            SqlHelper.AppendEncloseTableName(sql, table);
 
             GenerateWhereClause(whereClauseColumns, sql);
 
