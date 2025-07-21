@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace QueryLiteTest.Tests {
 
@@ -158,6 +159,10 @@ namespace QueryLiteTest.Tests {
                     .SelectRows
                     .OrderBy(repository.Table.Int)
                     .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
+
+                foreach(CustomTypesRow x in repository) {
+                    
+                }
 
                 Assert.AreEqual(2, repository.Count);
 

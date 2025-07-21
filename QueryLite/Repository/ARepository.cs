@@ -180,6 +180,14 @@ namespace QueryLite {
             ((RowUpdaterCollection<TABLE, ROW>)collection).SetUpdater(databaseType, rowUpdaters);
         }
 
+        public IEnumerator<ROW> GetEnumerator() {
+
+            for(int index = 0; index < Count; index++) {
+                ROW row = this[index];
+                yield return row;
+            }
+        }
+
         /// <summary>
         /// Number of rows in repository
         /// </summary>
