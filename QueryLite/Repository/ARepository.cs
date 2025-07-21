@@ -27,18 +27,6 @@ using System.Runtime.CompilerServices;
 
 namespace QueryLite {
 
-    //TODO: Load values for auto generated columns
-
-    [AttributeUsage(AttributeTargets.Class)]
-    public class RepositoryAttribute<TABLE> : Attribute where TABLE : ATable {
-
-        public bool ConcurrencyCheck { get; }
-
-        public RepositoryAttribute(bool concurrencyCheck) {
-            ConcurrencyCheck = concurrencyCheck;
-        }
-    }
-
     public interface IRepositoryRow<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
 
         abstract static ROW CloneRow(ROW row);
