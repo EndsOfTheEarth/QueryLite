@@ -27,7 +27,7 @@ using System.Runtime.CompilerServices;
 
 namespace QueryLite {
 
-    public interface IRepositoryRow<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRow<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
 
         abstract static ROW CloneRow(ROW row);
 
@@ -35,7 +35,7 @@ namespace QueryLite {
         abstract static ROW LoadRow(TABLE table, IResultRow resultRow);
     }
 
-    public interface IRepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRepositoryRow<TABLE, ROW>, IEquatable<ROW> {
+    public interface IRepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
 
         /// <summary>
         /// Returns number of rows in repository.
@@ -100,7 +100,7 @@ namespace QueryLite {
         Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
     }
 
-    public abstract class ARepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRepositoryRow<TABLE, ROW>, IEquatable<ROW> {
+    public abstract class ARepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
 
         public TABLE Table { get; }
 

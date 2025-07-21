@@ -528,7 +528,7 @@ namespace QueryLiteTest.Tests {
             public CustomTypesRepository() : base(CustomTypesTable.Instance, concurrencyCheck: false) { }
         }
 
-        public record class CustomTypesRow : IRepositoryRow<CustomTypesTable, CustomTypesRow> {
+        public record class CustomTypesRow : IRow<CustomTypesTable, CustomTypesRow> {
 
             public CustomGuid PreviousCustomGuid { get; set; }
 
