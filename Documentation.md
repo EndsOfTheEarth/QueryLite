@@ -26,7 +26,7 @@
 - [Delete Query](#delete-query)
    - [Delete From Query](#delete-from-query)
 - [Truncate Query](#truncate-query)
-- [Row Repository](#row-repository)
+- [Repository Pattern](#repository-pattern)
 - [Supported Operators](#supported-operators)
 - [String Like Condition](#string-like-condition)
 - [Functions](#functions)
@@ -626,10 +626,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 }
 ```
 
-## Row Repository
+## Repository Pattern
 
-QueryLite can implement the repository pattern for inserting, updating and deleting rows as objects. This is
-achived using a source generator.
+QueryLite can implement a repository pattern for create, read, update and delete actions. This is
+achived by creating a partial row class that is then implemented by a source generator.
 
 Note: If the an exception occurs in the update method or a transaction is rolled back, the repository
 should be discarded as it will likely be in an inconsistant state (Due to it not supporting transaction roll backs).
@@ -638,7 +638,7 @@ This is an example of how to define a row and repository class. The source gener
 class when it sees the `[Repository]` attribute.
 
 ```C#
-[Repository<OrderTable>(concurrencyCheck: false)]
+[Repository<OrderTable>(MatchOn.PrimaryKey)]
 public partial record OrderRow {
 
 }

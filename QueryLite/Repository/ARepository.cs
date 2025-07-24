@@ -100,11 +100,30 @@ namespace QueryLite {
         Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
     }
 
+    /// <summary>
+    /// When updating or deleting a row, what matching method be used to find the record in a table.
+    /// </summary>
+    public enum MatchOn {
+
+        /// <summary>
+        /// Matching on primary key is the most efficient option, but it allows updating of records
+        /// that have changed in the database since loading the row.
+        /// </summary> 
+        PrimaryKey,
+
+        /// <summary>
+        /// Match on all columns is less efficient (produces a larger sql query), and when a record
+        /// has changed in the database since loading, an exception will be thrown as the record was
+        /// not matched / found.
+        /// </summary>
+        AllColumns
+    }
+
     public abstract class ARepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
 
         public TABLE Table { get; }
 
-        private bool ConcurrencyCheck { get; }
+        private MatchOn MatchOn { get; }
 
         /*
          *  Note: We use RefCompare<ROW> to compare the ROW by reference rather than equality.
@@ -117,10 +136,14 @@ namespace QueryLite {
         /// <summary>
         /// ARepository constructor.
         /// </summary>
-        /// <param name="concurrencyCheck">Forces row updates and deletes to compare all column values and fail if they are different or the record is missing.</param>
-        protected ARepository(TABLE table, bool concurrencyCheck) {
+        /// <param name="matchOn">Forces row updates and deletes to compare all column values and fail if they are different or the record is missing.</param>
+        protected ARepository(TABLE table, MatchOn matchOn) {
+
+            if(matchOn != MatchOn.PrimaryKey || matchOn != MatchOn.AllColumns) {
+                throw new ArgumentException($"Invalid {nameof(matchOn)} value. Must be either {MatchOn.PrimaryKey} or {MatchOn.AllColumns}");
+            }
             Table = table;
-            ConcurrencyCheck = concurrencyCheck;
+            MatchOn = matchOn;
         }
 
         private RowUpdater<TABLE, ROW> GetOrBuildRowUpdater(IDatabase database) {
@@ -248,7 +271,7 @@ namespace QueryLite {
 
             List<ColumnAndSetter<ROW>> list = CreateColumnsAndSettersMap(Table);  //Get second set of parameter creators with different parameter names for use in the where clause
 
-            if(ConcurrencyCheck || Table.PrimaryKey == null) {
+            if(MatchOn != MatchOn.PrimaryKey || Table.PrimaryKey == null) {
                 return list;
             }
 

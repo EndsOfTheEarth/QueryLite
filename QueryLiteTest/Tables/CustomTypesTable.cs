@@ -67,8 +67,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-
-    [Repository<CustomTypesTable>(concurrencyCheck: false)]
+    [Repository<CustomTypesTable>(MatchOn.PrimaryKey)]
     public partial record CustomTypesRow {
 
     }
