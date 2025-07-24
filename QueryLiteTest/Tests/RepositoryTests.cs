@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace QueryLiteTest.Tests {
 
@@ -42,7 +41,6 @@ namespace QueryLiteTest.Tests {
             }
         }
 
-
         [TestMethod]
         public void TestRefCompare() {
 
@@ -59,7 +57,7 @@ namespace QueryLiteTest.Tests {
             lookup.Add(refA, rowA);
 
             // Change property on record - This will change the Record.Equals(...) return value
-            rowA.CustomGuid = CustomGuid.ValueOf(Guid.NewGuid());
+            rowA.Guid = CustomGuid.ValueOf(Guid.NewGuid());
 
             RefCompare<CustomTypesRow> refAA = new RefCompare<CustomTypesRow>(rowA);
             int hashAA = refAA.GetHashCode();
@@ -73,7 +71,7 @@ namespace QueryLiteTest.Tests {
 
             CustomTypesRow rowA = GetCustomTypesA();
 
-            CustomTypesRepository repository = new CustomTypesRepository();
+            CustomTypesRowRepository repository = new CustomTypesRowRepository();
 
             { //Test insert
                 repository.AddNewRow(rowA);
@@ -124,9 +122,9 @@ namespace QueryLiteTest.Tests {
             CustomTypesRow rowA = GetCustomTypesA();
             CustomTypesRow rowB = GetCustomTypesB();
 
-            Assert.IsTrue(rowA.CustomInt.Value < rowB.CustomInt.Value); //rowA CustomInt value is used for sorting below. So it needs to be less than rowB for test to work.
+            Assert.IsTrue(rowA.Int.Value < rowB.Int.Value); //rowA CustomInt value is used for sorting below. So it needs to be less than rowB for test to work.
 
-            CustomTypesRepository repository = new CustomTypesRepository();
+            CustomTypesRowRepository repository = new CustomTypesRowRepository();
 
             {   //Test select on empty table
                 await repository.SelectRows.ExecuteAsync(TestDatabase.Database, CancellationToken.None);
@@ -161,7 +159,7 @@ namespace QueryLiteTest.Tests {
                     .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
 
                 foreach(CustomTypesRow x in repository) {
-                    
+
                 }
 
                 Assert.AreEqual(2, repository.Count);
@@ -181,33 +179,33 @@ namespace QueryLiteTest.Tests {
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
 
-                loadedRowA.CustomGuid = CustomGuid.ValueOf(Guid.NewGuid());
-                loadedRowA.CustomShort = CustomShort.ValueOf(44);
-                loadedRowA.CustomInt = CustomInt.ValueOf(3384214);
-                loadedRowA.CustomLong = CustomLong.ValueOf(435234);
-                loadedRowA.CustomString = CustomString.ValueOf(Guid.NewGuid().ToString());
-                loadedRowA.CustomBool = CustomBool.ValueOf(true);
-                loadedRowA.CustomDecimal = CustomDecimal.ValueOf(27652345.67344567m);
-                loadedRowA.CustomDateTime = CustomDateTime.ValueOf(new DateTime(year: 2011, month: 02, day: 20, hour: 07, minute: 03, second: 08));
-                loadedRowA.CustomDateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1991, month: 11, day: 10, hour: 20, minute: 06, second: 02, new TimeSpan(hours: 13, minutes: 00, seconds: 00)));
-                loadedRowA.CustomDateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 2025, month: 07, day: 14));
-                loadedRowA.CustomTimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 02, minute: 05, second: 29));
-                loadedRowA.CustomFloat = CustomFloat.ValueOf(4323.14535f);
-                loadedRowA.CustomDouble = CustomDouble.ValueOf(976547.94356345345d);
+                loadedRowA.Guid = CustomGuid.ValueOf(Guid.NewGuid());
+                loadedRowA.Short = CustomShort.ValueOf(44);
+                loadedRowA.Int = CustomInt.ValueOf(3384214);
+                loadedRowA.Long = CustomLong.ValueOf(435234);
+                loadedRowA.String = CustomString.ValueOf(Guid.NewGuid().ToString());
+                loadedRowA.Bool = CustomBool.ValueOf(true);
+                loadedRowA.Decimal = CustomDecimal.ValueOf(27652345.67344567m);
+                loadedRowA.DateTime = CustomDateTime.ValueOf(new DateTime(year: 2011, month: 02, day: 20, hour: 07, minute: 03, second: 08));
+                loadedRowA.DateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1991, month: 11, day: 10, hour: 20, minute: 06, second: 02, new TimeSpan(hours: 13, minutes: 00, seconds: 00)));
+                loadedRowA.DateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 2025, month: 07, day: 14));
+                loadedRowA.TimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 02, minute: 05, second: 29));
+                loadedRowA.Float = CustomFloat.ValueOf(4323.14535f);
+                loadedRowA.Double = CustomDouble.ValueOf(976547.94356345345d);
 
-                loadedRowA.NCustomGuid = CustomGuid.ValueOf(Guid.NewGuid());
-                loadedRowA.NCustomShort = CustomShort.ValueOf(12);
-                loadedRowA.NCustomInt = CustomInt.ValueOf(1132434);
-                loadedRowA.NCustomLong = CustomLong.ValueOf(92783452345234);
-                loadedRowA.NCustomString = CustomString.ValueOf(Guid.NewGuid().ToString());
-                loadedRowA.NCustomBool = CustomBool.ValueOf(false);
-                loadedRowA.NCustomDecimal = CustomDecimal.ValueOf(23455432.2345234m);
-                loadedRowA.NCustomDateTime = CustomDateTime.ValueOf(new DateTime(year: 2024, month: 8, day: 12, hour: 14, minute: 02, second: 25));
-                loadedRowA.NCustomDateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2024, month: 02, day: 17, hour: 12, minute: 53, second: 14, new TimeSpan(hours: 05, minutes: 0, seconds: 0)));
-                loadedRowA.NCustomDateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 1991, month: 11, day: 29));
-                loadedRowA.NCustomTimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 23, minute: 59, second: 59));
-                loadedRowA.NCustomFloat = CustomFloat.ValueOf(6234563.54325f);
-                loadedRowA.NCustomDouble = CustomDouble.ValueOf(295234523.23452345d);
+                loadedRowA.NGuid = CustomGuid.ValueOf(Guid.NewGuid());
+                loadedRowA.NShort = CustomShort.ValueOf(12);
+                loadedRowA.NInt = CustomInt.ValueOf(1132434);
+                loadedRowA.NLong = CustomLong.ValueOf(92783452345234);
+                loadedRowA.NString = CustomString.ValueOf(Guid.NewGuid().ToString());
+                loadedRowA.NBool = CustomBool.ValueOf(false);
+                loadedRowA.NDecimal = CustomDecimal.ValueOf(23455432.2345234m);
+                loadedRowA.NDateTime = CustomDateTime.ValueOf(new DateTime(year: 2024, month: 8, day: 12, hour: 14, minute: 02, second: 25));
+                loadedRowA.NDateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2024, month: 02, day: 17, hour: 12, minute: 53, second: 14, new TimeSpan(hours: 05, minutes: 0, seconds: 0)));
+                loadedRowA.NDateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 1991, month: 11, day: 29));
+                loadedRowA.NTimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 23, minute: 59, second: 59));
+                loadedRowA.NFloat = CustomFloat.ValueOf(6234563.54325f);
+                loadedRowA.NDouble = CustomDouble.ValueOf(295234523.23452345d);
 
                 Assert.IsTrue(repository.RequiresUpdate(loadedRowA));
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
@@ -263,33 +261,33 @@ namespace QueryLiteTest.Tests {
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
 
-                loadedRowB.CustomGuid = CustomGuid.ValueOf(Guid.NewGuid());
-                loadedRowB.CustomShort = CustomShort.ValueOf(4324);
-                loadedRowB.CustomInt = CustomInt.ValueOf(33842141);
-                loadedRowB.CustomLong = CustomLong.ValueOf(4315234);
-                loadedRowB.CustomString = CustomString.ValueOf(Guid.NewGuid().ToString());
-                loadedRowB.CustomBool = CustomBool.ValueOf(true);
-                loadedRowB.CustomDecimal = CustomDecimal.ValueOf(1231252345.61123144m);
-                loadedRowB.CustomDateTime = CustomDateTime.ValueOf(new DateTime(year: 2012, month: 02, day: 20, hour: 07, minute: 03, second: 08));
-                loadedRowB.CustomDateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1992, month: 11, day: 10, hour: 20, minute: 06, second: 02, new TimeSpan(hours: 13, minutes: 00, seconds: 00)));
-                loadedRowB.CustomDateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 2026, month: 07, day: 14));
-                loadedRowB.CustomTimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 01, minute: 05, second: 29));
-                loadedRowB.CustomFloat = CustomFloat.ValueOf(8923.53454535f);
-                loadedRowB.CustomDouble = CustomDouble.ValueOf(5345634.35634564d);
+                loadedRowB.Guid = CustomGuid.ValueOf(Guid.NewGuid());
+                loadedRowB.Short = CustomShort.ValueOf(4324);
+                loadedRowB.Int = CustomInt.ValueOf(33842141);
+                loadedRowB.Long = CustomLong.ValueOf(4315234);
+                loadedRowB.String = CustomString.ValueOf(Guid.NewGuid().ToString());
+                loadedRowB.Bool = CustomBool.ValueOf(true);
+                loadedRowB.Decimal = CustomDecimal.ValueOf(1231252345.61123144m);
+                loadedRowB.DateTime = CustomDateTime.ValueOf(new DateTime(year: 2012, month: 02, day: 20, hour: 07, minute: 03, second: 08));
+                loadedRowB.DateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1992, month: 11, day: 10, hour: 20, minute: 06, second: 02, new TimeSpan(hours: 13, minutes: 00, seconds: 00)));
+                loadedRowB.DateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 2026, month: 07, day: 14));
+                loadedRowB.TimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 01, minute: 05, second: 29));
+                loadedRowB.Float = CustomFloat.ValueOf(8923.53454535f);
+                loadedRowB.Double = CustomDouble.ValueOf(5345634.35634564d);
 
-                loadedRowB.NCustomGuid = null;
-                loadedRowB.NCustomShort = null;
-                loadedRowB.NCustomInt = null;
-                loadedRowB.NCustomLong = null;
-                loadedRowB.NCustomString = null;
-                loadedRowB.NCustomBool = null;
-                loadedRowB.NCustomDecimal = null;
-                loadedRowB.NCustomDateTime = null;
-                loadedRowB.NCustomDateTimeOffset = null;
-                loadedRowB.NCustomDateOnly = null;
-                loadedRowB.NCustomTimeOnly = null;
-                loadedRowB.NCustomFloat = null;
-                loadedRowB.NCustomDouble = null;
+                loadedRowB.NGuid = null;
+                loadedRowB.NShort = null;
+                loadedRowB.NInt = null;
+                loadedRowB.NLong = null;
+                loadedRowB.NString = null;
+                loadedRowB.NBool = null;
+                loadedRowB.NDecimal = null;
+                loadedRowB.NDateTime = null;
+                loadedRowB.NDateTimeOffset = null;
+                loadedRowB.NDateOnly = null;
+                loadedRowB.NTimeOnly = null;
+                loadedRowB.NFloat = null;
+                loadedRowB.NDouble = null;
 
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
                 Assert.IsTrue(repository.RequiresUpdate(loadedRowB));
@@ -319,19 +317,19 @@ namespace QueryLiteTest.Tests {
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowB));
 
-                loadedRowB.CustomGuid = CustomGuid.ValueOf(Guid.NewGuid());
-                loadedRowB.CustomShort = CustomShort.ValueOf(6324);
-                loadedRowB.CustomInt = CustomInt.ValueOf(3534141);
-                loadedRowB.CustomLong = CustomLong.ValueOf(5324523415234);
-                loadedRowB.CustomString = CustomString.ValueOf(Guid.NewGuid().ToString());
-                loadedRowB.CustomBool = CustomBool.ValueOf(false);
-                loadedRowB.CustomDecimal = CustomDecimal.ValueOf(22345.52345234m);
-                loadedRowB.CustomDateTime = CustomDateTime.ValueOf(new DateTime(year: 2014, month: 02, day: 20, hour: 07, minute: 03, second: 08));
-                loadedRowB.CustomDateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1993, month: 11, day: 10, hour: 20, minute: 06, second: 02, new TimeSpan(hours: 13, minutes: 00, seconds: 00)));
-                loadedRowB.CustomDateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 2027, month: 07, day: 14));
-                loadedRowB.CustomTimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 02, minute: 05, second: 29));
-                loadedRowB.CustomFloat = CustomFloat.ValueOf(18923.253454535f);
-                loadedRowB.CustomDouble = CustomDouble.ValueOf(15345634.3563456445d);
+                loadedRowB.Guid = CustomGuid.ValueOf(Guid.NewGuid());
+                loadedRowB.Short = CustomShort.ValueOf(6324);
+                loadedRowB.Int = CustomInt.ValueOf(3534141);
+                loadedRowB.Long = CustomLong.ValueOf(5324523415234);
+                loadedRowB.String = CustomString.ValueOf(Guid.NewGuid().ToString());
+                loadedRowB.Bool = CustomBool.ValueOf(false);
+                loadedRowB.Decimal = CustomDecimal.ValueOf(22345.52345234m);
+                loadedRowB.DateTime = CustomDateTime.ValueOf(new DateTime(year: 2014, month: 02, day: 20, hour: 07, minute: 03, second: 08));
+                loadedRowB.DateTimeOffset = CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1993, month: 11, day: 10, hour: 20, minute: 06, second: 02, new TimeSpan(hours: 13, minutes: 00, seconds: 00)));
+                loadedRowB.DateOnly = CustomDateOnly.ValueOf(new DateOnly(year: 2027, month: 07, day: 14));
+                loadedRowB.TimeOnly = CustomTimeOnly.ValueOf(new TimeOnly(hour: 02, minute: 05, second: 29));
+                loadedRowB.Float = CustomFloat.ValueOf(18923.253454535f);
+                loadedRowB.Double = CustomDouble.ValueOf(15345634.3563456445d);
 
                 Assert.IsFalse(repository.RequiresUpdate(loadedRowA));
                 Assert.IsTrue(repository.RequiresUpdate(loadedRowB));
@@ -426,310 +424,168 @@ namespace QueryLiteTest.Tests {
 
         private static void CopyValuesTo(CustomTypesRow from, CustomTypesRow to) {
 
-            to.CustomGuid = from.CustomGuid;
-            to.CustomShort = from.CustomShort;
-            to.CustomInt = from.CustomInt;
-            to.CustomLong = from.CustomLong;
-            to.CustomString = from.CustomString;
-            to.CustomBool = from.CustomBool;
-            to.CustomDecimal = from.CustomDecimal;
-            to.CustomDateTime = from.CustomDateTime;
-            to.CustomDateTimeOffset = from.CustomDateTimeOffset;
-            to.CustomDateOnly = from.CustomDateOnly;
-            to.CustomTimeOnly = from.CustomTimeOnly;
-            to.CustomFloat = from.CustomFloat;
-            to.CustomDouble = from.CustomDouble;
+            to.Guid = from.Guid;
+            to.Short = from.Short;
+            to.Int = from.Int;
+            to.Long = from.Long;
+            to.String = from.String;
+            to.Bool = from.Bool;
+            to.Decimal = from.Decimal;
+            to.DateTime = from.DateTime;
+            to.DateTimeOffset = from.DateTimeOffset;
+            to.DateOnly = from.DateOnly;
+            to.TimeOnly = from.TimeOnly;
+            to.Float = from.Float;
+            to.Double = from.Double;
 
-            to.NCustomGuid = from.NCustomGuid;
-            to.NCustomShort = from.NCustomShort;
-            to.NCustomInt = from.NCustomInt;
-            to.NCustomLong = from.NCustomLong;
-            to.NCustomString = from.NCustomString;
-            to.NCustomBool = from.NCustomBool;
-            to.NCustomDecimal = from.NCustomDecimal;
-            to.NCustomDateTime = from.NCustomDateTime;
-            to.NCustomDateTimeOffset = from.NCustomDateTimeOffset;
-            to.NCustomDateOnly = from.NCustomDateOnly;
-            to.NCustomTimeOnly = from.NCustomTimeOnly;
-            to.NCustomFloat = from.NCustomFloat;
-            to.NCustomDouble = from.NCustomDouble;
+            to.NGuid = from.NGuid;
+            to.NShort = from.NShort;
+            to.NInt = from.NInt;
+            to.NLong = from.NLong;
+            to.NString = from.NString;
+            to.NBool = from.NBool;
+            to.NDecimal = from.NDecimal;
+            to.NDateTime = from.NDateTime;
+            to.NDateTimeOffset = from.NDateTimeOffset;
+            to.NDateOnly = from.NDateOnly;
+            to.NTimeOnly = from.NTimeOnly;
+            to.NFloat = from.NFloat;
+            to.NDouble = from.NDouble;
         }
 
         private static async Task AssertCustomTypesAsync(CustomTypesRow row) {
 
-            CustomTypesRepository repository = new CustomTypesRepository();
+            CustomTypesRowRepository repository = new CustomTypesRowRepository();
 
             await repository
                 .SelectRows
-                .Where(repository.Table.Guid == row.CustomGuid)
+                .Where(repository.Table.Guid == row.Guid)
                 .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
 
             Assert.AreEqual(1, repository.Count);
 
             CustomTypesRow values = repository[0];
 
-            Assert.AreEqual(row.CustomGuid, values.CustomGuid);
-            Assert.AreEqual(row.CustomShort, values.CustomShort);
-            Assert.AreEqual(row.CustomInt, values.CustomInt);
-            Assert.AreEqual(row.CustomLong, values.CustomLong);
-            Assert.AreEqual(row.CustomString, values.CustomString);
-            Assert.AreEqual(row.CustomBool, values.CustomBool);
-            Assert.AreEqual(row.CustomDecimal, values.CustomDecimal);
-            Assert.AreEqual(row.CustomDateTime, values.CustomDateTime);
-            Assert.AreEqual(row.CustomDateTimeOffset, values.CustomDateTimeOffset);
-            Assert.AreEqual(row.CustomDateOnly, values.CustomDateOnly);
-            Assert.AreEqual(row.CustomTimeOnly, values.CustomTimeOnly);
-            Assert.AreEqual(row.CustomFloat, values.CustomFloat);
-            Assert.AreEqual(row.CustomDouble, values.CustomDouble);
+            Assert.AreEqual(row.Guid, values.Guid);
+            Assert.AreEqual(row.Short, values.Short);
+            Assert.AreEqual(row.Int, values.Int);
+            Assert.AreEqual(row.Long, values.Long);
+            Assert.AreEqual(row.String, values.String);
+            Assert.AreEqual(row.Bool, values.Bool);
+            Assert.AreEqual(row.Decimal, values.Decimal);
+            Assert.AreEqual(row.DateTime, values.DateTime);
+            Assert.AreEqual(row.DateTimeOffset, values.DateTimeOffset);
+            Assert.AreEqual(row.DateOnly, values.DateOnly);
+            Assert.AreEqual(row.TimeOnly, values.TimeOnly);
+            Assert.AreEqual(row.Float, values.Float);
+            Assert.AreEqual(row.Double, values.Double);
 
-            Assert.AreEqual(row.NCustomGuid, values.NCustomGuid);
-            Assert.AreEqual(row.NCustomShort, values.NCustomShort);
-            Assert.AreEqual(row.NCustomInt, values.NCustomInt);
-            Assert.AreEqual(row.NCustomLong, values.NCustomLong);
-            Assert.AreEqual(row.NCustomString, values.NCustomString);
-            Assert.AreEqual(row.NCustomBool, values.NCustomBool);
-            Assert.AreEqual(row.NCustomDecimal, values.NCustomDecimal);
-            Assert.AreEqual(row.NCustomDateTime, values.NCustomDateTime);
-            Assert.AreEqual(row.NCustomDateTimeOffset, values.NCustomDateTimeOffset);
-            Assert.AreEqual(row.NCustomDateOnly, values.NCustomDateOnly);
-            Assert.AreEqual(row.NCustomTimeOnly, values.NCustomTimeOnly);
-            Assert.AreEqual(row.NCustomFloat, values.NCustomFloat);
-            Assert.AreEqual(row.NCustomDouble, values.NCustomDouble);
+            Assert.AreEqual(row.NGuid, values.NGuid);
+            Assert.AreEqual(row.NShort, values.NShort);
+            Assert.AreEqual(row.NInt, values.NInt);
+            Assert.AreEqual(row.NLong, values.NLong);
+            Assert.AreEqual(row.NString, values.NString);
+            Assert.AreEqual(row.NBool, values.NBool);
+            Assert.AreEqual(row.NDecimal, values.NDecimal);
+            Assert.AreEqual(row.NDateTime, values.NDateTime);
+            Assert.AreEqual(row.NDateTimeOffset, values.NDateTimeOffset);
+            Assert.AreEqual(row.NDateOnly, values.NDateOnly);
+            Assert.AreEqual(row.NTimeOnly, values.NTimeOnly);
+            Assert.AreEqual(row.NFloat, values.NFloat);
+            Assert.AreEqual(row.NDouble, values.NDouble);
         }
 
         private static void AssertAreEqual(CustomTypesRow rowA, CustomTypesRow rowB) {
 
-            Assert.AreEqual(rowA.CustomGuid, rowB.CustomGuid);
-            Assert.AreEqual(rowA.CustomShort, rowB.CustomShort);
-            Assert.AreEqual(rowA.CustomInt, rowB.CustomInt);
-            Assert.AreEqual(rowA.CustomLong, rowB.CustomLong);
-            Assert.AreEqual(rowA.CustomString, rowB.CustomString);
-            Assert.AreEqual(rowA.CustomBool, rowB.CustomBool);
-            Assert.AreEqual(rowA.CustomDecimal, rowB.CustomDecimal);
-            Assert.AreEqual(rowA.CustomDateTime, rowB.CustomDateTime);
-            Assert.AreEqual(rowA.CustomDateTimeOffset, rowB.CustomDateTimeOffset);
-            Assert.AreEqual(rowA.CustomDateOnly, rowB.CustomDateOnly);
-            Assert.AreEqual(rowA.CustomTimeOnly, rowB.CustomTimeOnly);
-            Assert.AreEqual(rowA.CustomFloat, rowB.CustomFloat);
-            Assert.AreEqual(rowA.CustomDouble, rowB.CustomDouble);
+            Assert.AreEqual(rowA.Guid, rowB.Guid);
+            Assert.AreEqual(rowA.Short, rowB.Short);
+            Assert.AreEqual(rowA.Int, rowB.Int);
+            Assert.AreEqual(rowA.Long, rowB.Long);
+            Assert.AreEqual(rowA.String, rowB.String);
+            Assert.AreEqual(rowA.Bool, rowB.Bool);
+            Assert.AreEqual(rowA.Decimal, rowB.Decimal);
+            Assert.AreEqual(rowA.DateTime, rowB.DateTime);
+            Assert.AreEqual(rowA.DateTimeOffset, rowB.DateTimeOffset);
+            Assert.AreEqual(rowA.DateOnly, rowB.DateOnly);
+            Assert.AreEqual(rowA.TimeOnly, rowB.TimeOnly);
+            Assert.AreEqual(rowA.Float, rowB.Float);
+            Assert.AreEqual(rowA.Double, rowB.Double);
 
-            Assert.AreEqual(rowA.NCustomGuid, rowB.NCustomGuid);
-            Assert.AreEqual(rowA.NCustomShort, rowB.NCustomShort);
-            Assert.AreEqual(rowA.NCustomInt, rowB.NCustomInt);
-            Assert.AreEqual(rowA.NCustomLong, rowB.NCustomLong);
-            Assert.AreEqual(rowA.NCustomString, rowB.NCustomString);
-            Assert.AreEqual(rowA.NCustomBool, rowB.NCustomBool);
-            Assert.AreEqual(rowA.NCustomDecimal, rowB.NCustomDecimal);
-            Assert.AreEqual(rowA.NCustomDateTime, rowB.NCustomDateTime);
-            Assert.AreEqual(rowA.NCustomDateTimeOffset, rowB.NCustomDateTimeOffset);
-            Assert.AreEqual(rowA.NCustomDateOnly, rowB.NCustomDateOnly);
-            Assert.AreEqual(rowA.NCustomTimeOnly, rowB.NCustomTimeOnly);
-            Assert.AreEqual(rowA.NCustomFloat, rowB.NCustomFloat);
-            Assert.AreEqual(rowA.NCustomDouble, rowB.NCustomDouble);
-        }
-
-        public sealed class CustomTypesRepository : ARepository<CustomTypesTable, CustomTypesRow>, IRepository<CustomTypesTable, CustomTypesRow> {
-
-            public CustomTypesRepository() : base(CustomTypesTable.Instance, concurrencyCheck: false) { }
-        }
-
-        public record class CustomTypesRow : IRow<CustomTypesTable, CustomTypesRow> {
-
-            public CustomGuid PreviousCustomGuid { get; set; }
-
-            public CustomGuid CustomGuid { get; set; }
-            public CustomShort CustomShort { get; set; }
-            public CustomInt CustomInt { get; set; }
-            public CustomLong CustomLong { get; set; }
-            public CustomString CustomString { get; set; }
-            public CustomBool CustomBool { get; set; }
-            public CustomDecimal CustomDecimal { get; set; }
-            public CustomDateTime CustomDateTime { get; set; }
-            public CustomDateTimeOffset CustomDateTimeOffset { get; set; }
-            public CustomDateOnly CustomDateOnly { get; set; }
-            public CustomTimeOnly CustomTimeOnly { get; set; }
-            public CustomFloat CustomFloat { get; set; }
-            public CustomDouble CustomDouble { get; set; }
-
-            public CustomGuid? NCustomGuid { get; set; }
-            public CustomShort? NCustomShort { get; set; }
-            public CustomInt? NCustomInt { get; set; }
-            public CustomLong? NCustomLong { get; set; }
-            public CustomString? NCustomString { get; set; }
-            public CustomBool? NCustomBool { get; set; }
-            public CustomDecimal? NCustomDecimal { get; set; }
-            public CustomDateTime? NCustomDateTime { get; set; }
-            public CustomDateTimeOffset? NCustomDateTimeOffset { get; set; }
-            public CustomDateOnly? NCustomDateOnly { get; set; }
-            public CustomTimeOnly? NCustomTimeOnly { get; set; }
-            public CustomFloat? NCustomFloat { get; set; }
-            public CustomDouble? NCustomDouble { get; set; }
-
-            public CustomTypesRow(CustomGuid customGuid, CustomShort customShort, CustomInt customInt,
-                               CustomLong customLong, CustomString customString, CustomBool customBool,
-                               CustomDecimal customDecimal, CustomDateTime customDateTime,
-                               CustomDateTimeOffset customDateTimeOffset, CustomDateOnly customDateOnly,
-                               CustomTimeOnly customTimeOnly, CustomFloat customFloat, CustomDouble customDouble,
-                               CustomGuid? nCustomGuid, CustomShort? nCustomShort, CustomInt? nCustomInt,
-                               CustomLong? nCustomLong, CustomString? nCustomString, CustomBool? nCustomBool,
-                               CustomDecimal? nCustomDecimal, CustomDateTime? nCustomDateTime,
-                               CustomDateTimeOffset? nCustomDateTimeOffset, CustomDateOnly? nCustomDateOnly,
-                               CustomTimeOnly? nCustomTimeOnly, CustomFloat? nCustomFloat, CustomDouble? nCustomDouble) {
-                CustomGuid = customGuid;
-                CustomShort = customShort;
-                CustomInt = customInt;
-                CustomLong = customLong;
-                CustomString = customString;
-                CustomBool = customBool;
-                CustomDecimal = customDecimal;
-                CustomDateTime = customDateTime;
-                CustomDateTimeOffset = customDateTimeOffset;
-                CustomDateOnly = customDateOnly;
-                CustomTimeOnly = customTimeOnly;
-                CustomFloat = customFloat;
-                CustomDouble = customDouble;
-                NCustomGuid = nCustomGuid;
-                NCustomShort = nCustomShort;
-                NCustomInt = nCustomInt;
-                NCustomLong = nCustomLong;
-                NCustomString = nCustomString;
-                NCustomBool = nCustomBool;
-                NCustomDecimal = nCustomDecimal;
-                NCustomDateTime = nCustomDateTime;
-                NCustomDateTimeOffset = nCustomDateTimeOffset;
-                NCustomDateOnly = nCustomDateOnly;
-                NCustomTimeOnly = nCustomTimeOnly;
-                NCustomFloat = nCustomFloat;
-                NCustomDouble = nCustomDouble;
-            }
-
-            public static CustomTypesRow CloneRow(CustomTypesRow row) => row with { };
-
-            public static List<(IColumn, Func<CustomTypesRow, object?>)> GetColumnMap(CustomTypesTable table) =>
-            [
-                (table.Guid, (row) => row.CustomGuid),
-                (table.Short, (row) => row.CustomShort),
-                (table.Int, (row) => row.CustomInt),
-                (table.Long, (row) => row.CustomLong),
-                (table.String, (row) => row.CustomString),
-                (table.Bool, (row) => row.CustomBool),
-                (table.Decimal, (row) => row.CustomDecimal),
-                (table.DateTime, (row) => row.CustomDateTime),
-                (table.DateTimeOffset, (row) => row.CustomDateTimeOffset),
-                (table.DateOnly, (row) => row.CustomDateOnly),
-                (table.TimeOnly, (row) => row.CustomTimeOnly),
-                (table.Float, (row) => row.CustomFloat),
-                (table.Double, (row) => row.CustomDouble),
-                (table.NGuid, (row) => row.NCustomGuid),
-                (table.NShort, (row) => row.NCustomShort),
-                (table.NInt, (row) => row.NCustomInt),
-                (table.NLong, (row) => row.NCustomLong),
-                (table.NString, (row) => row.NCustomString),
-                (table.NBool, (row) => row.NCustomBool),
-                (table.NDecimal, (row) => row.NCustomDecimal),
-                (table.NDateTime, (row) => row.NCustomDateTime),
-                (table.NDateTimeOffset, (row) => row.NCustomDateTimeOffset),
-                (table.NDateOnly, (row) => row.NCustomDateOnly),
-                (table.NTimeOnly, (row) => row.NCustomTimeOnly),
-                (table.NFloat, (row) => row.NCustomFloat),
-                (table.NDouble, (row) => row.NCustomDouble)
-            ];
-
-            public static CustomTypesRow LoadRow(CustomTypesTable table, IResultRow resultRow) {
-
-                CustomTypesRow row = new CustomTypesRow(
-
-                    customGuid: resultRow.Get(table.Guid),
-                    customShort: resultRow.Get(table.Short),
-                    customInt: resultRow.Get(table.Int),
-                    customLong: resultRow.Get(table.Long),
-                    customString: resultRow.Get(table.String),
-                    customBool: resultRow.Get(table.Bool),
-                    customDecimal: resultRow.Get(table.Decimal),
-                    customDateTime: resultRow.Get(table.DateTime),
-                    customDateTimeOffset: resultRow.Get(table.DateTimeOffset),
-                    customDateOnly: resultRow.Get(table.DateOnly),
-                    customTimeOnly: resultRow.Get(table.TimeOnly),
-                    customFloat: resultRow.Get(table.Float),
-                    customDouble: resultRow.Get(table.Double),
-                    nCustomGuid: resultRow.Get(table.NGuid),
-                    nCustomShort: resultRow.Get(table.NShort),
-                    nCustomInt: resultRow.Get(table.NInt),
-                    nCustomLong: resultRow.Get(table.NLong),
-                    nCustomString: resultRow.Get(table.NString),
-                    nCustomBool: resultRow.Get(table.NBool),
-                    nCustomDecimal: resultRow.Get(table.NDecimal),
-                    nCustomDateTime: resultRow.Get(table.NDateTime),
-                    nCustomDateTimeOffset: resultRow.Get(table.NDateTimeOffset),
-                    nCustomDateOnly: resultRow.Get(table.NDateOnly),
-                    nCustomTimeOnly: resultRow.Get(table.NTimeOnly),
-                    nCustomFloat: resultRow.Get(table.NFloat),
-                    nCustomDouble: resultRow.Get(table.NDouble)
-                );
-                return row;
-            }
+            Assert.AreEqual(rowA.NGuid, rowB.NGuid);
+            Assert.AreEqual(rowA.NShort, rowB.NShort);
+            Assert.AreEqual(rowA.NInt, rowB.NInt);
+            Assert.AreEqual(rowA.NLong, rowB.NLong);
+            Assert.AreEqual(rowA.NString, rowB.NString);
+            Assert.AreEqual(rowA.NBool, rowB.NBool);
+            Assert.AreEqual(rowA.NDecimal, rowB.NDecimal);
+            Assert.AreEqual(rowA.NDateTime, rowB.NDateTime);
+            Assert.AreEqual(rowA.NDateTimeOffset, rowB.NDateTimeOffset);
+            Assert.AreEqual(rowA.NDateOnly, rowB.NDateOnly);
+            Assert.AreEqual(rowA.NTimeOnly, rowB.NTimeOnly);
+            Assert.AreEqual(rowA.NFloat, rowB.NFloat);
+            Assert.AreEqual(rowA.NDouble, rowB.NDouble);
         }
 
         private static CustomTypesRow GetCustomTypesA() => new CustomTypesRow(
 
-            customGuid: CustomGuid.ValueOf(Guid.NewGuid()),
-            customShort: CustomShort.ValueOf(12),
-            customInt: CustomInt.ValueOf(55),
-            customLong: CustomLong.ValueOf(43213412),
-            customString: CustomString.ValueOf(Guid.NewGuid().ToString()),
-            customBool: CustomBool.ValueOf(true),
-            customDecimal: CustomDecimal.ValueOf(0.22345200m),
-            customDateTime: CustomDateTime.ValueOf(new DateTime(year: 2025, month: 03, day: 10, hour: 15, minute: 01, second: 7)),
-            customDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2024, month: 02, day: 11, hour: 22, minute: 52, second: 12, new TimeSpan(hours: 5, minutes: 0, seconds: 0))),
-            customDateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 2025, month: 05, day: 12)),
-            customTimeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 01, minute: 00, second: 25)),
-            customFloat: CustomFloat.ValueOf(342.1234423f),
-            customDouble: CustomDouble.ValueOf(45152345234.234523452345d),
+            guid: CustomGuid.ValueOf(Guid.NewGuid()),
+            @short: CustomShort.ValueOf(12),
+            @int: CustomInt.ValueOf(55),
+            @long: CustomLong.ValueOf(43213412),
+            @string: CustomString.ValueOf(Guid.NewGuid().ToString()),
+            @bool: CustomBool.ValueOf(true),
+            @decimal: CustomDecimal.ValueOf(0.22345200m),
+            dateTime: CustomDateTime.ValueOf(new DateTime(year: 2025, month: 03, day: 10, hour: 15, minute: 01, second: 7)),
+            dateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2024, month: 02, day: 11, hour: 22, minute: 52, second: 12, new TimeSpan(hours: 5, minutes: 0, seconds: 0))),
+            dateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 2025, month: 05, day: 12)),
+            timeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 01, minute: 00, second: 25)),
+            @float: CustomFloat.ValueOf(342.1234423f),
+            @double: CustomDouble.ValueOf(45152345234.234523452345d),
 
-            nCustomGuid: null,
-            nCustomShort: null,
-            nCustomInt: null,
-            nCustomLong: null,
-            nCustomString: null,
-            nCustomBool: null,
-            nCustomDecimal: null,
-            nCustomDateTime: null,
-            nCustomDateTimeOffset: null,
-            nCustomDateOnly: null,
-            nCustomTimeOnly: null,
-            nCustomFloat: null,
-            nCustomDouble: null
+            nGuid: null,
+            nShort: null,
+            nInt: null,
+            nLong: null,
+            nString: null,
+            nBool: null,
+            nDecimal: null,
+            nDateTime: null,
+            nDateTimeOffset: null,
+            nDateOnly: null,
+            nTimeOnly: null,
+            nFloat: null,
+            nDouble: null
         );
 
         private static CustomTypesRow GetCustomTypesB() => new CustomTypesRow(
 
-            customGuid: CustomGuid.ValueOf(Guid.NewGuid()),
-            customShort: CustomShort.ValueOf(43),
-            customInt: CustomInt.ValueOf(2384234),
-            customLong: CustomLong.ValueOf(6525234),
-            customString: CustomString.ValueOf(Guid.NewGuid().ToString()),
-            customBool: CustomBool.ValueOf(false),
-            customDecimal: CustomDecimal.ValueOf(-23452345.65474567m),
-            customDateTime: CustomDateTime.ValueOf(new DateTime(year: 2010, month: 01, day: 30, hour: 17, minute: 02, second: 7)),
-            customDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1990, month: 10, day: 11, hour: 21, minute: 05, second: 01, new TimeSpan(hours: 12, minutes: 0, seconds: 0))),
-            customDateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 2024, month: 06, day: 13)),
-            customTimeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 04, minute: 01, second: 27)),
-            customFloat: CustomFloat.ValueOf(3.14535f),
-            customDouble: CustomDouble.ValueOf(92345234523.98726452345d),
+            @guid: CustomGuid.ValueOf(Guid.NewGuid()),
+            @short: CustomShort.ValueOf(43),
+            @int: CustomInt.ValueOf(2384234),
+            @long: CustomLong.ValueOf(6525234),
+            @string: CustomString.ValueOf(Guid.NewGuid().ToString()),
+            @bool: CustomBool.ValueOf(false),
+            @decimal: CustomDecimal.ValueOf(-23452345.65474567m),
+            dateTime: CustomDateTime.ValueOf(new DateTime(year: 2010, month: 01, day: 30, hour: 17, minute: 02, second: 7)),
+            dateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 1990, month: 10, day: 11, hour: 21, minute: 05, second: 01, new TimeSpan(hours: 12, minutes: 0, seconds: 0))),
+            dateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 2024, month: 06, day: 13)),
+            timeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 04, minute: 01, second: 27)),
+            @float: CustomFloat.ValueOf(3.14535f),
+            @double: CustomDouble.ValueOf(92345234523.98726452345d),
 
-            nCustomGuid: CustomGuid.ValueOf(Guid.NewGuid()),
-            nCustomShort: CustomShort.ValueOf(11),
-            nCustomInt: CustomInt.ValueOf(3232),
-            nCustomLong: CustomLong.ValueOf(2414564),
-            nCustomString: CustomString.ValueOf(Guid.NewGuid().ToString()),
-            nCustomBool: CustomBool.ValueOf(true),
-            nCustomDecimal: CustomDecimal.ValueOf(2134.45234m),
-            nCustomDateTime: CustomDateTime.ValueOf(new DateTime(year: 2023, month: 9, day: 11, hour: 15, minute: 01, second: 7)),
-            nCustomDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2023, month: 05, day: 12, hour: 10, minute: 52, second: 15, new TimeSpan(hours: 7, minutes: 0, seconds: 0))),
-            nCustomDateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 1990, month: 12, day: 31)),
-            nCustomTimeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 23, minute: 59, second: 59)),
-            nCustomFloat: CustomFloat.ValueOf(123423.2345234f),
-            nCustomDouble: CustomDouble.ValueOf(73458.22347589234d)
+            nGuid: CustomGuid.ValueOf(Guid.NewGuid()),
+            nShort: CustomShort.ValueOf(11),
+            nInt: CustomInt.ValueOf(3232),
+            nLong: CustomLong.ValueOf(2414564),
+            nString: CustomString.ValueOf(Guid.NewGuid().ToString()),
+            nBool: CustomBool.ValueOf(true),
+            nDecimal: CustomDecimal.ValueOf(2134.45234m),
+            nDateTime: CustomDateTime.ValueOf(new DateTime(year: 2023, month: 9, day: 11, hour: 15, minute: 01, second: 7)),
+            nDateTimeOffset: CustomDateTimeOffset.ValueOf(new DateTimeOffset(year: 2023, month: 05, day: 12, hour: 10, minute: 52, second: 15, new TimeSpan(hours: 7, minutes: 0, seconds: 0))),
+            nDateOnly: CustomDateOnly.ValueOf(new DateOnly(year: 1990, month: 12, day: 31)),
+            nTimeOnly: CustomTimeOnly.ValueOf(new TimeOnly(hour: 23, minute: 59, second: 59)),
+            nFloat: CustomFloat.ValueOf(123423.2345234f),
+            nDouble: CustomDouble.ValueOf(73458.22347589234d)
         );
     }
 }

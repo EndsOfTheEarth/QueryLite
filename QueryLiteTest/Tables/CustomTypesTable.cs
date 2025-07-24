@@ -67,6 +67,12 @@ namespace QueryLiteTest.Tables {
         }
     }
 
+
+    [Repository<CustomTypesTable>(concurrencyCheck: false)]
+    public partial record CustomTypesRow {
+
+    }
+
     public readonly struct CustomGuid : ICustomType<Guid, CustomGuid>, IEquatable<CustomGuid> {
 
         public Guid Value { get; }
