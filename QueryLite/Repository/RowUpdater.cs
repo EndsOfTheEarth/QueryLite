@@ -120,9 +120,9 @@ namespace QueryLite {
             }
         }
 
-        public async Task<int> InsertAsync(ROW newRow, Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public async Task<int> InsertAsync(ROW newRow, Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken) {
 
-            using DbCommand command = transaction.CreateCommand(timeout);
+            using DbCommand command = transaction.CreateCommand(timeout ?? TimeoutLevel.ShortInsert);
 
             command.CommandText = InsertSql;
 
@@ -133,9 +133,9 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-        public async Task<int> UpdateAsync(ROW oldRow, ROW newRow, Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public async Task<int> UpdateAsync(ROW oldRow, ROW newRow, Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken) {
 
-            using DbCommand command = transaction.CreateCommand(timeout);
+            using DbCommand command = transaction.CreateCommand(timeout ?? TimeoutLevel.ShortUpdate);
 
             command.CommandText = UpdateSql;
 
@@ -148,9 +148,9 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-        public async Task<int> DeleteAsync(ROW existingRow, Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public async Task<int> DeleteAsync(ROW existingRow, Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken) {
 
-            using DbCommand command = transaction.CreateCommand(timeout);
+            using DbCommand command = transaction.CreateCommand(timeout ?? TimeoutLevel.ShortDelete);
 
             command.CommandText = DeleteSql;
 

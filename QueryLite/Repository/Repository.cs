@@ -24,6 +24,7 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace QueryLite {
 
@@ -82,22 +83,43 @@ namespace QueryLite {
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        Task<int> UpdateAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task<int> UpdateAsync(Transaction transaction, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// Deleted row objects are removed from the repository.
+        /// </summary>
+        Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken);
 
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task<int> PersistInsertsOnlyAsync(Transaction transaction, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken);
 
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken);
 
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task<int> PersistDeletesOnlyAsync(Transaction transaction, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -325,7 +347,14 @@ namespace QueryLite {
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public async Task<int> UpdateAsync(Transaction transaction, CancellationToken cancellationToken) {
+            return await UpdateAsync(transaction, timeout: null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// </summary>
+        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
@@ -366,7 +395,7 @@ namespace QueryLite {
             return totalRowsEffected;
         }
 
-        private static async Task<int> PerformInsertAsync(Transaction transaction, QueryTimeout timeout, List<RowState> newState,
+        private static async Task<int> PerformInsertAsync(Transaction transaction, QueryTimeout? timeout, List<RowState> newState,
                                                     RowUpdater<TABLE, ROW> updater,
                                                     RowState rowState, CancellationToken cancellationToken) {
 
@@ -379,8 +408,7 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-
-        private static async Task<int> PerformUpdateAsync(Transaction transaction, QueryTimeout timeout,
+        private static async Task<int> PerformUpdateAsync(Transaction transaction, QueryTimeout? timeout,
                                                   List<RowState> newState, RowUpdater<TABLE, ROW> updater,
                                                   RowState row, CancellationToken cancellationToken) {
 
@@ -396,7 +424,7 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-        private static async Task<int> PerformDeleteAsync(Transaction transaction, QueryTimeout timeout,
+        private static async Task<int> PerformDeleteAsync(Transaction transaction, QueryTimeout? timeout,
                                                           RowUpdater<TABLE, ROW> updater, RowState row,
                                                           CancellationToken cancellationToken) {
 
@@ -411,7 +439,14 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, CancellationToken cancellationToken) {
+            return await PersistInsertsOnlyAsync(transaction, timeout: null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
@@ -433,7 +468,14 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, CancellationToken cancellationToken) {
+            return await PersistUpdatesOnlyAsync(transaction, timeout: null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
@@ -467,7 +509,14 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, CancellationToken cancellationToken) {
+            return await PersistDeletesOnlyAsync(transaction, timeout: null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
