@@ -24,6 +24,7 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace QueryLite {
 
@@ -622,6 +623,14 @@ namespace QueryLite {
             }
 
             public async Task ExecuteAsync(IDatabase database, CancellationToken cancellationToken) {
+                await ExecuteAsync(database, timeout: TimeoutLevel.ShortSelect, debugName: "", cancellationToken);
+            }
+
+            public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken cancellationToken) {
+                await ExecuteAsync(database, timeout, debugName: "", cancellationToken);
+            }
+
+            public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
 
                 Repository.ClearRows();
 
@@ -632,7 +641,7 @@ namespace QueryLite {
 
                 IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
 
-                QueryResult<ROW> result = await q2.ExecuteAsync(database, cancellationToken);
+                QueryResult<ROW> result = await q2.ExecuteAsync(database, cancellationToken, timeout, debugName: debugName);
 
                 Repository.PopulateWithExistingRows(result.Rows);
             }
@@ -657,6 +666,8 @@ namespace QueryLite {
     public interface IDateTableExecute<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
 
         Task ExecuteAsync(IDatabase database, CancellationToken cancellationToken);
+        Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken cancellationToken);
     }
 
     public class ColumnAndSetter<ROW> {
