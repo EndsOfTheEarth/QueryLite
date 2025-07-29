@@ -368,6 +368,64 @@ namespace QueryLite {
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
+        public int Update(Transaction transaction) {
+            return Update(transaction, timeout: null);
+        }
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// </summary>
+        public int Update(Transaction transaction, QueryTimeout? timeout) {
+            return Update(transaction, timeout, debugName: "");
+        }
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// </summary>
+        public int Update(Transaction transaction, QueryTimeout? timeout, string debugName) {
+
+            List<RowState> newState = new List<RowState>(Rows.Count);
+
+            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database);
+
+            int totalRowsEffected = 0;
+
+            foreach(RowState row in Rows) {
+
+                if(row.State == RowUpdateState.PendingAdd) {
+                    totalRowsEffected += PerformInsert(transaction, timeout, newState, updater, row, debugName: debugName);
+                }
+                else if(row.State == RowUpdateState.Existing) {
+
+                    if(row.OldRow == null) {
+                        throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
+                    }
+
+                    bool rowHasChanged = !row.OldRow.Equals(row.NewRow);
+
+                    if(rowHasChanged) {
+                        totalRowsEffected += PerformUpdate(transaction, timeout, newState, updater, row, debugName: debugName);
+                    }
+                    else {
+                        newState.Add(row);  //Add unchanged row
+                    }
+                }
+                else if(row.State == RowUpdateState.PendingDelete) {
+
+                    if(row.OldRow == null) {
+                        throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
+                    }
+                    totalRowsEffected += PerformDelete(transaction, timeout, updater, row, debugName: debugName);
+                }
+            }
+            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            Rows = newState;
+            return totalRowsEffected;
+        }
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// </summary>
         public async Task<int> UpdateAsync(Transaction transaction, CancellationToken cancellationToken) {
             return await UpdateAsync(transaction, timeout: null, cancellationToken);
         }
@@ -422,6 +480,18 @@ namespace QueryLite {
             return totalRowsEffected;
         }
 
+        private static int PerformInsert(Transaction transaction, QueryTimeout? timeout, List<RowState> newState,
+                                                    RowUpdater<TABLE, ROW> updater, RowState rowState, string debugName) {
+
+            int rowsEffected = updater.Insert(rowState.NewRow, transaction, timeout, debugName);
+
+            if(rowsEffected != 1) {
+                throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
+            }
+            newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(rowState.NewRow), newRow: rowState.NewRow));
+            return rowsEffected;
+        }
+
         private static async Task<int> PerformInsertAsync(Transaction transaction, QueryTimeout? timeout, List<RowState> newState,
                                                     RowUpdater<TABLE, ROW> updater,
                                                     RowState rowState, string debugName, CancellationToken cancellationToken) {
@@ -432,6 +502,21 @@ namespace QueryLite {
                 throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
             }
             newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(rowState.NewRow), newRow: rowState.NewRow));
+            return rowsEffected;
+        }
+
+        private static int PerformUpdate(Transaction transaction, QueryTimeout? timeout,
+                                         List<RowState> newState, RowUpdater<TABLE, ROW> updater, RowState row, string debugName) {
+
+            int rowsEffected = updater.Update(oldRow: row.OldRow!, newRow: row.NewRow, transaction, timeout, debugName: debugName);
+
+            if(rowsEffected == 0) {
+                throw new Exception("Concurrency violation. Maybe row was changed in the database?");
+            }
+            if(rowsEffected != 1) {
+                throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
+            }
+            newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row.NewRow), newRow: row.NewRow));
             return rowsEffected;
         }
 
@@ -451,6 +536,16 @@ namespace QueryLite {
             return rowsEffected;
         }
 
+        private static int PerformDelete(Transaction transaction, QueryTimeout? timeout, RowUpdater<TABLE, ROW> updater, RowState row, string debugName) {
+
+            int rowsEffected = updater.Delete(existingRow: row.OldRow!, transaction, timeout, debugName: debugName);
+
+            if(rowsEffected != 1) {
+                throw new Exception($"Delete failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
+            }
+            return rowsEffected;
+        }
+
         private static async Task<int> PerformDeleteAsync(Transaction transaction, QueryTimeout? timeout,
                                                           RowUpdater<TABLE, ROW> updater, RowState row, string debugName,
                                                           CancellationToken cancellationToken) {
@@ -461,6 +556,42 @@ namespace QueryLite {
                 throw new Exception($"Delete failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
             }
             return rowsEffected;
+        }
+
+        /// <summary>
+        /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistInsertsOnly(Transaction transaction) {
+            return PersistInsertsOnly(transaction, timeout: null);
+        }
+
+        /// <summary>
+        /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistInsertsOnly(Transaction transaction, QueryTimeout? timeout) {
+            return PersistInsertsOnly(transaction, timeout, debugName: "");
+        }
+
+        /// <summary>
+        /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistInsertsOnly(Transaction transaction, QueryTimeout? timeout, string debugName) {
+
+            List<RowState> newState = new List<RowState>(Rows.Count);
+
+            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database);
+
+            int totalRowsEffected = 0;
+
+            foreach(RowState row in Rows) {
+
+                if(row.State == RowUpdateState.PendingAdd) {
+                    totalRowsEffected += PerformInsert(transaction, timeout, newState, updater, row, debugName: debugName);
+                }
+            }
+            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            Rows = newState;
+            return totalRowsEffected;
         }
 
         /// <summary>
@@ -492,6 +623,54 @@ namespace QueryLite {
 
                 if(row.State == RowUpdateState.PendingAdd) {
                     totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, debugName: debugName, cancellationToken);
+                }
+            }
+            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            Rows = newState;
+            return totalRowsEffected;
+        }
+
+        /// <summary>
+        /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistUpdatesOnly(Transaction transaction) {
+            return PersistUpdatesOnly(transaction, timeout: null);
+        }
+
+        /// <summary>
+        /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistUpdatesOnly(Transaction transaction, QueryTimeout? timeout) {
+            return PersistUpdatesOnly(transaction, timeout, debugName: "");
+        }
+
+        /// <summary>
+        /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistUpdatesOnly(Transaction transaction, QueryTimeout? timeout, string debugName) {
+
+            List<RowState> newState = new List<RowState>(Rows.Count);
+
+            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database);
+
+            int totalRowsEffected = 0;
+
+            foreach(RowState row in Rows) {
+
+                if(row.State == RowUpdateState.Existing) {
+
+                    if(row.OldRow == null) {
+                        throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
+                    }
+
+                    bool rowHasChanged = !row.OldRow.Equals(row.NewRow);
+
+                    if(rowHasChanged) {
+                        totalRowsEffected += PerformUpdate(transaction, timeout, newState, updater, row, debugName: debugName);
+                    }
+                    else {
+                        newState.Add(row);  //Add unchanged row
+                    }
                 }
             }
             StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
@@ -546,6 +725,48 @@ namespace QueryLite {
             Rows = newState;
             return totalRowsEffected;
         }
+
+
+        /// <summary>
+        /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistDeletesOnly(Transaction transaction) {
+            return PersistDeletesOnly(transaction, timeout: null);
+        }
+
+        /// <summary>
+        /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistDeletesOnly(Transaction transaction, QueryTimeout? timeout) {
+            return PersistDeletesOnly(transaction, timeout, debugName: "");
+        }
+
+        /// <summary>
+        /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
+        /// </summary>
+        public int PersistDeletesOnly(Transaction transaction, QueryTimeout? timeout, string debugName) {
+
+            List<RowState> newState = new List<RowState>(Rows.Count);
+
+            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database);
+
+            int totalRowsEffected = 0;
+
+            foreach(RowState row in Rows) {
+
+                if(row.State == RowUpdateState.PendingDelete) {
+
+                    if(row.OldRow == null) {
+                        throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
+                    }
+                    totalRowsEffected += PerformDelete(transaction, timeout, updater, row, debugName: debugName);
+                }
+            }
+            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            Rows = newState;
+            return totalRowsEffected;
+        }
+
 
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
@@ -622,6 +843,30 @@ namespace QueryLite {
                 return this;
             }
 
+            public void Execute(IDatabase database) {
+                Execute(database, timeout: TimeoutLevel.ShortSelect, debugName: "");
+            }
+
+            public void Execute(IDatabase database, QueryTimeout timeout) {
+                Execute(database, timeout, debugName: "");
+            }
+
+            public void Execute(IDatabase database, QueryTimeout timeout, string debugName) {
+
+                Repository.ClearRows();
+
+                IGroupBy<ROW> q1 = Query
+                    .Select(row => ROW.LoadRow(Table, row))
+                    .From(Table)
+                    .Where(Condition);
+
+                IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
+
+                QueryResult<ROW> result = q2.Execute(database, timeout, debugName: debugName);
+
+                Repository.PopulateWithExistingRows(result.Rows);
+            }
+
             public async Task ExecuteAsync(IDatabase database, CancellationToken cancellationToken) {
                 await ExecuteAsync(database, timeout: TimeoutLevel.ShortSelect, debugName: "", cancellationToken);
             }
@@ -664,6 +909,10 @@ namespace QueryLite {
         IDateTableExecute<TABLE, ROW> OrderBy(params IOrderByColumn[] columns);
     }
     public interface IDateTableExecute<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+
+        void Execute(IDatabase database);
+        void Execute(IDatabase database, QueryTimeout timeout);
+        void Execute(IDatabase database, QueryTimeout timeout, string debugName);
 
         Task ExecuteAsync(IDatabase database, CancellationToken cancellationToken);
         Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken cancellationToken);

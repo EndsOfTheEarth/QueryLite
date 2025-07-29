@@ -122,7 +122,8 @@ namespace QueryLite {
             }
         }
 
-        public async Task<int> InsertAsync(ROW newRow, Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken cancellationToken) {
+
+        public int Insert(ROW newRow, Transaction transaction, QueryTimeout? timeout, string debugName) {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -161,6 +162,100 @@ namespace QueryLite {
 #endif
 
                 using DbCommand command = transaction.CreateCommand(timeout.Value);
+
+                command.CommandText = InsertSql;
+
+                SetParameters(newRow, command.Parameters, InsertParameterCreators);
+
+                rowsEffected = command.ExecuteNonQuery();
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: transaction.Database,
+                        sql: InsertSql,
+                        rows: 0,
+                        rowsEffected: rowsEffected,
+                        queryType: QueryType.Insert,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: null,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        timeout: timeout.Value,
+                        isAsync: true,
+                        debugName: debugName
+                    );
+                }
+            }
+            catch(Exception ex) {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: transaction.Database,
+                        sql: InsertSql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: QueryType.Insert,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        timeout: timeout.Value,
+                        isAsync: true,
+                        debugName: debugName
+                    );
+                }
+                throw;
+            }
+            return rowsEffected;
+        }
+
+        public async Task<int> InsertAsync(ROW newRow, Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken cancellationToken) {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout is null) {
+                timeout = TimeoutLevel.ShortInsert;
+            }
+            bool hasEvents = Settings.HasEvents;
+
+            long? startTicks = hasEvents ? Stopwatch.GetTimestamp() : null;
+
+            DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
+
+            int rowsEffected;
+
+            try {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryExecutingEvent(
+                        database: transaction.Database,
+                        sql: InsertSql,
+                        queryType: QueryType.Insert,
+                        start: start,
+                        isolationLevel: transaction.IsolationLevel,
+                        transactionId: transaction.TransactionId,
+                        timeout: timeout.Value,
+                        debugName: debugName
+                    );
+                }
+
+#if DEBUG
+                if(Settings.BreakOnInsertQuery && Debugger.IsAttached) {
+                    Debugger.Break();
+                }
+#endif
+
+                using DbCommand command = await transaction.CreateCommandAsync(timeout.Value, cancellationToken);
 
                 command.CommandText = InsertSql;
 
@@ -216,7 +311,7 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-        public async Task<int> UpdateAsync(ROW oldRow, ROW newRow, Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken cancellationToken) {
+        public int Update(ROW oldRow, ROW newRow, Transaction transaction, QueryTimeout? timeout, string debugName) {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -255,6 +350,102 @@ namespace QueryLite {
 #endif
 
                 using DbCommand command = transaction.CreateCommand(timeout.Value);
+
+                command.CommandText = UpdateSql;
+
+                SetParameters(newRow, command.Parameters, UpdateParameterCreators);
+
+                SetParameters(oldRow, command.Parameters, WhereClauseParameterCreators);
+
+                rowsEffected = command.ExecuteNonQuery();
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: transaction.Database,
+                        sql: UpdateSql,
+                        rows: 0,
+                        rowsEffected: rowsEffected,
+                        queryType: QueryType.Update,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: null,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        timeout: timeout.Value,
+                        isAsync: true,
+                        debugName: debugName
+                    );
+                }
+            }
+            catch(Exception ex) {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: transaction.Database,
+                        sql: UpdateSql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: QueryType.Update,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        timeout: timeout.Value,
+                        isAsync: true,
+                        debugName: debugName
+                    );
+                }
+                throw;
+            }
+            return rowsEffected;
+        }
+
+        public async Task<int> UpdateAsync(ROW oldRow, ROW newRow, Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken cancellationToken) {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout is null) {
+                timeout = TimeoutLevel.ShortUpdate;
+            }
+            bool hasEvents = Settings.HasEvents;
+
+            long? startTicks = hasEvents ? Stopwatch.GetTimestamp() : null;
+
+            DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
+
+            int rowsEffected;
+
+            try {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryExecutingEvent(
+                        database: transaction.Database,
+                        sql: UpdateSql,
+                        queryType: QueryType.Update,
+                        start: start,
+                        isolationLevel: transaction.IsolationLevel,
+                        transactionId: transaction.TransactionId,
+                        timeout: timeout.Value,
+                        debugName: debugName
+                    );
+                }
+
+#if DEBUG
+                if(Settings.BreakOnUpdateQuery && Debugger.IsAttached) {
+                    Debugger.Break();
+                }
+#endif
+
+                using DbCommand command = await transaction.CreateCommandAsync(timeout.Value, cancellationToken);
 
                 command.CommandText = UpdateSql;
 
@@ -312,7 +503,7 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-        public async Task<int> DeleteAsync(ROW existingRow, Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken cancellationToken) {
+        public int Delete(ROW existingRow, Transaction transaction, QueryTimeout? timeout, string debugName) {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -351,6 +542,100 @@ namespace QueryLite {
 #endif
 
                 using DbCommand command = transaction.CreateCommand(timeout.Value);
+
+                command.CommandText = DeleteSql;
+
+                SetParameters(existingRow, command.Parameters, WhereClauseParameterCreators);
+
+                rowsEffected = command.ExecuteNonQuery();
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: transaction.Database,
+                        sql: DeleteSql,
+                        rows: 0,
+                        rowsEffected: rowsEffected,
+                        queryType: QueryType.Delete,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: null,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        timeout: timeout.Value,
+                        isAsync: true,
+                        debugName: debugName
+                    );
+                }
+            }
+            catch(Exception ex) {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryPerformedEvent(
+                        database: transaction.Database,
+                        sql: DeleteSql,
+                        rows: 0,
+                        rowsEffected: 0,
+                        queryType: QueryType.Delete,
+                        result: null,
+                        start: start,
+                        end: DateTimeOffset.Now,
+                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                        exception: ex,
+                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        transactionId: transaction?.TransactionId,
+                        timeout: timeout.Value,
+                        isAsync: true,
+                        debugName: debugName
+                    );
+                }
+                throw;
+            }
+            return rowsEffected;
+        }
+
+        public async Task<int> DeleteAsync(ROW existingRow, Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken cancellationToken) {
+
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(debugName);
+
+            if(timeout is null) {
+                timeout = TimeoutLevel.ShortDelete;
+            }
+            bool hasEvents = Settings.HasEvents;
+
+            long? startTicks = hasEvents ? Stopwatch.GetTimestamp() : null;
+
+            DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
+
+            int rowsEffected;
+
+            try {
+
+                if(hasEvents) {
+
+                    Settings.FireQueryExecutingEvent(
+                        database: transaction.Database,
+                        sql: DeleteSql,
+                        queryType: QueryType.Delete,
+                        start: start,
+                        isolationLevel: transaction.IsolationLevel,
+                        transactionId: transaction.TransactionId,
+                        timeout: timeout.Value,
+                        debugName: debugName
+                    );
+                }
+
+#if DEBUG
+                if(Settings.BreakOnDeleteQuery && Debugger.IsAttached) {
+                    Debugger.Break();
+                }
+#endif
+
+                using DbCommand command = await transaction.CreateCommandAsync(timeout.Value, cancellationToken);
 
                 command.CommandText = DeleteSql;
 
