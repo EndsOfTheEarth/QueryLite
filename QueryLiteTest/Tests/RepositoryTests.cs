@@ -81,6 +81,9 @@ namespace QueryLiteTest.Tests {
                     repository.Update(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
+                
+                Assert.IsTrue(rowA.Identifier.Value > 0); //Check auto generated column value is loaded after insert
+
                 AssertNumberOfRowsExists(rows: 1);
                 AssertCustomTypes(rowA);
 
@@ -131,6 +134,9 @@ namespace QueryLiteTest.Tests {
                     await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
+
+                Assert.IsTrue(rowA.Identifier.Value > 0); //Check auto generated column value is loaded after insert
+
                 AssertNumberOfRowsExists(rows: 1);
                 await AssertCustomTypesAsync(rowA);
 
@@ -802,6 +808,7 @@ namespace QueryLiteTest.Tests {
             CustomTypesRow values = repository[0];
 
             Assert.AreEqual(row.Guid, values.Guid);
+            Assert.AreEqual(row.Identifier, values.Identifier);
             Assert.AreEqual(row.Short, values.Short);
             Assert.AreEqual(row.Int, values.Int);
             Assert.AreEqual(row.Long, values.Long);
@@ -844,6 +851,7 @@ namespace QueryLiteTest.Tests {
             CustomTypesRow values = repository[0];
 
             Assert.AreEqual(row.Guid, values.Guid);
+            Assert.AreEqual(row.Identifier, values.Identifier);
             Assert.AreEqual(row.Short, values.Short);
             Assert.AreEqual(row.Int, values.Int);
             Assert.AreEqual(row.Long, values.Long);
@@ -875,6 +883,7 @@ namespace QueryLiteTest.Tests {
         private static void AssertAreEqual(CustomTypesRow rowA, CustomTypesRow rowB) {
 
             Assert.AreEqual(rowA.Guid, rowB.Guid);
+            Assert.AreEqual(rowA.Identifier, rowB.Identifier);
             Assert.AreEqual(rowA.Short, rowB.Short);
             Assert.AreEqual(rowA.Int, rowB.Int);
             Assert.AreEqual(rowA.Long, rowB.Long);
@@ -906,6 +915,7 @@ namespace QueryLiteTest.Tests {
         private static CustomTypesRow GetCustomTypesA() => new CustomTypesRow(
 
             guid: CustomGuid.ValueOf(Guid.NewGuid()),
+            identifier: CustomLong.ValueOf(-1),
             @short: CustomShort.ValueOf(12),
             @int: CustomInt.ValueOf(55),
             @long: CustomLong.ValueOf(43213412),
@@ -937,6 +947,7 @@ namespace QueryLiteTest.Tests {
         private static CustomTypesRow GetCustomTypesB() => new CustomTypesRow(
 
             @guid: CustomGuid.ValueOf(Guid.NewGuid()),
+            identifier: CustomLong.ValueOf(-1),
             @short: CustomShort.ValueOf(43),
             @int: CustomInt.ValueOf(2384234),
             @long: CustomLong.ValueOf(6525234),

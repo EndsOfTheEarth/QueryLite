@@ -24,16 +24,26 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace QueryLite {
 
     public interface IRow<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
 
         abstract static ROW CloneRow(ROW row);
-
-        abstract static List<(IColumn, Func<ROW, object?>)> GetColumnMap(TABLE table);
+        abstract static List<GetSetMap<ROW>> GetColumnMap(TABLE table);
         abstract static ROW LoadRow(TABLE table, IResultRow resultRow);
+    }
+
+    public sealed class GetSetMap<ROW> {
+
+        public GetSetMap(IColumn column, Func<ROW, object?> get, Action<ROW, IResultRow> set) {
+            Column = column;
+            Get = get;
+            Set = set;
+        }
+        public QueryLite.IColumn Column { get; }
+        public Func<ROW, object?> Get { get; }
+        public Action<ROW, QueryLite.IResultRow> Set { get; }
     }
 
     public interface IRepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
@@ -365,7 +375,7 @@ namespace QueryLite {
         }
 
         protected List<ColumnAndSetter<ROW>> CreateColumnsAndSettersMap(TABLE table) {
-            return [.. ROW.GetColumnMap(table).Select(cm => new ColumnAndSetter<ROW>(cm.Item1, cm.Item2))];
+            return [.. ROW.GetColumnMap(table).Select(cm => new ColumnAndSetter<ROW>(cm.Column, cm.Get, cm.Set))];
         }
 
         private List<ColumnAndSetter<ROW>> GetInsertAndUpdateColumnsAndSettersMap() {
@@ -983,13 +993,15 @@ namespace QueryLite {
 
     public class ColumnAndSetter<ROW> {
 
-        public ColumnAndSetter(IColumn column, Func<ROW, object?> setter) {
+        public ColumnAndSetter(IColumn column, Func<ROW, object?> getter, Action<ROW, IResultRow> setter) {
             Column = column;
+            Getter = getter;
             Setter = setter;
         }
         public string? ParameterName { get; internal set; }
         public IColumn Column { get; }
-        public Func<ROW, object?> Setter { get; }
+        public Func<ROW, object?> Getter { get; }
+        public Action<ROW, QueryLite.IResultRow> Setter { get; }
     }
 
     /// <summary>
