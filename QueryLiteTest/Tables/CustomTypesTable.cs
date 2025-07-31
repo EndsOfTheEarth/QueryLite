@@ -1,6 +1,5 @@
 ﻿using QueryLite;
 using System;
-using System.Collections.Generic;
 
 namespace QueryLiteTest.Tables {
 
@@ -62,7 +61,7 @@ namespace QueryLiteTest.Tables {
             NBool = new NullableColumn<CustomBool, bool>(this, columnName: "ctNBool");
             NDecimal = new NullableColumn<CustomDecimal, decimal>(this, columnName: "ctNDecimal");
             NDateTime = new NullableColumn<CustomDateTime, DateTime>(this, columnName: "ctNDateTime");
-            NDateTimeOffset = new NullableColumn<CustomDateTimeOffset, DateTimeOffset>(this, columnName: "ctNDateTimeOffset");  
+            NDateTimeOffset = new NullableColumn<CustomDateTimeOffset, DateTimeOffset>(this, columnName: "ctNDateTimeOffset");
             NDateOnly = new NullableColumn<CustomDateOnly, DateOnly>(this, columnName: "ctNDateOnly");
             NTimeOnly = new NullableColumn<CustomTimeOnly, TimeOnly>(this, columnName: "ctNTimeOnly");
             NFloat = new NullableColumn<CustomFloat, float>(this, columnName: "ctNFloat");
@@ -70,7 +69,7 @@ namespace QueryLiteTest.Tables {
         }
     }
 
-    [Repository<CustomTypesTable>(MatchOn.PrimaryKey)]
+    [Repository<CustomTypesTable>(MatchOn.AllColumns)]
     public partial record CustomTypesRow {
 
     }

@@ -939,6 +939,30 @@ namespace QueryLite {
                 Repository.PopulateWithExistingRows(result.Rows);
             }
 
+            public void Execute(Transaction transaction) {
+                Execute(transaction, timeout: TimeoutLevel.ShortSelect, debugName: "");
+            }
+
+            public void Execute(Transaction transaction, QueryTimeout timeout) {
+                Execute(transaction, timeout, debugName: "");
+            }
+
+            public void Execute(Transaction transaction, QueryTimeout timeout, string debugName) {
+
+                Repository.ClearRows();
+
+                IGroupBy<ROW> q1 = Query
+                    .Select(row => ROW.LoadRow(Table, row))
+                    .From(Table)
+                    .Where(Condition);
+
+                IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
+
+                QueryResult<ROW> result = q2.Execute(transaction, timeout, debugName: debugName);
+
+                Repository.PopulateWithExistingRows(result.Rows);
+            }
+
             public async Task ExecuteAsync(IDatabase database, CancellationToken cancellationToken) {
                 await ExecuteAsync(database, timeout: TimeoutLevel.ShortSelect, debugName: "", cancellationToken);
             }
@@ -959,6 +983,30 @@ namespace QueryLite {
                 IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
 
                 QueryResult<ROW> result = await q2.ExecuteAsync(database, cancellationToken, timeout, debugName: debugName);
+
+                Repository.PopulateWithExistingRows(result.Rows);
+            }
+
+            public async Task ExecuteAsync(Transaction transaction, CancellationToken cancellationToken) {
+                await ExecuteAsync(transaction, timeout: TimeoutLevel.ShortSelect, debugName: "", cancellationToken);
+            }
+
+            public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
+                await ExecuteAsync(transaction, timeout, debugName: "", cancellationToken);
+            }
+
+            public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
+
+                Repository.ClearRows();
+
+                IGroupBy<ROW> q1 = Query
+                    .Select(row => ROW.LoadRow(Table, row))
+                    .From(Table)
+                    .Where(Condition);
+
+                IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
+
+                QueryResult<ROW> result = await q2.ExecuteAsync(transaction, cancellationToken, timeout, debugName: debugName);
 
                 Repository.PopulateWithExistingRows(result.Rows);
             }
@@ -986,9 +1034,17 @@ namespace QueryLite {
         void Execute(IDatabase database, QueryTimeout timeout);
         void Execute(IDatabase database, QueryTimeout timeout, string debugName);
 
+        void Execute(Transaction transaction);
+        void Execute(Transaction transaction, QueryTimeout timeout);
+        void Execute(Transaction transaction, QueryTimeout timeout, string debugName);
+
         Task ExecuteAsync(IDatabase database, CancellationToken cancellationToken);
         Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken cancellationToken);
         Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken cancellationToken);
+
+        Task ExecuteAsync(Transaction transaction, CancellationToken cancellationToken);
+        Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken);
     }
 
     public class ColumnAndSetter<ROW> {
