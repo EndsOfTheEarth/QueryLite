@@ -395,9 +395,9 @@ var result = Query
     .Select(row => row.Get(shipperTable.Id))
     .Distinct
     .From(shipperTable)
-    .Execute(DB.Northwind); 
+    .Execute(DB.Northwind);
 ```
-
+epos
 ## Select TOP Query
 
 Select TOP is supported. In SqlServer this generates the `TOP` syntax and in PostgreSql this generates the `LIMIT` syntax.
@@ -630,6 +630,8 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
 QueryLite can implement a repository pattern for create, read, update and delete actions. This is
 achived by creating a partial row class that is then implemented by a source generator.
+
+Note: Auto generated columns on a row will be populated on the row object after being inserted by the repository.
 
 Note: If the an exception occurs in the update method or a transaction is rolled back, the repository
 should be discarded as it will likely be in an inconsistant state (Due to it not supporting transaction roll backs).
