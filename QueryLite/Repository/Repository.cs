@@ -401,6 +401,20 @@ namespace QueryLite {
             get { return new RepositoryQueryTemplate<TABLE, ROW>(this, Table); }
         }
 
+        /// <summary>
+        /// Throws an exception if the number of rows in the Repository does not equal rows.
+        /// </summary>
+        public void AssertRowCount(int rows) {
+
+            if(rows < 0) {
+                throw new ArgumentException($"{nameof(rows)} must be a positive number. {nameof(rows)} == {rows}");
+            }
+
+            if(Rows.Count != rows) {
+                throw new Exception($"Expected {rows} row{(rows != 1 ? "s" : "")} but {Rows.Count} rows were returned.");
+            }
+        }
+
         internal void ClearRows() {
             StateLookup.Clear();
             Rows.Clear();

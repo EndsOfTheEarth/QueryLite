@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.Utility;
@@ -55,19 +56,19 @@ namespace QueryLiteTest.Tests {
             Settings.UseParameters = false;
         }
 
-        //[TestMethod]
-        //public void BasicWithQueriesAndNoParameters() {
+        [TestMethod]
+        public void BasicWithQueriesAndNoParameters() {
 
-        //    Settings.UseParameters = false;
-        //    AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueries();
-        //}
+            Settings.UseParameters = false;
+            AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueries();
+        }
 
-        //[TestMethod]
-        //public async Task BasicWithQueriesAndNoParametersAsync() {
+        [TestMethod]
+        public async Task BasicWithQueriesAndNoParametersAsync() {
 
-        //    Settings.UseParameters = false;
-        //    await AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueriesAsync();
-        //}
+            Settings.UseParameters = false;
+            await AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueriesAsync();
+        }
 
         [TestMethod]
         public void BasicInsertAndTruncationWithQueries() {
@@ -83,19 +84,19 @@ namespace QueryLiteTest.Tests {
             await AllFieldsRepositoryTest.BasicInsertAndTruncateWithQueriesAsync();
         }
 
-        //[TestMethod]
-        //public void BasicWithQueriesAndParameters() {
+        [TestMethod]
+        public void BasicWithQueriesAndParameters() {
 
-        //    Settings.UseParameters = true;
-        //    AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueries();
-        //}
+            Settings.UseParameters = true;
+            AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueries();
+        }
 
-        //[TestMethod]
-        //public async Task BasicWithQueriesAndParametersAsync() {
+        [TestMethod]
+        public async Task BasicWithQueriesAndParametersAsync() {
 
-        //    Settings.UseParameters = true;
-        //    await AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueriesAsync();
-        //}
+            Settings.UseParameters = true;
+            await AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueriesAsync();
+        }
 
         private static AllTypes GetAllTypes1() {
 
@@ -215,6 +216,10 @@ namespace QueryLiteTest.Tests {
             AllFieldsRepositoryTest.InsertWithQuery(allTypes2);
             AllFieldsRepositoryTest.InsertWithQuery(allTypes3);
 
+            AllFieldsRepositoryTest.JoinQuery(allTypes1);
+            AllFieldsRepositoryTest.JoinQuery(allTypes2);
+            AllFieldsRepositoryTest.JoinQuery(allTypes3);
+
             AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes1);
             AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes2);
             AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes3);
@@ -270,6 +275,10 @@ namespace QueryLiteTest.Tests {
             await InsertWithQueryAsync(allTypes1);
             await InsertWithQueryAsync(allTypes2);
             await InsertWithQueryAsync(allTypes3);
+
+            await AllFieldsRepositoryTest.JoinQueryAsync(allTypes1);
+            await AllFieldsRepositoryTest.JoinQueryAsync(allTypes2);
+            await AllFieldsRepositoryTest.JoinQueryAsync(allTypes3);
 
             AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes1);
             AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes2);
@@ -849,6 +858,52 @@ namespace QueryLiteTest.Tests {
                 AllFieldsRepositoryTest.AssertRowExists(allTypes);
             }
             Assert.AreEqual(beginRowCount, AllFieldsRepositoryTest.GetNumberOfRows());
+        }
+
+        private static void JoinQuery(AllTypes allTypes) {
+
+            AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
+            AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
+            AllTypesTable allTypesTable4 = AllTypesTable.Instance4;
+
+            AllTypesRepository repository = new AllTypesRepository();
+
+            repository.SelectRows
+                .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
+                .Join(allTypesTable2).On(repository.Table.Id == allTypesTable2.Id)
+                .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
+                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new IntKey<AllTypes>(928756923))
+                .Where(allTypesTable3.Id == allTypes.Id)
+                .Execute(TestDatabase.Database);
+
+            Assert.AreEqual(1, repository.Count);
+
+            AllTypesRow row = repository[0];
+
+            AssertRow(row, allTypes);
+        }
+
+        private static async Task JoinQueryAsync(AllTypes allTypes) {
+
+            AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
+            AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
+            AllTypesTable allTypesTable4 = AllTypesTable.Instance4;
+
+            AllTypesRepository repository = new AllTypesRepository();
+
+            await repository.SelectRows
+                .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
+                .Join(allTypesTable2).On(repository.Table.Id == allTypesTable2.Id)
+                .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
+                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new IntKey<AllTypes>(928756923))
+                .Where(allTypesTable3.Id == allTypes.Id)
+                .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
+
+            Assert.AreEqual(1, repository.Count);
+
+            AllTypesRow row = repository[0];
+
+            AssertRow(row, allTypes);
         }
     }
 }
