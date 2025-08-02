@@ -205,40 +205,35 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(row.TimeOnly, allTypes.TimeOnly);
         }
 
-        //private static void BasicInsertUpdateAndDeleteWithQueries() {
+        private static void BasicInsertUpdateAndDeleteWithQueries() {
 
-        //    AllTypes allTypes1 = AllFieldsRepositoryTest.GetAllTypes1();
-        //    AllTypes allTypes2 = AllFieldsRepositoryTest.GetAllTypes1();
-        //    AllTypes allTypes3 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsRepositoryTest.GetAllTypes1();
 
-        //    AllFieldsRepositoryTest.InsertWithQuery(allTypes1);
-        //    AllFieldsRepositoryTest.InsertWithQuery(allTypes2);
-        //    AllFieldsRepositoryTest.InsertWithQuery(allTypes3);
+            AllFieldsRepositoryTest.InsertWithQuery(allTypes1);
+            AllFieldsRepositoryTest.InsertWithQuery(allTypes2);
+            AllFieldsRepositoryTest.InsertWithQuery(allTypes3);
 
-        //    AllFieldsRepositoryTest.JoinQuery(allTypes1);
-        //    AllFieldsRepositoryTest.JoinQuery(allTypes2);
-        //    AllFieldsRepositoryTest.JoinQuery(allTypes3);
+            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes1);
+            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes2);
+            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes3);
 
-        //    AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes1);
-        //    AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes2);
-        //    AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes3);
+            AllFieldsRepositoryTest.UpdateWithQuery(allTypes1);
+            AllFieldsRepositoryTest.UpdateWithQuery(allTypes2);
+            AllFieldsRepositoryTest.UpdateWithQuery(allTypes3);
 
-        //    AllFieldsRepositoryTest.UpdateWithQuery(allTypes1);
-        //    AllFieldsRepositoryTest.UpdateWithQuery(allTypes2);
-        //    AllFieldsRepositoryTest.UpdateWithQuery(allTypes3);
+            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes1);
+            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes2);
+            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes3);
 
-        //    AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes1);
-        //    AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes2);
-        //    AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes3);
+            AllFieldsRepositoryTest.DeleteWithQuery(allTypes1);
+            AllFieldsRepositoryTest.DeleteWithQuery(allTypes2);
 
-        //    AllFieldsRepositoryTest.DeleteWithQuery(allTypes1);
-        //    AllFieldsRepositoryTest.DeleteWithQuery(allTypes2);
-        //    AllFieldsRepositoryTest.DeleteWithQueryReturning(allTypes3);
-
-        //    AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-        //    AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-        //    AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-        //}
+            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
+            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
+            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
+        }
 
         private static void BasicInsertAndTruncateWithQueries() {
 
@@ -266,40 +261,35 @@ namespace QueryLiteTest.Tests {
             await AllFieldsRepositoryTest.TruncateAsync();
         }
 
-        //private static async Task BasicInsertUpdateAndDeleteWithQueriesAsync() {
+        private static async Task BasicInsertUpdateAndDeleteWithQueriesAsync() {
 
-        //    AllTypes allTypes1 = AllFieldsRepositoryTest.GetAllTypes1();
-        //    AllTypes allTypes2 = AllFieldsRepositoryTest.GetAllTypes1();
-        //    AllTypes allTypes3 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes1 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes2 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes3 = AllFieldsRepositoryTest.GetAllTypes1();
 
-        //    await InsertWithQueryAsync(allTypes1);
-        //    await InsertWithQueryAsync(allTypes2);
-        //    await InsertWithQueryAsync(allTypes3);
+            await InsertWithQueryAsync(allTypes1);
+            await InsertWithQueryAsync(allTypes2);
+            await InsertWithQueryAsync(allTypes3);
 
-        //    await AllFieldsRepositoryTest.JoinQueryAsync(allTypes1);
-        //    await AllFieldsRepositoryTest.JoinQueryAsync(allTypes2);
-        //    await AllFieldsRepositoryTest.JoinQueryAsync(allTypes3);
+            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes1);
+            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes2);
+            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes3);
 
-        //    AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes1);
-        //    AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes2);
-        //    AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes3);
+            await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes1);
+            await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes2);
+            await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes3);
 
-        //    await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes1);
-        //    await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes2);
-        //    await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes3);
+            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes1);
+            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes2);
+            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes3);
 
-        //    AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes1);
-        //    AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes2);
-        //    AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes3);
+            await AllFieldsRepositoryTest.DeleteWithQueryAsync(allTypes1);
+            await AllFieldsRepositoryTest.DeleteWithQueryAsync(allTypes2);
 
-        //    await AllFieldsRepositoryTest.DeleteWithQueryAsync(allTypes1);
-        //    await AllFieldsRepositoryTest.DeleteWithQueryAsync(allTypes2);
-        //    await AllFieldsRepositoryTest.DeleteWithQueryReturningAsync(allTypes3);
-
-        //    AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-        //    AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-        //    AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-        //}
+            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
+            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
+            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
+        }
 
         private static void InsertWithQuery(AllTypes allTypes) {
 
@@ -443,582 +433,422 @@ namespace QueryLiteTest.Tests {
             }
         }
 
-        //private static void UpdateWithQuery(AllTypes allTypes) {
-
-        //    Assert.IsTrue(allTypes.Id.IsValid);
-
-        //    allTypes.UpdateValues(
-        //        guid: Guid.NewGuid(),
-        //        @string: "-4at3=🦕_)(*&_(*#(*Kj🐘s734-g*%🦗lf]|][",
-        //        smallInt: 9794,
-        //        @int: 7761843,
-        //        bigInt: 5546328205,
-        //        @decimal: 614.887298m,
-        //        @float: 676832.13291f,
-        //        @double: 552761.997868d,
-        //        boolean: false,
-        //        bytes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        //        dateTime: new DateTime(year: 2023, month: 1, day: 2, hour: 3, minute: 4, second: 5),
-        //        dateTimeOffset: new DateTimeOffset(year: 2030, month: 12, day: 11, hour: 10, minute: 9, second: 8, new TimeSpan(hours: 0, minutes: 0, seconds: 0)),
-        //        @enum: AllTypesEnum.B,
-        //        dateOnly: new DateOnly(year: 1990, month: 1, day: 31),
-        //        timeOnly: new TimeOnly(hour: 12, minute: 14, second: 55, millisecond: 130, microsecond: 999)
-        //    );
-
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-        //        AllTypesTable allTypesTable = AllTypesTable.Instance;
-
-        //        QueryResult<AllTypesInfo> result = Query
-        //            .Update(allTypesTable)
-        //            .Values(values => values
-        //                .Set(allTypesTable.Guid, allTypes.Guid)
-        //                .Set(allTypesTable.String, allTypes.String)
-        //                .Set(allTypesTable.SmallInt, allTypes.SmallInt)
-        //                .Set(allTypesTable.Int, allTypes.Int)
-        //                .Set(allTypesTable.BigInt, allTypes.BigInt)
-        //                .Set(allTypesTable.Decimal, allTypes.Decimal)
-        //                .Set(allTypesTable.Float, allTypes.Float)
-        //                .Set(allTypesTable.Double, allTypes.Double)
-        //                .Set(allTypesTable.Boolean, allTypes.Boolean)
-        //                .Set(allTypesTable.Bytes, allTypes.Bytes)
-        //                .Set(allTypesTable.DateTime, allTypes.DateTime)
-        //                .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
-        //                .Set(allTypesTable.Enum, allTypes.Enum)
-        //                .Set(allTypesTable.DateOnly, allTypes.DateOnly)
-        //                .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
-        //            )
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .Execute(
-        //                result => new AllTypesInfo(result, allTypesTable),
-        //                transaction,
-        //                TimeoutLevel.ShortUpdate
-        //            );
-
-        //        Assert.AreEqual(1, result.RowsEffected);
-        //        Assert.AreEqual(1, result.Rows.Count);
-
-        //        AssertRow(result.Rows[0], allTypes);
-
-        //        transaction.Commit();
-
-        //        AllFieldsRepositoryTest.AssertRowExists(allTypes);
-        //    }
-        //}
-
-        //private static async Task UpdateWithQueryAsync(AllTypes allTypes) {
-
-        //    Assert.IsTrue(allTypes.Id.IsValid);
-
-        //    allTypes.UpdateValues(
-        //        guid: Guid.NewGuid(),
-        //        @string: "🦏-4at3=_)(*&_(🌍*#(*Kjs734💻-g*%lf]|][",
-        //        smallInt: 9794,
-        //        @int: 7761843,
-        //        bigInt: 5546328205,
-        //        @decimal: 614.887298m,
-        //        @float: 676832.13291f,
-        //        @double: 552761.997868d,
-        //        boolean: false,
-        //        bytes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        //        dateTime: new DateTime(year: 2023, month: 1, day: 2, hour: 3, minute: 4, second: 5),
-        //        dateTimeOffset: new DateTimeOffset(year: 2030, month: 12, day: 11, hour: 10, minute: 9, second: 8, new TimeSpan(hours: 0, minutes: 0, seconds: 0)),
-        //        @enum: AllTypesEnum.B,
-        //        dateOnly: new DateOnly(year: 1854, month: 05, day: 27),
-        //        timeOnly: new TimeOnly(hour: 1, minute: 4, second: 5, millisecond: 30, microsecond: 100)
-        //    );
-
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-        //        AllTypesTable allTypesTable = AllTypesTable.Instance;
-
-        //        QueryResult<AllTypesInfo> result = await Query
-        //            .Update(allTypesTable)
-        //            .Values(values => values
-        //                .Set(allTypesTable.Guid, allTypes.Guid)
-        //                .Set(allTypesTable.String, allTypes.String)
-        //                .Set(allTypesTable.SmallInt, allTypes.SmallInt)
-        //                .Set(allTypesTable.Int, allTypes.Int)
-        //                .Set(allTypesTable.BigInt, allTypes.BigInt)
-        //                .Set(allTypesTable.Decimal, allTypes.Decimal)
-        //                .Set(allTypesTable.Float, allTypes.Float)
-        //                .Set(allTypesTable.Double, allTypes.Double)
-        //                .Set(allTypesTable.Boolean, allTypes.Boolean)
-        //                .Set(allTypesTable.Bytes, allTypes.Bytes)
-        //                .Set(allTypesTable.DateTime, allTypes.DateTime)
-        //                .Set(allTypesTable.DateTimeOffset, allTypes.DateTimeOffset)
-        //                .Set(allTypesTable.Enum, allTypes.Enum)
-        //                .Set(allTypesTable.DateOnly, allTypes.DateOnly)
-        //                .Set(allTypesTable.TimeOnly, allTypes.TimeOnly)
-        //            )
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .ExecuteAsync(
-        //                result => new AllTypesInfo(result, allTypesTable),
-        //                transaction,
-        //                cancellationToken: null,
-        //                TimeoutLevel.ShortUpdate
-        //            );
+        private static void UpdateWithQuery(AllTypes allTypes) {
+
+            Assert.IsTrue(allTypes.Id.IsValid);
+
+            allTypes.UpdateValues(
+                guid: Guid.NewGuid(),
+                @string: "-4at3=🦕_)(*&_(*#(*Kj🐘s734-g*%🦗lf]|][",
+                smallInt: 9794,
+                @int: 7761843,
+                bigInt: 5546328205,
+                @decimal: 614.887298m,
+                @float: 676832.13291f,
+                @double: 552761.997868d,
+                boolean: false,
+                bytes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                dateTime: new DateTime(year: 2023, month: 1, day: 2, hour: 3, minute: 4, second: 5),
+                dateTimeOffset: new DateTimeOffset(year: 2030, month: 12, day: 11, hour: 10, minute: 9, second: 8, new TimeSpan(hours: 0, minutes: 0, seconds: 0)),
+                @enum: AllTypesEnum.B,
+                dateOnly: new DateOnly(year: 1990, month: 1, day: 31),
+                timeOnly: new TimeOnly(hour: 12, minute: 14, second: 55, millisecond: 130, microsecond: 999)
+            );
+
+            AllTypesRepository repository = new AllTypesRepository();
+
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                repository.SelectRows
+                    .Where(repository.Table.Id == allTypes.Id)
+                    .Execute(transaction);
+
+                Assert.AreEqual(1, repository.Count);
+
+                AllTypesRow row = repository[0];
+
+                row.Guid = allTypes.Guid;
+                row.String = allTypes.String;
+                row.SmallInt = allTypes.SmallInt;
+                row.Int = allTypes.Int;
+                row.BigInt = allTypes.BigInt;
+                row.Decimal = allTypes.Decimal;
+                row.Float = allTypes.Float;
+                row.Double = allTypes.Double;
+                row.Boolean = allTypes.Boolean;
+                row.Bytes = allTypes.Bytes;
+                row.DateTime = allTypes.DateTime;
+                row.DateTimeOffset = allTypes.DateTimeOffset;
+                row.Enum = allTypes.Enum;
+                row.DateOnly = allTypes.DateOnly;
+                row.TimeOnly = allTypes.TimeOnly;
 
-        //        Assert.AreEqual(1, result.RowsEffected);
-        //        Assert.AreEqual(1, result.Rows.Count);
+                int rowsEffected = repository.Update(transaction);
 
-        //        AssertRow(result.Rows[0], allTypes);
+                Assert.AreEqual(1, rowsEffected);
+                Assert.AreEqual(1, repository.Count);
 
-        //        transaction.Commit();
+                AssertRow(repository[0], allTypes);
 
-        //        await AssertRowExistsAsync(allTypes);
-        //    }
-        //}
+                transaction.Commit();
 
-        //private static void DeleteWithQuery(AllTypes allTypes) {
+                AllFieldsRepositoryTest.AssertRowExists(allTypes);
+            }
+        }
 
-        //    Assert.IsTrue(allTypes.Id.IsValid);
+        private static async Task UpdateWithQueryAsync(AllTypes allTypes) {
 
-        //    int beginRowCount = AllFieldsRepositoryTest.GetNumberOfRows();
+            Assert.IsTrue(allTypes.Id.IsValid);
 
-        //    AllTypesTable allTypesTable = AllTypesTable.Instance;
+            allTypes.UpdateValues(
+                guid: Guid.NewGuid(),
+                @string: "🦏-4at3=_)(*&_(🌍*#(*Kjs734💻-g*%lf]|][",
+                smallInt: 9794,
+                @int: 7761843,
+                bigInt: 5546328205,
+                @decimal: 614.887298m,
+                @float: 676832.13291f,
+                @double: 552761.997868d,
+                boolean: false,
+                bytes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                dateTime: new DateTime(year: 2023, month: 1, day: 2, hour: 3, minute: 4, second: 5),
+                dateTimeOffset: new DateTimeOffset(year: 2030, month: 12, day: 11, hour: 10, minute: 9, second: 8, new TimeSpan(hours: 0, minutes: 0, seconds: 0)),
+                @enum: AllTypesEnum.B,
+                dateOnly: new DateOnly(year: 1854, month: 05, day: 27),
+                timeOnly: new TimeOnly(hour: 1, minute: 4, second: 5, millisecond: 30, microsecond: 100)
+            );
 
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+            AllTypesRepository repository = new AllTypesRepository();
 
-        //        NonQueryResult result = Query
-        //            .Delete(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .Execute(transaction, timeout: TimeoutLevel.ShortDelete);
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-        //        Assert.AreEqual(1, result.RowsEffected);
+                await repository.SelectRows
+                    .Where(repository.Table.Id == allTypes.Id)
+                    .ExecuteAsync(transaction, CancellationToken.None);
 
-        //        transaction.Commit();
-        //    }
+                Assert.AreEqual(1, repository.Count);
 
-        //    {
-        //        COUNT_ALL count = COUNT_ALL.Instance;
+                AllTypesRow row = repository[0];
 
-        //        var result = Query
-        //            .Select(
-        //                result => new {
-        //                    Count = result.Get(count)
-        //                }
-        //            )
-        //            .From(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .Execute(TestDatabase.Database);
+                row.Guid = allTypes.Guid;
+                row.String = allTypes.String;
+                row.SmallInt = allTypes.SmallInt;
+                row.Int = allTypes.Int;
+                row.BigInt = allTypes.BigInt;
+                row.Decimal = allTypes.Decimal;
+                row.Float = allTypes.Float;
+                row.Double = allTypes.Double;
+                row.Boolean = allTypes.Boolean;
+                row.Bytes = allTypes.Bytes;
+                row.DateTime = allTypes.DateTime;
+                row.DateTimeOffset = allTypes.DateTimeOffset;
+                row.Enum = allTypes.Enum;
+                row.DateOnly = allTypes.DateOnly;
+                row.TimeOnly = allTypes.TimeOnly;
 
-        //        Assert.AreEqual(1, result.Rows.Count);
-        //        Assert.AreEqual(0, result.RowsEffected);
+                int rowsEffected = await repository.UpdateAsync(transaction, CancellationToken.None);
 
-        //        int? countValue = result.Rows[0].Count;
+                Assert.AreEqual(1, rowsEffected);
+                Assert.AreEqual(1, repository.Count);
 
-        //        Assert.IsNotNull(countValue);
-        //        Assert.AreEqual(0, countValue!.Value);
-        //    }
-        //    Assert.AreEqual(beginRowCount, AllFieldsRepositoryTest.GetNumberOfRows() + 1);
-        //}
+                AssertRow(repository[0], allTypes);
 
-        //private static void DeleteWithQueryReturning(AllTypes allTypes) {
+                transaction.Commit();
 
-        //    Assert.IsTrue(allTypes.Id.IsValid);
+                await AssertRowExistsAsync(allTypes);
+            }
+        }
 
-        //    int beginRowCount = AllFieldsRepositoryTest.GetNumberOfRows();
+        private static void DeleteWithQuery(AllTypes allTypes) {
 
-        //    AllTypesTable allTypesTable = AllTypesTable.Instance;
+            Assert.IsTrue(allTypes.Id.IsValid);
 
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+            int beginRowCount = AllFieldsRepositoryTest.GetNumberOfRows();
 
-        //        QueryResult<AllTypesInfo> result = Query
-        //            .Delete(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .Execute(
-        //                result => new AllTypesInfo(result, allTypesTable),
-        //                transaction,
-        //                TimeoutLevel.ShortDelete
-        //            );
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-        //        Assert.AreEqual(1, result.RowsEffected);
+                AllTypesRepository repository = new AllTypesRepository();
 
-        //        AllTypesInfo row = result.Rows.First();
+                repository.SelectRows
+                    .Where(repository.Table.Id == allTypes.Id)
+                    .Execute(transaction);
 
-        //        AssertRow(row, allTypes);
+                Assert.AreEqual(1, repository.Count);
 
-        //        transaction.Commit();
-        //    }
+                repository.DeleteRow(repository[0]);
 
-        //    {
-        //        COUNT_ALL count = COUNT_ALL.Instance;
+                int rowsEffected = repository.Update(transaction);
 
-        //        var result = Query
-        //            .Select(
-        //                result => new {
-        //                    Count = result.Get(count)
-        //                }
-        //            )
-        //            .From(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .Execute(TestDatabase.Database);
+                Assert.AreEqual(1, rowsEffected);
 
-        //        Assert.AreEqual(1, result.Rows.Count);
-        //        Assert.AreEqual(0, result.RowsEffected);
+                transaction.Commit();
+            }
 
-        //        int? countValue = result.Rows[0].Count;
+            {
 
-        //        Assert.IsNotNull(countValue);
-        //        Assert.AreEqual(0, countValue!.Value);
-        //    }
-        //    Assert.AreEqual(beginRowCount, AllFieldsRepositoryTest.GetNumberOfRows() + 1);
-        //}
+                AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-        //private static async Task DeleteWithQueryAsync(AllTypes allTypes) {
+                COUNT_ALL count = COUNT_ALL.Instance;
 
-        //    Assert.IsTrue(allTypes.Id.IsValid);
+                var result = Query
+                    .Select(
+                        result => new {
+                            Count = result.Get(count)
+                        }
+                    )
+                    .From(allTypesTable)
+                    .Where(allTypesTable.Id == allTypes.Id)
+                    .Execute(TestDatabase.Database);
 
-        //    int beginRowCount = await AllFieldsRepositoryTest.GetNumberOfRowsAsync();
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
-        //    AllTypesTable allTypesTable = AllTypesTable.Instance;
+                int? countValue = result.Rows[0].Count;
 
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+                Assert.IsNotNull(countValue);
+                Assert.AreEqual(0, countValue!.Value);
+            }
+            Assert.AreEqual(beginRowCount, AllFieldsRepositoryTest.GetNumberOfRows() + 1);
+        }
 
-        //        NonQueryResult result = await Query
-        //            .Delete(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .ExecuteAsync(transaction);
+        private static async Task DeleteWithQueryAsync(AllTypes allTypes) {
 
-        //        Assert.AreEqual(1, result.RowsEffected);
+            Assert.IsTrue(allTypes.Id.IsValid);
 
-        //        transaction.Commit();
-        //    }
+            int beginRowCount = await AllFieldsRepositoryTest.GetNumberOfRowsAsync();
 
-        //    {
-        //        COUNT_ALL count = COUNT_ALL.Instance;
+            AllTypesRepository repository = new AllTypesRepository();
 
-        //        var result = await Query
-        //            .Select(
-        //                result => new {
-        //                    Count = result.Get(count)
-        //                }
-        //            )
-        //            .From(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .ExecuteAsync(TestDatabase.Database);
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-        //        Assert.AreEqual(1, result.Rows.Count);
-        //        Assert.AreEqual(0, result.RowsEffected);
+                await repository.SelectRows
+                    .Where(repository.Table.Id == allTypes.Id)
+                    .ExecuteAsync(transaction, CancellationToken.None);
 
-        //        int? countValue = result.Rows[0].Count;
+                Assert.AreEqual(1, repository.Count);
 
-        //        Assert.IsNotNull(countValue);
-        //        Assert.AreEqual(0, countValue!.Value);
-        //    }
-        //    Assert.AreEqual(beginRowCount, await AllFieldsRepositoryTest.GetNumberOfRowsAsync() + 1);
-        //}
+                repository.DeleteRow(repository[0]);
 
-        //private static async Task DeleteWithQueryReturningAsync(AllTypes allTypes) {
+                int rowsEffected = await repository.UpdateAsync(transaction, CancellationToken.None);
 
-        //    Assert.IsTrue(allTypes.Id.IsValid);
+                Assert.AreEqual(1, rowsEffected);
 
-        //    int beginRowCount = await AllFieldsRepositoryTest.GetNumberOfRowsAsync();
+                transaction.Commit();
+            }
 
-        //    AllTypesTable allTypesTable = AllTypesTable.Instance;
+            {
 
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+                AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-        //        QueryResult<AllTypesInfo> result = await Query
-        //            .Delete(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .ExecuteAsync(
-        //                result => new AllTypesInfo(result, allTypesTable),
-        //                transaction
-        //            );
+                COUNT_ALL count = COUNT_ALL.Instance;
 
-        //        Assert.AreEqual(1, result.RowsEffected);
+                var result = await Query
+                    .Select(
+                        result => new {
+                            Count = result.Get(count)
+                        }
+                    )
+                    .From(allTypesTable)
+                    .Where(allTypesTable.Id == allTypes.Id)
+                    .ExecuteAsync(TestDatabase.Database);
 
-        //        AllTypesInfo row = result.Rows.First();
+                Assert.AreEqual(1, result.Rows.Count);
+                Assert.AreEqual(0, result.RowsEffected);
 
-        //        AssertRow(row, allTypes);
+                int? countValue = result.Rows[0].Count;
 
-        //        transaction.Commit();
-        //    }
+                Assert.IsNotNull(countValue);
+                Assert.AreEqual(0, countValue!.Value);
+            }
+            Assert.AreEqual(beginRowCount, await AllFieldsRepositoryTest.GetNumberOfRowsAsync() + 1);
+        }
 
-        //    {
-        //        COUNT_ALL count = COUNT_ALL.Instance;
+        private static int GetNumberOfRows() {
 
-        //        var result = await Query
-        //            .Select(
-        //                result => new {
-        //                    Count = result.Get(count)
-        //                }
-        //            )
-        //            .From(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .ExecuteAsync(TestDatabase.Database);
+            AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-        //        Assert.AreEqual(1, result.Rows.Count);
-        //        Assert.AreEqual(0, result.RowsEffected);
+            COUNT_ALL count = COUNT_ALL.Instance;
 
-        //        int? countValue = result.Rows[0].Count;
+            var result = Query
+                .Select(
+                    result => new {
+                        Count = result.Get(count)
+                    }
+                )
+                .From(allTypesTable)
+                .Execute(TestDatabase.Database);
 
-        //        Assert.IsNotNull(countValue);
-        //        Assert.AreEqual(0, countValue!.Value);
-        //    }
-        //    Assert.AreEqual(beginRowCount, await AllFieldsRepositoryTest.GetNumberOfRowsAsync() + 1);
-        //}
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
 
-        //private static int GetNumberOfRows() {
+            int? countValue = result.Rows[0].Count;
 
-        //    AllTypesTable allTypesTable = AllTypesTable.Instance;
+            Assert.IsNotNull(countValue);
+            return countValue!.Value;
+        }
 
-        //    COUNT_ALL count = COUNT_ALL.Instance;
+        private static async Task<int> GetNumberOfRowsAsync() {
 
-        //    var result = Query
-        //        .Select(
-        //            result => new {
-        //                Count = result.Get(count)
-        //            }
-        //        )
-        //        .From(allTypesTable)
-        //        .Execute(TestDatabase.Database);
+            AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-        //    Assert.AreEqual(1, result.Rows.Count);
-        //    Assert.AreEqual(0, result.RowsEffected);
+            COUNT_ALL count = COUNT_ALL.Instance;
 
-        //    int? countValue = result.Rows[0].Count;
+            var result = await Query
+                .Select(
+                    result => new {
+                        Count = result.Get(count)
+                    }
+                )
+                .From(allTypesTable)
+                .ExecuteAsync(TestDatabase.Database);
 
-        //    Assert.IsNotNull(countValue);
-        //    return countValue!.Value;
-        //}
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
 
-        //private static async Task<int> GetNumberOfRowsAsync() {
+            int? countValue = result.Rows[0].Count;
 
-        //    AllTypesTable allTypesTable = AllTypesTable.Instance;
+            Assert.IsNotNull(countValue);
+            return countValue!.Value;
+        }
 
-        //    COUNT_ALL count = COUNT_ALL.Instance;
+        private static void InsertWithQueryAndRollback(AllTypes allTypes) {
 
-        //    var result = await Query
-        //        .Select(
-        //            result => new {
-        //                Count = result.Get(count)
-        //            }
-        //        )
-        //        .From(allTypesTable)
-        //        .ExecuteAsync(TestDatabase.Database);
+            Assert.IsFalse(allTypes.Id.IsValid);
 
-        //    Assert.AreEqual(1, result.Rows.Count);
-        //    Assert.AreEqual(0, result.RowsEffected);
+            AllTypesRepository repository = new AllTypesRepository();
 
-        //    int? countValue = result.Rows[0].Count;
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-        //    Assert.IsNotNull(countValue);
-        //    return countValue!.Value;
-        //}
-
-        //private static void JoinQuery(AllTypes allTypes) {
-
-        //    AllTypesTable allTypesTable1 = AllTypesTable.Instance;
-        //    AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
-        //    AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
-        //    AllTypesTable allTypesTable4 = AllTypesTable.Instance4;
-
-        //    var result = Query
-        //        .Select(
-        //            result => new {
-        //                AllTypesRow1 = new AllTypesInfo(result, allTypesTable1),
-        //                AllTypesRow2 = new AllTypesInfo(result, allTypesTable2),
-        //                AllTypesRow3 = new AllTypesInfo(result, allTypesTable3),
-        //                AllTypesRow4 = new AllTypesInfo(result, allTypesTable4),
-        //            }
-        //        )
-        //        .From(allTypesTable1)
-        //        .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
-        //        .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id)
-        //        .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
-        //        .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new IntKey<AllTypes>(928756923))
-        //        .Where(allTypesTable1.Id == allTypes.Id)
-        //        .Option(labelName: "Label 1", SqlServerQueryOption.FORCE_ORDER)
-        //        .Execute(TestDatabase.Database);
+                AllTypesTable table = AllTypesTable.Instance;
 
-        //    Assert.AreEqual(1, result.Rows.Count);
-        //    Assert.AreEqual(0, result.RowsEffected);
+                AllTypesRow row = new AllTypesRow();
+                row.Guid = allTypes.Guid;
+                row.String = allTypes.String;
+                row.SmallInt = allTypes.SmallInt;
+                row.Int = allTypes.Int;
+                row.BigInt = allTypes.BigInt;
+                row.Decimal = allTypes.Decimal;
+                row.Float = allTypes.Float;
+                row.Double = allTypes.Double;
+                row.Boolean = allTypes.Boolean;
+                row.Bytes = allTypes.Bytes;
+                row.DateTime = allTypes.DateTime;
+                row.DateTimeOffset = allTypes.DateTimeOffset;
+                row.Enum = allTypes.Enum;
+                row.DateOnly = allTypes.DateOnly;
+                row.TimeOnly = allTypes.TimeOnly;
 
-        //    AllTypesInfo row1 = result.Rows[0].AllTypesRow1;
-        //    AllTypesInfo row2 = result.Rows[0].AllTypesRow2;
-        //    AllTypesInfo row3 = result.Rows[0].AllTypesRow3;
-        //    AllTypesInfo row4 = result.Rows[0].AllTypesRow4;
+                repository.AddNewRow(row);
 
-        //    AssertRow(row1, allTypes);
-        //    AssertRow(row2, allTypes);
-        //    AssertRow(row3, allTypes);
-        //    Assert.IsFalse(row4.Id.IsValid);
-        //}
+                int rowsEffected = repository.Update(transaction);
 
-        //private static async Task JoinQueryAsync(AllTypes allTypes) {
+                Assert.AreEqual(1, repository.Count);
+                Assert.AreEqual(1, rowsEffected);
 
-        //    AllTypesTable allTypesTable1 = AllTypesTable.Instance;
-        //    AllTypesTable allTypesTable2 = AllTypesTable.Instance2;
-        //    AllTypesTable allTypesTable3 = AllTypesTable.Instance3;
-
-        //    var result = await Query
-        //        .Select(
-        //            result => new {
-        //                AllTypesRow1 = new AllTypesInfo(result, allTypesTable1),
-        //                AllTypesRow2 = new AllTypesInfo(result, allTypesTable2),
-        //                AllTypesRow3 = new AllTypesInfo(result, allTypesTable3)
-        //            }
-        //        )
-        //        .From(allTypesTable1)
-        //        .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id)
-        //        .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
-        //        .Where(allTypesTable1.Id == allTypes.Id)
-        //        .ExecuteAsync(TestDatabase.Database);
-
-        //    Assert.AreEqual(1, result.Rows.Count);
-        //    Assert.AreEqual(0, result.RowsEffected);
-
-        //    AllTypesInfo row1 = result.Rows[0].AllTypesRow1;
-        //    AllTypesInfo row2 = result.Rows[0].AllTypesRow2;
-        //    AllTypesInfo row3 = result.Rows[0].AllTypesRow3;
-
-        //    AssertRow(row1, allTypes);
-        //    AssertRow(row2, allTypes);
-        //    AssertRow(row3, allTypes);
-        //}
-
-        //private static void InsertWithQueryAndRollback(AllTypes allTypes) {
-
-        //    Assert.IsFalse(allTypes.Id.IsValid);
-
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-        //        AllTypesTable table = AllTypesTable.Instance;
-
-        //        var result = Query.Insert(table)
-        //            .Values(values => values
-        //                .Set(table.Guid, allTypes.Guid)
-        //                .Set(table.String, allTypes.String)
-        //                .Set(table.SmallInt, allTypes.SmallInt)
-        //                .Set(table.Int, allTypes.Int)
-        //                .Set(table.BigInt, allTypes.BigInt)
-        //                .Set(table.Decimal, allTypes.Decimal)
-        //                .Set(table.Float, allTypes.Float)
-        //                .Set(table.Double, allTypes.Double)
-        //                .Set(table.Boolean, allTypes.Boolean)
-        //                .Set(table.Bytes, allTypes.Bytes)
-        //                .Set(table.DateTime, allTypes.DateTime)
-        //                .Set(table.DateTimeOffset, allTypes.DateTimeOffset)
-        //                .Set(table.Enum, allTypes.Enum)
-        //                .Set(table.DateOnly, allTypes.DateOnly)
-        //                .Set(table.TimeOnly, allTypes.TimeOnly)
-        //            )
-        //            .Execute(
-        //                result => new {
-        //                    AllTypesRow = new AllTypesInfo(result, table)
-        //                },
-        //                transaction
-        //            );
-
-        //        Assert.AreEqual(1, result.Rows.Count);
-        //        Assert.AreEqual(1, result.RowsEffected);
-
-        //        allTypes.Id = result.Rows[0].AllTypesRow.Id;
-
-        //        AssertRow(result.Rows[0].AllTypesRow, allTypes);
-
-        //        Assert.IsTrue(allTypes.Id.IsValid);
-
-        //        AllFieldsRepositoryTest.AssertRowExists(allTypes, transaction);
-
-        //        transaction.Rollback();
-
-        //        AllFieldsRepositoryTest.AssertRowDoesNotExists(allTypes);
-
-        //        allTypes.Id = IntKey<AllTypes>.NotSet;
-        //    }
-        //}
-
-        //private static void UpdateWithQueryAndRollback(AllTypes initialAllTypes) {
-
-        //    Assert.IsTrue(initialAllTypes.Id.IsValid);
-
-        //    AllTypes newAllTypes = new AllTypes(
-        //        id: initialAllTypes.Id,
-        //        guid: Guid.NewGuid(),
-        //        @string: "F89&sad💾^&%$Djadsa",
-        //        smallInt: 1594,
-        //        @int: 7742143,
-        //        bigInt: 55461234205,
-        //        @decimal: 6324.843298m,
-        //        @float: 612342.142391f,
-        //        @double: 554231.942368d,
-        //        boolean: false,
-        //        bytes: [5, 99, 3, 6, 5, 4, 7, 3, 1, 10],
-        //        dateTime: new DateTime(year: 2019, month: 11, day: 12, hour: 13, minute: 14, second: 15),
-        //        dateTimeOffset: new DateTimeOffset(year: 2025, month: 11, day: 10, hour: 1, minute: 7, second: 5, new TimeSpan(hours: 3, minutes: 0, seconds: 0)),
-        //        @enum: AllTypesEnum.C,
-        //        dateOnly: new DateOnly(year: 9999, month: 12, day: 31),
-        //        timeOnly: new TimeOnly(hour: 9, minute: 59, second: 1, millisecond: 770, microsecond: 11)
-        //    );
-
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-        //        AllTypesTable allTypesTable = AllTypesTable.Instance;
-
-        //        QueryResult<AllTypesInfo> result = Query
-        //            .Update(allTypesTable)
-        //            .Values(values => values
-        //                .Set(allTypesTable.Guid, newAllTypes.Guid)
-        //                .Set(allTypesTable.String, newAllTypes.String)
-        //                .Set(allTypesTable.SmallInt, newAllTypes.SmallInt)
-        //                .Set(allTypesTable.Int, newAllTypes.Int)
-        //                .Set(allTypesTable.BigInt, newAllTypes.BigInt)
-        //                .Set(allTypesTable.Decimal, newAllTypes.Decimal)
-        //                .Set(allTypesTable.Float, newAllTypes.Float)
-        //                .Set(allTypesTable.Double, newAllTypes.Double)
-        //                .Set(allTypesTable.Boolean, newAllTypes.Boolean)
-        //                .Set(allTypesTable.Bytes, newAllTypes.Bytes)
-        //                .Set(allTypesTable.DateTime, newAllTypes.DateTime)
-        //                .Set(allTypesTable.DateTimeOffset, newAllTypes.DateTimeOffset)
-        //                .Set(allTypesTable.Enum, newAllTypes.Enum)
-        //                .Set(allTypesTable.DateOnly, newAllTypes.DateOnly)
-        //                .Set(allTypesTable.TimeOnly, newAllTypes.TimeOnly)
-        //            )
-        //            .Where(allTypesTable.Id == newAllTypes.Id)
-        //            .Execute(
-        //                updated => new AllTypesInfo(updated, allTypesTable),
-        //                transaction
-        //            );
-
-        //        Assert.AreEqual(1, result.RowsEffected);
-        //        Assert.AreEqual(1, result.Rows.Count);
-
-        //        AssertRow(result.Rows[0], newAllTypes);
-        //        AllFieldsRepositoryTest.AssertRowExists(newAllTypes, transaction);
-
-        //        transaction.Rollback();
-        //        AllFieldsRepositoryTest.AssertRowExists(initialAllTypes);   //Assert initial values
-        //    }
-        //}
-
-        //private static void DeleteWithQueryAndRollback(AllTypes allTypes) {
-
-        //    Assert.IsTrue(allTypes.Id.IsValid);
-
-        //    int beginRowCount = AllFieldsRepositoryTest.GetNumberOfRows();
-
-        //    AllTypesTable allTypesTable = AllTypesTable.Instance;
-
-        //    using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-        //        NonQueryResult result = Query
-        //            .Delete(allTypesTable)
-        //            .Where(allTypesTable.Id == allTypes.Id)
-        //            .Execute(transaction, TimeoutLevel.ShortDelete);
-
-        //        Assert.AreEqual(1, result.RowsEffected);
-
-        //        AllFieldsRepositoryTest.AssertRowDoesNotExists(allTypes, transaction);
-
-        //        transaction.Rollback();
-
-        //        AllFieldsRepositoryTest.AssertRowExists(allTypes);
-        //    }
-        //    Assert.AreEqual(beginRowCount, AllFieldsRepositoryTest.GetNumberOfRows());
-        //}
+                allTypes.Id = repository[0].Id;
+
+                AssertRow(repository[0], allTypes);
+
+                Assert.IsTrue(allTypes.Id.IsValid);
+
+                AllFieldsRepositoryTest.AssertRowExists(allTypes, transaction);
+
+                transaction.Rollback();
+
+                AllFieldsRepositoryTest.AssertRowDoesNotExists(allTypes);
+
+                allTypes.Id = IntKey<AllTypes>.NotSet;
+            }
+        }
+
+        private static void UpdateWithQueryAndRollback(AllTypes initialAllTypes) {
+
+            Assert.IsTrue(initialAllTypes.Id.IsValid);
+
+            AllTypes newAllTypes = new AllTypes(
+                id: initialAllTypes.Id,
+                guid: Guid.NewGuid(),
+                @string: "F89&sad💾^&%$Djadsa",
+                smallInt: 1594,
+                @int: 7742143,
+                bigInt: 55461234205,
+                @decimal: 6324.843298m,
+                @float: 612342.142391f,
+                @double: 554231.942368d,
+                boolean: false,
+                bytes: [5, 99, 3, 6, 5, 4, 7, 3, 1, 10],
+                dateTime: new DateTime(year: 2019, month: 11, day: 12, hour: 13, minute: 14, second: 15),
+                dateTimeOffset: new DateTimeOffset(year: 2025, month: 11, day: 10, hour: 1, minute: 7, second: 5, new TimeSpan(hours: 3, minutes: 0, seconds: 0)),
+                @enum: AllTypesEnum.C,
+                dateOnly: new DateOnly(year: 9999, month: 12, day: 31),
+                timeOnly: new TimeOnly(hour: 9, minute: 59, second: 1, millisecond: 770, microsecond: 11)
+            );
+
+            AllTypesRepository repository = new AllTypesRepository();
+
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                repository.SelectRows
+                    .Where(repository.Table.Id == newAllTypes.Id)
+                    .Execute(transaction);
+
+                Assert.AreEqual(1, repository.Count);
+
+                AllTypesRow row = repository[0];
+
+                row.Guid = newAllTypes.Guid;
+                row.String = newAllTypes.String;
+                row.SmallInt = newAllTypes.SmallInt;
+                row.Int = newAllTypes.Int;
+                row.BigInt = newAllTypes.BigInt;
+                row.Decimal = newAllTypes.Decimal;
+                row.Float = newAllTypes.Float;
+                row.Double = newAllTypes.Double;
+                row.Boolean = newAllTypes.Boolean;
+                row.Bytes = newAllTypes.Bytes;
+                row.DateTime = newAllTypes.DateTime;
+                row.DateTimeOffset = newAllTypes.DateTimeOffset;
+                row.Enum = newAllTypes.Enum;
+                row.DateOnly = newAllTypes.DateOnly;
+                row.TimeOnly = newAllTypes.TimeOnly;
+
+                int rowsEffected = repository.Update(transaction);
+
+                Assert.AreEqual(1, rowsEffected);
+                Assert.AreEqual(1, repository.Count);
+
+                AssertRow(repository[0], newAllTypes);
+                AllFieldsRepositoryTest.AssertRowExists(newAllTypes, transaction);
+
+                transaction.Rollback();
+                AllFieldsRepositoryTest.AssertRowExists(initialAllTypes);   //Assert initial values
+            }
+        }
+
+        private static void DeleteWithQueryAndRollback(AllTypes allTypes) {
+
+            Assert.IsTrue(allTypes.Id.IsValid);
+
+            int beginRowCount = AllFieldsRepositoryTest.GetNumberOfRows();
+
+            AllTypesTable allTypesTable = AllTypesTable.Instance;
+
+            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+                NonQueryResult result = Query
+                    .Delete(allTypesTable)
+                    .Where(allTypesTable.Id == allTypes.Id)
+                    .Execute(transaction, TimeoutLevel.ShortDelete);
+
+                Assert.AreEqual(1, result.RowsEffected);
+
+                AllFieldsRepositoryTest.AssertRowDoesNotExists(allTypes, transaction);
+
+                transaction.Rollback();
+
+                AllFieldsRepositoryTest.AssertRowExists(allTypes);
+            }
+            Assert.AreEqual(beginRowCount, AllFieldsRepositoryTest.GetNumberOfRows());
+        }
     }
 }
