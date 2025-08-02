@@ -62,11 +62,21 @@ namespace QueryLite.Repository {
 
     public interface IRepositoryWhere<TABLE, ROW> : IRepositoryOrderBy<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
 
+        /// <summary>
+        /// Where condition clause
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
         IRepositoryOrderBy<TABLE, ROW> Where(ICondition? condition);
     }
 
     public interface IRepositoryOrderBy<TABLE, ROW> : IRepositoryFor<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
 
+        /// <summary>
+        /// Order by clause
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <returns></returns>
         IRepositoryFor<TABLE, ROW> OrderBy(params IOrderByColumn[] columns);
     }
 
