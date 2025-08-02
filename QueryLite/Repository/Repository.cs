@@ -72,7 +72,7 @@ namespace QueryLite {
         /// <summary>
         /// Select rows from database.
         /// </summary>
-        IDataTableWhere<TABLE, ROW> SelectRows { get; }
+        IRepositoryWith<TABLE, ROW> SelectRows { get; }
 
         /// <summary>
         /// Populate repository with rows that already exist in the database and are unchanged.
@@ -396,8 +396,8 @@ namespace QueryLite {
             return [.. Table.PrimaryKey.Columns.Select(pkColumn => lookup[pkColumn.ColumnName])];
         }
 
-        public IDataTableWhere<TABLE, ROW> SelectRows {
-            get { return new DataTableQueryTemplate(this, Table); }
+        public IRepositoryWith<TABLE, ROW> SelectRows {
+            get { return new RepositoryQueryTemplate(this, Table); }
         }
 
         protected void ClearRows() {
@@ -892,26 +892,50 @@ namespace QueryLite {
             public ROW NewRow { get; set; }
         }
 
-        protected class DataTableQueryTemplate : IDataTableWhere<TABLE, ROW>, IDataTableOrderBy<TABLE, ROW>, IDateTableExecute<TABLE, ROW> {
+        protected class RepositoryQueryTemplate : IRepositoryWith<TABLE, ROW>, IRepositoryWhere<TABLE, ROW>, IRepositoryOrderBy<TABLE, ROW>,
+                                                  IRepositoryFor<TABLE, ROW>, IRepositoryExecute<TABLE, ROW> {
 
             private ARepository<TABLE, ROW> Repository { get; }
             private TABLE Table { get; }
 
-            public DataTableQueryTemplate(ARepository<TABLE, ROW> repository, TABLE table) {
+            public RepositoryQueryTemplate(ARepository<TABLE, ROW> repository, TABLE table) {
                 Repository = repository;
                 Table = table;
             }
 
             public ICondition? Condition { get; private set; }
             public IOrderByColumn[]? OrderByColumns { get; private set; }
+            public SqlServerTableHint[]? Hints { get; private set; }
 
-            public IDataTableOrderBy<TABLE, ROW> Where(ICondition? condition) {
+            public ForType? ForType { get; internal set; } = null;
+            public ITable[]? OfTables { get; internal set; } = null;
+            public WaitType? WaitType { get; internal set; } = null;
+
+            public IRepositoryWhere<TABLE, ROW> With(params SqlServerTableHint[] hints) {
+                ArgumentNullException.ThrowIfNull(hints);
+                Hints = hints;
+                return this;
+            }
+
+            public IRepositoryOrderBy<TABLE, ROW> Where(ICondition? condition) {
                 Condition = condition;
                 return this;
             }
 
-            public IDateTableExecute<TABLE, ROW> OrderBy(params IOrderByColumn[] columns) {
+            public IRepositoryFor<TABLE, ROW> OrderBy(params IOrderByColumn[] columns) {
+                ArgumentNullException.ThrowIfNull(columns);
                 OrderByColumns = columns;
+                return this;
+            }
+
+            public IRepositoryExecute<TABLE, ROW> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
+
+                ArgumentNullException.ThrowIfNull(ofTables);
+
+                ForType = forType;
+                OfTables = ofTables;
+                WaitType = waitType;
+
                 return this;
             }
 
@@ -925,16 +949,29 @@ namespace QueryLite {
 
             public void Execute(IDatabase database, QueryTimeout timeout, string debugName) {
 
+                ArgumentNullException.ThrowIfNull(database);
+
                 Repository.ClearRows();
 
-                IGroupBy<ROW> q1 = Query
+                IHint<ROW> q1 = Query
                     .Select(row => ROW.LoadRow(Table, row))
-                    .From(Table)
-                    .Where(Condition);
+                    .From(Table);
 
-                IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
+                IGroupBy<ROW> q2;
 
-                QueryResult<ROW> result = q2.Execute(database, timeout, debugName: debugName);
+                if(Hints is not null) {
+                    q2 = q1.With(Hints)
+                        .Where(Condition);
+                }
+                else {
+                    q2 = q1.Where(Condition);
+                }
+
+                IFor<ROW> q3 = OrderByColumns != null ? q2.OrderBy(OrderByColumns) : q2;
+
+                IExecute<ROW> q4 = ForType is not null ? q3.FOR(ForType.Value, OfTables!, WaitType!.Value) : q3;
+
+                QueryResult<ROW> result = q4.Execute(database, timeout, debugName: debugName);
 
                 Repository.PopulateWithExistingRows(result.Rows);
             }
@@ -949,16 +986,29 @@ namespace QueryLite {
 
             public void Execute(Transaction transaction, QueryTimeout timeout, string debugName) {
 
+                ArgumentNullException.ThrowIfNull(transaction);
+
                 Repository.ClearRows();
 
-                IGroupBy<ROW> q1 = Query
+                IHint<ROW> q1 = Query
                     .Select(row => ROW.LoadRow(Table, row))
-                    .From(Table)
-                    .Where(Condition);
+                    .From(Table);
 
-                IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
+                IGroupBy<ROW> q2;
 
-                QueryResult<ROW> result = q2.Execute(transaction, timeout, debugName: debugName);
+                if(Hints is not null) {
+                    q2 = q1.With(Hints)
+                        .Where(Condition);
+                }
+                else {
+                    q2 = q1.Where(Condition);
+                }
+
+                IFor<ROW> q3 = OrderByColumns != null ? q2.OrderBy(OrderByColumns) : q2;
+
+                IExecute<ROW> q4 = ForType is not null ? q3.FOR(ForType.Value, OfTables!, WaitType!.Value) : q3;
+
+                QueryResult<ROW> result = q4.Execute(transaction, timeout, debugName: debugName);
 
                 Repository.PopulateWithExistingRows(result.Rows);
             }
@@ -973,16 +1023,29 @@ namespace QueryLite {
 
             public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
 
+                ArgumentNullException.ThrowIfNull(database);
+
                 Repository.ClearRows();
 
-                IGroupBy<ROW> q1 = Query
+                IHint<ROW> q1 = Query
                     .Select(row => ROW.LoadRow(Table, row))
-                    .From(Table)
-                    .Where(Condition);
+                    .From(Table);
 
-                IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
+                IGroupBy<ROW> q2;
 
-                QueryResult<ROW> result = await q2.ExecuteAsync(database, cancellationToken, timeout, debugName: debugName);
+                if(Hints is not null) {
+                    q2 = q1.With(Hints)
+                        .Where(Condition);
+                }
+                else {
+                    q2 = q1.Where(Condition);
+                }
+
+                IFor<ROW> q3 = OrderByColumns != null ? q2.OrderBy(OrderByColumns) : q2;
+
+                IExecute<ROW> q4 = ForType is not null ? q3.FOR(ForType.Value, OfTables!, WaitType!.Value) : q3;
+
+                QueryResult<ROW> result = await q4.ExecuteAsync(database, cancellationToken, timeout, debugName: debugName);
 
                 Repository.PopulateWithExistingRows(result.Rows);
             }
@@ -997,16 +1060,29 @@ namespace QueryLite {
 
             public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
 
+                ArgumentNullException.ThrowIfNull(transaction);
+
                 Repository.ClearRows();
 
-                IGroupBy<ROW> q1 = Query
+                IHint<ROW> q1 = Query
                     .Select(row => ROW.LoadRow(Table, row))
-                    .From(Table)
-                    .Where(Condition);
+                    .From(Table);
 
-                IFor<ROW> q2 = OrderByColumns != null ? q1.OrderBy(OrderByColumns) : q1;
+                IGroupBy<ROW> q2;
 
-                QueryResult<ROW> result = await q2.ExecuteAsync(transaction, cancellationToken, timeout, debugName: debugName);
+                if(Hints is not null) {
+                    q2 = q1.With(Hints)
+                        .Where(Condition);
+                }
+                else {
+                    q2 = q1.Where(Condition);
+                }
+
+                IFor<ROW> q3 = OrderByColumns != null ? q2.OrderBy(OrderByColumns) : q2;
+
+                IExecute<ROW> q4 = ForType is not null ? q3.FOR(ForType.Value, OfTables!, WaitType!.Value) : q3;
+
+                QueryResult<ROW> result = await q4.ExecuteAsync(transaction, cancellationToken, timeout, debugName: debugName);
 
                 Repository.PopulateWithExistingRows(result.Rows);
             }
@@ -1020,15 +1096,37 @@ namespace QueryLite {
         Deleted
     }
 
-    public interface IDataTableWhere<TABLE, ROW> : IDataTableOrderBy<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
-
-        IDataTableOrderBy<TABLE, ROW> Where(ICondition? condition);
+    public interface IRepositoryWith<TABLE, ROW> : IRepositoryWhere<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+        /// <summary>
+        /// The 'With' option only works on sql server. For other databases the query will ignore these table hints and execute without them.
+        /// </summary>
+        /// <param name="hints"></param>
+        /// <returns></returns>
+        public IRepositoryWhere<TABLE, ROW> With(params SqlServerTableHint[] hints);
     }
-    public interface IDataTableOrderBy<TABLE, ROW> : IDateTableExecute<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRepositoryWhere<TABLE, ROW> : IRepositoryOrderBy<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
 
-        IDateTableExecute<TABLE, ROW> OrderBy(params IOrderByColumn[] columns);
+        IRepositoryOrderBy<TABLE, ROW> Where(ICondition? condition);
     }
-    public interface IDateTableExecute<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+
+    public interface IRepositoryOrderBy<TABLE, ROW> : IRepositoryFor<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+
+        IRepositoryFor<TABLE, ROW> OrderBy(params IOrderByColumn[] columns);
+    }
+
+    public interface IRepositoryFor<TABLE, ROW> : IRepositoryExecute<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+
+        /// <summary>
+        /// FOR clause. PostgreSql only
+        /// </summary>
+        /// <param name="forType"></param>
+        /// <param name="ofTables"></param>
+        /// <param name="waitType"></param>
+        /// <returns></returns>
+        IRepositoryExecute<TABLE, ROW> FOR(ForType forType, ITable[] ofTables, WaitType waitType);
+    }
+
+    public interface IRepositoryExecute<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
 
         void Execute(IDatabase database);
         void Execute(IDatabase database, QueryTimeout timeout);
