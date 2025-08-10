@@ -643,8 +643,33 @@ should be discarded as it will likely be in an inconsistant state (Due to it not
 This is an example of how to define a row and repository class. The source generator will generate a row and repository
 class when it sees the `[Repository]` attribute.
 
+>[!WARNING]
+>Source generator is not yet released.
+
+Add a marker attribute to your solution to turn on source generator.
 ```C#
-[Repository<OrderTable>(MatchOn.PrimaryKey)]
+namespace QueryLite {
+
+    //
+    //  Source generator marker attribute. Only one defintion is required to turn on source generator.
+    //
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class)]
+    public class RepositoryAttribute<TABLE> : global::System.Attribute where TABLE : global::QueryLite.ATable {
+
+        public global::QueryLite.MatchOn MatchOn { get; init; }
+        public string RepositoryName { get; } = "";
+
+        public RepositoryAttribute(global::QueryLite.MatchOn matchOn, string repositoryName = "") {
+            this.MatchOn = matchOn;
+        }
+    }
+}
+```
+
+Add attribute to row class (record) for source generator.
+
+```C#
+[Repository<OrderTable>(MatchOn.PrimaryKey, repositoryName: "OrderRepository")]
 public partial record OrderRow {
 
 }
@@ -654,10 +679,10 @@ Here is an example of creating a new row.
 
 ```C#
 OrderRow row = new OrderRow() {
-    //...populate
+    //...populate properties
 }
 
-OrderRowRepository repository = new OrderRowRepository();
+OrderRepository repository = new OrderRepository();
 
 repository.AddNewRow(row);
 
@@ -671,8 +696,7 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 Here is an example of updating rows.
 
 ```C#
-
-OrderRowRepository repository = new OrderRowRepository();
+OrderRepository repository = new OrderRepository();
 
 await repository
     .SelectRows
@@ -694,8 +718,7 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 Here is an example of deleing rows.
 
 ```C#
-
-OrderRowRepository repository = new OrderRowRepository();
+OrderRepository repository = new OrderRepository();
 
 await repository
     .SelectRows
