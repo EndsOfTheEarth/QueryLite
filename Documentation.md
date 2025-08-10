@@ -628,6 +628,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
 ## Repository Pattern
 
+>[!WARNING]
+>Repository pattern functionality is a new feature that is still a work in progress.
+>A source generator for this feature has not been released yet.
+
 QueryLite can implement a repository pattern for create, read, update and delete actions. This is
 achived by creating a partial row class that is then implemented by a source generator.
 
