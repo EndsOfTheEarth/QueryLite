@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -130,13 +129,20 @@ namespace QueryLite.Databases {
     /// </summary>
     internal static class ParamNameCache {
 
-        public static string[] ParamNames = new string[50];
+        public static string[] ParamNames = new string[150];
 
         static ParamNameCache() {
 
             for(int index = 0; index < ParamNames.Length; index++) {
                 ParamNames[index] = $"@{index}";
             }
+        }
+        public static string GetName(int count) {
+
+            if(count >= 0 && count < ParamNames.Length) {
+                return ParamNames[count];
+            }
+            return $"@{count}";
         }
     }
 

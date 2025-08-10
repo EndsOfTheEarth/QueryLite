@@ -26,6 +26,7 @@
 - [Delete Query](#delete-query)
    - [Delete From Query](#delete-from-query)
 - [Truncate Query](#truncate-query)
+- [Repository Pattern](#repository-pattern)
 - [Supported Operators](#supported-operators)
 - [String Like Condition](#string-like-condition)
 - [Functions](#functions)
@@ -394,9 +395,9 @@ var result = Query
     .Select(row => row.Get(shipperTable.Id))
     .Distinct
     .From(shipperTable)
-    .Execute(DB.Northwind); 
+    .Execute(DB.Northwind);
 ```
-
+epos
 ## Select TOP Query
 
 Select TOP is supported. In SqlServer this generates the `TOP` syntax and in PostgreSql this generates the `LIMIT` syntax.
@@ -622,6 +623,89 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
         .Execute(transaction);
 
     transaction.Commit();
+}
+```
+
+## Repository Pattern
+
+QueryLite can implement a repository pattern for create, read, update and delete actions. This is
+achived by creating a partial row class that is then implemented by a source generator.
+
+Note: Auto generated columns on a row will be populated on the row object after being inserted by the repository.
+
+Note: If the an exception occurs in the update method or a transaction is rolled back, the repository
+should be discarded as it will likely be in an inconsistant state (Due to it not supporting transaction roll backs).
+
+This is an example of how to define a row and repository class. The source generator will generate a row and repository
+class when it sees the `[Repository]` attribute.
+
+```C#
+[Repository<OrderTable>(MatchOn.PrimaryKey)]
+public partial record OrderRow {
+
+}
+```
+
+Here is an example of creating a new row.
+
+```C#
+OrderRow row = new OrderRow() {
+    //...populate
+}
+
+OrderRowRepository repository = new OrderRowRepository();
+
+repository.AddNewRow(row);
+
+using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+    await repository.UpdateAsync(transaction, CancellationToken.None);
+    await transaction.CommitAsync();
+}
+```
+
+Here is an example of updating rows.
+
+```C#
+
+OrderRowRepository repository = new OrderRowRepository();
+
+await repository
+    .SelectRows
+    .Where(repository.Table.State == OrderState.New)
+    .OrderBy(repository.Table.OrderDate)
+    .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
+
+foreach(OrderRow row in repository) {
+    row.State = OrderState.Processed;
+}
+
+using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+    await repository.UpdateAsync(transaction, CancellationToken.None);
+    await transaction.CommitAsync();
+}
+```
+
+Here is an example of deleing rows.
+
+```C#
+
+OrderRowRepository repository = new OrderRowRepository();
+
+await repository
+    .SelectRows
+    .Where(repository.Table.Id == 100)
+    .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
+
+OrderRow row = repository.First();
+
+repository.DeleteRow(row);
+
+using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+    await repository.UpdateAsync(transaction, CancellationToken.None);
+    await transaction.CommitAsync();
 }
 ```
 

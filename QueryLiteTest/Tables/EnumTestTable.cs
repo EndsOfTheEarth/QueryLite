@@ -28,6 +28,11 @@ namespace QueryLiteTest.Tables {
         }
     }
 
+    [Repository<EnumTestTableTable>(MatchOn.AllColumns, "EnumRepository")]
+    public partial record EnumRow {
+
+    }
+
     public enum ByteTestEnum : byte {
         One = 1,
         Min = byte.MinValue,

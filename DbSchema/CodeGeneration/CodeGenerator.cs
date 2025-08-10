@@ -64,6 +64,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         public required bool UsePreparedQueries { get; set; }
 
+        /// <summary>
+        /// Use repository pattern for CRUD actions.
+        /// </summary>
+        public required bool UseRepositoryPattern { get; set; }
+
         public required Namespaces Namespaces { get; set; }
     }
 

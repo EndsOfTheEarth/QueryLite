@@ -90,6 +90,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
             chkIncludeMessagePackAttributes.IsCheckedChanged += (sender, e) => UpdateCode(updatePrefix: false);
             chkIncludeJsonAttributes.IsCheckedChanged += (sender, e) => UpdateCode(updatePrefix: false);
             chkUsePreparedQueries.IsCheckedChanged += (sender, e) => UpdateCode(updatePrefix: false);
+            chkUseRepositoryPattern.IsCheckedChanged += (sender, e) => UpdateCode(updatePrefix: false);
 
             btnExpandAll.Click += BtnExpandAll_Click;
             btnCollapseAll.Click += BtnCollapseAll_Click;
@@ -314,6 +315,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                         IncludeConstraints = chkIncludeConstraints.IsChecked ?? false,
                         NumberOfInstanceProperties = (int)(numNumberOfInstanceProperties.Value ?? 1),
                         UsePreparedQueries = chkUsePreparedQueries.IsChecked ?? false,
+                        UseRepositoryPattern = chkUseRepositoryPattern.IsChecked ?? false,
                         Namespaces = namespaces
                     };
 
@@ -442,6 +444,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                     IncludeConstraints = chkIncludeConstraints.IsChecked ?? false,
                     NumberOfInstanceProperties = (int)(numNumberOfInstanceProperties.Value ?? 1),
                     UsePreparedQueries = chkUsePreparedQueries.IsChecked ?? false,
+                    UseRepositoryPattern = chkUseRepositoryPattern.IsChecked ?? false,
                     Namespaces = namespaces
                 };
 

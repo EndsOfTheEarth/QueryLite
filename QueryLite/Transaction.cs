@@ -129,6 +129,27 @@ namespace QueryLite {
             return command;
         }
 
+        public async Task<DbCommand> CreateCommandAsync(QueryTimeout timeout, CancellationToken cancellationToken) {
+
+            DbTransaction? dbTransaction = GetTransaction(Database);
+
+            DbConnection dbConnection;
+
+            if(dbTransaction == null) {
+                dbConnection = Database.GetNewConnection();
+                await dbConnection.OpenAsync(cancellationToken);
+                SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(IsolationLevel, cancellationToken));
+                dbTransaction = DbTransaction;
+            }
+            else {
+                dbConnection = dbTransaction.Connection!;
+            }
+            DbCommand command = dbConnection.CreateCommand();
+            command.Transaction = dbTransaction!;
+            command.CommandTimeout = timeout.Seconds;
+            return command;
+        }
+
         /// <summary>
         /// Counter used to give each transaction a unique id mainly for debugging purposes
         /// </summary>

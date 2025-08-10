@@ -259,6 +259,17 @@ namespace QueryLite.DbSchema.CodeGeneration {
             code.Indent(2).Append("}").EndLine();
             code.Indent(1).Append("}").EndLine();
 
+            if(settings.UseRepositoryPattern) {
+
+                string tableName = CodeHelper.GetTableName(table, includePostFix: false);
+
+                code.EndLine();
+                code.Indent(1).Append(@$"[Repository<{tableClassName}>(MatchOn.AllColumns, repositoryName: ""{tableName}Repository"")]").EndLine();
+                code.Indent(1).Append($"public partial record {tableName}Row {{").EndLine();
+                code.EndLine();
+                code.Indent(1).Append("}").EndLine();
+            }
+
             if(includeUsings) {
                 code.Append("}");
             }

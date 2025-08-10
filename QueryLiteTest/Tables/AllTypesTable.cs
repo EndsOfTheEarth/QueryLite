@@ -54,6 +54,11 @@ namespace QueryLiteTest.Tables {
         }
     }
 
+    [Repository<AllTypesTable>(MatchOn.AllColumns, "AllTypesRepository")]
+    public partial record AllTypesRow {
+
+    }
+
     public sealed class AllTypesInfo {
 
         public AllTypesInfo() { }
