@@ -653,14 +653,15 @@ namespace QueryLite {
     //
     //  Source generator marker attribute. Only one defintion is required to turn on source generator.
     //
-    [global::System.AttributeUsage(global::System.AttributeTargets.Class)]
-    public class RepositoryAttribute<TABLE> : global::System.Attribute where TABLE : global::QueryLite.ATable {
+    [AttributeUsage(AttributeTargets.Class)]
+    public class RepositoryAttribute<TABLE> : Attribute where TABLE : QueryLite.ATable {
 
-        public global::QueryLite.MatchOn MatchOn { get; init; }
-        public string RepositoryName { get; } = "";
+        public QueryLite.MatchOn MatchOn { get; init; }
+        public string RepositoryName { get; }
 
-        public RepositoryAttribute(global::QueryLite.MatchOn matchOn, string repositoryName = "") {
-            this.MatchOn = matchOn;
+        public RepositoryAttribute(QueryLite.MatchOn matchOn, string repositoryName = "") {
+            MatchOn = matchOn;
+            RepositoryName = repositoryName;
         }
     }
 }
@@ -688,8 +689,8 @@ repository.AddNewRow(row);
 
 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-    await repository.UpdateAsync(transaction, CancellationToken.None);
-    await transaction.CommitAsync();
+    await repository.UpdateAsync(transaction, cancellationToken);
+    await transaction.CommitAsync(cancellationToken);
 }
 ```
 
@@ -702,16 +703,16 @@ await repository
     .SelectRows
     .Where(repository.Table.State == OrderState.New)
     .OrderBy(repository.Table.OrderDate)
-    .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
+    .ExecuteAsync(TestDatabase.Database, cancellationToken);
 
-foreach(OrderRow row in repository) {
-    row.State = OrderState.Processed;
+foreach(OrderRow row in repository) {   //Set a value on each row
+    row.OrderState = OrderState.Processed;
 }
 
 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-    await repository.UpdateAsync(transaction, CancellationToken.None);
-    await transaction.CommitAsync();
+    await repository.UpdateAsync(transaction, cancellationToken);
+    await transaction.CommitAsync(cancellationToken);
 }
 ```
 
@@ -723,7 +724,7 @@ OrderRepository repository = new OrderRepository();
 await repository
     .SelectRows
     .Where(repository.Table.Id == 100)
-    .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
+    .ExecuteAsync(TestDatabase.Database, cancellationToken);
 
 OrderRow row = repository.First();
 
@@ -731,8 +732,8 @@ repository.DeleteRow(row);
 
 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-    await repository.UpdateAsync(transaction, CancellationToken.None);
-    await transaction.CommitAsync();
+    await repository.UpdateAsync(transaction, cancellationToken);
+    await transaction.CommitAsync(cancellationToken);
 }
 ```
 
