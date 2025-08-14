@@ -233,15 +233,17 @@ namespace DbSchema.CodeGeneration {
 
             {name} info = request.{name};
 
-            {name}Row row = new Row() {{
+            {name}Row row = new {name}Row() {{
 {setValues}
-            }}
+            }};
+
+            repository.AddNewRow(row);
 
             using(Transaction transaction = new Transaction(_database)) {{
 
-                await repository.Update(transaction, cancellationToken);
+                await repository.UpdateAsync(transaction, cancellationToken);
 
-                transaction.Commit();
+                await transaction.CommitAsync(cancellationToken);
             }}
             return Response.Success;
         }}
