@@ -475,21 +475,24 @@ namespace QueryLiteTest.Tests {
 
                 AllTypesRow row = repository[0];
 
-                row.Guid = allTypes.Guid;
-                row.String = allTypes.String;
-                row.SmallInt = allTypes.SmallInt;
-                row.Int = allTypes.Int;
-                row.BigInt = allTypes.BigInt;
-                row.Decimal = allTypes.Decimal;
-                row.Float = allTypes.Float;
-                row.Double = allTypes.Double;
-                row.Boolean = allTypes.Boolean;
-                row.Bytes = allTypes.Bytes;
-                row.DateTime = allTypes.DateTime;
-                row.DateTimeOffset = allTypes.DateTimeOffset;
-                row.Enum = allTypes.Enum;
-                row.DateOnly = allTypes.DateOnly;
-                row.TimeOnly = allTypes.TimeOnly;
+                row.SetValues(
+                    id: row.Id,
+                    guid: allTypes.Guid,
+                    @string: allTypes.String,
+                    smallInt: allTypes.SmallInt,
+                    @int: allTypes.Int,
+                    bigInt: allTypes.BigInt,
+                    @decimal: allTypes.Decimal,
+                    @float: allTypes.Float,
+                    @double: allTypes.Double,
+                    boolean: allTypes.Boolean,
+                    bytes: allTypes.Bytes,
+                    dateTime: allTypes.DateTime,
+                    dateTimeOffset: allTypes.DateTimeOffset,
+                    @enum: allTypes.Enum,
+                    dateOnly: allTypes.DateOnly,
+                    timeOnly: allTypes.TimeOnly
+                );
 
                 int rowsEffected = repository.Update(transaction);
 
@@ -538,21 +541,24 @@ namespace QueryLiteTest.Tests {
 
                 AllTypesRow row = repository[0];
 
-                row.Guid = allTypes.Guid;
-                row.String = allTypes.String;
-                row.SmallInt = allTypes.SmallInt;
-                row.Int = allTypes.Int;
-                row.BigInt = allTypes.BigInt;
-                row.Decimal = allTypes.Decimal;
-                row.Float = allTypes.Float;
-                row.Double = allTypes.Double;
-                row.Boolean = allTypes.Boolean;
-                row.Bytes = allTypes.Bytes;
-                row.DateTime = allTypes.DateTime;
-                row.DateTimeOffset = allTypes.DateTimeOffset;
-                row.Enum = allTypes.Enum;
-                row.DateOnly = allTypes.DateOnly;
-                row.TimeOnly = allTypes.TimeOnly;
+                row.SetValues(
+                    id: row.Id,
+                    guid: allTypes.Guid,
+                    @string: allTypes.String,
+                    smallInt: allTypes.SmallInt,
+                    @int: allTypes.Int,
+                    bigInt: allTypes.BigInt,
+                    @decimal: allTypes.Decimal,
+                    @float: allTypes.Float,
+                    @double: allTypes.Double,
+                    boolean: allTypes.Boolean,
+                    bytes: allTypes.Bytes,
+                    dateTime: allTypes.DateTime,
+                    dateTimeOffset: allTypes.DateTimeOffset,
+                    @enum: allTypes.Enum,
+                    dateOnly: allTypes.DateOnly,
+                    timeOnly: allTypes.TimeOnly
+                );
 
                 int rowsEffected = await repository.UpdateAsync(transaction, CancellationToken.None);
 
@@ -730,21 +736,25 @@ namespace QueryLiteTest.Tests {
                 AllTypesTable table = AllTypesTable.Instance;
 
                 AllTypesRow row = new AllTypesRow();
-                row.Guid = allTypes.Guid;
-                row.String = allTypes.String;
-                row.SmallInt = allTypes.SmallInt;
-                row.Int = allTypes.Int;
-                row.BigInt = allTypes.BigInt;
-                row.Decimal = allTypes.Decimal;
-                row.Float = allTypes.Float;
-                row.Double = allTypes.Double;
-                row.Boolean = allTypes.Boolean;
-                row.Bytes = allTypes.Bytes;
-                row.DateTime = allTypes.DateTime;
-                row.DateTimeOffset = allTypes.DateTimeOffset;
-                row.Enum = allTypes.Enum;
-                row.DateOnly = allTypes.DateOnly;
-                row.TimeOnly = allTypes.TimeOnly;
+
+                row.SetValues(
+                    id: IntKey<AllTypes>.NotSet,
+                    guid: allTypes.Guid,
+                    @string: allTypes.String,
+                    smallInt: allTypes.SmallInt,
+                    @int: allTypes.Int,
+                    bigInt: allTypes.BigInt,
+                    @decimal: allTypes.Decimal,
+                    @float: allTypes.Float,
+                    @double: allTypes.Double,
+                    boolean: allTypes.Boolean,
+                    bytes: allTypes.Bytes,
+                    dateTime: allTypes.DateTime,
+                    dateTimeOffset: allTypes.DateTimeOffset,
+                    @enum: allTypes.Enum,
+                    dateOnly: allTypes.DateOnly,
+                    timeOnly: allTypes.TimeOnly
+                );
 
                 repository.AddNewRow(row);
 
