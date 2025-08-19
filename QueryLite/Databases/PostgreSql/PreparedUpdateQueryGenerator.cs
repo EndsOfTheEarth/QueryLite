@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases.PostgreSql.Collectors;
-using System;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql {

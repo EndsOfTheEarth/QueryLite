@@ -23,10 +23,6 @@
  **/
 using QueryLite.Databases;
 using QueryLite.PreparedQuery;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace QueryLite {
 

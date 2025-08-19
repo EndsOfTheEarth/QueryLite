@@ -24,8 +24,6 @@
 using QueryLite.DbSchema.Tables;
 using QueryLite.DbSchema.Tables.PostgreSql;
 using QueryLite.Utility;
-using System;
-using System.Collections.Generic;
 
 namespace QueryLite.DbSchema {
 

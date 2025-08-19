@@ -25,7 +25,6 @@ using Npgsql;
 using NpgsqlTypes;
 using QueryLite.Databases.PostgreSql;
 using QueryLite.Utility;
-using System;
 
 namespace QueryLite.Databases.SqlServer {
 

@@ -23,7 +23,6 @@
  **/
 using NpgsqlTypes;
 using QueryLite.Utility;
-using System;
 
 namespace QueryLite.Databases.PostgreSql {
 

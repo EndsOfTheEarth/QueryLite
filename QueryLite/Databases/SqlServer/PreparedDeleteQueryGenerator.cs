@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases.SqlServer.Collectors;
-using System;
 using System.Text;
 
 namespace QueryLite.Databases.SqlServer {

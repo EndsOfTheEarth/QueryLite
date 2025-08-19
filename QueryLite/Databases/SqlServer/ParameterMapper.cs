@@ -23,7 +23,6 @@
  **/
 using Microsoft.Data.SqlClient;
 using QueryLite.Utility;
-using System;
 using System.Data;
 
 namespace QueryLite.Databases.SqlServer {

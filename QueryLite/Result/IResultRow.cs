@@ -22,8 +22,6 @@
  * SOFTWARE.
  **/
 using QueryLite.Utility;
-using System;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace QueryLite {
 

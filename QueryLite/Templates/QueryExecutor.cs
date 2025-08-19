@@ -22,13 +22,9 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace QueryLite {
 

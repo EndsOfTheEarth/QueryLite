@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using QueryLite.Utility;
-using System;
 using System.Data.Common;
 using Microsoft.Data.SqlClient;
 

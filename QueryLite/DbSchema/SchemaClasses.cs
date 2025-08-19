@@ -23,8 +23,6 @@
  **/
 using QueryLite.DbSchema.Tables;
 using QueryLite.Utility;
-using System;
-using System.Collections.Generic;
 
 namespace QueryLite.DbSchema {
 

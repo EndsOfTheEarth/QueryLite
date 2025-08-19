@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases;
-using System;
 using System.ComponentModel;
 using System.Text;
 

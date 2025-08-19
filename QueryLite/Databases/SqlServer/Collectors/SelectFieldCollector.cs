@@ -22,7 +22,6 @@
  * SOFTWARE.
  **/
 using QueryLite.Utility;
-using System;
 using System.Text;
 
 namespace QueryLite.Databases.SqlServer {

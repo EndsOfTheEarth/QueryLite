@@ -22,8 +22,6 @@
  * SOFTWARE.
  **/
 using Npgsql;
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
 
 namespace QueryLite.Databases.PostgreSql {

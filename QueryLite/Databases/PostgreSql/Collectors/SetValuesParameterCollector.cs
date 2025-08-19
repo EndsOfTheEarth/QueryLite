@@ -24,7 +24,6 @@
 using Npgsql;
 using NpgsqlTypes;
 using QueryLite.Utility;
-using System;
 using System.Text;
 
 namespace QueryLite.Databases.PostgreSql.Collectors {

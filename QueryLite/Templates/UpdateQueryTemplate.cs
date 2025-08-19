@@ -21,11 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace QueryLite {
 
     internal sealed class UpdateQueryTemplate : IUpdateSet, IUpdateFrom, IUpdateWhere, IUpdateExecute {
