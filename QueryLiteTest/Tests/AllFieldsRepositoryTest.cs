@@ -59,42 +59,42 @@ namespace QueryLiteTest.Tests {
         public void BasicWithQueriesAndNoParameters() {
 
             Settings.UseParameters = false;
-            AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueries();
+            BasicInsertUpdateAndDeleteWithQueries();
         }
 
         [TestMethod]
         public async Task BasicWithQueriesAndNoParametersAsync() {
 
             Settings.UseParameters = false;
-            await AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueriesAsync();
+            await BasicInsertUpdateAndDeleteWithQueriesAsync();
         }
 
         [TestMethod]
         public void BasicInsertAndTruncationWithQueries() {
 
             Settings.UseParameters = false;
-            AllFieldsRepositoryTest.BasicInsertAndTruncateWithQueries();
+            BasicInsertAndTruncateWithQueries();
         }
 
         [TestMethod]
         public async Task BasicInsertAndTruncationWithQueriesAsync() {
 
             Settings.UseParameters = false;
-            await AllFieldsRepositoryTest.BasicInsertAndTruncateWithQueriesAsync();
+            await BasicInsertAndTruncateWithQueriesAsync();
         }
 
         [TestMethod]
         public void BasicWithQueriesAndParameters() {
 
             Settings.UseParameters = true;
-            AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueries();
+            BasicInsertUpdateAndDeleteWithQueries();
         }
 
         [TestMethod]
         public async Task BasicWithQueriesAndParametersAsync() {
 
             Settings.UseParameters = true;
-            await AllFieldsRepositoryTest.BasicInsertUpdateAndDeleteWithQueriesAsync();
+            await BasicInsertUpdateAndDeleteWithQueriesAsync();
         }
 
         private static AllTypes GetAllTypes1() {
@@ -207,96 +207,96 @@ namespace QueryLiteTest.Tests {
 
         private static void BasicInsertUpdateAndDeleteWithQueries() {
 
-            AllTypes allTypes1 = AllFieldsRepositoryTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsRepositoryTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes1);
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes2);
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
-            AllFieldsRepositoryTest.JoinQuery(allTypes1);
-            AllFieldsRepositoryTest.JoinQuery(allTypes2);
-            AllFieldsRepositoryTest.JoinQuery(allTypes3);
+            JoinQuery(allTypes1);
+            JoinQuery(allTypes2);
+            JoinQuery(allTypes3);
 
-            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes1);
-            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes2);
-            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes3);
+            DeleteWithQueryAndRollback(allTypes1);
+            DeleteWithQueryAndRollback(allTypes2);
+            DeleteWithQueryAndRollback(allTypes3);
 
-            AllFieldsRepositoryTest.UpdateWithQuery(allTypes1);
-            AllFieldsRepositoryTest.UpdateWithQuery(allTypes2);
-            AllFieldsRepositoryTest.UpdateWithQuery(allTypes3);
+            UpdateWithQuery(allTypes1);
+            UpdateWithQuery(allTypes2);
+            UpdateWithQuery(allTypes3);
 
-            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes1);
-            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes2);
-            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes3);
+            UpdateWithQueryAndRollback(allTypes1);
+            UpdateWithQueryAndRollback(allTypes2);
+            UpdateWithQueryAndRollback(allTypes3);
 
-            AllFieldsRepositoryTest.DeleteWithQuery(allTypes1);
-            AllFieldsRepositoryTest.DeleteWithQuery(allTypes2);
+            DeleteWithQuery(allTypes1);
+            DeleteWithQuery(allTypes2);
 
-            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
         }
 
         private static void BasicInsertAndTruncateWithQueries() {
 
-            AllTypes allTypes1 = AllFieldsRepositoryTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsRepositoryTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes1);
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes2);
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
-            AllFieldsRepositoryTest.Truncate();
+            Truncate();
         }
 
         private static async Task BasicInsertAndTruncateWithQueriesAsync() {
 
-            AllTypes allTypes1 = AllFieldsRepositoryTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsRepositoryTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes1);
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes2);
-            AllFieldsRepositoryTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
-            await AllFieldsRepositoryTest.TruncateAsync();
+            await TruncateAsync();
         }
 
         private static async Task BasicInsertUpdateAndDeleteWithQueriesAsync() {
 
-            AllTypes allTypes1 = AllFieldsRepositoryTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsRepositoryTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsRepositoryTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
             await InsertWithQueryAsync(allTypes1);
             await InsertWithQueryAsync(allTypes2);
             await InsertWithQueryAsync(allTypes3);
 
-            await AllFieldsRepositoryTest.JoinQueryAsync(allTypes1);
-            await AllFieldsRepositoryTest.JoinQueryAsync(allTypes2);
-            await AllFieldsRepositoryTest.JoinQueryAsync(allTypes3);
+            await JoinQueryAsync(allTypes1);
+            await JoinQueryAsync(allTypes2);
+            await JoinQueryAsync(allTypes3);
 
-            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes1);
-            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes2);
-            AllFieldsRepositoryTest.DeleteWithQueryAndRollback(allTypes3);
+            DeleteWithQueryAndRollback(allTypes1);
+            DeleteWithQueryAndRollback(allTypes2);
+            DeleteWithQueryAndRollback(allTypes3);
 
-            await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes1);
-            await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes2);
-            await AllFieldsRepositoryTest.UpdateWithQueryAsync(allTypes3);
+            await UpdateWithQueryAsync(allTypes1);
+            await UpdateWithQueryAsync(allTypes2);
+            await UpdateWithQueryAsync(allTypes3);
 
-            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes1);
-            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes2);
-            AllFieldsRepositoryTest.UpdateWithQueryAndRollback(allTypes3);
+            UpdateWithQueryAndRollback(allTypes1);
+            UpdateWithQueryAndRollback(allTypes2);
+            UpdateWithQueryAndRollback(allTypes3);
 
-            await AllFieldsRepositoryTest.DeleteWithQueryAsync(allTypes1);
-            await AllFieldsRepositoryTest.DeleteWithQueryAsync(allTypes2);
+            await DeleteWithQueryAsync(allTypes1);
+            await DeleteWithQueryAsync(allTypes2);
 
-            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
-            AllFieldsRepositoryTest.InsertWithQueryAndRollback(AllFieldsRepositoryTest.GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
         }
 
         private static void InsertWithQuery(AllTypes allTypes) {
@@ -341,7 +341,7 @@ namespace QueryLiteTest.Tests {
 
                 Assert.IsTrue(allTypes.Id.IsValid);
 
-                AllFieldsRepositoryTest.AssertRowExists(allTypes);
+                AssertRowExists(allTypes);
             }
         }
 
@@ -500,7 +500,7 @@ namespace QueryLiteTest.Tests {
 
                 transaction.Commit();
 
-                AllFieldsRepositoryTest.AssertRowExists(allTypes);
+                AssertRowExists(allTypes);
             }
         }
 
@@ -571,7 +571,7 @@ namespace QueryLiteTest.Tests {
 
             Assert.IsTrue(allTypes.Id.IsValid);
 
-            int beginRowCount = AllFieldsRepositoryTest.GetNumberOfRows();
+            int beginRowCount = GetNumberOfRows();
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -616,14 +616,14 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(0, countValue!.Value);
             }
-            Assert.AreEqual(beginRowCount, AllFieldsRepositoryTest.GetNumberOfRows() + 1);
+            Assert.AreEqual(beginRowCount, GetNumberOfRows() + 1);
         }
 
         private static async Task DeleteWithQueryAsync(AllTypes allTypes) {
 
             Assert.IsTrue(allTypes.Id.IsValid);
 
-            int beginRowCount = await AllFieldsRepositoryTest.GetNumberOfRowsAsync();
+            int beginRowCount = await GetNumberOfRowsAsync();
 
             AllTypesRepository repository = new AllTypesRepository();
 
@@ -668,7 +668,7 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(0, countValue!.Value);
             }
-            Assert.AreEqual(beginRowCount, await AllFieldsRepositoryTest.GetNumberOfRowsAsync() + 1);
+            Assert.AreEqual(beginRowCount, await GetNumberOfRowsAsync() + 1);
         }
 
         private static int GetNumberOfRows() {
@@ -759,11 +759,11 @@ namespace QueryLiteTest.Tests {
 
                 Assert.IsTrue(allTypes.Id.IsValid);
 
-                AllFieldsRepositoryTest.AssertRowExists(allTypes, transaction);
+                AssertRowExists(allTypes, transaction);
 
                 transaction.Rollback();
 
-                AllFieldsRepositoryTest.AssertRowDoesNotExists(allTypes);
+                AssertRowDoesNotExists(allTypes);
 
                 allTypes.Id = IntKey<AllTypes>.NotSet;
             }
@@ -826,10 +826,10 @@ namespace QueryLiteTest.Tests {
                 Assert.AreEqual(1, repository.Count);
 
                 AssertRow(repository[0], newAllTypes);
-                AllFieldsRepositoryTest.AssertRowExists(newAllTypes, transaction);
+                AssertRowExists(newAllTypes, transaction);
 
                 transaction.Rollback();
-                AllFieldsRepositoryTest.AssertRowExists(initialAllTypes);   //Assert initial values
+                AssertRowExists(initialAllTypes);   //Assert initial values
             }
         }
 
@@ -837,7 +837,7 @@ namespace QueryLiteTest.Tests {
 
             Assert.IsTrue(allTypes.Id.IsValid);
 
-            int beginRowCount = AllFieldsRepositoryTest.GetNumberOfRows();
+            int beginRowCount = GetNumberOfRows();
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
@@ -850,13 +850,13 @@ namespace QueryLiteTest.Tests {
 
                 Assert.AreEqual(1, result.RowsEffected);
 
-                AllFieldsRepositoryTest.AssertRowDoesNotExists(allTypes, transaction);
+                AssertRowDoesNotExists(allTypes, transaction);
 
                 transaction.Rollback();
 
-                AllFieldsRepositoryTest.AssertRowExists(allTypes);
+                AssertRowExists(allTypes);
             }
-            Assert.AreEqual(beginRowCount, AllFieldsRepositoryTest.GetNumberOfRows());
+            Assert.AreEqual(beginRowCount, GetNumberOfRows());
         }
 
         private static void JoinQuery(AllTypes allTypes) {
