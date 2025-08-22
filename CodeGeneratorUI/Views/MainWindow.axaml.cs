@@ -104,9 +104,11 @@ namespace QueryLite.CodeGeneratorUI.Views {
             Cursor = new Cursor(StandardCursorType.Wait);
 
             btnLoad.IsEnabled = false;
+            btnOutputAllToFile.IsEnabled = false;
 
             try {
-                await LoadAsync();
+                bool success = await LoadAsync();
+                btnOutputAllToFile.IsEnabled = success;
             }
             catch(Exception ex) {
                 MessageDialog dialog = new MessageDialog();
@@ -118,10 +120,10 @@ namespace QueryLite.CodeGeneratorUI.Views {
             }
         }
 
-        private async Task LoadAsync() {
+        private async Task<bool> LoadAsync() {
 
             if(string.IsNullOrWhiteSpace(txtConnectionString.Text)) {
-                return;
+                return false;
             }
 
             MainWindowViewModel? viewModel = GetViewModel();
@@ -153,9 +155,10 @@ namespace QueryLite.CodeGeneratorUI.Views {
             if(Tables.Count == 0) {
                 MessageDialog dialog = new MessageDialog();
                 await dialog.ShowMessage(this, title: "No tables found", message: "No tables found");
-                return;
+                return false;
             }
             LoadTablesNodes(_database.DatabaseType);
+            return true;
         }
 
         private async Task LoadTablesAsync() {
@@ -409,7 +412,9 @@ namespace QueryLite.CodeGeneratorUI.Views {
         private async void BtnOutputAllToFile_Click(object? sender, RoutedEventArgs e) {
 
             if(_database == null) {
-                throw new NullReferenceException($"{nameof(_database)} cannot be null");
+                MessageDialog dialog = new MessageDialog();
+                await dialog.ShowMessage(this, title: "Database not connected", message: $"{nameof(_database)} cannot be null");
+                return;
             }
 
             TopLevel? topLevel = GetTopLevel(this);
