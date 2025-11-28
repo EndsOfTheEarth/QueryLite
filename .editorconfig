@@ -89,6 +89,9 @@ dotnet_diagnostic.MSTEST0003.severity = error
 dotnet_diagnostic.MSTEST0030.severity = error
 
 
+# MSTEST0037: Use proper 'Assert' methods
+dotnet_diagnostic.MSTEST0037.severity = none
+
 [*.{cs,vb}]
 #### Naming styles ####
 

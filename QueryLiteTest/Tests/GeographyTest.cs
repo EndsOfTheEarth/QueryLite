@@ -41,7 +41,7 @@ namespace QueryLiteTest.Tests {
                 int? countValue = result.Rows[0];
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue, 0);
+                Assert.AreEqual(0, countValue);
 
                 transaction.Commit();
             }
@@ -147,8 +147,8 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(0, row.Distance);
             Assert.AreEqual("01010000007593180456965EC017D9CEF753D34740", Convert.ToHexString(row.Binary!).Replace("-", ""));
             Assert.AreEqual("POINT (-122.349 47.651)", row.Text);
-            Assert.AreEqual(row.Longitude, -122.349);
-            Assert.AreEqual(row.Latitude, 47.651);
+            Assert.AreEqual(-122.349, row.Longitude);
+            Assert.AreEqual(47.651, row.Latitude);
             Assert.AreEqual("LINESTRING (-121.36 47.646, -122.343 47.601)", row.STGeomFromTextAsText);
             Assert.AreEqual("LINESTRING (-123.36 47.496, -121.323 47.256)", row.STLineFromTextAsText);
             Assert.AreEqual("POLYGON ((-121.358 47.643, -121.348 47.629, -121.348 47.678, -121.358 47.668, -121.358 47.643))", row.STPolyFromTextAsText);
@@ -225,7 +225,7 @@ namespace QueryLiteTest.Tests {
 
             Assert.AreEqual(row.Guid, guid);
 
-            Assert.AreEqual(row.Distance, 555.94977427172694);
+            Assert.AreEqual(555.94977427172694, row.Distance);
         }
 
         [TestMethod]
@@ -303,7 +303,7 @@ namespace QueryLiteTest.Tests {
 
             Assert.AreEqual(row.ContainsA, Bit.TRUE);
             Assert.AreEqual(row.ContainsB, Bit.FALSE);
-            Assert.AreEqual(row.Area, 45023599772.742432);
+            Assert.AreEqual(45023599772.742432, row.Area);
         }
     }
 }

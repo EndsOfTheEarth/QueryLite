@@ -41,7 +41,7 @@ namespace QueryLiteTest.Tests {
                 int? countValue = result.Rows[0].Count;
 
                 Assert.IsNotNull(countValue);
-                Assert.AreEqual(countValue, 0);
+                Assert.AreEqual(0, countValue);
 
                 transaction.Commit();
             }
