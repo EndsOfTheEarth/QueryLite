@@ -10,8 +10,6 @@ namespace QueryLiteTest.Tests {
         [TestInitialize]
         public void ClearTable() {
 
-            EnumTestTableTable table = EnumTestTableTable.Instance;
-
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
                 EnumRepository repository = new EnumRepository();
