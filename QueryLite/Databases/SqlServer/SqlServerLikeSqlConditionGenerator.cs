@@ -35,6 +35,10 @@ namespace QueryLite.Databases.SqlServer {
                 _ => throw new Exception($"Unknown {nameof(like.LikeType)}. Value = '{like.LikeType}'")
             };
             sql += $" {database.ConvertToSql(like.Expression)}";
+
+            if(!string.IsNullOrEmpty(like.Collation)) {
+                sql += $" COLLATE \"{like.Collation}\"";
+            }
             return sql;
         }
     }

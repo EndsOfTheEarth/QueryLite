@@ -328,9 +328,9 @@ namespace QueryLite {
 
     public sealed class StringLike : ILike<string> {
 
-        public StringLike(string expression, string pgCollation = "") {
+        public StringLike(string expression, string collation = "") {
             Expression = expression;
-            Collation = pgCollation;
+            Collation = collation;
         }
         public string Expression { get; }
         public LikeType LikeType { get; set; }
