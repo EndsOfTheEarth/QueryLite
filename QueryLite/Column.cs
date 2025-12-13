@@ -241,18 +241,33 @@ namespace QueryLite {
             return new GenericCondition(condition.Field, Operator.GREATER_THAN_OR_EQUAL, value);
         }
 
+        /// <summary>
+        /// Case sensitive LIKE (Only where supported by database)
+        /// </summary>
         public ICondition Like(ILike<TYPE> like) {
             like.LikeType = LikeType.Like;
             return new LikeCondition<TYPE>(Field, like);
         }
+
+        /// <summary>
+        /// Case insensitive LIKE
+        /// </summary>
         public ICondition ILike(ILike<TYPE> like) {
             like.LikeType = LikeType.ILike;
             return new LikeCondition<TYPE>(Field, like);
         }
-        public ICondition NoteLike(ILike<TYPE> like) {
+
+        /// <summary>
+        /// Case sensitive NOT LIKE
+        /// </summary>
+        public ICondition NotLike(ILike<TYPE> like) {
             like.LikeType = LikeType.NotLike;
             return new LikeCondition<TYPE>(Field, like);
         }
+
+        /// <summary>
+        /// Case insensitive NOT LIKE
+        /// </summary>
         public ICondition NotILike(ILike<TYPE> like) {
             like.LikeType = LikeType.NotILike;
             return new LikeCondition<TYPE>(Field, like);
@@ -283,33 +298,30 @@ namespace QueryLite {
         LikeType LikeType { get; set; }
 
         /// <summary>
-        /// PostgreSql requires a deterministic collation for LIKE comparisons to work with columns
-        /// that are using a non-deterministic collation. This property defines a deterministic collation
-        /// to be used for the comparison when using PostgreSql. This is ignored for other databases.
+        /// Sets the 'LIKE' comparison collation
         /// </summary>
-        string PgCollation { get; }
+        string Collation { get; }
     }
 
     public enum LikeType {
 
         /// <summary>
-        /// Case sensitive LIKE. If not supported by the database a case insensitive
-        /// comparision will be performed.
+        /// LIKE - Case sensitive if supported by database.
         /// </summary>
         Like,
+
         /// <summary>
-        /// Case sensitive NOT LIKE. If not supported by the database a case insensitive
-        /// comparision will be performed.
+        /// NOT LIKE - Case sensitive if supported by database.
         /// </summary>
         NotLike,
 
         /// <summary>
-        /// Case insensitive LIKE.
+        /// Case insensitive ILIKE. If not supported, a LIKE is used instead.
         /// </summary>
         ILike,
 
         /// <summary>
-        /// Case insensitive NOT LIKE.
+        /// Case insensitive NOT ILIKE. If not supported, a NOT LIKE is used instead.
         /// </summary>
         NotILike
     }
@@ -318,20 +330,11 @@ namespace QueryLite {
 
         public StringLike(string expression, string pgCollation = "") {
             Expression = expression;
-            PgCollation = pgCollation;
+            Collation = pgCollation;
         }
         public string Expression { get; }
         public LikeType LikeType { get; set; }
-        public string PgCollation { get; }
-    }
-
-    public sealed class PostgreSqlCollation {
-
         public string Collation { get; }
-
-        public PostgreSqlCollation(string collation) {
-            Collation = collation;
-        }
     }
 
     /// <summary>

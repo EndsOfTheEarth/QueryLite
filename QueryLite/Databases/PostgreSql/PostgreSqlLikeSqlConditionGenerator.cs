@@ -36,8 +36,8 @@ namespace QueryLite.Databases.PostgreSql {
             };
             sql += $" {database.ConvertToSql(like.Expression)}";
 
-            if(!string.IsNullOrEmpty(like.PgCollation)) {
-                sql += $" COLLATE \"{like.PgCollation}\"";
+            if(!string.IsNullOrEmpty(like.Collation)) {
+                sql += $" COLLATE \"{like.Collation}\"";
             }
             return sql;
         }
