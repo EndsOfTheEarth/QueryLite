@@ -225,8 +225,6 @@ namespace QueryLite {
                 Operator.GREATER_THAN_OR_EQUAL => " >= ",
                 Operator.LESS_THAN => " < ",
                 Operator.LESS_THAN_OR_EQUAL => " <= ",
-                Operator.LIKE => " LIKE ",
-                Operator.NOT_LIKE => " NOT LIKE ",
                 _ => throw new Exception($"Unknown join operator. {nameof(Operator)} == {Operator}")
             });
 
@@ -255,14 +253,41 @@ namespace QueryLite {
         }
     }
 
+    internal sealed class LikeCondition<TYPE> : ICondition {
+
+        public IField Left { get; private set; }
+        public ILike<TYPE> Like { get; private set; }
+
+        public LikeCondition(IField left, ILike<TYPE> like) {
+            Left = left;
+            Like = like;
+        }
+
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+            if(Left is IColumn leftColumn) {
+
+                if(useAlias) {
+                    sql.Append(leftColumn.Table.Alias).Append('.');
+                }
+                sql.Append(leftColumn.ColumnName);
+            }
+            else if(Left is IFunction leftFunction) {
+                sql.Append(leftFunction.GetSql(database, useAlias: useAlias, parameters));
+            }
+            else {
+                throw new Exception($"Unsupported type: {Left.GetType()}");
+            }
+            sql.Append(database.LikeSqlConditionGenerator.GetSql(Like, database));
+        }
+    }
+
     public enum Operator {
         EQUALS,
         NOT_EQUALS,
         GREATER_THAN,
         GREATER_THAN_OR_EQUAL,
         LESS_THAN,
-        LESS_THAN_OR_EQUAL,
-        LIKE,
-        NOT_LIKE
+        LESS_THAN_OR_EQUAL
     }
 }

@@ -48,6 +48,8 @@ namespace QueryLite.Databases.PostgreSql {
         IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new PostgreSqlPreparedInsertQueryGenerator();
         IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new PostgreSqlPreparedDeleteQueryGenerator();
 
+        ILikeSqlConditionGenerator IInternalConnection.LikeSqlConditionGenerator { get; } = new PostgreSqlLikeSqlConditionGenerator();
+
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 
         public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {

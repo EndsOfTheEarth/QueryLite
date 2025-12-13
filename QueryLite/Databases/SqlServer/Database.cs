@@ -45,6 +45,8 @@ namespace QueryLite.Databases.SqlServer {
         IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator => new SqlServerPreparedUpdateQueryGenerator();
         IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new PreparedDeleteQueryGenerator();
 
+        ILikeSqlConditionGenerator IInternalConnection.LikeSqlConditionGenerator { get; } = new SqlServerLikeSqlConditionGenerator() ;
+
         public DatabaseType DatabaseType => DatabaseType.SqlServer;
 
         public SqlServerDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {

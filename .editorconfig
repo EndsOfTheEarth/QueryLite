@@ -168,3 +168,6 @@ dotnet_diagnostic.IDE0028.severity = none
 dotnet_diagnostic.IDE0130.severity = silent
 dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
 dotnet_style_readonly_field = true:suggestion
+
+# CA2245: Do not assign a property to itself
+dotnet_diagnostic.CA2245.severity = error

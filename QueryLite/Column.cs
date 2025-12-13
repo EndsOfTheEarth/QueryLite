@@ -242,10 +242,20 @@ namespace QueryLite {
         }
 
         public ICondition Like(ILike<TYPE> like) {
-            return new GenericCondition(Field, Operator.LIKE, like.Expression);
+            like.LikeType = LikeType.Like;
+            return new LikeCondition<TYPE>(Field, like);
         }
-        public ICondition NotLike(ILike<TYPE> like) {
-            return new GenericCondition(Field, Operator.NOT_LIKE, like.Expression);
+        public ICondition ILike(ILike<TYPE> like) {
+            like.LikeType = LikeType.ILike;
+            return new LikeCondition<TYPE>(Field, like);
+        }
+        public ICondition NoteLike(ILike<TYPE> like) {
+            like.LikeType = LikeType.NotLike;
+            return new LikeCondition<TYPE>(Field, like);
+        }
+        public ICondition NotILike(ILike<TYPE> like) {
+            like.LikeType = LikeType.NotILike;
+            return new LikeCondition<TYPE>(Field, like);
         }
 
         public ICondition IsNull => new NullNotNullCondition<TYPE>(this, isNull: true);
@@ -267,15 +277,60 @@ namespace QueryLite {
     }
 
     public interface ILike<VALUE> {
+
         string Expression { get; }
+
+        LikeType LikeType { get; set; }
+
+        /// <summary>
+        /// PostgreSql requires a deterministic collation for LIKE comparisons to work with columns
+        /// that are using a non-deterministic collation. This property defines a deterministic collation
+        /// to be used for the comparison when using PostgreSql. This is ignored for other databases.
+        /// </summary>
+        string PgCollation { get; }
+    }
+
+    public enum LikeType {
+
+        /// <summary>
+        /// Case sensitive LIKE. If not supported by the database a case insensitive
+        /// comparision will be performed.
+        /// </summary>
+        Like,
+        /// <summary>
+        /// Case sensitive NOT LIKE. If not supported by the database a case insensitive
+        /// comparision will be performed.
+        /// </summary>
+        NotLike,
+
+        /// <summary>
+        /// Case insensitive LIKE.
+        /// </summary>
+        ILike,
+
+        /// <summary>
+        /// Case insensitive NOT LIKE.
+        /// </summary>
+        NotILike
     }
 
     public sealed class StringLike : ILike<string> {
 
-        public string Expression { get; }
-
-        public StringLike(string expression) {
+        public StringLike(string expression, string pgCollation = "") {
             Expression = expression;
+            PgCollation = pgCollation;
+        }
+        public string Expression { get; }
+        public LikeType LikeType { get; set; }
+        public string PgCollation { get; }
+    }
+
+    public sealed class PostgreSqlCollation {
+
+        public string Collation { get; }
+
+        public PostgreSqlCollation(string collation) {
+            Collation = collation;
         }
     }
 

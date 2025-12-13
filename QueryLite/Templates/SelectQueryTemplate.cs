@@ -56,6 +56,10 @@ namespace QueryLite {
         internal string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, PreparedParameterList<PARAMETERS> parameters);
     }
 
+    internal interface ILikeSqlConditionGenerator {
+        internal string GetSql<TYPE>(ILike<TYPE> like, IDatabase database);
+    }
+
     internal class TemplateExtra<RESULT> {
 
         public SelectQueryTemplate<RESULT>? ParentUnion { get; internal set; }

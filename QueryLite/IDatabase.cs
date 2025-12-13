@@ -73,6 +73,7 @@ namespace QueryLite {
         internal ITruncateQueryGenerator TruncateGenerator { get; }
         internal IPreparedQueryGenerator PreparedQueryGenerator { get; }
         internal IPreparedParameterMapper ParameterMapper { get; }
+        internal ILikeSqlConditionGenerator LikeSqlConditionGenerator { get; }
 
         /// <summary>
         /// Converts object into sql value. Use
