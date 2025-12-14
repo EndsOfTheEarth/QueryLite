@@ -70,7 +70,7 @@ namespace QueryLite {
     internal static class AliasGenerator {
 
         private static volatile uint _counter = 0;
-        private readonly static object _lock = new object();
+        private static readonly Lock _lock = new Lock();
 
         public static string GetAlias() {
 

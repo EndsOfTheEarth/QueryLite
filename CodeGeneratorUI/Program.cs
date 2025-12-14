@@ -34,7 +34,10 @@ namespace QueryLite.CodeGeneratorUI {
             try {
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             }
+// (Variable is declared but never used) (Unnecessary assignment of a value)
+#pragma warning disable CS0168, IDE0059
             catch(Exception ex) {
+#pragma warning restore CS0168, IDE0059
                 throw;
             }
         }
