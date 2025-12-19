@@ -144,6 +144,9 @@ namespace QueryLite.DbSchema {
             }
             else if(string.Equals("varbinary", columnRow.Data_type, StringComparison.OrdinalIgnoreCase) && columnRow.Character_octet_length == -1) {
                 length = new ColumnLength(LengthType.Max);
+            }
+            else if(string.Equals("nvarchar", columnRow.Data_type, StringComparison.OrdinalIgnoreCase) && columnRow.Character_maximum_length == -1) {
+                length = new ColumnLength(LengthType.Max);
             }            
             else {
 
