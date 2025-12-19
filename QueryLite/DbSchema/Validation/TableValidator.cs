@@ -393,25 +393,19 @@ namespace QueryLite {
                         tableValidation.Add($"{columnDetail}, database column is not auto generated but code column is");
                     }
 
-                    if(dbColumn.Length != null) {
+                    bool codeColumnIsMaxLength = codeColumn.Length?.LengthType == LengthType.Max;
+                    bool dbColumnIsMaxLength = dbColumn.Length?.LengthType == LengthType.Max;
 
-                        if(codeColumn.Length == null) {
-                            tableValidation.Add($"{columnDetail}, database column length is not null but code column length is null");
-                        }
-                        else if(dbColumn.Length.Value == -1) {  //-1 is unlimited length
-
-                            if(codeColumn.Length != int.MaxValue) {
-                                tableValidation.Add($"{columnDetail}, database column has an unlimited length but code column is not set to int.MaxValue. Database Length = {dbColumn.Length}, Code Column Length = {codeColumn.Length}");
-                            }
-                        }
-                        else if(codeColumn.Length != null && dbColumn.Length.Value != codeColumn.Length.Value) {
-                            tableValidation.Add($"{columnDetail}, database column length does not match code column length. Database Length = {dbColumn.Length}, Code Column Length = {codeColumn.Length}");
-                        }
+                    if(codeColumnIsMaxLength != dbColumnIsMaxLength) {
+                        tableValidation.Add($"{columnDetail}, database column length and column column length do not match. Database Length = {dbColumn.Length}, Code Column Length = {codeColumn.Length}");
                     }
                     else {
 
-                        if(codeColumn.Length != null && codeColumn.Length != int.MaxValue) {
-                            tableValidation.Add($"{columnDetail}, database column length is null but code column length is not null");
+                        int? codeColumnMaxLength = codeColumn.Length?.Length ?? null;
+                        int? dbColumnMaxLength = dbColumn.Length?.Length ?? null;
+
+                        if(codeColumnMaxLength != dbColumnMaxLength) {
+                            tableValidation.Add($"{columnDetail}, database column length and column column length do not match. Database Length = {dbColumn.Length}, Code Column Length = {codeColumn.Length}");
                         }
                     }
                 }

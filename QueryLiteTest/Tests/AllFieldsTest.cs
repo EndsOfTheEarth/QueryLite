@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -186,6 +187,17 @@ namespace QueryLiteTest.Tests {
             }
 
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
+
+            StringBuilder messages = new StringBuilder();
+
+            foreach(ValidationItem item in result.Items) {
+
+                foreach(string message in item.ValidationMessages) {
+                    messages.AppendLine(message);
+                }
+            }
+
+            string text = messages.ToString();
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
                 Assert.AreEqual(7, result.Items.Count);

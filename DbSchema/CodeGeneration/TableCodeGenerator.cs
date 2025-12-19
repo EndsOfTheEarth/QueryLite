@@ -154,11 +154,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 string columnLengthParameter = string.Empty;
 
-                if(column.Length != null) {
-                    columnLengthParameter = ", length: " + (column.Length != -1 ? column.Length.Value.ToString() : "int.MaxValue");
+                if(column.Length?.LengthType == LengthType.Max || columnInfo.DotNetType == typeof(byte[])) {
+                    columnLengthParameter = $", length: {nameof(ColumnLength)}.{ColumnLength.MAX}";
                 }
-                else if(columnInfo.DotNetType == typeof(byte[])) {
-                    columnLengthParameter = ", length: int.MaxValue";
+                else if(column.Length != null) {
+                    columnLengthParameter = $", length: new({column.Length?.Length})";
                 }
 
                 string encloseParameter = SqlKeyWordLookup.IsKeyWord(column.ColumnName.Value) ? ", enclose: true" : string.Empty;

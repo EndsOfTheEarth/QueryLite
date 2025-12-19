@@ -43,7 +43,7 @@ namespace QueryLiteTest.Tables {
             Short = new Column<CustomShort, short>(this, columnName: "ctShort");
             Int = new Column<CustomInt, int>(this, columnName: "ctInt");
             Long = new Column<CustomLong, long>(this, columnName: "ctLong");
-            String = new Column<CustomString, string>(this, columnName: "ctString", length: 100);
+            String = new Column<CustomString, string>(this, columnName: "ctString", length: new(100));
             Bool = new Column<CustomBool, bool>(this, columnName: "ctBool");
             Decimal = new Column<CustomDecimal, decimal>(this, columnName: "ctDecimal");
             DateTime = new Column<CustomDateTime, DateTime>(this, columnName: "ctDateTime");
@@ -57,7 +57,7 @@ namespace QueryLiteTest.Tables {
             NShort = new NullableColumn<CustomShort, short>(this, columnName: "ctNShort");
             NInt = new NullableColumn<CustomInt, int>(this, columnName: "ctNInt");
             NLong = new NullableColumn<CustomLong, long>(this, columnName: "ctNLong");
-            NString = new NullableColumn<CustomString, string>(this, columnName: "ctNString", length: 100);
+            NString = new NullableColumn<CustomString, string>(this, columnName: "ctNString", length: new(100));
             NBool = new NullableColumn<CustomBool, bool>(this, columnName: "ctNBool");
             NDecimal = new NullableColumn<CustomDecimal, decimal>(this, columnName: "ctNDecimal");
             NDateTime = new NullableColumn<CustomDateTime, DateTime>(this, columnName: "ctNDateTime");

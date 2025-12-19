@@ -39,10 +39,10 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public ExtendedPropertiesView() : base(tableName: "extended_properties", schemaName: "sys") {
 
             Class = new Column<short>(this, columnName: "class");
-            Class_Desc = new NullableColumn<string>(this, columnName: "class_desc", length: 60);
+            Class_Desc = new NullableColumn<string>(this, columnName: "class_desc", length: new(60));
             Major_Id = new Column<int>(this, columnName: "major_id");
             Minor_Id = new Column<int>(this, columnName: "minor_id");
-            Name = new Column<string>(this, columnName: "name", length: 128);
+            Name = new Column<string>(this, columnName: "name", length: new(128));
             Value = new NullableColumn<string>(this, columnName: "value");
         }
     }
@@ -59,7 +59,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
             Object_Id = new Column<int>(this, columnName: "object_id");
             Schema_Id = new Column<int>(this, columnName: "schema_id");
-            Table_Name = new Column<StringKey<ITableName>>(this, columnName: "name", length: 128);
+            Table_Name = new Column<StringKey<ITableName>>(this, columnName: "name", length: new(128));
         }
     }
 
@@ -75,7 +75,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
             Object_Id = new Column<int>(this, columnName: "object_id");
             Column_Id = new Column<int>(this, columnName: "column_id");
-            Column_Name = new Column<StringKey<IColumnName>>(this, columnName: "name", length: 128);
+            Column_Name = new Column<StringKey<IColumnName>>(this, columnName: "name", length: new(128));
         }
     }
 
@@ -89,7 +89,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public SchemasView() : base(tableName: "schemas", schemaName: "sys") {
 
             Schema_Id = new Column<int>(this, columnName: "schema_id");
-            Schema_Name = new Column<StringKey<ISchemaName>>(this, columnName: "name", length: 128);
+            Schema_Name = new Column<StringKey<ISchemaName>>(this, columnName: "name", length: new(128));
         }
     }
 }

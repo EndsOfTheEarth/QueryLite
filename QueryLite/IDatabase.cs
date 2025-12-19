@@ -46,6 +46,8 @@ namespace QueryLite {
         /// </summary>
         Func<string, string> SchemaMap { get; }
 
+        public UtfType DefaultUtfType { get; }
+
         /// <summary>
         /// Creates a new database connection
         /// </summary>
@@ -56,6 +58,12 @@ namespace QueryLite {
     public enum DatabaseType {
         SqlServer = 0,  //Note: These integer values are used by the prepared query functionality
         PostgreSql = 1
+    }
+
+    public enum UtfType{
+        UTF8,
+        UTF16,
+        UTF32
     }
 
     /// <summary>

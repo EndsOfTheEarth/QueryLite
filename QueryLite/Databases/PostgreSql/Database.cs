@@ -52,6 +52,8 @@ namespace QueryLite.Databases.PostgreSql {
 
         public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 
+        public UtfType DefaultUtfType { get; } = UtfType.UTF8;
+
         public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 
             ArgumentException.ThrowIfNullOrEmpty(connectionString);
