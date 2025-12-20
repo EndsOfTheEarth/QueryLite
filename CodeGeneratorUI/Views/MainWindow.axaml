@@ -44,6 +44,15 @@
               SelectionMode="Single" SelectionChanged="TreeNodeSelectionChanged"
               VerticalAlignment="Stretch"
               BorderThickness="1">
+        
+            <TreeView.Styles>
+                <Style Selector="TreeViewItem" x:DataType="vm:TreeNodeViewModel">
+                    <Setter Property="Focusable" Value="True" />
+                    <Setter Property="IsExpanded" Value="False"/>
+                    <Setter Property="IsEnabled" Value="{Binding IsEnabled, Mode=TwoWay}"/>
+                </Style>
+            </TreeView.Styles>
+
             <TreeView.ItemTemplate>
               <TreeDataTemplate ItemsSource="{Binding Nodes}">
                 <TextBlock Text="{Binding Text}"/>

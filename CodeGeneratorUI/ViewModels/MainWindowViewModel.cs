@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using CommunityToolkit.Mvvm.ComponentModel;
 using QueryLite.DbSchema;
 using QueryLite.DbSchema.Tables;
 using QueryLite.Utility;
@@ -30,22 +31,25 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
 
     public partial class MainWindowViewModel : ViewModelBase {
 
-        internal ObservableCollection<Node> Nodes { get; set; }
-        public ObservableCollection<object> SelectedNodes { get; }
+        internal ObservableCollection<TreeNodeViewModel> Nodes { get; set; }
+        public ObservableCollection<TreeNodeViewModel> SelectedNodes { get; }
 
         public MainWindowViewModel() {
-            Nodes = new ObservableCollection<Node>();
-            SelectedNodes = new ObservableCollection<object>();
+            Nodes = new ObservableCollection<TreeNodeViewModel>();
+            SelectedNodes = new ObservableCollection<TreeNodeViewModel>();
         }
     }
 
-    public abstract class Node {
+    public partial class TreeNodeViewModel : ViewModelBase {
 
         public string Text { get; set; } = string.Empty;
 
-        public ObservableCollection<Node> Nodes { get; set; } = new ObservableCollection<Node>();
+        [ObservableProperty]
+        private bool isEnabled = true;
+
+        public ObservableCollection<TreeNodeViewModel> Nodes { get; set; } = new ObservableCollection<TreeNodeViewModel>();
     }
-    internal class SchemaNode : Node {
+    internal class SchemaNode : TreeNodeViewModel {
 
         public StringKey<ISchemaName> SchemaName { get; }
 
@@ -54,7 +58,7 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
             Text = SchemaName.Value;
         }
     }
-    internal class TableNode : Node {
+    internal class TableNode : TreeNodeViewModel {
 
         public DatabaseTable Table { get; }
 
@@ -63,7 +67,7 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
             Text = table.TableName.Value + (table.IsView ? " (View)" : "");
         }
     }
-    internal class ColumnNode : Node {
+    internal partial class ColumnNode : TreeNodeViewModel {
 
         public TableNode TableNode { get; }
         public DatabaseColumn Column { get; }

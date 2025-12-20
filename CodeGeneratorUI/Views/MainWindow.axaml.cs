@@ -376,7 +376,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
             MainWindowViewModel? viewModel = GetViewModel();
 
-            foreach(Node node in viewModel!.Nodes) {
+            foreach(TreeNodeViewModel node in viewModel!.Nodes) {
                 SetExpandAll(node, expand: true);
             }
         }
@@ -385,12 +385,12 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
             MainWindowViewModel? viewModel = GetViewModel();
 
-            foreach(Node node in viewModel!.Nodes) {
+            foreach(TreeNodeViewModel node in viewModel!.Nodes) {
                 SetExpandAll(node, expand: false);
             }
         }
 
-        private void SetExpandAll(Node parentNode, bool expand) {
+        private void SetExpandAll(TreeNodeViewModel parentNode, bool expand) {
 
             TreeViewItem? treeViewItem = (TreeViewItem?)tvwSchema.TreeContainerFromItem(parentNode);
 
@@ -398,7 +398,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                 treeViewItem.IsExpanded = expand;
             }
 
-            foreach(Node node in parentNode.Nodes) {
+            foreach(TreeNodeViewModel node in parentNode.Nodes) {
 
                 TreeViewItem? subTreeViewItem = (TreeViewItem?)tvwSchema.TreeContainerFromItem(node);
 
