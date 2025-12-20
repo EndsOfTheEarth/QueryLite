@@ -233,7 +233,7 @@ namespace DbSchema.CodeGeneration {
 
             {name} info = request.{name};
 
-            {name}Row row = new Row() {{
+            {name}Row row = new {name}Row() {{
 {setValues}
             }}
 
