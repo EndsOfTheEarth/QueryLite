@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
-using Microsoft.Data.SqlClient;
 
 namespace QueryLite {
 
@@ -182,8 +182,9 @@ namespace QueryLite {
                     DbTransaction.Commit();
 
                     if(DbTransaction.Connection != null) {
-                        using DbConnection connection = DbTransaction.Connection;
-                        ResetIsolationLevel(connection);
+                        using(DbConnection connection = DbTransaction.Connection) {
+                            ResetIsolationLevel(connection);
+                        }
                     }
                 }
             }
@@ -203,19 +204,20 @@ namespace QueryLite {
 
             if(DbTransaction != null) {
 
-                using(DbTransaction) {
+                await using(DbTransaction) {
 
                     await DbTransaction.CommitAsync(cancellationToken);
 
                     if(DbTransaction.Connection != null) {
-                        using DbConnection connection = DbTransaction.Connection;
-                        ResetIsolationLevel(connection);
+                        await using(DbConnection connection = DbTransaction.Connection) {
+                            ResetIsolationLevel(connection);
+                        }
                     }
                 }
             }
             if(DbConnection != null) {
 
-                using(DbConnection) {
+                await using(DbConnection) {
                     await DbConnection.CloseAsync();
                 }
             }
@@ -233,12 +235,13 @@ namespace QueryLite {
 
                     if(DbTransaction.Connection != null) {
 
-                        using DbConnection connection = DbTransaction.Connection;
+                        using(DbConnection connection = DbTransaction.Connection) {
 
-                        if(DbTransaction.Connection.State != ConnectionState.Closed && DbTransaction.Connection.State != ConnectionState.Broken) {
-                            DbTransaction.Rollback();
+                            if(DbTransaction.Connection.State != ConnectionState.Closed && DbTransaction.Connection.State != ConnectionState.Broken) {
+                                DbTransaction.Rollback();
+                            }
+                            ResetIsolationLevel(connection);
                         }
-                        ResetIsolationLevel(connection);
                     }
                 }
                 DbTransaction = null;
@@ -260,23 +263,24 @@ namespace QueryLite {
 
             if(DbTransaction != null) {
 
-                using(DbTransaction) {
+                await using(DbTransaction) {
 
                     if(DbTransaction.Connection != null) {
 
-                        using DbConnection connection = DbTransaction.Connection;
+                        await using(DbConnection connection = DbTransaction.Connection) {
 
-                        if(DbTransaction.Connection.State != ConnectionState.Closed && DbTransaction.Connection.State != ConnectionState.Broken) {
-                            await DbTransaction.RollbackAsync(cancellationToken);
+                            if(DbTransaction.Connection.State != ConnectionState.Closed && DbTransaction.Connection.State != ConnectionState.Broken) {
+                                await DbTransaction.RollbackAsync(cancellationToken);
+                            }
+                            ResetIsolationLevel(connection);
                         }
-                        ResetIsolationLevel(connection);
                     }
                 }
                 DbTransaction = null;
             }
             if(DbConnection != null) {
 
-                using(DbConnection) {
+                await using(DbConnection) {
                     await DbConnection.CloseAsync();
                 }
                 DbConnection = null;

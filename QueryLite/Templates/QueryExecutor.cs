@@ -93,75 +93,71 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandText = sql;
+                    command.CommandTimeout = timeout.Seconds;
 
-                if(parameters != null) {
+                    if(parameters != null) {
 
-                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                        command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList[index]);
+                        }
                     }
-                }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) { //Ideally we want to open the connection as late a possible and close it immediately after use so it is freed back into the connection pool for other threads to use
-                    dbConnection.Open();
+                    if(oneTimeConnection) { //Ideally we want to open the connection as late a possible and close it immediately after use so it is freed back into the connection pool for other threads to use
+                        dbConnection.Open();
+                    }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    using(DbDataReader reader = command.ExecuteReader()) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        List<RESULT> rowList = new List<RESULT>();
+
+                        while(reader.Read()) {
+                            rowList.Add(func(resultRow));
+                            resultRow.Reset();
+                        }
+
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        //Note: Reader must be closed for RecordsAffected to be populated
+                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+
+                        if(hasEvents) {
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: result.Rows.Count,
+                                rowsEffected: result.RowsEffected,
+                                queryType: queryType,
+                                result: result,
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: false,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                using DbDataReader reader = command.ExecuteReader();
-
-                IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                List<RESULT> rowList = new List<RESULT>();
-
-                while(reader.Read()) {
-                    rowList.Add(func(resultRow));
-                    resultRow.Reset();
-                }
-
-                reader.Dispose();
-
-                if(oneTimeConnection) {
-                    dbConnection.Dispose();
-                }
-
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
-                //Note: Reader must be closed for RecordsAffected to be populated
-                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: result.Rows.Count,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: false,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -188,8 +184,8 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
-                    dbConnection.Dispose();
+                if(oneTimeConnection) {
+                    dbConnection?.Dispose();
                 }
             }
         }
@@ -231,7 +227,7 @@ namespace QueryLite {
 
                 if(transaction == null) {
                     oneTimeConnection = true;
-                    dbConnection = database.GetNewConnection();                    
+                    dbConnection = database.GetNewConnection();
                 }
                 else {
 
@@ -248,62 +244,59 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                if(parameters != null) {
+                    if(parameters != null) {
 
-                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                        command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList[index]);
+                        }
                     }
-                }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    dbConnection.Open();
+                    if(oneTimeConnection) {
+                        dbConnection.Open();
+                    }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    int rowsEffected = command.ExecuteNonQuery();
+
+                    NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+
+                    if(hasEvents) {
+
+                        Settings.FireQueryPerformedEvent(
+                            database: database,
+                            sql: sql,
+                            rows: 0,
+                            rowsEffected: result.RowsEffected,
+                            queryType: queryType,
+                            result: result,
+                            start: start,
+                            end: DateTimeOffset.Now,
+                            elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                            exception: null,
+                            isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                            transactionId: transaction?.TransactionId,
+                            timeout: timeout,
+                            isAsync: false,
+                            debugName: debugName
+                        );
+                    }
+                    return result;
                 }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                int rowsEffected = command.ExecuteNonQuery();
-
-                if(oneTimeConnection) {
-                    dbConnection.Dispose();
-                }
-
-                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: 0,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: false,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -330,8 +323,8 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
-                    dbConnection.Dispose();
+                if(oneTimeConnection) {
+                    dbConnection?.Dispose();
                 }
             }
         }
@@ -390,81 +383,77 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                if(parameters != null) {
+                    if(parameters != null) {
 
-                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                        command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList[index]);
+                        }
                     }
-                }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    dbConnection.Open();
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                using DbDataReader reader = command.ExecuteReader();
-
-                IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                bool isFirst = true;
-
-                RESULT? result = default;
-
-                while(reader.Read()) {
-
-                    if(!isFirst) {
-                        throw new Exception("More than one record exists in result");
+                    if(oneTimeConnection) {
+                        dbConnection.Open();
                     }
-                    result = func(resultRow);
-                    isFirst = false;
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    using(DbDataReader reader = command.ExecuteReader()) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        bool isFirst = true;
+
+                        RESULT? result = default;
+
+                        while(reader.Read()) {
+
+                            if(!isFirst) {
+                                throw new Exception("More than one record exists in result");
+                            }
+                            result = func(resultRow);
+                            isFirst = false;
+                        }
+
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        if(hasEvents) {
+
+                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: !isFirst ? 1 : 0,
+                                rowsEffected: 0,
+                                queryType: queryType,
+                                result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: false,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-
-                reader.Dispose();
-
-                if(oneTimeConnection) {
-                    dbConnection.Dispose();
-                }
-
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
-                if(hasEvents) {
-
-                    List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: !isFirst ? 1 : 0,
-                        rowsEffected: 0,
-                        queryType: queryType,
-                        result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: false,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -491,8 +480,8 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
-                    dbConnection.Dispose();
+                if(oneTimeConnection) {
+                    dbConnection?.Dispose();
                 }
             }
         }
@@ -552,84 +541,76 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                if(parameters != null) {
+                    if(parameters != null) {
 
-                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                        command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList[index]);
+                        }
                     }
-                }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                bool isFirst = true;
-
-                RESULT? result = default;
-
-                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-
-                try {
-
-                    IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-
-                        if(!isFirst) {
-                            throw new Exception("More than one record exists in result");
-                        }
-                        result = func(resultRow);
-                        isFirst = false;
+                    if(oneTimeConnection) {
+                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    SelectCollectorCache.Release(database.DatabaseType, resultRow);
-                }
-                finally {
-                    await reader.DisposeAsync().ConfigureAwait(false);
-                }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                if(oneTimeConnection) {
-                    await dbConnection.DisposeAsync().ConfigureAwait(false);
+                    bool isFirst = true;
+
+                    RESULT? result = default;
+
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+
+                            if(!isFirst) {
+                                throw new Exception("More than one record exists in result");
+                            }
+                            result = func(resultRow);
+                            isFirst = false;
+                        }
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        if(hasEvents) {
+
+                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: !isFirst ? 1 : 0,
+                                rowsEffected: 0,
+                                queryType: queryType,
+                                result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: true,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-
-                if(hasEvents) {
-
-                    List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: !isFirst ? 1 : 0,
-                        rowsEffected: 0,
-                        queryType: queryType,
-                        result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: true,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -656,7 +637,7 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null) {
                     await dbConnection.DisposeAsync().ConfigureAwait(false);
                 }
             }
@@ -718,79 +699,71 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                if(parameters != null) {
+                    if(parameters != null) {
 
-                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                        command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList[index]);
+                        }
                     }
-                }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                List<RESULT> rowList = new List<RESULT>();
-
-                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-
-                try {
-
-                    IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-                        rowList.Add(func(resultRow));
-                        resultRow.Reset();
+                    if(oneTimeConnection) {
+                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    SelectCollectorCache.Release(database.DatabaseType, resultRow);
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    List<RESULT> rowList = new List<RESULT>();
+
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                            rowList.Add(func(resultRow));
+                            resultRow.Reset();
+                        }
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        //Note: Reader must be closed for RecordsAffected to be populated
+                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+
+                        if(hasEvents) {
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: result.Rows.Count,
+                                rowsEffected: result.RowsEffected,
+                                queryType: queryType,
+                                result: result,
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: true,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-                finally {
-                    await reader.DisposeAsync().ConfigureAwait(false);
-                }
-
-                if(oneTimeConnection) {
-                    await dbConnection.DisposeAsync().ConfigureAwait(false);
-                }                
-
-                //Note: Reader must be closed for RecordsAffected to be populated
-                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: result.Rows.Count,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: true,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -817,7 +790,7 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null) {
                     await dbConnection.DisposeAsync().ConfigureAwait(false);
                 }
             }
@@ -878,62 +851,59 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                if(parameters != null) {
+                    if(parameters != null) {
 
-                    for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                        command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList[index]);
+                        }
                     }
-                }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    if(oneTimeConnection) {
+                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+
+                    NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+
+                    if(hasEvents) {
+
+                        Settings.FireQueryPerformedEvent(
+                            database: database,
+                            sql: sql,
+                            rows: 0,
+                            rowsEffected: result.RowsEffected,
+                            queryType: queryType,
+                            result: result,
+                            start: start,
+                            end: DateTimeOffset.Now,
+                            elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                            exception: null,
+                            isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                            transactionId: transaction?.TransactionId,
+                            timeout: timeout,
+                            isAsync: true,
+                            debugName: debugName
+                        );
+                    }
+                    return result;
                 }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
-
-                if(oneTimeConnection) {
-                    await dbConnection.DisposeAsync().ConfigureAwait(false);
-                }
-
-                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: 0,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: true,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -960,7 +930,7 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null) {
                     await dbConnection.DisposeAsync().ConfigureAwait(false);
                 }
             }
@@ -1025,73 +995,69 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
-                }
+                    for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
+                        command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    dbConnection.Open();
+                    if(oneTimeConnection) {
+                        dbConnection.Open();
+                    }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    using(DbDataReader reader = command.ExecuteReader()) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        List<RESULT> rowList = new List<RESULT>();
+
+                        while(reader.Read()) {
+                            rowList.Add(func(resultRow));
+                            resultRow.Reset();
+                        }
+
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        //Note: Reader must be closed for RecordsAffected to be populated
+                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+
+                        if(hasEvents) {
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: result.Rows.Count,
+                                rowsEffected: result.RowsEffected,
+                                queryType: queryType,
+                                result: result,
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: false,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                using DbDataReader reader = command.ExecuteReader();
-
-                IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                List<RESULT> rowList = new List<RESULT>();
-
-                while(reader.Read()) {
-                    rowList.Add(func(resultRow));
-                    resultRow.Reset();
-                }
-
-                reader.Dispose();
-
-                if(oneTimeConnection) {
-                    dbConnection.Dispose();
-                }
-
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
-                //Note: Reader must be closed for RecordsAffected to be populated
-                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: result.Rows.Count,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: false,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -1118,8 +1084,8 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
-                    dbConnection.Dispose();
+                if(oneTimeConnection) {
+                    dbConnection?.Dispose();
                 }
             }
         }
@@ -1180,78 +1146,74 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
-                }
+                    for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
+                        command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    dbConnection.Open();
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                using DbDataReader reader = command.ExecuteReader();
-
-                IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                bool isFirst = true;
-
-                RESULT? result = default;
-
-                while(reader.Read()) {
-
-                    if(!isFirst) {
-                        throw new Exception("More than one record exists in result");
+                    if(oneTimeConnection) {
+                        dbConnection.Open();
                     }
-                    result = func(resultRow);
-                    isFirst = false;
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    using(DbDataReader reader = command.ExecuteReader()) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        bool isFirst = true;
+
+                        RESULT? result = default;
+
+                        while(reader.Read()) {
+
+                            if(!isFirst) {
+                                throw new Exception("More than one record exists in result");
+                            }
+                            result = func(resultRow);
+                            isFirst = false;
+                        }
+
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        if(hasEvents) {
+
+                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: !isFirst ? 1 : 0,
+                                rowsEffected: 0,
+                                queryType: queryType,
+                                result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: false,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-
-                reader.Dispose();
-
-                if(oneTimeConnection) {
-                    dbConnection.Dispose();
-                }
-
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
-                if(hasEvents) {
-
-                    List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: !isFirst ? 1 : 0,
-                        rowsEffected: 0,
-                        queryType: queryType,
-                        result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: false,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -1278,8 +1240,8 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
-                    dbConnection.Dispose();
+                if(oneTimeConnection) {
+                    dbConnection?.Dispose();
                 }
             }
         }
@@ -1341,80 +1303,72 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
-                }
+                    for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
+                        command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                RESULT? result = default;
-                bool isFirst = true;
-
-                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-
-                try {
-
-                    IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-
-                        if(!isFirst) {
-                            throw new Exception("More than one record exists in result");
-                        }
-                        result = func(resultRow);
-                        isFirst = false;
+                    if(oneTimeConnection) {
+                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    SelectCollectorCache.Release(database.DatabaseType, resultRow);
-                }
-                finally {
-                    await reader.DisposeAsync().ConfigureAwait(false);
-                }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                if(oneTimeConnection) {
-                    await dbConnection.DisposeAsync().ConfigureAwait(false);
+                    RESULT? result = default;
+                    bool isFirst = true;
+
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+
+                            if(!isFirst) {
+                                throw new Exception("More than one record exists in result");
+                            }
+                            result = func(resultRow);
+                            isFirst = false;
+                        }
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        if(hasEvents) {
+
+                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: !isFirst ? 1 : 0,
+                                rowsEffected: 0,
+                                queryType: queryType,
+                                result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: true,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-
-                if(hasEvents) {
-
-                    List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: !isFirst ? 1 : 0,
-                        rowsEffected: 0,
-                        queryType: queryType,
-                        result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: true,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -1441,7 +1395,7 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null) {
                     await dbConnection.DisposeAsync().ConfigureAwait(false);
                 }
             }
@@ -1487,7 +1441,7 @@ namespace QueryLite {
 
                 if(transaction == null) {
                     oneTimeConnection = true;
-                    dbConnection = database.GetNewConnection();                    
+                    dbConnection = database.GetNewConnection();
                 }
                 else {
 
@@ -1504,76 +1458,68 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
-                    command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
-                }
+                    for(int paramIndex = 0; paramIndex < parameters.Count; paramIndex++) {
+                        command.Parameters.Add(parameters[paramIndex].CreateParameter(paramValue));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                List<RESULT> rowList = new List<RESULT>();
-
-                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-
-                try {
-
-                    IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-                        rowList.Add(func(resultRow));
-                        resultRow.Reset();
+                    if(oneTimeConnection) {
+                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    SelectCollectorCache.Release(database.DatabaseType, resultRow);
-                }
-                finally {
-                    await reader.DisposeAsync().ConfigureAwait(false);
-                }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                if(oneTimeConnection) {
-                    await dbConnection.DisposeAsync().ConfigureAwait(false);
+                    List<RESULT> rowList = new List<RESULT>();
+
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                            rowList.Add(func(resultRow));
+                            resultRow.Reset();
+                        }
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        //Note: Reader must be closed for RecordsAffected to be populated
+                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+
+                        if(hasEvents) {
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: result.Rows.Count,
+                                rowsEffected: result.RowsEffected,
+                                queryType: queryType,
+                                result: result,
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: true,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-
-                //Note: Reader must be closed for RecordsAffected to be populated
-                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: result.Rows.Count,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: true,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -1600,7 +1546,7 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null) {
                     await dbConnection.DisposeAsync().ConfigureAwait(false);
                 }
             }
@@ -1662,76 +1608,72 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int index = 0; index < setParameters.Count; index++) {
+                    for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPreparedParameter<PARAMETERS> param = setParameters[index];
+                        IPreparedParameter<PARAMETERS> param = setParameters[index];
 
-                    command.Parameters.Add(param.CreateParameter(parameters));
-                }
+                        command.Parameters.Add(param.CreateParameter(parameters));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    dbConnection.Open();
+                    if(oneTimeConnection) {
+                        dbConnection.Open();
+                    }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    using(DbDataReader reader = command.ExecuteReader()) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        List<RESULT> rowList = new List<RESULT>();
+
+                        while(reader.Read()) {
+                            rowList.Add(outputFunc(resultRow));
+                            resultRow.Reset();
+                        }
+
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        //Note: Reader must be closed for RecordsAffected to be populated
+                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+
+                        if(hasEvents) {
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: result.Rows.Count,
+                                rowsEffected: result.RowsEffected,
+                                queryType: queryType,
+                                result: result,
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: false,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                using DbDataReader reader = command.ExecuteReader();
-
-                IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                List<RESULT> rowList = new List<RESULT>();
-
-                while(reader.Read()) {
-                    rowList.Add(outputFunc(resultRow));
-                    resultRow.Reset();
-                }
-
-                reader.Dispose();
-
-                if(oneTimeConnection) {
-                    dbConnection.Dispose();
-                }
-
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
-                //Note: Reader must be closed for RecordsAffected to be populated
-                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: result.Rows.Count,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: false,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -1758,8 +1700,8 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
-                    dbConnection.Dispose();
+                if(oneTimeConnection) {
+                    dbConnection?.Dispose();
                 }
             }
         }
@@ -1820,81 +1762,77 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int index = 0; index < setParameters.Count; index++) {
+                    for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPreparedParameter<PARAMETERS> param = setParameters[index];
+                        IPreparedParameter<PARAMETERS> param = setParameters[index];
 
-                    command.Parameters.Add(param.CreateParameter(parameters));
-                }
+                        command.Parameters.Add(param.CreateParameter(parameters));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    dbConnection.Open();
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                using DbDataReader reader = command.ExecuteReader();
-
-                IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                bool isFirst = true;
-
-                RESULT? result = default;
-
-                while(reader.Read()) {
-
-                    if(!isFirst) {
-                        throw new Exception("More than one record exists in result");
+                    if(oneTimeConnection) {
+                        dbConnection.Open();
                     }
-                    result = outputFunc(resultRow);
-                    isFirst = false;
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    using(DbDataReader reader = command.ExecuteReader()) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        bool isFirst = true;
+
+                        RESULT? result = default;
+
+                        while(reader.Read()) {
+
+                            if(!isFirst) {
+                                throw new Exception("More than one record exists in result");
+                            }
+                            result = outputFunc(resultRow);
+                            isFirst = false;
+                        }
+
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        if(hasEvents) {
+
+                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: !isFirst ? 1 : 0,
+                                rowsEffected: reader.RecordsAffected,
+                                queryType: queryType,
+                                result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: false,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-
-                reader.Dispose(); //Note: Reader must be closed for RecordsAffected to be populated
-
-                if(oneTimeConnection) {
-                    dbConnection.Dispose();
-                }
-
-                SelectCollectorCache.Release(database.DatabaseType, resultRow);
-
-                if(hasEvents) {
-
-                    List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: !isFirst ? 1 : 0,
-                        rowsEffected: reader.RecordsAffected,
-                        queryType: queryType,
-                        result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: false,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -1921,8 +1859,8 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
-                    dbConnection.Dispose();
+                if(oneTimeConnection) {
+                    dbConnection?.Dispose();
                 }
             }
         }
@@ -1984,84 +1922,76 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int index = 0; index < setParameters.Count; index++) {
+                    for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPreparedParameter<PARAMETERS> param = setParameters[index];
+                        IPreparedParameter<PARAMETERS> param = setParameters[index];
 
-                    command.Parameters.Add(param.CreateParameter(parameters));
-                }
+                        command.Parameters.Add(param.CreateParameter(parameters));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                bool isFirst = true;
-
-                RESULT? result = default;
-
-                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-
-                try {
-
-                    IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-
-                        if(!isFirst) {
-                            throw new Exception("More than one record exists in result");
-                        }
-                        result = outputFunc(resultRow);
-                        isFirst = false;
+                    if(oneTimeConnection) {
+                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    SelectCollectorCache.Release(database.DatabaseType, resultRow);
-                }
-                finally {
-                    await reader.DisposeAsync().ConfigureAwait(false); //Note: Reader must be closed for RecordsAffected to be populated
-                }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                if(oneTimeConnection) {
-                    await dbConnection.DisposeAsync().ConfigureAwait(false);
+                    bool isFirst = true;
+
+                    RESULT? result = default;
+
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+
+                            if(!isFirst) {
+                                throw new Exception("More than one record exists in result");
+                            }
+                            result = outputFunc(resultRow);
+                            isFirst = false;
+                        }
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        if(hasEvents) {
+
+                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: !isFirst ? 1 : 0,
+                                rowsEffected: reader.RecordsAffected,
+                                queryType: queryType,
+                                result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: true,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-
-                if(hasEvents) {
-
-                    List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: !isFirst ? 1 : 0,
-                        rowsEffected: reader.RecordsAffected,
-                        queryType: queryType,
-                        result: new QueryResult<RESULT>(resultRows, sql, rowsEffected: 0),
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: true,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -2088,7 +2018,7 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null) {
                     await dbConnection.DisposeAsync().ConfigureAwait(false);
                 }
             }
@@ -2151,79 +2081,71 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int index = 0; index < setParameters.Count; index++) {
+                    for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPreparedParameter<PARAMETERS> param = setParameters[index];
+                        IPreparedParameter<PARAMETERS> param = setParameters[index];
 
-                    command.Parameters.Add(param.CreateParameter(parameters));
-                }
+                        command.Parameters.Add(param.CreateParameter(parameters));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                List<RESULT> rowList = new List<RESULT>();
-
-                using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-
-                try {
-
-                    IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
-
-                    while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
-                        rowList.Add(outputFunc(resultRow));
-                        resultRow.Reset();
+                    if(oneTimeConnection) {
+                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    SelectCollectorCache.Release(database.DatabaseType, resultRow);
-                }
-                finally {
-                    await reader.DisposeAsync().ConfigureAwait(false);
-                }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                if(oneTimeConnection) {
-                    await dbConnection.DisposeAsync().ConfigureAwait(false);
+                    List<RESULT> rowList = new List<RESULT>();
+
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+
+                        IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
+
+                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                            rowList.Add(outputFunc(resultRow));
+                            resultRow.Reset();
+                        }
+                        SelectCollectorCache.Release(database.DatabaseType, resultRow);
+
+                        //Note: Reader must be closed for RecordsAffected to be populated
+                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+
+                        if(hasEvents) {
+
+                            Settings.FireQueryPerformedEvent(
+                                database: database,
+                                sql: sql,
+                                rows: result.Rows.Count,
+                                rowsEffected: result.RowsEffected,
+                                queryType: queryType,
+                                result: result,
+                                start: start,
+                                end: DateTimeOffset.Now,
+                                elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                                exception: null,
+                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                transactionId: transaction?.TransactionId,
+                                timeout: timeout,
+                                isAsync: true,
+                                debugName: debugName
+                            );
+                        }
+                        return result;
+                    }
                 }
-
-                //Note: Reader must be closed for RecordsAffected to be populated
-                QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: result.Rows.Count,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: true,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -2250,7 +2172,7 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null) {
                     await dbConnection.DisposeAsync().ConfigureAwait(false);
                 }
             }
@@ -2311,62 +2233,59 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int index = 0; index < setParameters.Count; index++) {
+                    for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPreparedParameter<PARAMETERS> param = setParameters[index];
+                        IPreparedParameter<PARAMETERS> param = setParameters[index];
 
-                    command.Parameters.Add(param.CreateParameter(parameters));
-                }
+                        command.Parameters.Add(param.CreateParameter(parameters));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    dbConnection.Open();
+                    if(oneTimeConnection) {
+                        dbConnection.Open();
+                    }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+
+                    int rowsEffected = command.ExecuteNonQuery();
+
+                    NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+
+                    if(hasEvents) {
+
+                        Settings.FireQueryPerformedEvent(
+                            database: database,
+                            sql: sql,
+                            rows: 0,
+                            rowsEffected: result.RowsEffected,
+                            queryType: queryType,
+                            result: result,
+                            start: start,
+                            end: DateTimeOffset.Now,
+                            elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                            exception: null,
+                            isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                            transactionId: transaction?.TransactionId,
+                            timeout: timeout,
+                            isAsync: false,
+                            debugName: debugName
+                        );
+                    }
+                    return result;
                 }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-
-                int rowsEffected = command.ExecuteNonQuery();
-
-                if(oneTimeConnection) {
-                    dbConnection.Dispose();
-                }
-
-                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: 0,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: false,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -2393,8 +2312,8 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
-                    dbConnection.Dispose();
+                if(oneTimeConnection) {
+                    dbConnection?.Dispose();
                 }
             }
         }
@@ -2455,61 +2374,58 @@ namespace QueryLite {
                     oneTimeConnection = false;
                 }
 
-                using DbCommand command = dbConnection!.CreateCommand();
+                using(DbCommand command = dbConnection!.CreateCommand()) {
 
-                command.CommandText = sql;
+                    command.CommandText = sql;
 
-                command.CommandTimeout = timeout.Seconds;
+                    command.CommandTimeout = timeout.Seconds;
 
-                for(int index = 0; index < setParameters.Count; index++) {
+                    for(int index = 0; index < setParameters.Count; index++) {
 
-                    IPreparedParameter<PARAMETERS> param = setParameters[index];
+                        IPreparedParameter<PARAMETERS> param = setParameters[index];
 
-                    command.Parameters.Add(param.CreateParameter(parameters));
-                }
+                        command.Parameters.Add(param.CreateParameter(parameters));
+                    }
 
 #if DEBUG
-                if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
+                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
 
-                    if(Debugger.IsAttached) {
-                        Debugger.Break();
+                        if(Debugger.IsAttached) {
+                            Debugger.Break();
+                        }
                     }
-                }
 #endif
 
-                if(oneTimeConnection) {
-                    await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    if(oneTimeConnection) {
+                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+
+                    NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+
+                    if(hasEvents) {
+
+                        Settings.FireQueryPerformedEvent(
+                            database: database,
+                            sql: sql,
+                            rows: 0,
+                            rowsEffected: result.RowsEffected,
+                            queryType: queryType,
+                            result: result,
+                            start: start,
+                            end: DateTimeOffset.Now,
+                            elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
+                            exception: null,
+                            isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                            transactionId: transaction?.TransactionId,
+                            timeout: timeout,
+                            isAsync: true,
+                            debugName: debugName
+                        );
+                    }
+                    return result;
                 }
-                command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
-                int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
-
-                NonQueryResult result = new NonQueryResult(sql, rowsEffected);
-
-                if(oneTimeConnection) {
-                    await dbConnection.DisposeAsync().ConfigureAwait(false);
-                }
-
-                if(hasEvents) {
-
-                    Settings.FireQueryPerformedEvent(
-                        database: database,
-                        sql: sql,
-                        rows: 0,
-                        rowsEffected: result.RowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: DateTimeOffset.Now,
-                        elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
-                        exception: null,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
-                        transactionId: transaction?.TransactionId,
-                        timeout: timeout,
-                        isAsync: true,
-                        debugName: debugName
-                    );
-                }
-                return result;
             }
             catch(Exception ex) {
 
@@ -2536,7 +2452,7 @@ namespace QueryLite {
                 throw;
             }
             finally {
-                if(oneTimeConnection && dbConnection != null && dbConnection.State != ConnectionState.Closed) {
+                if(oneTimeConnection && dbConnection != null) {
                     await dbConnection.DisposeAsync().ConfigureAwait(false);
                 }
             }
