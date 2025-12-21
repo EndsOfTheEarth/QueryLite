@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Benchmarks.Tables;
 using Dapper;
 using Npgsql;
 using QueryLite;
@@ -122,6 +123,29 @@ namespace Benchmarks {
                         .Set(table.Date, _date)
                     )
                     .Execute(transaction);
+
+                transaction.Commit();
+            }
+        }
+
+        [Benchmark]
+        public void QueryLite_Single_Repository_Insert() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Test01RowRepository repository = new Test01RowRepository();
+
+                Test01Row row = new Test01Row(
+                    id: 0,
+                    row_guid: _guid,
+                    message: _message,
+                    date: _date
+                );
+                repository.AddNewRow(row);
+
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
+
+                repository.Update(transaction);
 
                 transaction.Commit();
             }

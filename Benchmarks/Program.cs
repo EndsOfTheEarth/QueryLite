@@ -7,7 +7,7 @@ namespace Benchmarks {
         static void Main(string[] args) {
 
             //BenchmarkRunner.Run<InsertBenchmarks>();
-            //BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
+            BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
             //BenchmarkRunner.Run<DeleteSingleRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
@@ -18,12 +18,17 @@ namespace Benchmarks {
             //BenchmarkRunner.Run<SelectSingleRowAsyncBenchmarks>();
             //BenchmarkRunner.Run<SelectTenRowAsyncBenchmarks>();
             //BenchmarkRunner.Run<SelectOneHundredRowAsyncBenchmarks>();
-            BenchmarkRunner.Run<SelectOneThousandRowAsyncBenchmarks>();
+            //BenchmarkRunner.Run<SelectOneThousandRowAsyncBenchmarks>();
 
             //await new SelectOneThousandRowAsyncBenchmarks().Ado_One_Thousand_Row_SelectAsync();
-            
+
             //await new SelectOneThousandRowAsyncBenchmarks().Ado_One_Thousand_Row_SelectAsync();
             //await new SelectOneThousandRowAsyncBenchmarks().QueryLite_One_Thousand_Row_Prepared_SelectAsync();
+
+            //DeleteSingleRowBenchmarks benchmark = new DeleteSingleRowBenchmarks();
+            //benchmark.Setup();
+
+            //benchmark.QueryLite_Single_Row_Repository_Delete();
         }
     }
 

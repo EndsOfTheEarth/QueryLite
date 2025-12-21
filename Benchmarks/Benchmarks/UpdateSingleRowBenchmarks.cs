@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Benchmarks.Tables;
 using Dapper;
 using Npgsql;
 using QueryLite;
@@ -131,6 +132,31 @@ namespace Benchmarks {
                     )
                     .Where(table.Row_guid == _guid)
                     .Execute(transaction);
+
+                transaction.Commit();
+            }
+        }
+
+        [Benchmark]
+        public void QueryLite_Single_Row_Repository_Update() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Test01RowRepository repository = new Test01RowRepository();
+
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
+
+                repository
+                    .SelectRows
+                    .Where(repository.Table.Row_guid == _guid)
+                    .Execute(Databases.TestDatabase);
+
+                Test01Row row = repository[0];
+
+                row.Message = "New Message";
+                row.Date = DateTime.Now;
+
+                repository.Update(transaction);
 
                 transaction.Commit();
             }

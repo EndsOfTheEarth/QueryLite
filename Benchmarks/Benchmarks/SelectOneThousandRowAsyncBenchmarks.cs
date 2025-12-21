@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Benchmarks.Classes;
+using Benchmarks.Tables;
 using Dapper;
 using Npgsql;
 using QueryLite;
@@ -153,6 +154,27 @@ namespace Benchmarks {
                         )
                         .From(table)
                         .ExecuteAsync(Databases.TestDatabase);
+
+                    _semaphore.Release();
+                });
+            }
+            for(int index = 0; index < _iterations; index++) {
+                await _semaphore.WaitAsync();
+            }
+        }
+
+        [Benchmark]
+        public async Task QueryLite_One_Thousand_Row_Repository_SelectAsync() {
+
+            SemaphoreSlim _semaphore = new SemaphoreSlim(0, _iterations);
+
+            for(int index = 0; index < _iterations; index++) {
+
+                _ = Task.Run(async () => {
+
+                    Test01RowRepository repository = new Test01RowRepository();
+
+                    repository.SelectRows.Execute(Databases.TestDatabase);
 
                     _semaphore.Release();
                 });

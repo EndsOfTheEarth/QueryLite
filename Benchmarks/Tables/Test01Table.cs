@@ -22,4 +22,54 @@
             Date = new Column<DateTime>(this, columnName: "date");
         }
     }
+
+    public sealed class Test01RowRepository : ARepository<Test01Table, Test01Row>, IRepository<Test01Table, Test01Row> {
+
+        public Test01RowRepository() : base(Test01Table.Instance, matchOn: MatchOn.PrimaryKey) { }
+    }
+
+    public partial record class Test01Row : IRow<Test01Table, Test01Row> {
+
+        public int Id { get; set; }
+        public Guid Row_guid { get; set; }
+        public string Message { get; set; } = "";
+        public DateTime Date { get; set; }        
+
+        public Test01Row() { }
+
+        public Test01Row(int id, Guid row_guid, string message, DateTime date) {
+            Id = id;
+            Row_guid = row_guid;
+            Message = message;
+            Date = date;
+        }
+
+        public void SetValues(int id, Guid row_guid, string message, DateTime date) {
+            Id = id;
+            Row_guid = row_guid;
+            Message = message;
+            Date = date;
+        }
+
+        public static Test01Row CloneRow(Test01Row row) => row with { };
+
+        public static List<GetSetMap<Test01Row>> GetColumnMap(Test01Table table) =>
+        [
+            new GetSetMap<Test01Row>(table.Id, row => row.Id, (row, resultRow) => row.Id = resultRow.Get(table.Id)),
+            new GetSetMap<Test01Row>(table.Row_guid, row => row.Row_guid, (row, resultRow) => row.Row_guid = resultRow.Get(table.Row_guid)),
+            new GetSetMap<Test01Row>(table.Message, row => row.Message, (row, resultRow) => row.Message = resultRow.Get(table.Message)),
+            new GetSetMap<Test01Row>(table.Date, row => row.Date, (row, resultRow) => row.Date = resultRow.Get(table.Date))
+        ];
+
+        public static Test01Row LoadRow(Test01Table table, IResultRow resultRow) {
+
+            Test01Row row = new Test01Row(
+                id: resultRow.Get(table.Id),
+                row_guid: resultRow.Get(table.Row_guid),
+                message: resultRow.Get(table.Message),
+                date: resultRow.Get(table.Date)
+            );
+            return row;
+        }
+    }
 }

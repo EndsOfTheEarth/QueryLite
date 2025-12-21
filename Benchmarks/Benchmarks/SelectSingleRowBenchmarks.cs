@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Benchmarks.Classes;
+using Benchmarks.Tables;
 using Dapper;
 using Npgsql;
 using QueryLite;
@@ -121,6 +122,20 @@ namespace Benchmarks {
                     )
                     .From(table)
                     .Where(table.Row_guid == _guid)
+                    .Execute(Databases.TestDatabase);
+            }
+        }
+
+        [Benchmark]
+        public void QueryLite_Single_Row_Repository_Select() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Test01RowRepository repository = new Test01RowRepository();
+
+                repository
+                    .SelectRows
+                    .Where(repository.Table.Row_guid == _guid)
                     .Execute(Databases.TestDatabase);
             }
         }

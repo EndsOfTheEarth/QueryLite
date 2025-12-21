@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Benchmarks.Tables;
 using Dapper;
 using Npgsql;
 using QueryLite;
@@ -130,6 +131,29 @@ namespace Benchmarks {
                     .Execute(transaction);
 
                 if(result.RowsEffected != 1) {
+                    throw new Exception();
+                }
+                transaction.Rollback(); //Roll back so we can run iterations
+            }
+        }
+
+        [Benchmark]
+        public void QueryLite_Single_Row_Repository_Delete() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Test01RowRepository repository = new Test01RowRepository();
+
+                repository.SelectRows.Execute(Databases.TestDatabase);
+
+                foreach(Test01Row row in repository) {
+                    repository.DeleteRow(row);
+                }
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
+
+                int rowsEffected = repository.Update(transaction);
+
+                if(rowsEffected != 1) {
                     throw new Exception();
                 }
                 transaction.Rollback(); //Roll back so we can run iterations
