@@ -30,7 +30,7 @@ namespace QueryLite {
     /// <summary>
     /// Database transaction
     /// </summary>
-    public sealed class Transaction : IDisposable {
+    public sealed class Transaction : IDisposable, IAsyncDisposable {
 
         /// <summary>
         /// Identifier for transaction. Used for debugging.
@@ -168,6 +168,21 @@ namespace QueryLite {
                 }
             }
             DbConnection?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync() {
+
+            if(DbTransaction != null) {
+
+                if(!mCommitted && !mRolledBack) {
+                    await RollbackAsync().ConfigureAwait(false);
+                }
+            }
+            if(DbConnection != null) {
+                await DbConnection.DisposeAsync().ConfigureAwait(false);
+            }
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
