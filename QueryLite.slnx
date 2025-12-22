@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Documentation.md" />
+    <File Path="GettingStarted.md" />
+    <File Path="LICENSE" />
+    <File Path="NugetReadme.md" />
+    <File Path="PreparedQueries.md" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Benchmarks/Benchmarks.csproj" />
+  <Project Path="CodeGeneratorUI/CodeGenerator.csproj" />
+  <Project Path="DbSchema/DbSchema.csproj" />
+  <Project Path="QueryLite/QueryLite.csproj" />
+  <Project Path="QueryLiteTest/QueryLiteTest.csproj" />
+</Solution>
