@@ -9,6 +9,7 @@ namespace Benchmarks {
     [MemoryDiagnoser]
     public class UpdateSingleRowBenchmarks {
 
+        public int Id { get; private set; }
         private readonly Guid _guid = new Guid("{A94E044C-CDE2-40E2-9A81-5803AFB746A2}");
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
@@ -41,15 +42,16 @@ namespace Benchmarks {
 
                 Query.Truncate(table).Execute(transaction);
 
-                NonQueryResult result = Query
+                QueryResult<int> result = Query
                     .Insert(table)
                     .Values(values => values
                         .Set(table.Row_guid, _guid)
                         .Set(table.Message, _message)
                         .Set(table.Date, _date)
                     )
-                    .Execute(transaction);
+                    .Execute(returning => returning.Get(table.Id), transaction);
 
+                Id = result.Rows[0];
                 transaction.Commit();
             }
         }
@@ -157,6 +159,26 @@ namespace Benchmarks {
                 row.Date = DateTime.Now;
 
                 repository.Update(transaction);
+
+                transaction.Commit();
+            }
+        }
+
+        [Benchmark]
+        public void QueryLite_Single_Row_Repository_Static_Update() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
+
+                Test01Row row = new Test01Row(
+                    id: Id,
+                    row_guid: _guid,
+                    message: "New Message",
+                    date: DateTime.Now
+                );
+
+                Test01RowRepository.ExecuteUpdate(row, Test01Table.Instance, transaction);
 
                 transaction.Commit();
             }

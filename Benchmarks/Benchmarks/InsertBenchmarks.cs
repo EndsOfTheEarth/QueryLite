@@ -150,5 +150,25 @@ namespace Benchmarks {
                 transaction.Commit();
             }
         }
+
+        [Benchmark]
+        public void QueryLite_Single_Repository_Static_Insert() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Test01Row row = new Test01Row(
+                    id: 0,
+                    row_guid: _guid,
+                    message: _message,
+                    date: _date
+                );
+
+                using Transaction transaction = new Transaction(Databases.TestDatabase);
+
+                Test01RowRepository.ExecuteInsert(row, Test01Table.Instance, transaction);
+
+                transaction.Commit();
+            }
+        }
     }
 }
