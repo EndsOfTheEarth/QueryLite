@@ -192,12 +192,22 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 if(settings.IncludeMessagePackAttributes || settings.IncludeJsonAttributes) {
                     classCode.EndLine();
                 }
+
+                string attributes = "";
+
                 if(settings.IncludeMessagePackAttributes) {
-                    classCode.Indent(2).Append($"[Key({count})]").EndLine();
+                    attributes += $"Key({count})";
                 }
 
                 if(settings.IncludeJsonAttributes) {
-                    classCode.Indent(2).Append($"[JsonPropertyName(\"{columnName}\")]").EndLine();
+                    if(attributes.Length > 0) {
+                        attributes += ", ";
+                    }
+                    attributes += $"JsonPropertyName(\"{columnName}\")";
+                }
+
+                if(attributes.Length > 0) {
+                    classCode.Indent(2).Append($"[{attributes}]").EndLine();
                 }
 
                 classCode.Indent(2).Append($"public {columnInfo.ColumnTypeName}{(column.IsNullable ? "?" : "")} {columnName} {{ get; set; }}");
