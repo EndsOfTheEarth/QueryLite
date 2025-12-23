@@ -369,7 +369,7 @@ namespace QueryLite {
         NotILike
     }
 
-    public sealed class StringLike : ILike<string> {
+    public sealed class StringLike<TYPE> : ILike<TYPE> {
 
         public StringLike(string expression, string collation = "") {
             Expression = expression;
