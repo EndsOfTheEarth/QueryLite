@@ -737,6 +737,42 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 }
 ```
 
+## Repository Static Insert & Update
+
+The repository class includes static Insert and Update methods that allocate less memory compared to using the Repository instance.
+The down side is that all updates are matched using the rows primary key and there is no checks to validate the
+row has not been changed in the database.
+When inserting a row, any auto generated values will be populated on the row after an update, but they will not be reverted
+if the transaction fails.
+
+Insert Example:
+
+```C#
+
+using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+    OrderRow row = new OrderRow(
+        //...populate properties
+    );
+    OrderRepository.ExecuteInsert(row, Test01Table.Instance, transaction);
+    await transaction.CommitAsync(cancellationToken);
+}
+```
+
+Update Example:
+
+```C#
+
+using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+    OrderRow row = new OrderRow(
+        //...populate properties
+    );
+    OrderRepository.ExecuteUpdate(row, Test01Table.Instance, transaction);
+    await transaction.CommitAsync(cancellationToken);
+}
+```
+
 ## Supported Operators
 
 | Description | Operator / Method | Example | Notes
