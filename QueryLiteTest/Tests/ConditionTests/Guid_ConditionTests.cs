@@ -87,7 +87,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.In(new List<Guid>() { types1.Guid, types2.Guid, types3.Guid }))
+                    .Where(table.Guid.In(types1.Guid, types2.Guid, types3.Guid))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +104,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.In(new List<Guid>() { types1.Guid, types2.Guid }))
+                    .Where(table.Guid.In(types1.Guid, types2.Guid))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +120,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.In(new List<Guid>() { types2.Guid }))
+                    .Where(table.Guid.In(types2.Guid))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -135,7 +135,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.NotIn(new List<Guid>() { types1.Guid, types2.Guid, types3.Guid }))
+                    .Where(table.Guid.NotIn(types1.Guid, types2.Guid, types3.Guid))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +148,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.NotIn(new List<Guid>() { types1.Guid, types2.Guid }))
+                    .Where(table.Guid.NotIn(types1.Guid, types2.Guid))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +163,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Guid.NotIn(new List<Guid>() { types1.Guid }))
+                    .Where(table.Guid.NotIn(types1.Guid))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -336,7 +336,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.Guid.In(
                             Query.NestedSelect(table2.Guid)
                                 .From(table2)
-                                .Where(table2.Guid.In(new List<Guid>() { types2.Guid, types3.Guid }))
+                                .Where(table2.Guid.In(types2.Guid, types3.Guid))
                         )
                     )
                     .OrderBy(table.Id.ASC)

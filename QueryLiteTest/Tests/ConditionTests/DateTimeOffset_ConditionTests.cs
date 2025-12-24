@@ -82,12 +82,16 @@ namespace QueryLiteTest.Tests.ConditionTests {
             AllTypesTable table = AllTypesTable.Instance;
 
             {
+                if(!Sequence<DateTimeOffset>.TryCreateFrom([types1.DateTimeOffset, types2.DateTimeOffset, types3.DateTimeOffset], out Sequence<DateTimeOffset>? dates)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTimeOffset.In(new List<DateTimeOffset>() { types1.DateTimeOffset, types2.DateTimeOffset, types3.DateTimeOffset }))
+                    .Where(table.DateTimeOffset.In(dates))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +108,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTimeOffset.In(new List<DateTimeOffset>() { types1.DateTimeOffset, types2.DateTimeOffset }))
+                    .Where(table.DateTimeOffset.In(types1.DateTimeOffset, types2.DateTimeOffset))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +124,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTimeOffset.In(new List<DateTimeOffset>() { types2.DateTimeOffset }))
+                    .Where(table.DateTimeOffset.In(types2.DateTimeOffset))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -135,7 +139,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTimeOffset.NotIn(new List<DateTimeOffset>() { types1.DateTimeOffset, types2.DateTimeOffset, types3.DateTimeOffset }))
+                    .Where(table.DateTimeOffset.NotIn(types1.DateTimeOffset, types2.DateTimeOffset, types3.DateTimeOffset))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +152,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTimeOffset.NotIn(new List<DateTimeOffset>() { types1.DateTimeOffset, types2.DateTimeOffset }))
+                    .Where(table.DateTimeOffset.NotIn(types1.DateTimeOffset, types2.DateTimeOffset))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +167,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTimeOffset.NotIn(new List<DateTimeOffset>() { types1.DateTimeOffset }))
+                    .Where(table.DateTimeOffset.NotIn(types1.DateTimeOffset))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -459,7 +463,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.DateTimeOffset.In(
                             Query.NestedSelect(table2.DateTimeOffset)
                                 .From(table2)
-                                .Where(table2.DateTimeOffset.In(new List<DateTimeOffset>() { types2.DateTimeOffset, types3.DateTimeOffset }))
+                                .Where(table2.DateTimeOffset.In(types2.DateTimeOffset, types3.DateTimeOffset))
                         )
                     )
                     .OrderBy(table.Id.ASC)

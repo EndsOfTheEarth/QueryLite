@@ -87,7 +87,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.BigInt.In(new List<long>() { types1.BigInt, types2.BigInt, types3.BigInt }))
+                    .Where(table.BigInt.In(types1.BigInt, types2.BigInt, types3.BigInt))
                     .OrderBy(table.BigInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +104,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.BigInt.In(new List<long>() { types1.BigInt, types2.BigInt }))
+                    .Where(table.BigInt.In(types1.BigInt, types2.BigInt))
                     .OrderBy(table.BigInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +120,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.BigInt.In(new List<long>() { types2.BigInt }))
+                    .Where(table.BigInt.In(types2.BigInt))
                     .OrderBy(table.BigInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -135,7 +135,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.BigInt.NotIn(new List<long>() { types1.BigInt, types2.BigInt, types3.BigInt }))
+                    .Where(table.BigInt.NotIn(types1.BigInt, types2.BigInt, types3.BigInt))
                     .OrderBy(table.BigInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +148,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.BigInt.NotIn(new List<long>() { types1.BigInt, types2.BigInt }))
+                    .Where(table.BigInt.NotIn(types1.BigInt, types2.BigInt))
                     .OrderBy(table.BigInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +163,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.BigInt.NotIn(new List<long>() { types1.BigInt }))
+                    .Where(table.BigInt.NotIn(types1.BigInt))
                     .OrderBy(table.BigInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -459,7 +459,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.BigInt.In(
                             Query.NestedSelect(table2.BigInt)
                                 .From(table2)
-                                .Where(table2.BigInt.In(new List<long>() { types2.BigInt, types3.BigInt }))
+                                .Where(table2.BigInt.In(types2.BigInt, types3.BigInt))
                         )
                     )
                     .OrderBy(table.BigInt.ASC)

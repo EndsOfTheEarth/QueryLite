@@ -232,18 +232,18 @@ namespace QueryLite {
             return new GenericCondition(columnA, Operator.NOT_EQUALS, value);
         }
 
-        public ICondition In(IEnumerable<TYPE> list) {
-            return new InNotInCondition<TYPE>(this, isIn: true, list: list);
+        public ICondition In(Sequence<TYPE> sequence) {
+            return new InNotInCondition<TYPE>(this, isIn: true, list: sequence.Items);
         }
-        public ICondition NotIn(IEnumerable<TYPE> list) {
-            return new InNotInCondition<TYPE>(this, isIn: false, list: list);
+        public ICondition NotIn(Sequence<TYPE> sequence) {
+            return new InNotInCondition<TYPE>(this, isIn: false, list: sequence.Items);
         }
 
-        public ICondition In(params TYPE[] list) {
-            return new InNotInCondition<TYPE>(this, isIn: true, list: list);
+        public ICondition In(TYPE value, params TYPE[] values) {
+            return new InNotInCondition<TYPE>(this, isIn: true, list: [value, ..values]);
         }
-        public ICondition NotIn(params TYPE[] list) {
-            return new InNotInCondition<TYPE>(this, isIn: false, list: list);
+        public ICondition NotIn(TYPE value, params TYPE[] values) {
+            return new InNotInCondition<TYPE>(this, isIn: false, list: [value, ..values]);
         }
 
         public ICondition In<FIELD>(IExecute<FIELD> query) where FIELD : ISelectable<TYPE> {

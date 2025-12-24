@@ -87,7 +87,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.TimeOnly.In(new List<TimeOnly>() { types1.TimeOnly, types2.TimeOnly, types3.TimeOnly }))
+                    .Where(table.TimeOnly.In(types1.TimeOnly, types2.TimeOnly, types3.TimeOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +104,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.TimeOnly.In(new List<TimeOnly>() { types1.TimeOnly, types2.TimeOnly }))
+                    .Where(table.TimeOnly.In(types1.TimeOnly, types2.TimeOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +120,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.TimeOnly.In(new List<TimeOnly>() { types2.TimeOnly }))
+                    .Where(table.TimeOnly.In(types2.TimeOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -135,7 +135,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.TimeOnly.NotIn(new List<TimeOnly>() { types1.TimeOnly, types2.TimeOnly, types3.TimeOnly }))
+                    .Where(table.TimeOnly.NotIn(types1.TimeOnly, types2.TimeOnly, types3.TimeOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +148,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.TimeOnly.NotIn(new List<TimeOnly>() { types1.TimeOnly, types2.TimeOnly }))
+                    .Where(table.TimeOnly.NotIn(types1.TimeOnly, types2.TimeOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +163,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.TimeOnly.NotIn(new List<TimeOnly>() { types1.TimeOnly }))
+                    .Where(table.TimeOnly.NotIn(types1.TimeOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -459,7 +459,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.TimeOnly.In(
                             Query.NestedSelect(table2.TimeOnly)
                                 .From(table2)
-                                .Where(table2.TimeOnly.In(new List<TimeOnly>() { types2.TimeOnly, types3.TimeOnly }))
+                                .Where(table2.TimeOnly.In(types2.TimeOnly, types3.TimeOnly))
                         )
                     )
                     .OrderBy(table.Id.ASC)

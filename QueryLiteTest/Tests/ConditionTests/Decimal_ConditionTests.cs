@@ -87,7 +87,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Decimal.In(new List<decimal>() { types1.Decimal, types2.Decimal, types3.Decimal }))
+                    .Where(table.Decimal.In(types1.Decimal, types2.Decimal, types3.Decimal))
                     .OrderBy(table.Decimal.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +104,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Decimal.In(new List<decimal>() { types1.Decimal, types2.Decimal }))
+                    .Where(table.Decimal.In(types1.Decimal, types2.Decimal))
                     .OrderBy(table.Decimal.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +120,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Decimal.In(new List<decimal>() { types2.Decimal }))
+                    .Where(table.Decimal.In(types2.Decimal))
                     .OrderBy(table.Decimal.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -130,12 +130,17 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<decimal>.TryCreateFrom([types1.Decimal, types2.Decimal, types3.Decimal], out Sequence<decimal>? decimals)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Decimal.NotIn(new List<decimal>() { types1.Decimal, types2.Decimal, types3.Decimal }))
+                    .Where(table.Decimal.NotIn(decimals))
                     .OrderBy(table.Decimal.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +153,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Decimal.NotIn(new List<decimal>() { types1.Decimal, types2.Decimal }))
+                    .Where(table.Decimal.NotIn(types1.Decimal, types2.Decimal))
                     .OrderBy(table.Decimal.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +168,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Decimal.NotIn(new List<decimal>() { types1.Decimal }))
+                    .Where(table.Decimal.NotIn(types1.Decimal))
                     .OrderBy(table.Decimal.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -450,6 +455,11 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<decimal>.TryCreateFrom([types2.Decimal, types3.Decimal], out Sequence<decimal>? decimals)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
@@ -459,7 +469,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.Decimal.In(
                             Query.NestedSelect(table2.Decimal)
                                 .From(table2)
-                                .Where(table2.Decimal.In(new List<decimal>() { types2.Decimal, types3.Decimal }))
+                                .Where(table2.Decimal.In(decimals))
                         )
                     )
                     .OrderBy(table.Decimal.ASC)

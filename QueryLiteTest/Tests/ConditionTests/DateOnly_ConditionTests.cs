@@ -82,12 +82,17 @@ namespace QueryLiteTest.Tests.ConditionTests {
             AllTypesTable table = AllTypesTable.Instance;
 
             {
+
+                if(!Sequence<DateOnly>.TryCreateFrom([types1.DateOnly, types2.DateOnly, types3.DateOnly], out Sequence<DateOnly>? dates)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateOnly.In(new List<DateOnly>() { types1.DateOnly, types2.DateOnly, types3.DateOnly }))
+                    .Where(table.DateOnly.In(dates))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -99,12 +104,17 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<DateOnly>.TryCreateFrom([types1.DateOnly, types2.DateOnly], out Sequence<DateOnly>? dates)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateOnly.In(new List<DateOnly>() { types1.DateOnly, types2.DateOnly }))
+                    .Where(table.DateOnly.In(dates))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +130,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateOnly.In(new List<DateOnly>() { types2.DateOnly }))
+                    .Where(table.DateOnly.In(types2.DateOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -130,12 +140,17 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<DateOnly>.TryCreateFrom([types1.DateOnly, types2.DateOnly, types3.DateOnly], out Sequence<DateOnly>? dates)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateOnly.NotIn(new List<DateOnly>() { types1.DateOnly, types2.DateOnly, types3.DateOnly }))
+                    .Where(table.DateOnly.NotIn(dates))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +163,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateOnly.NotIn(new List<DateOnly>() { types1.DateOnly, types2.DateOnly }))
+                    .Where(table.DateOnly.NotIn(types1.DateOnly, types2.DateOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +178,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateOnly.NotIn(new List<DateOnly>() { types1.DateOnly }))
+                    .Where(table.DateOnly.NotIn(types1.DateOnly))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -450,6 +465,11 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<DateOnly>.TryCreateFrom([types2.DateOnly, types3.DateOnly], out Sequence<DateOnly>? dates)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
@@ -459,7 +479,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.DateOnly.In(
                             Query.NestedSelect(table2.DateOnly)
                                 .From(table2)
-                                .Where(table2.DateOnly.In(new List<DateOnly>() { types2.DateOnly, types3.DateOnly }))
+                                .Where(table2.DateOnly.In(dates))
                         )
                     )
                     .OrderBy(table.Id.ASC)

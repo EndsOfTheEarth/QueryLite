@@ -82,12 +82,17 @@ namespace QueryLiteTest.Tests.ConditionTests {
             AllTypesTable table = AllTypesTable.Instance;
 
             {
+
+                if(!Sequence<DateTime>.TryCreateFrom([types1.DateTime, types2.DateTime, types3.DateTime], out Sequence<DateTime>? dates)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTime.In(new List<DateTime>() { types1.DateTime, types2.DateTime, types3.DateTime }))
+                    .Where(table.DateTime.In(dates))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +109,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTime.In(new List<DateTime>() { types1.DateTime, types2.DateTime }))
+                    .Where(table.DateTime.In(types1.DateTime, types2.DateTime))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +125,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTime.In(new List<DateTime>() { types2.DateTime }))
+                    .Where(table.DateTime.In(types2.DateTime))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -135,7 +140,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTime.NotIn(new List<DateTime>() { types1.DateTime, types2.DateTime, types3.DateTime }))
+                    .Where(table.DateTime.NotIn(types1.DateTime, types2.DateTime, types3.DateTime))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +153,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTime.NotIn(new List<DateTime>() { types1.DateTime, types2.DateTime }))
+                    .Where(table.DateTime.NotIn(types1.DateTime, types2.DateTime))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -158,12 +163,17 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<DateTime>.TryCreateFrom([types1.DateTime], out Sequence<DateTime>? dates)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.DateTime.NotIn(new List<DateTime>() { types1.DateTime }))
+                    .Where(table.DateTime.NotIn(dates))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -450,6 +460,11 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<DateTime>.TryCreateFrom([types2.DateTime, types3.DateTime], out Sequence<DateTime>? dates)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
@@ -459,7 +474,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.DateTime.In(
                             Query.NestedSelect(table2.DateTime)
                                 .From(table2)
-                                .Where(table2.DateTime.In(new List<DateTime>() { types2.DateTime, types3.DateTime }))
+                                .Where(table2.DateTime.In(dates))
                         )
                     )
                     .OrderBy(table.Id.ASC)

@@ -83,7 +83,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id.In(new List<IntKey<AllTypes>>() { types1.Id, types2.Id, types3.Id }))
+                    .Where(table.Id.In(types1.Id, types2.Id, types3.Id))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -100,7 +100,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id.In(new List<IntKey<AllTypes>>() { types1.Id, types2.Id }))
+                    .Where(table.Id.In(types1.Id, types2.Id))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -116,7 +116,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id.In(new List<IntKey<AllTypes>>() { types2.Id }))
+                    .Where(table.Id.In(types2.Id))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -126,12 +126,17 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<IntKey<AllTypes>>.TryCreateFrom([types1.Id, types2.Id, types3.Id], out Sequence<IntKey<AllTypes>>? allTypes)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id.NotIn(new List<IntKey<AllTypes>>() { types1.Id, types2.Id, types3.Id }))
+                    .Where(table.Id.NotIn(allTypes))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -144,7 +149,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id.NotIn(new List<IntKey<AllTypes>>() { types1.Id, types2.Id }))
+                    .Where(table.Id.NotIn(types1.Id, types2.Id))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -159,7 +164,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id.NotIn(new List<IntKey<AllTypes>>() { types1.Id }))
+                    .Where(table.Id.NotIn(types1.Id))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -455,7 +460,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.Id.In(
                             Query.NestedSelect(table2.Id)
                                 .From(table2)
-                                .Where(table2.Id.In(new List<IntKey<AllTypes>>() { types2.Id, types3.Id }))
+                                .Where(table2.Id.In(types2.Id, types3.Id))
                         )
                     )
                     .OrderBy(table.Id.ASC)

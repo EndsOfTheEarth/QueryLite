@@ -87,7 +87,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Float.In(new List<float>() { types1.Float, types2.Float, types3.Float }))
+                    .Where(table.Float.In(types1.Float, types2.Float, types3.Float))
                     .OrderBy(table.Float.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +104,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Float.In(new List<float>() { types1.Float, types2.Float }))
+                    .Where(table.Float.In(types1.Float, types2.Float))
                     .OrderBy(table.Float.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +120,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Float.In(new List<float>() { types2.Float }))
+                    .Where(table.Float.In(types2.Float))
                     .OrderBy(table.Float.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -135,7 +135,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Float.NotIn(new List<float>() { types1.Float, types2.Float, types3.Float }))
+                    .Where(table.Float.NotIn(types1.Float, types2.Float, types3.Float))
                     .OrderBy(table.Float.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +148,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Float.NotIn(new List<float>() { types1.Float, types2.Float }))
+                    .Where(table.Float.NotIn(types1.Float, types2.Float))
                     .OrderBy(table.Float.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +163,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Float.NotIn(new List<float>() { types1.Float }))
+                    .Where(table.Float.NotIn(types1.Float))
                     .OrderBy(table.Float.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -459,7 +459,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.Float.In(
                             Query.NestedSelect(table2.Float)
                                 .From(table2)
-                                .Where(table2.Float.In(new List<float>() { types2.Float, types3.Float }))
+                                .Where(table2.Float.In(types2.Float, types3.Float))
                         )
                     )
                     .OrderBy(table.Float.ASC)

@@ -87,7 +87,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Enum.In(new List<AllTypesEnum>() { types1.Enum, types2.Enum, types3.Enum }))
+                    .Where(table.Enum.In(types1.Enum, types2.Enum, types3.Enum))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +104,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Enum.In(new List<AllTypesEnum>() { types1.Enum, types2.Enum }))
+                    .Where(table.Enum.In(types1.Enum, types2.Enum))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +120,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Enum.In(new List<AllTypesEnum>() { types2.Enum }))
+                    .Where(table.Enum.In(types2.Enum))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -135,7 +135,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Enum.NotIn(new List<AllTypesEnum>() { types1.Enum, types2.Enum, types3.Enum }))
+                    .Where(table.Enum.NotIn(types1.Enum, types2.Enum, types3.Enum))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +148,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Enum.NotIn(new List<AllTypesEnum>() { types1.Enum, types2.Enum }))
+                    .Where(table.Enum.NotIn(types1.Enum, types2.Enum))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +163,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Enum.NotIn(new List<AllTypesEnum>() { types1.Enum }))
+                    .Where(table.Enum.NotIn(types1.Enum))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -459,7 +459,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.Enum.In(
                             Query.NestedSelect(table2.Enum)
                                 .From(table2)
-                                .Where(table2.Enum.In(new List<AllTypesEnum>() { types2.Enum, types3.Enum }))
+                                .Where(table2.Enum.In(types2.Enum, types3.Enum))
                         )
                     )
                     .OrderBy(table.Id.ASC)

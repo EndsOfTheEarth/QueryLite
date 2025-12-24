@@ -5,6 +5,7 @@ using QueryLite.Utility;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -83,12 +84,39 @@ namespace QueryLiteTest.Tests.ConditionTests {
             AllTypesTable table = AllTypesTable.Instance;
 
             {
+
+                if(!Sequence<bool>.TryCreateFrom([types1.Boolean, types2.Boolean, types3.Boolean], out Sequence<bool>? booleans)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Boolean.In(new List<bool>() { types1.Boolean, types2.Boolean, types3.Boolean }))
+                    .Where(table.Boolean.In(booleans))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(3, result.Rows.Count);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+                AllFieldsTest.AssertRow(result.Rows[1], types2);
+                AllFieldsTest.AssertRow(result.Rows[2], types3);
+            }
+
+            {
+
+                if(!Sequence<bool>.TryCreateFrom([true, false], out Sequence<bool>? booleans)) {
+                    throw new Exception();
+                }
+
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.Boolean.In(booleans))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -105,24 +133,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Boolean.In(new List<bool>() { true, false }))
-                    .OrderBy(table.Id.ASC)
-                    .ExecuteAsync(TestDatabase.Database);
-
-                Assert.AreEqual(3, result.Rows.Count);
-
-                AllFieldsTest.AssertRow(result.Rows[0], types1);
-                AllFieldsTest.AssertRow(result.Rows[1], types2);
-                AllFieldsTest.AssertRow(result.Rows[2], types3);
-            }
-
-            {
-                QueryResult<AllTypesInfo> result = await Query
-                    .Select(
-                        row => new AllTypesInfo(row, table)
-                    )
-                    .From(table)
-                    .Where(table.Boolean.In(new List<bool>() { false }))
+                    .Where(table.Boolean.In(Sequence<bool>.CreateFrom(false)))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -138,7 +149,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Boolean.NotIn(new List<bool>() { true, false }))
+                    .Where(table.Boolean.NotIn(Sequence<bool>.CreateFrom(true, false)))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -151,7 +162,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Boolean.NotIn(new List<bool>() { true, false }))
+                    .Where(table.Boolean.NotIn(Sequence<bool>.CreateFrom(true, false)))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -164,7 +175,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Boolean.NotIn(new List<bool>() { true }))
+                    .Where(table.Boolean.NotIn(Sequence<bool>.CreateFrom(true)))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -180,7 +191,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Boolean.NotIn(new List<bool>() { false }))
+                    .Where(table.Boolean.NotIn(Sequence<bool>.CreateFrom(false)))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -342,7 +353,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.Boolean.In(
                             Query.NestedSelect(table2.Boolean)
                                 .From(table2)
-                                .Where(table2.Boolean.In(new List<bool>() { types2.Boolean, types3.Boolean }))
+                                .Where(table2.Boolean.In(types2.Boolean, types3.Boolean))
                         )
                     )
                     .OrderBy(table.Id.ASC)
