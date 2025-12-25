@@ -17,7 +17,7 @@ namespace Benchmarks {
 
         public SelectTenRowBenchmarks() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             _preparedSelectQuery = Query
                 .Prepare<SelectTenRowBenchmarks>()
@@ -33,7 +33,7 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
@@ -114,7 +114,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Tables.Test01Table table = Tables.Test01Table.Instance;
+                Test01Table table = Test01Table.Instance;
 
                 QueryResult<Test01> result = Query
                     .Select(
@@ -135,6 +135,16 @@ namespace Benchmarks {
                 repository
                     .SelectRows
                     .Execute(Databases.TestDatabase);
+            }
+        }
+
+        [Benchmark]
+        public void EfCore_Ten_Row_Select() {
+
+            using TestContext context = new TestContext(Databases.ConnectionString);
+
+            for(int index = 0; index < _iterations; index++) {
+                List<Test01Row_EfCore> list = context.TestRows.ToList();
             }
         }
     }

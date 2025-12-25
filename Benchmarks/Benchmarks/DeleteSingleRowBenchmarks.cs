@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Benchmarks.Tables;
 using Dapper;
+using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using QueryLite;
 
@@ -17,7 +18,7 @@ namespace Benchmarks {
 
         public DeleteSingleRowBenchmarks() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             _preparedDeleteQuery = Query
                 .Prepare<Guid>()
@@ -31,7 +32,7 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
@@ -121,7 +122,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Tables.Test01Table table = Tables.Test01Table.Instance;
+                Test01Table table = Test01Table.Instance;
 
                 using Transaction transaction = new Transaction(Databases.TestDatabase);
 
@@ -152,6 +153,31 @@ namespace Benchmarks {
                 using Transaction transaction = new Transaction(Databases.TestDatabase);
 
                 int rowsEffected = repository.Update(transaction);
+
+                if(rowsEffected != 1) {
+                    throw new Exception();
+                }
+                transaction.Rollback(); //Roll back so we can run iterations
+            }
+        }
+
+        [Benchmark]
+        public void EfCore_Single_Row_Delete() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                using TestContext context = new TestContext(Databases.ConnectionString);
+
+                List<Test01Row_EfCore> list = context.TestRows.ToList();
+
+                foreach(Test01Row_EfCore row in list) {
+
+                    context.TestRows.Remove(row);
+                }
+
+                using IDbContextTransaction transaction = context.Database.BeginTransaction();
+
+                int rowsEffected = context.SaveChanges();
 
                 if(rowsEffected != 1) {
                     throw new Exception();

@@ -2,6 +2,7 @@
 using Benchmarks.Classes;
 using Benchmarks.Tables;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using QueryLite;
 
@@ -17,7 +18,7 @@ namespace Benchmarks {
 
         public SelectTenRowAsyncBenchmarks() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             _preparedSelectQuery = Query
                 .Prepare<SelectTenRowAsyncBenchmarks>()
@@ -33,7 +34,7 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
@@ -139,7 +140,7 @@ namespace Benchmarks {
 
                 Task task = Task.Run(async () => {
 
-                    Tables.Test01Table table = Tables.Test01Table.Instance;
+                    Test01Table table = Test01Table.Instance;
 
                     QueryResult<Test01> result = await Query
                         .Select(
@@ -171,6 +172,25 @@ namespace Benchmarks {
                 tasks.Add(task);
             }
             await Task.WhenAll(tasks);
+        }
+
+        [Benchmark]
+        public async Task EfCore_Ten_Row_SelectAsync() {
+
+            using(TestContext context = new TestContext(Databases.ConnectionString)) {
+
+                List<Task> tasks = new List<Task>(_iterations);
+
+                for(int index = 0; index < _iterations; index++) {
+
+                    Task task = Task.Run(async () => {
+
+                        List<Test01Row_EfCore> result = await context.TestRows.ToListAsync(CancellationToken.None);
+                    });
+                    tasks.Add(task);
+                }
+                await Task.WhenAll(tasks);
+            }
         }
     }
 }

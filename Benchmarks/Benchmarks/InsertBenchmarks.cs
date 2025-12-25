@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Benchmarks.Tables;
 using Dapper;
+using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using QueryLite;
 
@@ -13,7 +14,7 @@ namespace Benchmarks {
 
         public InsertBenchmarks() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             _preparedInsertQuery = Query
                 .Prepare<InsertBenchmarks>()
@@ -31,7 +32,7 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
@@ -111,7 +112,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Tables.Test01Table table = Tables.Test01Table.Instance;
+                Test01Table table = Test01Table.Instance;
 
                 using Transaction transaction = new Transaction(Databases.TestDatabase);
 
@@ -166,6 +167,30 @@ namespace Benchmarks {
                 using Transaction transaction = new Transaction(Databases.TestDatabase);
 
                 Test01RowRepository.ExecuteInsert(row, Test01Table.Instance, transaction);
+
+                transaction.Commit();
+            }
+        }
+
+        [Benchmark]
+        public void EfCore_Single_Insert() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                using TestContext context = new TestContext(Databases.ConnectionString);
+
+                Test01Row_EfCore row = new Test01Row_EfCore(
+                    id: 0,
+                    row_guid: _guid,
+                    message: _message,
+                    date: _date.ToUniversalTime()
+                );
+
+                using IDbContextTransaction transaction = context.Database.BeginTransaction();
+                
+                context.TestRows.Add(row);
+
+                context.SaveChanges();
 
                 transaction.Commit();
             }

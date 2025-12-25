@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Benchmarks.Tables;
 using Dapper;
+using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using QueryLite;
 
@@ -18,7 +19,7 @@ namespace Benchmarks {
 
         public UpdateSingleRowBenchmarks() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             _preparedUpdateQuery = Query
                 .Prepare<UpdateSingleRowBenchmarks>()
@@ -36,7 +37,7 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
@@ -122,7 +123,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Tables.Test01Table table = Tables.Test01Table.Instance;
+                Test01Table table = Test01Table.Instance;
 
                 using Transaction transaction = new Transaction(Databases.TestDatabase);
 
@@ -179,6 +180,32 @@ namespace Benchmarks {
                 );
 
                 Test01RowRepository.ExecuteUpdate(row, Test01Table.Instance, transaction);
+
+                transaction.Commit();
+            }
+        }
+
+        [Benchmark]
+        public void EfCore_Single_Row_Update() {
+
+            Test01Row_EfCore row = new Test01Row_EfCore(
+                id: Id,
+                row_guid: _guid,
+                message: "New Message",
+                date: DateTime.Now.ToUniversalTime()
+            );
+
+            for(int index = 0; index < _iterations; index++) {
+
+                using TestContext context = new TestContext(Databases.ConnectionString);
+
+                using IDbContextTransaction transaction = context.Database.BeginTransaction();
+
+                row.Date = DateTime.Now.ToUniversalTime();
+
+                context.Update(row);
+
+                context.SaveChanges();
 
                 transaction.Commit();
             }

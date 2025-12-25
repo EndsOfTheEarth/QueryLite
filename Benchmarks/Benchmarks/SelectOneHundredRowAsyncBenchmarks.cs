@@ -2,6 +2,7 @@
 using Benchmarks.Classes;
 using Benchmarks.Tables;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using QueryLite;
 
@@ -17,7 +18,7 @@ namespace Benchmarks {
 
         public SelectOneHundredRowAsyncBenchmarks() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             _preparedSelectQuery = Query
                 .Prepare<SelectOneHundredRowAsyncBenchmarks>()
@@ -33,7 +34,7 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
-            Tables.Test01Table table = Tables.Test01Table.Instance;
+            Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
 
@@ -56,6 +57,8 @@ namespace Benchmarks {
 
         private int _iterations = 2000;
 
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(initialCount: 70);   //Limit the number of queries as PostgreSQL has a limit
+
         [Benchmark]
         public async Task Ado_One_Hundred_Row_SelectAsync() {
 
@@ -64,6 +67,8 @@ namespace Benchmarks {
             for(int index = 0; index < _iterations; index++) {
 
                 Task task = Task.Run(async () => {
+
+                    await _semaphore.WaitAsync();
 
                     await using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
@@ -88,6 +93,8 @@ namespace Benchmarks {
                             )
                         );
                     }
+                    await connection.CloseAsync();
+                    _semaphore.Release();
                 });
                 tasks.Add(task);
             }
@@ -103,11 +110,16 @@ namespace Benchmarks {
 
                 Task task = Task.Run(async () => {
 
+                    await _semaphore.WaitAsync();
+
                     await using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
 
                     await connection.OpenAsync();
 
                     IEnumerable<Test01> result = await connection.QueryAsync<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01");
+
+                    await connection.CloseAsync();
+                    _semaphore.Release();
                 });
                 tasks.Add(task);
             }
@@ -123,7 +135,11 @@ namespace Benchmarks {
 
                 Task task = Task.Run(async () => {
 
+                    await _semaphore.WaitAsync();
+
                     QueryResult<Test01> result = await _preparedSelectQuery.ExecuteAsync(parameters: this, Databases.TestDatabase);
+
+                    _semaphore.Release();
                 });
                 tasks.Add(task);
             }
@@ -139,7 +155,9 @@ namespace Benchmarks {
 
                 Task task = Task.Run(async () => {
 
-                    Tables.Test01Table table = Tables.Test01Table.Instance;
+                    await _semaphore.WaitAsync();
+
+                    Test01Table table = Test01Table.Instance;
 
                     QueryResult<Test01> result = await Query
                         .Select(
@@ -147,6 +165,8 @@ namespace Benchmarks {
                         )
                         .From(table)
                         .ExecuteAsync(Databases.TestDatabase);
+
+                    _semaphore.Release();
                 });
                 tasks.Add(task);
             }
@@ -162,10 +182,35 @@ namespace Benchmarks {
 
                 Task task = Task.Run(async () => {
 
+                    await _semaphore.WaitAsync();
+
                     Test01RowRepository repository = new Test01RowRepository();
 
                     await repository.SelectRows.ExecuteAsync(Databases.TestDatabase, CancellationToken.None);
 
+                    _semaphore.Release();
+                });
+                tasks.Add(task);
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        [Benchmark]
+        public async Task EfCore_One_Hundred_Row_SelectAsync() {
+
+            List<Task> tasks = new List<Task>(_iterations);
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Task task = Task.Run(async () => {
+
+                    await _semaphore.WaitAsync();
+
+                    using TestContext context = new TestContext(Databases.ConnectionString);
+
+                    List<Test01Row_EfCore> list = await context.TestRows.ToListAsync(CancellationToken.None);
+
+                    _semaphore.Release();
                 });
                 tasks.Add(task);
             }

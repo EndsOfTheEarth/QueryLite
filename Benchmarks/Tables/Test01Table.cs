@@ -1,7 +1,10 @@
 ﻿namespace Benchmarks.Tables {
-
+    using Microsoft.EntityFrameworkCore;
     using QueryLite;
     using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public sealed class Test01Table : ATable {
 
@@ -70,6 +73,47 @@
                 date: resultRow.Get(table.Date)
             );
             return row;
+        }
+    }
+
+    [Table(name: "test01", Schema = "public")]
+    public class Test01Row_EfCore {
+
+        public Test01Row_EfCore() { }
+
+        public Test01Row_EfCore(int id, Guid row_guid, string message, DateTime date) {
+            Id = id;
+            Row_guid = row_guid;
+            Message = message;
+            Date = date;
+        }
+        [Key]
+        [Column(name: "id")]
+        public int Id { get; set; }
+
+        [Column(name: "row_guid")]
+        public Guid Row_guid { get; set; }
+
+        [Required]
+        [Column(name: "message")]
+        public string Message { get; set; } = "";
+
+        [Column(name: "date")]
+        public DateTime Date { get; set; }
+    }
+
+    public class TestContext : DbContext {
+
+        private string ConnectionString { get; }
+
+        public TestContext(string connectionString) {
+            ConnectionString = connectionString;
+        }
+
+        public DbSet<Test01Row_EfCore> TestRows { get; set; } // Represents the Blogs table
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+            optionsBuilder.UseNpgsql(ConnectionString);
         }
     }
 }
