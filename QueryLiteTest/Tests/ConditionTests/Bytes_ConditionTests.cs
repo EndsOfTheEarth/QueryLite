@@ -87,7 +87,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Bytes.In(new List<byte[]>() { types1.Bytes, types2.Bytes, types3.Bytes }))
+                    .Where(table.Bytes.In(types1.Bytes, types2.Bytes, types3.Bytes))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -121,7 +121,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Bytes.In(new List<byte[]>() { types1.Bytes, types2.Bytes }))
+                    .Where(table.Bytes.In(types1.Bytes, types2.Bytes))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -137,26 +137,13 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Bytes.In(new List<byte[]>() { types2.Bytes }))
+                    .Where(table.Bytes.In(types2.Bytes))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
                 Assert.AreEqual(1, result.Rows.Count);
 
                 AllFieldsTest.AssertRow(result.Rows[0], types2);
-            }
-
-            {
-                QueryResult<AllTypesInfo> result = await Query
-                    .Select(
-                        row => new AllTypesInfo(row, table)
-                    )
-                    .From(table)
-                    .Where(table.Bytes.NotIn(new List<byte[]>() { types1.Bytes, types2.Bytes, types3.Bytes }))
-                    .OrderBy(table.Id.ASC)
-                    .ExecuteAsync(TestDatabase.Database);
-
-                Assert.AreEqual(0, result.Rows.Count);
             }
 
             {
@@ -178,7 +165,24 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Bytes.NotIn(new List<byte[]>() { types1.Bytes, types2.Bytes }))
+                    .Where(table.Bytes.NotIn(types1.Bytes, types2.Bytes, types3.Bytes))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(0, result.Rows.Count);
+            }
+
+            {
+                if(!Sequence<byte[]>.TryCreateFrom([types1.Bytes, types2.Bytes], out Sequence<byte[]>? bytes)) {
+                    throw new Exception();
+                }
+
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.Bytes.NotIn(bytes))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -193,7 +197,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Bytes.NotIn(new List<byte[]>() { types1.Bytes }))
+                    .Where(table.Bytes.NotIn(types1.Bytes))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -480,6 +484,11 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                if(!Sequence<byte[]>.TryCreateFrom([types2.Bytes, types3.Bytes], out Sequence<byte[]>? bytes)) {
+                    throw new Exception();
+                }
+
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)
@@ -489,7 +498,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.Bytes.In(
                             Query.NestedSelect(table2.Bytes)
                                 .From(table2)
-                                .Where(table2.Bytes.In(new List<byte[]>() { types2.Bytes, types3.Bytes }))
+                                .Where(table2.Bytes.In(bytes))
                         )
                     )
                     .OrderBy(table.Id.ASC)

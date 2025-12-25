@@ -87,7 +87,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.SmallInt.In(new List<short>() { types1.SmallInt, types2.SmallInt, types3.SmallInt }))
+                    .Where(table.SmallInt.In(types1.SmallInt, types2.SmallInt, types3.SmallInt))
                     .OrderBy(table.SmallInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -104,7 +104,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.SmallInt.In(new List<short>() { types1.SmallInt, types2.SmallInt }))
+                    .Where(table.SmallInt.In(types1.SmallInt, types2.SmallInt))
                     .OrderBy(table.SmallInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -120,7 +120,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.SmallInt.In(new List<short>() { types2.SmallInt }))
+                    .Where(table.SmallInt.In(types2.SmallInt))
                     .OrderBy(table.SmallInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -135,7 +135,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.SmallInt.NotIn(new List<short>() { types1.SmallInt, types2.SmallInt, types3.SmallInt }))
+                    .Where(table.SmallInt.NotIn(types1.SmallInt, types2.SmallInt, types3.SmallInt))
                     .OrderBy(table.SmallInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -148,7 +148,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.SmallInt.NotIn(new List<short>() { types1.SmallInt, types2.SmallInt }))
+                    .Where(table.SmallInt.NotIn(types1.SmallInt, types2.SmallInt))
                     .OrderBy(table.SmallInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -163,7 +163,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.SmallInt.NotIn(new List<short>() { types1.SmallInt }))
+                    .Where(table.SmallInt.NotIn(types1.SmallInt))
                     .OrderBy(table.SmallInt.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -459,7 +459,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         table.SmallInt.In(
                             Query.NestedSelect(table2.SmallInt)
                                 .From(table2)
-                                .Where(table2.SmallInt.In(new List<short>() { types2.SmallInt, types3.SmallInt }))
+                                .Where(table2.SmallInt.In(types2.SmallInt, types3.SmallInt))
                         )
                     )
                     .OrderBy(table.SmallInt.ASC)
