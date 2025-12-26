@@ -486,7 +486,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     transaction.Commit();
 
-    IntKey<IShipper> shipperId = result.Rows.First().ShipperID;
+    ShipperId shipperId = result.Rows.First().ShipperID;
 }
 ```
 
@@ -529,7 +529,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     transaction.Commit();
     
-    IntKey<IShipper> shipperId = result.Rows.First();
+    ShipperId shipperId = result.Rows.First();
 }
 ```
 
@@ -563,8 +563,8 @@ For example:
     NonQueryResult result = Query
         .Update(table)
         .Values(values => values
-            .Set(table.CounterA, SqlMath.Add(table.CounterA, 1)),   --Add one to the existing column value
-            .Set(table.CounterB, SqlMath.Subtract(table.CounterB, 1))   --Subtract one from the existing column value
+            .Set(table.CounterA, SqlMath.Add(table.CounterA, 1)),   //Add one to the existing column value
+            .Set(table.CounterB, SqlMath.Subtract(table.CounterB, 1))   //Subtract one from the existing column value
         )
         .From(table)
         .Where(table.Id == id)
@@ -580,7 +580,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     var result = Query
         .Delete(shipperTable)
-        .Where(shipperTable.ShipperID == new IntKey<IShipper>(100))
+        .Where(shipperTable.ShipperID == ShipperId.ValueOf(100))
         .Execute(transaction);
 
     transaction.Commit();
@@ -596,7 +596,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     var result = Query
         .Delete(shipperTable)
-        .Where(shipperTable.ShipperID == new IntKey<IShipper>(100))
+        .Where(shipperTable.ShipperID == ShipperId.ValueOf(100))
         .Execute(
             deleted => deleted.Get(shipperTable.ShipperID),
             transaction
@@ -604,7 +604,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 
     transaction.Commit();
     
-    IntKey<IShipper> shipperId = result.Rows.First();
+    ShipperId shipperId = result.Rows.First();
 }
 ```
 
@@ -1012,7 +1012,7 @@ Key columns can be used for primary and foreign key columns. They help make join
 
 The generic TYPE can be any type but it is suggested that an empty interface is used for each table.
 
-For example we can change the shipper 'Id' column from an int to an InKey<>
+For example we can change the shipper 'Id' column from an int to an IntKey<>
 
 ```C#
 public interface IShipper {}
@@ -1038,7 +1038,10 @@ public sealed class ShipperTable : ATable {
 
 ## Custom Types
 
-QueryLite has support for custom types. These can be created manually or by using a source generator.
+QueryLite has support for custom types. These can be created manually or by using a source generator (Recommended).
+
+Custom types are preferred over key types as they look cleaner in code and can be extending with source
+generator templates to implenent additional functionality (Like serialization to various formats).
 
 The following types are supported with custom types:
 
@@ -1082,7 +1085,7 @@ public sealed class ShipperTable : ATable {
 
 Custom types must a struct that implements the interfaces `QueryLite.ICustomType<,>`, `IEquatable<>` and `IComparable<>`.
 
-Here is a code example of custom type called `ShipperId`.
+Here is a code example of custom type called `ShipperId`. (Note: This code example is missing serialization converters for json, xml etc).
 
 ```C#
 public readonly struct ShipperId : QueryLite.ICustomType<int, ShipperId>,
@@ -1188,7 +1191,7 @@ GeoTestTable table = GeoTestTable.Instance;
 //Define a 'STPointFromText(...)' sql function
 STPointFromText stPointFromText = new STPointFromText(kwText: "POINT(-122.34900 47.65100)");
 
-GuidKey<IGeoTest> guid = GuidKey<IGeoTest>.ValueOf(Guid.NewGuid());
+GeoTestGuid guid = GeoTestGuid.ValueOf(Guid.NewGuid());
 
 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -1484,7 +1487,7 @@ namespace Tables {
 
         public static readonly ParentTable Instance = new ParentTable();
 
-        public Column<GuidKey<IParent>> Id { get; }
+        public Column<ParentId, Guid> Id { get; }
         public Column<Guid> Id2 { get; }
 
         public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Parent", Id);
@@ -1495,7 +1498,7 @@ namespace Tables {
 
         private ParentTable() : base(tableName:"Parent", schemaName: "dbo") {
 
-            Id = new Column<GuidKey<IParent>>(this, columnName: "Id");
+            Id = new Column<ParentId, Guid>(this, columnName: "Id");
             Id2 = new Column<Guid>(this, columnName: "Id2");
         }
     }
@@ -1504,8 +1507,8 @@ namespace Tables {
 
         public static readonly ChildTable Instance = new ChildTable();
 
-        public Column<GuidKey<IChild>> Id { get; }
-        public Column<GuidKey<IParent>> ParentId { get; }
+        public Column<ChildId, Guid> Id { get; }
+        public Column<ParentId, Guid> ParentId { get; }
 
         public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Child", Id);
 
@@ -1515,8 +1518,8 @@ namespace Tables {
 
         private ChildTable() : base(tableName:"Child", schemaName: "dbo") {
 
-            Id = new Column<GuidKey<IChild>>(this, columnName: "Id");
-            ParentId = new Column<GuidKey<IParent>>(this, columnName: "ParentId");
+            Id = new Column<ChildId, Guid>(this, columnName: "Id");
+            ParentId = new Column<ParentId, Guid>(this, columnName: "ParentId");
         }
     }
 }
@@ -1554,15 +1557,15 @@ public sealed class TerritoryTable : ATable {
 
     public static readonly TerritoryTable Instance = new TerritoryTable();
 
-    public Column<StringKey<ITerritory>> TerritoryId { get; }
+    public Column<TerritoryId, string> TerritoryId { get; }
     public Column<string> TerritoryDescription { get; }
-    public Column<IntKey<IRegion>> RegionId { get; }
+    public Column<RegionId, int> RegionId { get; }
 
     private TerritoryTable() : base(tableName:"Territory", schemaName: "dbo", description: "Stores information about territories") {
 
-        TerritoryId = new Column<StringKey<ITerritory>>(this, columnName: "TerritoryId", length: new(20), description: "Territory identifier");
+        TerritoryId = new Column<TerritoryId, string>(this, columnName: "TerritoryId", length: new(20), description: "Territory identifier");
         TerritoryDescription = new Column<string>(this, columnName: "TerritoryDescription", length: new(50), description: "Territory description");
-        RegionId = new Column<IntKey<IRegion>>(this, columnName: "RegionId", description: "Region that territory belongs to");
+        RegionId = new Column<RegionId, int>(this, columnName: "RegionId", description: "Region that territory belongs to");
     }
 }
 ```
