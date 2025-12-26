@@ -91,6 +91,35 @@ namespace QueryLite {
             return new GenericCondition(function, Operator.GREATER_THAN_OR_EQUAL, value);
         }
 
+        //
+        //  Between conditions
+        //
+        public ICondition Between(TYPE valueA, TYPE valueB) {
+            return new BetweenCondition<TYPE>(not: false, left: this, valueA: valueA, valueB: valueB);
+        }
+        public ICondition Between(TYPE valueA, ISelectable<TYPE> valueB) {
+            return new BetweenCondition<TYPE>(not: false, left: this, valueA: valueA, valueB: valueB);
+        }
+        public ICondition Between(ISelectable<TYPE> valueA, TYPE valueB) {
+            return new BetweenCondition<TYPE>(not: false, left: this, valueA: valueA, valueB: valueB);
+        }
+        public ICondition Between(ISelectable<TYPE> valueA, ISelectable<TYPE> valueB) {
+            return new BetweenCondition<TYPE>(not: false, left: this, valueA: valueA, valueB: valueB);
+        }
+
+        public ICondition NotBetween(TYPE valueA, TYPE valueB) {
+            return new BetweenCondition<TYPE>(not: true, left: this, valueA: valueA, valueB: valueB);
+        }
+        public ICondition NotBetween(TYPE valueA, ISelectable<TYPE> valueB) {
+            return new BetweenCondition<TYPE>(not: true, left: this, valueA: valueA, valueB: valueB);
+        }
+        public ICondition NotBetween(ISelectable<TYPE> valueA, TYPE valueB) {
+            return new BetweenCondition<TYPE>(not: true, left: this, valueA: valueA, valueB: valueB);
+        }
+        public ICondition NotBetween(ISelectable<TYPE> valueA, ISelectable<TYPE> valueB) {
+            return new BetweenCondition<TYPE>(not: true, left: this, valueA: valueA, valueB: valueB);
+        }
+
         public ICondition IsNull => new NullNotNullFunctionCondition<TYPE>(this, isNull: true);
         public ICondition IsNotNull => new NullNotNullFunctionCondition<TYPE>(this, isNull: false);
 

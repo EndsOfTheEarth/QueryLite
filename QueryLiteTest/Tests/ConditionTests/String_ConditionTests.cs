@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
+using QueryLite.Databases.Functions;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.Utility;
 using QueryLiteTest.Tables;
@@ -312,6 +313,53 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     )
                     .From(table)
                     .Where(table.String.IsNotNull)
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(3, result.Rows.Count);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+                AllFieldsTest.AssertRow(result.Rows[1], types2);
+                AllFieldsTest.AssertRow(result.Rows[2], types3);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(new Length(table.String) == types1.String.Length)
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(3, result.Rows.Count);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+                AllFieldsTest.AssertRow(result.Rows[1], types2);
+                AllFieldsTest.AssertRow(result.Rows[2], types3);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(new Length(table.String) != types1.String.Length)
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(0, result.Rows.Count);
+            }
+
+            {
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(new Length(table.String).Between(1, types1.String.Length))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 

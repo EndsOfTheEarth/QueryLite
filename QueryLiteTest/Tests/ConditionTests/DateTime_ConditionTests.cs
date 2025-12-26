@@ -104,6 +104,57 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.DateTime.Between(new DateTime(2023, 01, 01, 00, 00, 00), new DateTime(2023, 01, 23, 23, 59, 59)))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(3, result.Rows.Count);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+                AllFieldsTest.AssertRow(result.Rows[1], types2);
+                AllFieldsTest.AssertRow(result.Rows[2], types3);
+            }
+
+            {
+
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.DateTime.Between(new DateTime(2023, 01, 12, 11, 21, 00), new DateTime(2023, 01, 12, 11, 21, 02)))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(1, result.Rows.Count);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types2);
+            }
+
+            {
+
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(table.DateTime.NotBetween(new DateTime(2023, 01, 12, 11, 21, 00), new DateTime(2023, 01, 12, 11, 21, 02)))
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(2, result.Rows.Count);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+                AllFieldsTest.AssertRow(result.Rows[1], types3);
+            }
+
+            {
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)

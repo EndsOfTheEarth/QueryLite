@@ -212,19 +212,7 @@ namespace QueryLite {
 
         public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-            if(Left is IColumn leftColumn) {
-
-                if(useAlias) {
-                    sql.Append(leftColumn.Table.Alias).Append('.');
-                }
-                sql.Append(leftColumn.ColumnName);
-            }
-            else if(Left is IFunction leftFunction) {
-                sql.Append(leftFunction.GetSql(database, useAlias: useAlias, parameters));
-            }
-            else {
-                throw new Exception($"Unsupported type: {Left.GetType()}");
-            }
+            ConditionHelper.AppendSqlValue(Left, sql, database, useAlias: useAlias, parameters);
 
             sql.Append(Operator switch {
                 Operator.EQUALS => " = ",
@@ -235,29 +223,7 @@ namespace QueryLite {
                 Operator.LESS_THAN_OR_EQUAL => " <= ",
                 _ => throw new Exception($"Unknown join operator. {nameof(Operator)} == {Operator}")
             });
-
-            if(Right is IColumn rightColumn) {
-
-                if(useAlias) {
-                    sql.Append(rightColumn.Table.Alias).Append('.');
-                }
-                sql.Append(rightColumn.ColumnName);
-            }
-            else if(Right is IFunction rightFunction) {
-                sql.Append(rightFunction.GetSql(database, useAlias: useAlias, parameters));
-            }
-            else {
-
-                object value = Right;
-
-                if(parameters == null) {
-                    sql.Append(database.ConvertToSql(value));
-                }
-                else {
-                    parameters.AddParameter(database, value.GetType(), value: value, out string paramName);
-                    sql.Append(paramName);
-                }
-            }
+            ConditionHelper.AppendSqlValue(Right, sql, database, useAlias: useAlias, parameters);
         }
     }
 
@@ -287,6 +253,95 @@ namespace QueryLite {
                 throw new Exception($"Unsupported type: {Left.GetType()}");
             }
             sql.Append(database.LikeSqlConditionGenerator.GetSql(Like, database));
+        }
+    }
+
+    internal sealed class BetweenCondition<TYPE> : ICondition where TYPE : notnull {
+        
+        public bool Not { get; }
+        public IField Left { get; private set; }
+        public object ValueA { get; private set; }
+        public object ValueB { get; private set; }
+
+        public BetweenCondition(bool not, IField left, TYPE valueA, TYPE valueB) {
+            Not = not;
+            Left = left;
+            ValueA = valueA;
+            ValueB = valueB;
+        }
+
+        public BetweenCondition(bool not, IField left, ISelectable<TYPE> valueA, TYPE valueB) {
+            Not = not;
+            Left = left;
+            ValueA = valueA;
+            ValueB = valueB;
+        }
+
+        public BetweenCondition(bool not, IField left, ISelectable<TYPE> valueA, ISelectable<TYPE> valueB) {
+            Not = not;
+            Left = left;
+            ValueA = valueA;
+            ValueB = valueB;
+        }
+
+        public BetweenCondition(bool not, IField left, TYPE valueA, ISelectable<TYPE> valueB) {
+            Not = not;
+            Left = left;
+            ValueA = valueA;
+            ValueB = valueB;
+        }
+
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+            if(Left is IColumn leftColumn) {
+
+                if(useAlias) {
+                    sql.Append(leftColumn.Table.Alias).Append('.');
+                }
+                sql.Append(leftColumn.ColumnName);
+            }
+            else if(Left is IFunction leftFunction) {
+                sql.Append(leftFunction.GetSql(database, useAlias: useAlias, parameters));
+            }
+            else {
+                throw new Exception($"Unsupported type: {Left.GetType()}");
+            }
+            if(Not) {
+                sql.Append(" NOT BETWEEN ");
+            }
+            else {
+                sql.Append(" BETWEEN ");
+            }
+            ConditionHelper.AppendSqlValue(ValueA, sql, database, useAlias: useAlias, parameters);
+            sql.Append(" AND ");
+            ConditionHelper.AppendSqlValue(ValueB, sql, database, useAlias: useAlias, parameters);
+        }
+    }
+
+    internal static class ConditionHelper {
+
+        public static void AppendSqlValue(object value, StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+            if(value is IColumn rightColumn) {
+
+                if(useAlias) {
+                    sql.Append(rightColumn.Table.Alias).Append('.');
+                }
+                sql.Append(rightColumn.ColumnName);
+            }
+            else if(value is IFunction rightFunction) {
+                sql.Append(rightFunction.GetSql(database, useAlias: useAlias, parameters));
+            }
+            else {
+
+                if(parameters == null) {
+                    sql.Append(database.ConvertToSql(value));
+                }
+                else {
+                    parameters.AddParameter(database, value.GetType(), value: value, out string paramName);
+                    sql.Append(paramName);
+                }
+            }
         }
     }
 
