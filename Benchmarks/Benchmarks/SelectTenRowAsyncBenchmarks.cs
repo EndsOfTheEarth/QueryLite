@@ -34,6 +34,8 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
+            Databases.ResetTable();
+
             Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {

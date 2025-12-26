@@ -36,6 +36,8 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
+            Databases.ResetTable();
+
             Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
@@ -76,15 +78,12 @@ namespace Benchmarks {
 
                 reader.Read();
 
-                List<Test01> list = new List<Test01>();
-
                 Test01 test01 = new Test01(
                     id: reader.GetInt32(0),
                     row_guid: reader.GetGuid(1),
                     message: reader.GetString(2),
                     date: reader.GetDateTime(3)
-                );
-                list.Add(test01);
+                );                
             }
         }
 
@@ -97,7 +96,7 @@ namespace Benchmarks {
 
                 connection.Open();
 
-                IEnumerable<Test01> result = connection.Query<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@_guid", new { _guid });
+                Test01 result = connection.QuerySingle<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@_guid", new { _guid });
             }
         }
 
@@ -106,7 +105,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                QueryResult<Test01> result = _preparedSelectQuery.Execute(parameters: this, Databases.TestDatabase);
+                Test01? result = _preparedSelectQuery.SingleOrDefault(parameters: this, Databases.TestDatabase);
             }
         }
 
@@ -117,13 +116,13 @@ namespace Benchmarks {
 
                 Test01Table table = Test01Table.Instance;
 
-                QueryResult<Test01> result = Query
+                Test01? result = Query
                     .Select(
                         row => new Test01(table, row)
                     )
                     .From(table)
                     .Where(table.Row_guid == _guid)
-                    .Execute(Databases.TestDatabase);
+                    .SingleOrDefault(Databases.TestDatabase);
             }
         }
 
@@ -148,10 +147,10 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                List<Test01Row_EfCore> result = context.TestRows
+                Test01Row_EfCore? result = context.TestRows
                     .Select(row => row)
                     .Where(row => row.Row_guid == _guid)
-                    .ToList();
+                    .SingleOrDefault();
             }
         }
     }

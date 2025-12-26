@@ -38,6 +38,8 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
+            Databases.ResetTable();
+
             Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
@@ -56,7 +58,6 @@ namespace Benchmarks {
                 Id = result.Rows[0];
                 transaction.Commit();
             }
-            Query.ExecuteNonQuery(sql: $"VACUUM {table.SchemaName}.{table.TableName};", Databases.TestDatabase);
         }
 
         private int _iterations = 2000;

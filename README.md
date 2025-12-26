@@ -470,14 +470,14 @@ These tests measure sequential execution times (non async). Executing queries as
 ```SQL
 SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 ```
-| Method                                 | Mean     | Error   | StdDev  | Allocated |
-|--------------------------------------- |---------:|--------:|--------:|----------:|
-| Ado_Single_Row_Select                  | 154.7 ms | 1.38 ms | 1.30 ms |   3.01 MB |
-| Dapper_Single_Row_Select               | 153.6 ms | 1.72 ms | 1.52 ms |   3.72 MB |
-| QueryLite_Single_Row_Prepared_Select   | 159.6 ms | 1.67 ms | 1.48 ms |    3.1 MB |
-| QueryLite_Single_Row_Dynamic_Select    | 158.8 ms | 1.29 ms | 1.15 ms |   4.06 MB |
-| QueryLite_Single_Row_Repository_Select | 190.6 ms | 2.14 ms | 2.01 ms |   5.19 MB |
-| EF_Core_Single_Row_Select              | 188.6 ms | 1.94 ms | 1.51 ms |  15.62 MB |
+| Method                                 | Mean     | Error   | StdDev  | Gen0      | Allocated |
+|--------------------------------------- |---------:|--------:|--------:|----------:|----------:|
+| Ado_Single_Row_Select                  | 154.0 ms | 1.14 ms | 1.12 ms |         - |   2.84 MB |
+| Dapper_Single_Row_Select               | 149.2 ms | 0.92 ms | 0.81 ms |         - |   3.19 MB |
+| QueryLite_Single_Row_Prepared_Select   | 157.4 ms | 2.67 ms | 2.49 ms |         - |   2.93 MB |
+| QueryLite_Single_Row_Dynamic_Select    | 158.0 ms | 2.65 ms | 2.35 ms |         - |   3.89 MB |
+| QueryLite_Single_Row_Repository_Select | 186.6 ms | 1.66 ms | 1.47 ms |         - |   5.19 MB |
+| EF_Core_Single_Row_Select              | 194.8 ms | 1.41 ms | 1.18 ms | 1000.0000 |  17.65 MB |
 
 ### Select Ten Rows To List (2000 Sequential Iterations)
 

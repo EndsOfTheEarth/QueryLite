@@ -32,6 +32,8 @@ namespace Benchmarks {
         [IterationSetup]
         public void Setup() {
 
+            Databases.ResetTable();
+
             Test01Table table = Test01Table.Instance;
 
             using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
@@ -40,7 +42,6 @@ namespace Benchmarks {
 
                 transaction.Commit();
             }
-            Query.ExecuteNonQuery(sql: $"VACUUM {table.SchemaName}.{table.TableName};", Databases.TestDatabase);
         }
 
         private readonly Guid _guid = new Guid("{A94E044C-CDE2-40E2-9A81-5803AFB746A2}");

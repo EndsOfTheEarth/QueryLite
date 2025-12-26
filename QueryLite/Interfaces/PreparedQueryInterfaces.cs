@@ -180,7 +180,7 @@ namespace QueryLite {
     public interface IPreparedQueryExecute<PARAMETERS, RESULT> {
 
         /// <summary>
-        /// Initialize generates the underlying sql query if it do not already exist. This method is mostly used for benchmarking where we want the sql to be generated before the query is used.
+        /// Initialize generates the underlying sql query if it does not already exist. This method is mostly used for benchmarking where we want the sql to be generated before the query is used.
         /// </summary>
         /// <param name="database"></param>
         void Initialize(IDatabase database);
