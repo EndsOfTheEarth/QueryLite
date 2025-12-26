@@ -4,6 +4,7 @@ using Dapper;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using QueryLite;
+using System.Data.Common;
 
 namespace Benchmarks {
 
@@ -49,6 +50,13 @@ namespace Benchmarks {
 
                 transaction.Commit();
             }
+            using DbConnection connection = Databases.TestDatabase.GetNewConnection();
+
+            connection.Open();
+            using DbCommand command = connection.CreateCommand();
+            command.CommandText = $"VACUUM {table.SchemaName}.{table.TableName};";
+
+            command.ExecuteNonQuery();
         }
 
         private int _iterations = 2000;
@@ -162,7 +170,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void EfCore_Single_Row_Delete() {
+        public void EF_Core_Single_Row_Delete() {
 
             for(int index = 0; index < _iterations; index++) {
 
@@ -171,7 +179,6 @@ namespace Benchmarks {
                 List<Test01Row_EfCore> list = context.TestRows.ToList();
 
                 foreach(Test01Row_EfCore row in list) {
-
                     context.TestRows.Remove(row);
                 }
 

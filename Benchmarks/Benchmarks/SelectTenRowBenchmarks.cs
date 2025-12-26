@@ -139,7 +139,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void EfCore_Ten_Row_Select() {
+        public void EF_Core_Ten_Row_Select() {
 
             using TestContext context = new TestContext(Databases.ConnectionString);
 

@@ -4,6 +4,7 @@ using Dapper;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using QueryLite;
+using System.Data.Common;
 
 namespace Benchmarks {
 
@@ -55,6 +56,13 @@ namespace Benchmarks {
                 Id = result.Rows[0];
                 transaction.Commit();
             }
+            using DbConnection connection = Databases.TestDatabase.GetNewConnection();
+
+            connection.Open();
+            using DbCommand command = connection.CreateCommand();
+            command.CommandText = $"VACUUM {table.SchemaName}.{table.TableName};";
+
+            command.ExecuteNonQuery();
         }
 
         private int _iterations = 2000;
@@ -186,7 +194,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void EfCore_Single_Row_Update() {
+        public void EF_Core_Single_Row_Update() {
 
             Test01Row_EfCore row = new Test01Row_EfCore(
                 id: Id,

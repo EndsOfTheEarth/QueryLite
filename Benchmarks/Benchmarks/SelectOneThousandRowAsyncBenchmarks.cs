@@ -196,7 +196,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public async Task EfCore_One_Thousand_Row_SelectAsync() {
+        public async Task EF_Core_One_Thousand_Row_SelectAsync() {
 
             List<Task> tasks = new List<Task>(_iterations);
 

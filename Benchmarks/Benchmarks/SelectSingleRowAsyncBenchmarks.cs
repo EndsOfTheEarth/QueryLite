@@ -177,7 +177,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public async Task EfCore_Single_Row_SelectAsync() {
+        public async Task EF_Core_Single_Row_SelectAsync() {
 
             using TestContext context = new TestContext(Databases.ConnectionString);
 

@@ -175,7 +175,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public async Task EfCore_Ten_Row_SelectAsync() {
+        public async Task EF_Core_Ten_Row_SelectAsync() {
 
             using(TestContext context = new TestContext(Databases.ConnectionString)) {
 

@@ -4,6 +4,7 @@ using Dapper;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using QueryLite;
+using System.Data.Common;
 
 namespace Benchmarks {
 
@@ -40,6 +41,13 @@ namespace Benchmarks {
 
                 transaction.Commit();
             }
+            using DbConnection connection = Databases.TestDatabase.GetNewConnection();
+
+            connection.Open();
+            using DbCommand command = connection.CreateCommand();
+            command.CommandText = $"VACUUM {table.SchemaName}.{table.TableName};";
+
+            command.ExecuteNonQuery();
         }
 
         private readonly Guid _guid = new Guid("{A94E044C-CDE2-40E2-9A81-5803AFB746A2}");
@@ -173,7 +181,7 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void EfCore_Single_Insert() {
+        public void EF_Core_Single_Insert() {
 
             for(int index = 0; index < _iterations; index++) {
 
