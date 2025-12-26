@@ -635,6 +635,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 QueryLite can implement a repository pattern for create, read, update and delete actions. This is
 achived by creating a partial row class that is then implemented by a source generator.
 
+One of the benefits of using a repository is that an update query is not sent to the database if the record has not changed. The down side is that tracking
+changes requires additional memory allocation to store the previous row state. So if you are selecting rows that will not be updated,
+it is better to use a standard query to save on memory allocations.
+
 Note: Auto generated columns on a row will be populated on the row object after being inserted by the repository.
 
 Note: If the an exception occurs in the update method or a transaction is rolled back, the repository
@@ -740,8 +744,8 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 ## Repository Static Insert & Update
 
 The repository class includes static Insert and Update methods that allocate less memory compared to using the Repository instance.
-The down side is that all updates are matched using the rows primary key and there is no checks to validate the
-row has not been changed in the database.
+The down side is that all updates are matched using the rows primary key and there are no checks to validate the
+row has not been changed in the database. So an update query is always sent to the database even when no values have changed.
 When inserting a row, any auto generated values will be populated on the row after an update, but they will not be reverted
 if the transaction fails.
 
