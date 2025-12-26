@@ -33,7 +33,8 @@ namespace QueryLite {
         Insert,
         Update,
         Delete,
-        Truncate
+        Truncate,
+        Custom
     }
 
     internal static class QueryExecutor {

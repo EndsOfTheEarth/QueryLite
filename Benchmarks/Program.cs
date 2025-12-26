@@ -8,7 +8,7 @@ namespace Benchmarks {
 
             //BenchmarkRunner.Run<InsertBenchmarks>();
             //BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
-            BenchmarkRunner.Run<DeleteSingleRowBenchmarks>();
+            //BenchmarkRunner.Run<DeleteSingleRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
             //BenchmarkRunner.Run<SelectTenRowBenchmarks>();
@@ -25,8 +25,8 @@ namespace Benchmarks {
             //await new SelectOneThousandRowAsyncBenchmarks().Ado_One_Thousand_Row_SelectAsync();
             //await new SelectOneThousandRowAsyncBenchmarks().QueryLite_One_Thousand_Row_Prepared_SelectAsync();
 
-            //InsertBenchmarks benchmark = new InsertBenchmarks();
-            //benchmark.Setup();
+            InsertBenchmarks benchmark = new InsertBenchmarks();
+            benchmark.Setup();
 
             //await benchmark.Ado_One_Hundred_Row_SelectAsync();
         }

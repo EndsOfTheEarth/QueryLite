@@ -1261,6 +1261,12 @@ Settings.EnableCollectorCaching = true;
 
 ## Executing Custom SQL
 
+Executing a non-query example:
+
+```C#
+NonQueryResult result = Query.ExecuteNonQuery(sql: "VACUUM public.my_table;", database: database);
+```
+
 If you need to execute custom SQL / TSQL within an existing transaction, you can create an Ado `DbCommand` object `CreateCommand(...)` on the transaction. The command object will be returned with the transaction and timeout setting populated.
 
 Note: Remember to correctly dispose of the command object.

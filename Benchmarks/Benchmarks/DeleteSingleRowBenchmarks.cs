@@ -50,13 +50,7 @@ namespace Benchmarks {
 
                 transaction.Commit();
             }
-            using DbConnection connection = Databases.TestDatabase.GetNewConnection();
-
-            connection.Open();
-            using DbCommand command = connection.CreateCommand();
-            command.CommandText = $"VACUUM {table.SchemaName}.{table.TableName};";
-
-            command.ExecuteNonQuery();
+            Query.ExecuteNonQuery(sql: $"VACUUM {table.SchemaName}.{table.TableName};", Databases.TestDatabase);
         }
 
         private int _iterations = 2000;

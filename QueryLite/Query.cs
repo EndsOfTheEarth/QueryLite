@@ -90,5 +90,77 @@ namespace QueryLite {
         public static ITruncate Truncate(ITable table) {
             return new TruncateQueryTemplate(table);
         }
+
+        public static NonQueryResult ExecuteNonQuery(string sql, IDatabase database, QueryTimeout? timeout = null,
+                                                     string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(sql);
+            ArgumentNullException.ThrowIfNull(database);
+
+            return QueryExecutor.ExecuteNonQuery(
+                database: database,
+                transaction: null,
+                timeout: timeout ?? TimeoutLevel.ShortSelect,
+                parameters: null,
+                sql: sql,
+                queryType: QueryType.Custom,
+                debugName: debugName
+            );
+        }
+
+        public static NonQueryResult ExecuteNonQuery(string sql, Transaction transaction, QueryTimeout? timeout = null,
+                                                     string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(sql);
+            ArgumentNullException.ThrowIfNull(transaction);
+
+            return QueryExecutor.ExecuteNonQuery(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortSelect,
+                parameters: null,
+                sql: sql,
+                queryType: QueryType.Custom,
+                debugName: debugName
+            );
+        }
+
+        public static async Task<NonQueryResult> ExecuteNonQueryAsync(string sql, IDatabase database,
+                                                                      CancellationToken ct, QueryTimeout? timeout = null,
+                                                                      string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(sql);
+            ArgumentNullException.ThrowIfNull(database);
+
+            return await QueryExecutor.ExecuteNonQueryAsync(
+                database: database,
+                transaction: null,
+                timeout: timeout ?? TimeoutLevel.ShortSelect,
+                parameters: null,
+                sql: sql,
+                queryType: QueryType.Custom,
+                debugName: debugName,
+                cancellationToken: ct
+            );
+        }
+
+        public static async Task<NonQueryResult> ExecuteNonQueryAsync(string sql, Transaction transaction,
+                                                                      CancellationToken ct, QueryTimeout? timeout = null,
+                                                                      string debugName = "") {
+
+            ArgumentNullException.ThrowIfNull(sql);
+            ArgumentNullException.ThrowIfNull(transaction);
+
+            return await QueryExecutor.ExecuteNonQueryAsync(
+                database: transaction.Database,
+                transaction: transaction,
+                timeout: timeout ?? TimeoutLevel.ShortSelect,
+                parameters: null,
+                sql: sql,
+                queryType: QueryType.Custom,
+                debugName: debugName,
+                cancellationToken: ct
+            );
+        }
     }
 }
