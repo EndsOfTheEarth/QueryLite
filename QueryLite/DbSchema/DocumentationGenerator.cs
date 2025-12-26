@@ -279,8 +279,19 @@ a, a:visited {
                 }
                 html.Append("</table>");
 
+                html.Append($"<h3>Check Constraints({table.TableClass.CheckConstraints.Length})</h3><p>");
+                html.Append("<table><tr><th style=\"text-align: center;\">Name</th>");
+
+                foreach(CheckConstraint checkConstraint in table.TableClass.CheckConstraints) {
+
+                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(checkConstraint.Name)).Append("</td>");
+                }
+                html.Append("</table>");
+
                 html.Append($"<h3>Foreign Keys({table.TableClass.ForeignKeys.Length})</h3><p>");
                 html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th><th style=\"text-align: center;\">References</th>");
+                
+                counter = 0;
 
                 foreach(ForeignKey foreignKey in table.TableClass.ForeignKeys) {
 
