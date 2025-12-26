@@ -170,6 +170,7 @@ namespace QueryLiteTest.Tests {
                 ValidatePrimaryKeys = true,
                 ValidateUniqueConstraints = true,
                 ValidateForeignKeys = true,
+                ValidateCheckConstraintNames = true,
                 ValidateMissingCodeTables = true
             };
 

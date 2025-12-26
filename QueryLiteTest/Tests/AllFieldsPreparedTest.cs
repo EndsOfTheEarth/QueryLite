@@ -197,6 +197,7 @@ namespace QueryLiteTest.Tests {
                 ValidatePrimaryKeys = true,
                 ValidateUniqueConstraints = true,
                 ValidateForeignKeys = true,
+                ValidateCheckConstraintNames = true,
                 ValidateMissingCodeTables = true
             };
 
@@ -222,8 +223,15 @@ namespace QueryLiteTest.Tests {
                 Assert.AreEqual(5, result.Items.Count);
             }
 
+            string messages = "";
+
             foreach(ValidationItem val in result.Items) {
 
+                foreach(string message in val.ValidationMessages) {
+                    messages += $"{val.TableName}: {message}{Environment.NewLine}";
+                }
+            }
+            foreach(ValidationItem val in result.Items) {
                 Assert.AreEqual(0, val.ValidationMessages.Count);
             }
         }

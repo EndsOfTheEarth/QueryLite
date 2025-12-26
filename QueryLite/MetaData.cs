@@ -122,4 +122,14 @@ namespace QueryLite {
         public string ConstraintName { get; }
         public IColumn[] Columns { get; }
     }
+
+    public sealed class CheckConstraint {
+
+        public CheckConstraint(string name, ICondition? condition) {
+            Name = name;
+            Condition = condition;
+        }
+        public string Name { get; }
+        public ICondition? Condition { get; }
+    }
 }

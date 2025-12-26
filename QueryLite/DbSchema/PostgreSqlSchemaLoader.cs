@@ -80,7 +80,7 @@ namespace QueryLite.DbSchema {
 
                 DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(IUnknownType)));
 
-                
+
 
                 bool isNullable = string.Compare(columnRow.Is_nullable, "YES", true) == 0;
 
@@ -100,6 +100,7 @@ namespace QueryLite.DbSchema {
 
             SetPrimaryKeys(tableList, database);
             SetUniqueConstraints(tableList, database);
+            SetCheckConstraints(tableList, database);
             SetForeignKeys(tableList, database);
 
             LoadCommentMetaData(tableList, database);
@@ -128,7 +129,7 @@ namespace QueryLite.DbSchema {
                 }
                 else if(columnRow.Character_octet_length != null) {
                     length = new ColumnLength(columnRow.Character_octet_length.Value);
-                }                
+                }
             }
             return length;
         }
@@ -241,6 +242,79 @@ namespace QueryLite.DbSchema {
                 }
                 constraint.ColumnNames.Add(row.Column_name);
             }
+        }
+
+        private static void SetCheckConstraints(List<DatabaseTable> tableList, IDatabase database) {
+
+            Dictionary<TableKey, DatabaseTable> dbTableLookup = new Dictionary<TableKey, DatabaseTable>();
+
+            foreach(DatabaseTable table in tableList) {
+                dbTableLookup.Add(new TableKey(table.Schema, table.TableName), table);
+            }
+
+            TableConstraintsTable tableConstraints = TableConstraintsTable.Instance;
+            CheckConstraintsTable checkConstraintsTable = CheckConstraintsTable.Instance;
+
+            var result = Query
+                .Select(
+                    row => new {
+                        Table_schema = row.Get(tableConstraints.Table_schema),
+                        Table_name = row.Get(tableConstraints.Table_name),
+                        Constraint_Name = row.Get(tableConstraints.Constraint_name),
+                        CheckClause = row.Get(checkConstraintsTable.Check_caluse),
+                    }
+                )
+                .From(tableConstraints)
+                .Join(checkConstraintsTable).On(
+                    tableConstraints.Constraint_catalog == checkConstraintsTable.Constraint_catalog &
+                    tableConstraints.Constraint_schema == checkConstraintsTable.Constraint_schema &  
+                    tableConstraints.Constraint_name == checkConstraintsTable.Constraint_name
+                )
+                .Where(tableConstraints.Constraint_type == "CHECK")
+                .Execute(database, TimeoutLevel.ShortSelect);
+
+            Dictionary<Key<TableKey, string>, DatabaseCheckConstraint> lookup = [];
+
+            foreach(var row in result.Rows) {
+
+                if(IsPostgreSqlGeneratedConstraint(row.Constraint_Name)) {
+                    continue;
+                }
+                TableKey tableKey = new TableKey(row.Table_schema, row.Table_name);
+
+                DatabaseTable table = dbTableLookup[tableKey];
+
+                Key<TableKey, string> constraintKey = new Key<TableKey, string>(tableKey, row.Constraint_Name);
+
+                if(!lookup.TryGetValue(constraintKey, out DatabaseCheckConstraint? constraint)) {
+                    constraint = new(row.Constraint_Name, row.CheckClause);
+                    table.CheckConstraints.Add(constraint);
+                    lookup.Add(constraintKey, constraint);
+                }
+            }
+        }
+
+        private static bool IsPostgreSqlGeneratedConstraint(string constrainName) {
+
+            //This is a crude way to determine if a NOT NULL constraint was created by PostgreSql
+            if(constrainName.EndsWith("_not_null")) {
+
+                constrainName = constrainName.Replace("_not_null", "");
+
+                string[] tokens = constrainName.Split('_', StringSplitOptions.RemoveEmptyEntries);
+
+                if(tokens.Length == 3) {
+
+                    bool token1IsInteger = int.TryParse(tokens[0], out _);
+                    bool token2IsInteger = int.TryParse(tokens[1], out _);
+                    bool token3IsInteger = int.TryParse(tokens[2], out _);
+
+                    bool isPostgreGeneratedConstraint = token1IsInteger && token2IsInteger && token3IsInteger;
+
+                    return isPostgreGeneratedConstraint;
+                }
+            }
+            return false;
         }
 
         private static void SetForeignKeys(List<DatabaseTable> tableList, IDatabase database) {

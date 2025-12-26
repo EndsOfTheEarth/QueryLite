@@ -44,7 +44,8 @@ namespace QueryLite.DbSchema {
         public List<DatabaseColumn> Columns { get; } = new List<DatabaseColumn>();
 
         public DatabasePrimaryKey? PrimaryKey { get; set; }
-        public List<DatabaseUniqueConstraint> UniqueConstraints { get; set; } = new List<DatabaseUniqueConstraint>();
+        public List<DatabaseUniqueConstraint> UniqueConstraints { get; set; } = [];
+        public List<DatabaseCheckConstraint> CheckConstraints { get; set; } = [];
         public List<DatabaseForeignKey> ForeignKeys { get; } = new List<DatabaseForeignKey>();
 
         public DatabaseTable(StringKey<ISchemaName> schema, StringKey<ITableName> tableName, bool isView) {
@@ -65,6 +66,16 @@ namespace QueryLite.DbSchema {
         }
         public string ConstraintName { get; }
         public List<StringKey<IColumnName>> ColumnNames { get; } = new List<StringKey<IColumnName>>();
+    }
+
+    public sealed class DatabaseCheckConstraint {
+
+        public DatabaseCheckConstraint(string constraintName, string definition) {
+            ConstraintName = constraintName;
+            Definition = definition;
+        }
+        public string ConstraintName { get; }
+        public string Definition { get; }
     }
 
     public sealed class DatabasePrimaryKey {

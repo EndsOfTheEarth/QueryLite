@@ -62,6 +62,8 @@ namespace QueryLite {
         UniqueConstraint[] UniqueConstraints { get; }
 
         ForeignKey[] ForeignKeys { get; }
+
+        CheckConstraint[] CheckConstraints { get; }
     }
 
     /// <summary>
@@ -99,6 +101,7 @@ namespace QueryLite {
         public virtual PrimaryKey? PrimaryKey => null;
         public virtual UniqueConstraint[] UniqueConstraints => [];
         public virtual ForeignKey[] ForeignKeys => [];
+        public virtual CheckConstraint[] CheckConstraints => [];
 
         /// <summary>
         /// Abstract table

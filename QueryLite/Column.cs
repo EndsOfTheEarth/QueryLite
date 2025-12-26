@@ -436,7 +436,7 @@ namespace QueryLite {
     /// </summary>
     /// <typeparam name="CUSTOM_TYPE">Type of custom type.</typeparam>
     /// <typeparam name="TYPE">Underlying type of the custom type.</typeparam>
-    public sealed class Column<CUSTOM_TYPE, TYPE> : AColumn<CUSTOM_TYPE>
+    public sealed class Column<CUSTOM_TYPE, TYPE> : AColumn<CUSTOM_TYPE>, ISelectable<TYPE>
             where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
             where TYPE : notnull {
 
@@ -482,7 +482,7 @@ namespace QueryLite {
     /// </summary>
     /// <typeparam name="CUSTOM_TYPE">Type of custom type.</typeparam>
     /// <typeparam name="TYPE">Underlying type of the custom type.</typeparam>
-    public sealed class NullableColumn<CUSTOM_TYPE, TYPE> : AColumn<CUSTOM_TYPE>
+    public sealed class NullableColumn<CUSTOM_TYPE, TYPE> : AColumn<CUSTOM_TYPE>, ISelectable<TYPE>
             where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
             where TYPE : notnull {
 

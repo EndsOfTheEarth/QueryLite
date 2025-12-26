@@ -23,6 +23,7 @@
  **/
 using QueryLite.DbSchema;
 using QueryLite.Utility;
+using System.Data;
 using System.Data.Common;
 using System.Reflection;
 
@@ -64,6 +65,7 @@ namespace QueryLite {
         public required bool ValidatePrimaryKeys { get; init; }
         public required bool ValidateUniqueConstraints { get; init; }
         public required bool ValidateForeignKeys { get; init; }
+        public required bool ValidateCheckConstraintNames { get; init; }
         public required bool ValidateMissingCodeTables { get; init; }
     }
 
@@ -457,7 +459,12 @@ namespace QueryLite {
 
             foreach(PropertyInfo tableProperty in tableProperties) {
 
-                if(tableProperty.Name == nameof(table.PrimaryKey) || tableProperty.Name == nameof(table.UniqueConstraints) || tableProperty.Name == nameof(table.ForeignKeys)) {
+                bool allowedTableProperty = tableProperty.Name == nameof(table.PrimaryKey) ||
+                    tableProperty.Name == nameof(table.UniqueConstraints) ||
+                    tableProperty.Name == nameof(table.ForeignKeys) ||
+                    tableProperty.Name == nameof(table.CheckConstraints);
+
+                if(allowedTableProperty) {
                     continue;
                 }
 
@@ -517,9 +524,41 @@ namespace QueryLite {
             if(validationSettings.ValidateUniqueConstraints) {
                 ValidateUniqueConstraintsForTable(table, dbTable, tableValidation);
             }
-
+            if(validationSettings.ValidateCheckConstraintNames) {
+                ValidateCheckConstraintNamesForTable(table, dbTable, tableValidation);
+            }
             if(validationSettings.ValidateForeignKeys) {
                 ValidateForeignKeys(table, dbTable, tableValidation);
+            }
+        }
+
+        private static void ValidateCheckConstraintNamesForTable(ITable table, DatabaseTable dbTable, ValidationItem tableValidation) {
+
+            if(table.UniqueConstraints.Length != dbTable.UniqueConstraints.Count) {
+                tableValidation.Add($"The number of unique constraints between the code and database do not match. '{table.UniqueConstraints.Length}' != '{dbTable.UniqueConstraints.Count}'");
+            }
+
+            foreach(DatabaseCheckConstraint dbConstraint in dbTable.CheckConstraints) {
+
+                CheckConstraint? tableCheckConstraint = null;
+
+                foreach(CheckConstraint tableConstraint in table.CheckConstraints) {
+
+                    bool matches = string.Equals(dbConstraint.ConstraintName, tableConstraint.Name, StringComparison.OrdinalIgnoreCase);
+
+                    if(matches) {
+
+                        if(tableCheckConstraint != null) {
+                            tableValidation.Add($"The check constraint '{dbConstraint.ConstraintName}'is defined more than once in code");
+                            break;
+                        }
+                        tableCheckConstraint = tableConstraint;
+                    }
+                }
+
+                if(tableCheckConstraint == null) {
+                    tableValidation.Add($"The check constraint '{dbConstraint.ConstraintName}' is not defined in code. Definition = '{dbConstraint.Definition}'");
+                }
             }
         }
 
