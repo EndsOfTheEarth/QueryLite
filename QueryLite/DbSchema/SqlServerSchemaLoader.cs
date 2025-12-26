@@ -98,8 +98,6 @@ namespace QueryLite.DbSchema {
 
                 DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(IUnknownType)));
 
-                
-
                 bool isNullable = string.Compare(columnRow.Is_nullable, "YES", true) == 0;
 
                 int? isIdentity = !databaseTable.IsView ? row.ColumnProperty : null;   //The column property function returns 1 (i.e. is an identity column) for some columns on a view so we need to handle those cases
@@ -128,6 +126,7 @@ namespace QueryLite.DbSchema {
 
             SetPrimaryKeys(tableList, database);
             SetUniqueConstraints(tableList, database);
+            SetCheckConstraints(tableList, database);
             SetForeignKeys(tableList, database);
 
             LoadCommentMetaData(tableList, database);
@@ -255,6 +254,53 @@ namespace QueryLite.DbSchema {
                     dbUniqueConstraintLookup.Add(constraintKey, constraint);
                 }
                 constraint.ColumnNames.Add(row.COLUMN_NAME);
+            }
+        }
+
+        private static void SetCheckConstraints(List<DatabaseTable> tableList, IDatabase database) {
+
+            Dictionary<TableKey, DatabaseTable> dbTableLookup = new Dictionary<TableKey, DatabaseTable>();
+
+            foreach(DatabaseTable table in tableList) {
+                dbTableLookup.Add(new TableKey(table.Schema, table.TableName), table);
+            }
+
+            TableConstraintsTable tableConstraints = TableConstraintsTable.Instance;
+            CheckConstraintsTable checkConstraintsTable = CheckConstraintsTable.Instance;
+
+            var result = Query
+                .Select(
+                    row => new {
+                        TableSchema = row.Get(tableConstraints.Table_schema),
+                        TableName = row.Get(tableConstraints.Table_name),
+                        ConstraintName = row.Get(tableConstraints.Constraint_name),
+                        CheckClause = row.Get(checkConstraintsTable.Check_caluse),
+                    }
+                )
+                .From(tableConstraints)
+                .Join(checkConstraintsTable).On(
+                    tableConstraints.Constraint_catalog == checkConstraintsTable.Constraint_catalog &
+                    tableConstraints.Constraint_schema == checkConstraintsTable.Constraint_schema &
+                    tableConstraints.Constraint_name == checkConstraintsTable.Constraint_name
+                )
+                .Where(tableConstraints.Constraint_type == "CHECK")
+                .Execute(database, TimeoutLevel.ShortSelect);
+
+            Dictionary<Key<TableKey, string>, DatabaseCheckConstraint> dbLookup = [];
+
+            foreach(var row in result.Rows) {
+
+                TableKey tableKey = new TableKey(row.TableSchema, row.TableName);
+
+                DatabaseTable table = dbTableLookup[tableKey];
+
+                Key<TableKey, string> constraintKey = new(tableKey, row.ConstraintName);
+
+                if(!dbLookup.TryGetValue(constraintKey, out DatabaseCheckConstraint? constraint)) {
+                    constraint = new DatabaseCheckConstraint(constraintName: row.ConstraintName, definition: row.CheckClause);
+                    table.CheckConstraints.Add(constraint);
+                    dbLookup.Add(constraintKey, constraint);
+                }
             }
         }
 
