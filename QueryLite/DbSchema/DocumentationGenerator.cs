@@ -35,11 +35,15 @@ namespace QueryLite.DbSchema {
 
             foreach(Assembly assembly in assemblies) {
 
-                List<Type> listOfTypes = assembly.GetTypes()
+                List<Type> listOfTypes = [..
+                    assembly.GetTypes()
                     .Select(type => type)
-                    .Where(type => typeof(ITable).IsAssignableFrom(type) && type != typeof(ITable) && type != typeof(ATable))
-                    .ToList();
-
+                    .Where(
+                        type => typeof(ITable).IsAssignableFrom(type) &&
+                        type != typeof(ITable) &&
+                        type != typeof(ATable)
+                    )
+                ];
                 types.AddRange(listOfTypes);
             }
             return GenerateForTableTypes(types, applicationName, version);

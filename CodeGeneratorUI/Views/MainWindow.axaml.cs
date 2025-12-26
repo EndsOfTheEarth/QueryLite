@@ -221,7 +221,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                 schemaNode.Nodes.Add(tableNode);
             }
 
-            foreach(SchemaNode node in viewModel.Nodes) {
+            foreach(TreeNodeViewModel node in viewModel.Nodes) {
 
                 TreeViewItem? treeViewItem = (TreeViewItem?)tvwSchema.TreeContainerFromItem(node);
 
@@ -472,7 +472,6 @@ namespace QueryLite.CodeGeneratorUI.Views {
                 }
                 OutputToFolder.Output(
                     tables: tables,
-                    namespaces: namespaces,
                     settings: settings,
                     folder: folder,
                     singleFiles: chkSingleFiles.IsChecked ?? false,

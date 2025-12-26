@@ -30,7 +30,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public static class OutputToFolder {
 
-        public static void Output(List<DatabaseTable> tables, Namespaces namespaces, CodeGeneratorSettings settings, string folder, bool singleFiles, IDatabase database) {
+        public static void Output(List<DatabaseTable> tables, CodeGeneratorSettings settings, string folder, bool singleFiles, IDatabase database) {
 
             if(string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder)) {
                 throw new ArgumentException($"{nameof(folder)} = '{folder}' does not exist");

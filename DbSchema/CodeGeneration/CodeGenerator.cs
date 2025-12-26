@@ -98,7 +98,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 TablePrefix prefix = new TablePrefix(table);
 
-                CodeBuilder code = TableCodeGenerator.Generate(tables: new List<DatabaseTable>(new DatabaseTable[] { table }), settings);
+                CodeBuilder code = TableCodeGenerator.Generate(tables: [table], settings);
 
                 string tableFilePath = Path.Combine(tablesDir, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
                 File.WriteAllText(tableFilePath, code.ToString());
