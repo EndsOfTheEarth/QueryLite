@@ -397,7 +397,7 @@ var result = Query
     .From(shipperTable)
     .Execute(DB.Northwind);
 ```
-epos
+
 ## Select TOP Query
 
 Select TOP is supported. In SqlServer this generates the `TOP` syntax and in PostgreSql this generates the `LIMIT` syntax.
@@ -408,6 +408,39 @@ var result = Query
     .Top(100)
     .From(shipperTable)
     .Execute(DB.Northwind); 
+```
+
+## Dynamic Conditions
+
+At times it can be useful to have a query where the 'where' condition is dynamically created at run time.
+This can allow a query to dynamically filter out records based on changing criteria.
+
+Code Example:
+
+```C#
+CustomersTable customersTable = CustomersTable.Instance;
+OrdersTable ordersTable = OrdersTable.Instance;
+
+ICondition? condition = null;
+
+if(orderId != null) {
+    condition &= ordersTable.Id == orderId.Value;
+}
+if(suplierId != null) {
+    condition &= ordersTable.SupplierId == suplierId.Value;
+}
+
+var result = Query
+    .Select(
+        row => new {
+            OrderId = row.Get(ordersTable.OrderID),
+            CustomerId = row.Get(customersTable.CustomerID)
+        }
+    )
+    .From(ordersTable)
+    .LeftJoin(customersTable).On(ordersTable.CustomerID == customersTable.CustomerID)
+    .Where(condition)
+    .Execute(DB.Northwind, TimeoutLevel.ShortSelect);
 ```
 
 ## Nested Query

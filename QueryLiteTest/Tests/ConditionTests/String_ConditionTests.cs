@@ -100,6 +100,27 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+                ICondition? condition = null;
+
+                condition &= table.String.In(types1.String, types2.String, types3.String);
+
+                QueryResult<AllTypesInfo> result = await Query
+                    .Select(
+                        row => new AllTypesInfo(row, table)
+                    )
+                    .From(table)
+                    .Where(condition)
+                    .OrderBy(table.Id.ASC)
+                    .ExecuteAsync(TestDatabase.Database);
+
+                Assert.AreEqual(3, result.Rows.Count);
+
+                AllFieldsTest.AssertRow(result.Rows[0], types1);
+                AllFieldsTest.AssertRow(result.Rows[1], types2);
+                AllFieldsTest.AssertRow(result.Rows[2], types3);
+            }
+
+            {
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
                         row => new AllTypesInfo(row, table)

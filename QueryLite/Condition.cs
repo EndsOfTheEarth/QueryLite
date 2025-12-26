@@ -35,11 +35,19 @@ namespace QueryLite {
         public static ICondition Or(ICondition? conditionA, ICondition conditionB) {
             return conditionA != null ? new AndOrCondition(conditionA, isAnd: false, conditionB) : conditionB;
         }
-        public static ICondition operator &(ICondition pConditionA, ICondition pConditionB) {
-            return new AndOrCondition(pConditionA, isAnd: true, pConditionB);
+        public static ICondition operator &(ICondition? conditionA, ICondition conditionB) {
+
+            if(conditionA == null) {
+                return conditionB;
+            }
+            return new AndOrCondition(conditionA, isAnd: true, conditionB);
         }
-        public static ICondition operator |(ICondition pConditionA, ICondition pConditionB) {
-            return new AndOrCondition(pConditionA, isAnd: false, pConditionB);
+        public static ICondition operator |(ICondition? conditionA, ICondition conditionB) {
+
+            if(conditionA == null) {
+                return conditionB;
+            }
+            return new AndOrCondition(conditionA, isAnd: false, conditionB);
         }
     }
 
