@@ -138,7 +138,7 @@ For example: Sql Server's schema name might be defined as "dbo" in C# but the Po
 IDatabase northwind = new PostgreSqlDatabase(
       name: "Northwind",
       connectionString: "Server=127.0.0.1;Port=5432;Database=Northwind;User Id=postgres;Password=my_password;",
-      schemaMap: schema => (schema == "dbo" ? "public" : string.Empty)  //This will convert "dbo" to "public" when using PostgreSql
+      schemaMap: schema => (schema == "dbo" ? "public" : "")  //This will convert "dbo" to "public" when using PostgreSql
 );
 ```
 ## Defining A Table Definition
@@ -227,6 +227,17 @@ var result = Query
     )
 
 var result = Query
+    .Select(            
+        row => new {    //This is good,  The ordinal positions in the query will be ShipperID = 0, CompanyId = 1, CompanyName = 2, Phone = 3, Name = 4
+            Id = row.Get(shipperTable.ShipperID),
+            CompanyId = row.Get(shipperTable.CompanyId),
+            CompanyName = row.Get(shipperTable.CompanyName) ?? "",  //This is ok as row.Get(...) is always called
+            Phone = row.Get(shipperTable.Phone),
+            Name = "My Name"    //This is ok
+        }
+    )
+
+var result = Query
     .Select(
         row => new {
             Id = row.Get(shipperTable.ShipperID),
@@ -236,10 +247,10 @@ var result = Query
             //  during execution.
             //
             //  So the ordinal postions could be either
-            //     -> ShipperID = 0, CompanyName = 1, CompanyName = 2, Phone = 3
+            //     -> ShipperID = 0, CompanyId = 1, CompanyName = 2, Phone = 3
             //  or -> ShipperID = 0, CompanyName = 1, Phone = 2
             // 
-            CompanyName = row.Get(shipperTable.CompanyName) != null ? row.Get(shipperTable.CompanyName) : "",
+            CompanyName = row.Get(shipperTable.CompanyId) != null ? row.Get(shipperTable.CompanyName) : "",
             Phone = row.Get(shipperTable.Phone)
         }
     )
@@ -1139,7 +1150,7 @@ public readonly struct ShipperId : QueryLite.ICustomType<int, ShipperId>,
         return Value.GetHashCode();
     }
     public override string ToString() {
-        return Value.ToString() ?? string.Empty;
+        return Value.ToString() ?? "";
     }
 }
 ```
@@ -1407,8 +1418,8 @@ foreach(TableValidation tableValidation in result.TableValidation) {
 
     if(tableValidation.HasErrors) {
 
-        string tableSchema = tableValidation.Table?.SchemaName ?? string.Empty;
-        string tableName = tableValidation.Table?.TableName ?? string.Empty;
+        string tableSchema = tableValidation.Table?.SchemaName ?? "";
+        string tableName = tableValidation.Table?.TableName ?? "";
 
         foreach(string message in tableValidation.ValidationMessages) {
             
