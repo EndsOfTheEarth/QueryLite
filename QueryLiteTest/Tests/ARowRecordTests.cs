@@ -45,14 +45,14 @@ namespace QueryLiteTest.Tests {
 
     internal record Child : ParentRow {
 
-        public string GivenName { get; set; } = string.Empty;
-        public string Surname { get; set; } = string.Empty;
+        public string GivenName { get; set; } = "";
+        public string Surname { get; set; } = "";
     }
 
 
     internal record ChildWithInvalidProperty : ParentRow {
 
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = "";
         public List<string> List { get; set; } = [];
     }
 }

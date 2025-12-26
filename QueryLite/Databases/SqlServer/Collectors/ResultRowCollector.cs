@@ -1071,7 +1071,7 @@ namespace QueryLite.Databases.SqlServer {
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
-                return CUSTOM_TYPE.ValueOf(string.Empty);
+                return CUSTOM_TYPE.ValueOf("");
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetString(_ordinal));
         }

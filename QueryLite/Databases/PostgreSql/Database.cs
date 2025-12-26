@@ -58,17 +58,13 @@ namespace QueryLite.Databases.PostgreSql {
 
             ArgumentException.ThrowIfNullOrEmpty(connectionString);
 
-            Name = name ?? string.Empty;
+            Name = name ?? "";
             SchemaMap = schemaMap ?? ((schema) => schema);
 
             ConnectionString = connectionString;
         }
 
         public DbConnection GetNewConnection()  => new NpgsqlConnection(ConnectionString);
-
-        DbConnection IDatabase.GetNewConnection() {
-            return GetNewConnection();
-        }
 
         public string ConvertToSql(object value) {
             return PostgreSqlTypeMappings.ToSqlStringFunctions.ConvertToSql(value);

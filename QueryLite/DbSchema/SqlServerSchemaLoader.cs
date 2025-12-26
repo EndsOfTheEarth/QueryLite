@@ -374,7 +374,7 @@ namespace QueryLite.DbSchema {
 
                     if(tableLookup.TryGetValue(tableKey, out DatabaseTable? dbTable)) {
 
-                        dbTable.Description = row.Value ?? string.Empty;
+                        dbTable.Description = row.Value ?? "";
                     }
                 }
                 else {
@@ -383,7 +383,7 @@ namespace QueryLite.DbSchema {
 
                     if(columnLookup.TryGetValue(columnKey, out DatabaseColumn? dbColumn)) {
 
-                        dbColumn.Description = row.Value ?? string.Empty;
+                        dbColumn.Description = row.Value ?? "";
                     }
                 }
             }

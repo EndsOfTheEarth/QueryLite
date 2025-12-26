@@ -56,8 +56,8 @@ namespace QueryLiteTest {
 
     public class TestSettings {
 
-        public string DatabaseType { get; set; } = string.Empty;
-        public string SqlServerConnectionString { get; set; } = string.Empty;
-        public string PostgreSqlConnectionString { get; set; } = string.Empty;
+        public string DatabaseType { get; set; } = "";
+        public string SqlServerConnectionString { get; set; } = "";
+        public string PostgreSqlConnectionString { get; set; } = "";
     }
 }

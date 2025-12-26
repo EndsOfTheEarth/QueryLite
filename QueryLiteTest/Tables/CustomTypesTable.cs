@@ -120,7 +120,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -170,7 +170,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -220,7 +220,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -270,7 +270,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -320,7 +320,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -370,7 +370,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -420,7 +420,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -470,7 +470,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -520,7 +520,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -570,7 +570,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -620,7 +620,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -670,7 +670,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 
@@ -720,7 +720,7 @@ namespace QueryLiteTest.Tables {
             return Value.GetHashCode();
         }
         public override string ToString() {
-            return Value.ToString() ?? string.Empty;
+            return Value.ToString() ?? "";
         }
     }
 }

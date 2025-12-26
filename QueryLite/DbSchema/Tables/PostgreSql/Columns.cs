@@ -174,7 +174,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
             Is_updatable = result.Get(table.Is_updatable);
         }
 
-        public string Table_catalog { get; set; } = string.Empty;
+        public string Table_catalog { get; set; } = "";
 
         public StringKey<ISchemaName> Table_schema { get; set; }
 
@@ -184,11 +184,11 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public int? Ordinal_position { get; set; }
 
-        public string Column_default { get; set; } = string.Empty;
+        public string Column_default { get; set; } = "";
 
-        public string Is_nullable { get; set; } = string.Empty;
+        public string Is_nullable { get; set; } = "";
 
-        public string Data_type { get; set; } = string.Empty;
+        public string Data_type { get; set; } = "";
 
         public int? Character_maximum_length { get; set; }
 
@@ -202,64 +202,64 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public int? Datetime_precision { get; set; }
 
-        public string Interval_type { get; set; } = string.Empty;
+        public string Interval_type { get; set; } = "";
 
-        public string Interval_precision { get; set; } = string.Empty;
+        public string Interval_precision { get; set; } = "";
 
-        public string Character_set_catalog { get; set; } = string.Empty;
+        public string Character_set_catalog { get; set; } = "";
 
-        public string Character_set_schema { get; set; } = string.Empty;
+        public string Character_set_schema { get; set; } = "";
 
-        public string Character_set_name { get; set; } = string.Empty;
+        public string Character_set_name { get; set; } = "";
 
-        public string Collation_catalog { get; set; } = string.Empty;
+        public string Collation_catalog { get; set; } = "";
 
-        public string Collation_schema { get; set; } = string.Empty;
+        public string Collation_schema { get; set; } = "";
 
-        public string Collation_name { get; set; } = string.Empty;
+        public string Collation_name { get; set; } = "";
 
-        public string Domain_catalog { get; set; } = string.Empty;
+        public string Domain_catalog { get; set; } = "";
 
-        public string Domain_schema { get; set; } = string.Empty;
+        public string Domain_schema { get; set; } = "";
 
-        public string Domain_name { get; set; } = string.Empty;
+        public string Domain_name { get; set; } = "";
 
-        public string Udt_catalog { get; set; } = string.Empty;
+        public string Udt_catalog { get; set; } = "";
 
-        public string Udt_schema { get; set; } = string.Empty;
+        public string Udt_schema { get; set; } = "";
 
-        public string Udt_name { get; set; } = string.Empty;
+        public string Udt_name { get; set; } = "";
 
-        public string Scope_catalog { get; set; } = string.Empty;
+        public string Scope_catalog { get; set; } = "";
 
-        public string Scope_schema { get; set; } = string.Empty;
+        public string Scope_schema { get; set; } = "";
 
-        public string Scope_name { get; set; } = string.Empty;
+        public string Scope_name { get; set; } = "";
 
         public int? Maximum_cardinality { get; set; }
 
-        public string Dtd_identifier { get; set; } = string.Empty;
+        public string Dtd_identifier { get; set; } = "";
 
-        public string Is_self_referencing { get; set; } = string.Empty;
+        public string Is_self_referencing { get; set; } = "";
 
-        public string Is_identity { get; set; } = string.Empty;
+        public string Is_identity { get; set; } = "";
 
-        public string Identity_generation { get; set; } = string.Empty;
+        public string Identity_generation { get; set; } = "";
 
-        public string Identity_start { get; set; } = string.Empty;
+        public string Identity_start { get; set; } = "";
 
-        public string Identity_increment { get; set; } = string.Empty;
+        public string Identity_increment { get; set; } = "";
 
-        public string Identity_maximum { get; set; } = string.Empty;
+        public string Identity_maximum { get; set; } = "";
 
-        public string Identity_minimum { get; set; } = string.Empty;
+        public string Identity_minimum { get; set; } = "";
 
-        public string Identity_cycle { get; set; } = string.Empty;
+        public string Identity_cycle { get; set; } = "";
 
-        public string Is_generated { get; set; } = string.Empty;
+        public string Is_generated { get; set; } = "";
 
-        public string Generation_expression { get; set; } = string.Empty;
+        public string Generation_expression { get; set; } = "";
 
-        public string Is_updatable { get; set; } = string.Empty;
+        public string Is_updatable { get; set; } = "";
     }
 }

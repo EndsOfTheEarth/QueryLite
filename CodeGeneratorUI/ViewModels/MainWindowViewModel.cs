@@ -42,7 +42,7 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
 
     public partial class TreeNodeViewModel : ViewModelBase {
 
-        public string Text { get; set; } = string.Empty;
+        public string Text { get; set; } = "";
 
         [ObservableProperty]
         private bool isEnabled = true;
@@ -75,7 +75,7 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
         public ColumnNode(TableNode tableNode, DatabaseColumn column) {
             TableNode = tableNode;
             Column = column;
-            Text = $"{column.ColumnName} ({column.SqlDataTypeName} {(column.IsNullable ? "NULL" : "NOT NULL")} {(column.IsPrimaryKey ? "PK" : string.Empty)})";
+            Text = $"{column.ColumnName} ({column.SqlDataTypeName} {(column.IsNullable ? "NULL" : "NOT NULL")} {(column.IsPrimaryKey ? "PK" : "")})";
         }
     }
 }

@@ -25,7 +25,7 @@
         }
         public int Id { get; set; }
         public Guid Row_guid { get; set; }
-        public string Message { get; set; } = string.Empty;
+        public string Message { get; set; } = "";
         public DateTime Date { get; set; }
     }
 }

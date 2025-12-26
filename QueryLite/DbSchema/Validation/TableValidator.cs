@@ -39,8 +39,8 @@ namespace QueryLite {
             Schema = table.SchemaName;
             TableName = table.TableName;
         }
-        public string Schema { get; private set; } = string.Empty;
-        public string TableName { get; private set; } = string.Empty;
+        public string Schema { get; private set; } = "";
+        public string TableName { get; private set; } = "";
 
         public bool HasErrors => ValidationMessages.Count > 0;
         public List<string> ValidationMessages { get; } = new List<string>();

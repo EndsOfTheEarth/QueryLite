@@ -171,7 +171,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                             addBeginAndEndLine = true;
 
-                            string valueType = string.Empty;
+                            string valueType = "";
 
                             if(columnInfo.DotNetType.IsValueType) {
                                 valueType = ".Value";

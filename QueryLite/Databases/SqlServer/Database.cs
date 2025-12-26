@@ -55,17 +55,13 @@ namespace QueryLite.Databases.SqlServer {
 
             ArgumentException.ThrowIfNullOrEmpty(connectionString);
 
-            Name = name ?? string.Empty;
+            Name = name ?? "";
             SchemaMap = schemaMap ?? ((schema) => schema);
 
             ConnectionString = connectionString;
         }
 
         public DbConnection GetNewConnection() => new SqlConnection(ConnectionString);
-
-        DbConnection IDatabase.GetNewConnection() {
-            return GetNewConnection();
-        }
 
         public string ConvertToSql(object value) {
             return SqlServerSqlTypeMappings.ToSqlStringFunctions.ConvertToSql(value);

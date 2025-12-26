@@ -116,11 +116,11 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public int? Ordinal_position { get; set; }
 
-        public string Column_default { get; set; } = string.Empty;
+        public string Column_default { get; set; } = "";
 
-        public string Is_nullable { get; set; } = string.Empty;
+        public string Is_nullable { get; set; } = "";
 
-        public string Data_type { get; set; } = string.Empty;
+        public string Data_type { get; set; } = "";
 
         public int? Character_maximum_length { get; set; }
 
@@ -134,22 +134,22 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public int? Datetime_precision { get; set; }
 
-        public string Character_set_catalog { get; set; } = string.Empty;
+        public string Character_set_catalog { get; set; } = "";
 
-        public string Character_set_schema { get; set; } = string.Empty;
+        public string Character_set_schema { get; set; } = "";
 
-        public string Character_set_name { get; set; } = string.Empty;
+        public string Character_set_name { get; set; } = "";
 
-        public string Collation_catalog { get; set; } = string.Empty;
+        public string Collation_catalog { get; set; } = "";
 
-        public string Collation_schema { get; set; } = string.Empty;
+        public string Collation_schema { get; set; } = "";
 
-        public string Collation_name { get; set; } = string.Empty;
+        public string Collation_name { get; set; } = "";
 
-        public string Domain_catalog { get; set; } = string.Empty;
+        public string Domain_catalog { get; set; } = "";
 
-        public string Domain_schema { get; set; } = string.Empty;
+        public string Domain_schema { get; set; } = "";
 
-        public string Domain_name { get; set; } = string.Empty;
+        public string Domain_name { get; set; } = "";
     }
 }

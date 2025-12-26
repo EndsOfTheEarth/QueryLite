@@ -48,7 +48,7 @@ namespace QueryLite {
 
         public string Get(Column<string> column) {
             Fields.Add(column);
-            return string.Empty;
+            return "";
         }
 
         public string? Get(NullableColumn<string> column) {
@@ -268,7 +268,7 @@ namespace QueryLite {
 
         public string Get(Function<string> column) {
             Fields.Add(column);
-            return String.Empty;
+            return "";
         }
 
         public string? Get(NullableFunction<string> column) {

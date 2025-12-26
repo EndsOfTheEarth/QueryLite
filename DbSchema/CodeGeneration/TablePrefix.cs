@@ -40,7 +40,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
         public TablePrefix(DatabaseTable table) {
 
             if(table.Columns.Count <= 1) {
-                Prefix = string.Empty;
+                Prefix = "";
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     break;
                 }
             }
-            Prefix = prefix.Length > 1 ? prefix.ToString() : string.Empty;
+            Prefix = prefix.Length > 1 ? prefix.ToString() : "";
         }
 
         public string GetColumnName(string columnName, string? className) {

@@ -399,7 +399,7 @@ public readonly struct CustomerId : ICustomType<string, CustomerId>, IEquatable<
         return Value.GetHashCode();
     }
     public override string ToString() {
-        return Value.ToString() ?? string.Empty;
+        return Value.ToString() ?? "";
     }
 }
 ```

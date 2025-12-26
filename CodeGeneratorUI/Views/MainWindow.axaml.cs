@@ -130,15 +130,15 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
             viewModel!.Nodes.Clear();
 
-            txtCode.Text = string.Empty;
+            txtCode.Text = "";
 
-            string item = cboDatabaseType.SelectedItem as string ?? string.Empty;
+            string item = cboDatabaseType.SelectedItem as string ?? "";
 
             if(string.Equals(item, POSTGRESQL, StringComparison.OrdinalIgnoreCase)) {
 
                 NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder(txtConnectionString.Text);
 
-                _database = new PostgreSqlDatabase(name: builder.Database ?? string.Empty, connectionString: txtConnectionString.Text);
+                _database = new PostgreSqlDatabase(name: builder.Database ?? "", connectionString: txtConnectionString.Text);
             }
             else if(string.Equals(item, SQL_SERVER, StringComparison.OrdinalIgnoreCase)) {
 
@@ -233,7 +233,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
         private void CboDatabaseType_SelectionChanged(object? sender, SelectionChangedEventArgs e) {
 
-            string item = cboDatabaseType.SelectedItem?.ToString() ?? string.Empty;
+            string item = cboDatabaseType.SelectedItem?.ToString() ?? "";
 
             if(string.Equals(item, SQL_SERVER, StringComparison.OrdinalIgnoreCase)) {
                 txtConnectionStringExample.Text = "Server=localhost;Database=Northwind;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;";
@@ -271,7 +271,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                 return;
             }
             if(_database == null) {
-                txtCode.Text = string.Empty;
+                txtCode.Text = "";
                 return;
             }
             _ignoreChanges = true;
@@ -280,7 +280,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
                 MainWindowViewModel? viewModel = GetViewModel();
 
-                txtCode.Text = string.Empty;
+                txtCode.Text = "";
 
                 TableNode? tableNode = null;
 
@@ -304,9 +304,9 @@ namespace QueryLite.CodeGeneratorUI.Views {
                         txtPrefix.Text = prefix.Prefix;
                     }
                     else {
-                        prefix = new TablePrefix(txtPrefix.Text ?? string.Empty);
+                        prefix = new TablePrefix(txtPrefix.Text ?? "");
                     }
-                    string baseNamespace = txtNamespace.Text ?? string.Empty;
+                    string baseNamespace = txtNamespace.Text ?? "";
 
                     Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}", classNamespace: $"{baseNamespace}", requestNamespace: $"{baseNamespace}", handlerNamespace: $"{baseNamespace}");
 
@@ -437,7 +437,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                     return;
                 }
 
-                string baseNamespace = txtNamespace.Text ?? string.Empty;
+                string baseNamespace = txtNamespace.Text ?? "";
 
                 Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}", classNamespace: $"{baseNamespace}", requestNamespace: $"{baseNamespace}", handlerNamespace: $"{baseNamespace}");
 

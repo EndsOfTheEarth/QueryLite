@@ -83,7 +83,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         private static void OutputHandlersAndValidationToFile(CodeGeneratorSettings settings, string handlersFolder, DatabaseTable table, TablePrefix prefix) {
 
-            string handlersAndSchemaFolder = Path.Combine(handlersFolder, (table.Schema.Value ?? string.Empty));
+            string handlersAndSchemaFolder = Path.Combine(handlersFolder, (table.Schema.Value ?? ""));
 
             if(!Directory.Exists(handlersAndSchemaFolder)) {
                 Directory.CreateDirectory(handlersAndSchemaFolder);
@@ -102,7 +102,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         private static void OutputRequestFile(CodeGeneratorSettings settings, string requestsFolder, DatabaseTable table, TablePrefix prefix) {
 
-            string requestsAndSchemaFolder = Path.Combine(requestsFolder, (table.Schema.Value ?? string.Empty));
+            string requestsAndSchemaFolder = Path.Combine(requestsFolder, (table.Schema.Value ?? ""));
 
             if(!Directory.Exists(requestsAndSchemaFolder)) {
                 Directory.CreateDirectory(requestsAndSchemaFolder);
@@ -115,7 +115,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         //private static void OutputValidationFile(CodeGeneratorSettings settings, string validationFolder, DatabaseTable table, TablePrefix prefix) {
 
-        //    string validationAndSchemaFolder = Path.Combine(validationFolder, (table.Schema.Value ?? string.Empty));
+        //    string validationAndSchemaFolder = Path.Combine(validationFolder, (table.Schema.Value ?? ""));
 
         //    if(!Directory.Exists(validationAndSchemaFolder)) {
         //        Directory.CreateDirectory(validationAndSchemaFolder);
@@ -128,7 +128,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         private static void OutputClassCodeFile(CodeGeneratorSettings settings, IDatabase database, string classesFolder, DatabaseTable table, TablePrefix prefix) {
 
-            string classesAndSchemaFolder = Path.Combine(classesFolder, (table.Schema.Value ?? string.Empty));
+            string classesAndSchemaFolder = Path.Combine(classesFolder, (table.Schema.Value ?? ""));
 
             if(!Directory.Exists(classesAndSchemaFolder)) {
                 Directory.CreateDirectory(classesAndSchemaFolder);
@@ -136,13 +136,13 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings, includeUsings: true);
 
-            string classesFileName = Path.Combine(classesAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + (table.IsView ? "View" : string.Empty) + ".cs");
+            string classesFileName = Path.Combine(classesAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + (table.IsView ? "View" : "") + ".cs");
             File.WriteAllText(classesFileName, classCode.ToString());
         }
 
         private static void OutputTableFile(CodeGeneratorSettings settings, string tablesFolder, DatabaseTable table) {
 
-            string tablesAndSchemaFolder = Path.Combine(tablesFolder, (table.Schema.Value ?? string.Empty));
+            string tablesAndSchemaFolder = Path.Combine(tablesFolder, (table.Schema.Value ?? ""));
 
             if(!Directory.Exists(tablesAndSchemaFolder)) {
                 Directory.CreateDirectory(tablesAndSchemaFolder);

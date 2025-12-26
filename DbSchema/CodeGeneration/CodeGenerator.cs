@@ -125,9 +125,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             nameText[0] = char.ToUpper(nameText[0]);    //Make first character uppercase
 
-            nameText.Replace(" ", string.Empty);    //Remove space character
+            nameText.Replace(" ", "");    //Remove space character
 
-            nameText.Append(includePostFix ? postFix : string.Empty);
+            nameText.Append(includePostFix ? postFix : "");
 
             char previous = nameText[0];
 
@@ -151,7 +151,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             nameText[0] = char.ToUpper(nameText[0]);    //Make first character uppercase
 
-            nameText.Replace(" ", string.Empty);    //Remove space character
+            nameText.Replace(" ", "");    //Remove space character
 
             char previous = nameText[0];
 
@@ -174,8 +174,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
             public ColumnInfo() { }
 
             public required Type DotNetType { get; set; }
-            public string ColumnTypeName { get; set; } = string.Empty;
-            public string UnderlyingTypeName { get; set; } = string.Empty;
+            public string ColumnTypeName { get; set; } = "";
+            public string UnderlyingTypeName { get; set; } = "";
             public IdentifierType IdentifierType { get; set; }
         }
 
@@ -234,7 +234,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             else if(useIdentifiers == IdentifierType.Custom && isPrimaryOrForeignKey) {
 
                 columnInfo.IdentifierType = IdentifierType.Custom;
-                columnInfo.UnderlyingTypeName = typeDefaults?.ColumnType ?? string.Empty;
+                columnInfo.UnderlyingTypeName = typeDefaults?.ColumnType ?? "";
 
                 if(typeDefaults != null) {
 

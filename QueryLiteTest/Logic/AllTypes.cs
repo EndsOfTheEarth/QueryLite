@@ -50,7 +50,7 @@ namespace QueryLiteTestLogic {
 
         public IntKey<AllTypes> Id { get; set; }
         public Guid Guid { get; set; }
-        public string String { get; set; } = string.Empty;
+        public string String { get; set; } = "";
         public short SmallInt { get; set; }
         public int Int { get; set; }
         public long BigInt { get; set; }

@@ -140,7 +140,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 }
                 count++;
 
-                string underlyingTypeText = string.Empty;
+                string underlyingTypeText = "";
 
                 if(columnInfo.IdentifierType == IdentifierType.Custom) {
                     underlyingTypeText = $", {columnInfo.UnderlyingTypeName}";
@@ -152,7 +152,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     code.EndLine();
                 }
 
-                string columnLengthParameter = string.Empty;
+                string columnLengthParameter = "";
 
                 if(column.Length?.LengthType == LengthType.Max || columnInfo.DotNetType == typeof(byte[])) {
                     columnLengthParameter = $", length: {nameof(ColumnLength)}.{ColumnLength.MAX}";
@@ -161,7 +161,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     columnLengthParameter = $", length: new({column.Length?.Length})";
                 }
 
-                string encloseParameter = SqlKeyWordLookup.IsKeyWord(column.ColumnName.Value) ? ", enclose: true" : string.Empty;
+                string encloseParameter = SqlKeyWordLookup.IsKeyWord(column.ColumnName.Value) ? ", enclose: true" : "";
 
                 string columnDescription = settings.IncludeDescriptions ? $", description: \"{CodeHelper.EscapeCSharpString(column.Description)}\"" : "";
 
@@ -234,7 +234,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                         string primaryKeyTable = CodeHelper.GetTableName(reference.PrimaryKeyColumn.Table, includePostFix: true);
                         string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(reference.PrimaryKeyColumn.ColumnName.Value, className: null);
 
-                        string primaryKeyTableSchemaName = !Namespaces.IsDefaultSchema(reference.PrimaryKeyColumn.Table.Schema) ? $"{reference.PrimaryKeyColumn.Table.Schema.Value}." : string.Empty;
+                        string primaryKeyTableSchemaName = !Namespaces.IsDefaultSchema(reference.PrimaryKeyColumn.Table.Schema) ? $"{reference.PrimaryKeyColumn.Table.Schema.Value}." : "";
 
                         code.Append($".References({foreignKeyColumnName}, {primaryKeyTableSchemaName}{primaryKeyTable}.Instance.{primaryKeyColumnName})");
                     }
@@ -247,7 +247,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string encloseTableName = SqlKeyWordLookup.IsKeyWord(table.TableName.Value) ? ", enclose: true" : "";
 
-            string isViewCode = table.IsView ? ", isView: true" : string.Empty;
+            string isViewCode = table.IsView ? ", isView: true" : "";
 
             string tableDescription = settings.IncludeDescriptions ? $", description: \"{CodeHelper.EscapeCSharpString(table.Description)}\"" : "";
 
