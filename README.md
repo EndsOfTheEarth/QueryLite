@@ -563,12 +563,6 @@ UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 ```SQL
 DELETE FROM Test01 WHERE row_guid=@0
 ```
-|                               Method |     Mean |   Error |  StdDev | Allocated |
-|------------------------------------- |---------:|--------:|--------:|----------:|
-|                Ado_Single_Row_Delete | 172.8 ms | 1.20 ms | 1.00 ms | 2.55 MB |
-|             Dapper_Single_Row_Delete | 175.4 ms | 0.80 ms | 0.63 ms | 2.76 MB |
-| QueryLite_Single_Row_Prepared_Delete | 176.3 ms | 1.00 ms | 0.83 ms | 2.70 MB |
-|  QueryLite_Single_Row_Dynamic_Delete | 179.4 ms | 1.90 ms | 1.68 ms | 3.36 MB |
 
 | Method                                 | Mean     | Error   | StdDev   | Gen0      | Allocated |
 |--------------------------------------- |---------:|--------:|---------:|----------:|----------:|
