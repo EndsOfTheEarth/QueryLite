@@ -29,7 +29,7 @@ namespace QueryLite {
         /// Nested query
         /// </summary>
         public static IDistinct<FIELD> NestedSelect<FIELD>(FIELD field) where FIELD : IField {
-            return new SelectQueryTemplate<FIELD>(new List<IField>() { field });
+            return new SelectQueryTemplate<FIELD>([field]);
         }
 
         /// <summary>

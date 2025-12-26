@@ -51,9 +51,9 @@ namespace QueryLite.DbSchema {
 
         public static List<DatabaseTable> LoadTables(IDatabase database) {
 
-            List<DatabaseTable> tableList = new List<DatabaseTable>();
-            Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
-            Dictionary<string, Type?> typeLookup = new Dictionary<string, Type?>();
+            List<DatabaseTable> tableList = [];
+            Dictionary<TableKey, DatabaseTable> tableLookup = [];
+            Dictionary<string, Type?> typeLookup = [];
 
             /*
              * Load tables and columns
@@ -161,7 +161,7 @@ namespace QueryLite.DbSchema {
 
         private static void SetPrimaryKeys(List<DatabaseTable> tableList, IDatabase database) {
 
-            Dictionary<TableKey, DatabaseTable> dbTableLookup = new Dictionary<TableKey, DatabaseTable>();
+            Dictionary<TableKey, DatabaseTable> dbTableLookup = [];
 
             foreach(DatabaseTable table in tableList) {
                 dbTableLookup.Add(new TableKey(table.Schema, table.TableName), table);
@@ -209,7 +209,7 @@ namespace QueryLite.DbSchema {
 
         private static void SetUniqueConstraints(List<DatabaseTable> tableList, IDatabase database) {
 
-            Dictionary<TableKey, DatabaseTable> dbTableLookup = new Dictionary<TableKey, DatabaseTable>();
+            Dictionary<TableKey, DatabaseTable> dbTableLookup = [];
 
             foreach(DatabaseTable table in tableList) {
                 dbTableLookup.Add(new TableKey(table.Schema, table.TableName), table);
@@ -237,7 +237,7 @@ namespace QueryLite.DbSchema {
                 .OrderBy(keyColumnUsage.ORDINAL_POSITION)
                 .Execute(database);
 
-            Dictionary<Key<TableKey, string>, DatabaseUniqueConstraint> dbUniqueConstraintLookup = new Dictionary<Key<TableKey, string>, DatabaseUniqueConstraint>();
+            Dictionary<Key<TableKey, string>, DatabaseUniqueConstraint> dbUniqueConstraintLookup = [];
 
             foreach(var row in result.Rows) {
 
@@ -259,7 +259,7 @@ namespace QueryLite.DbSchema {
 
         private static void SetCheckConstraints(List<DatabaseTable> tableList, IDatabase database) {
 
-            Dictionary<TableKey, DatabaseTable> dbTableLookup = new Dictionary<TableKey, DatabaseTable>();
+            Dictionary<TableKey, DatabaseTable> dbTableLookup = [];
 
             foreach(DatabaseTable table in tableList) {
                 dbTableLookup.Add(new TableKey(table.Schema, table.TableName), table);
@@ -306,8 +306,8 @@ namespace QueryLite.DbSchema {
 
         private static void SetForeignKeys(List<DatabaseTable> tableList, IDatabase database) {
 
-            Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
-            Dictionary<TableColumnKey, DatabaseColumn> columnLookup = new Dictionary<TableColumnKey, DatabaseColumn>();
+            Dictionary<TableKey, DatabaseTable> tableLookup = [];
+            Dictionary<TableColumnKey, DatabaseColumn> columnLookup = [];
 
             foreach(DatabaseTable table in tableList) {
 
@@ -350,7 +350,7 @@ namespace QueryLite.DbSchema {
                 .OrderBy(rcTable.CONSTRAINT_NAME, foreignKcuTable.ORDINAL_POSITION)
                 .Execute(database);
 
-            Dictionary<ForeignK, DatabaseForeignKey> dbForeignKeyLookup = new Dictionary<ForeignK, DatabaseForeignKey>();
+            Dictionary<ForeignK, DatabaseForeignKey> dbForeignKeyLookup = [];
 
             foreach(var row in result.Rows) {
 
@@ -378,8 +378,8 @@ namespace QueryLite.DbSchema {
 
         private static void LoadCommentMetaData(List<DatabaseTable> tableList, IDatabase database) {
 
-            Dictionary<TableKey, DatabaseTable> tableLookup = new Dictionary<TableKey, DatabaseTable>();
-            Dictionary<TableColumnKey, DatabaseColumn> columnLookup = new Dictionary<TableColumnKey, DatabaseColumn>();
+            Dictionary<TableKey, DatabaseTable> tableLookup = [];
+            Dictionary<TableColumnKey, DatabaseColumn> columnLookup = [];
 
             foreach(DatabaseTable table in tableList) {
 

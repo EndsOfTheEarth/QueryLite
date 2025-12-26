@@ -164,7 +164,7 @@ dotnet_style_namespace_match_folder = true:silent
 spelling_languages = en-GB
 
 # IDE0028: Simplify collection initialization
-dotnet_diagnostic.IDE0028.severity = none
+#dotnet_diagnostic.IDE0028.severity = none
 
 # IDE0130: Namespace does not match folder structure
 dotnet_diagnostic.IDE0130.severity = silent

@@ -60,7 +60,7 @@ namespace QueryLite {
             ArgumentNullException.ThrowIfNull(selectFunction);
 
             SelectFunction = selectFunction;
-            SelectFields = new List<IField>();
+            SelectFields = [];
         }
         public IPreparedTop<PARAMETERS, RESULT> Distinct {
             get {
@@ -102,7 +102,7 @@ namespace QueryLite {
             PreparedJoin<PARAMETERS, RESULT> join = new PreparedJoin<PARAMETERS, RESULT>(JoinType.Join, table, this);
 
             if(Joins == null) {
-                Joins = new List<IPreparedJoin<PARAMETERS>>();
+                Joins = [];
             }
             Joins.Add(join);
             return join;
@@ -115,7 +115,7 @@ namespace QueryLite {
             PreparedJoin<PARAMETERS, RESULT> join = new PreparedJoin<PARAMETERS, RESULT>(JoinType.LeftJoin, table, this);
 
             if(Joins == null) {
-                Joins = new List<IPreparedJoin<PARAMETERS>>();
+                Joins = [];
             }
             Joins.Add(join);
             return join;

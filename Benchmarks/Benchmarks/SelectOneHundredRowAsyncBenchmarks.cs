@@ -14,7 +14,7 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        private IPreparedQueryExecute<SelectOneHundredRowAsyncBenchmarks, Test01> _preparedSelectQuery;
+        private readonly IPreparedQueryExecute<SelectOneHundredRowAsyncBenchmarks, Test01> _preparedSelectQuery;
 
         public SelectOneHundredRowAsyncBenchmarks() {
 
@@ -57,9 +57,9 @@ namespace Benchmarks {
             }
         }
 
-        private int _iterations = 2000;
+        private readonly int _iterations = 2000;
 
-        private SemaphoreSlim _semaphore = new SemaphoreSlim(initialCount: 70);   //Limit the number of queries as PostgreSQL has a limit
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(initialCount: 70);   //Limit the number of queries as PostgreSQL has a limit
 
         [Benchmark]
         public async Task Ado_One_Hundred_Row_SelectAsync() {
@@ -82,7 +82,7 @@ namespace Benchmarks {
 
                     await using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                    List<Test01> list = new List<Test01>();
+                    List<Test01> list = [];
 
                     while(await reader.ReadAsync()) {
 

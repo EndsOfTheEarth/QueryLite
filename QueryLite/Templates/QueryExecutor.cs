@@ -124,7 +124,7 @@ namespace QueryLite {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        List<RESULT> rowList = new List<RESULT>();
+                        List<RESULT> rowList = [];
 
                         while(reader.Read()) {
                             rowList.Add(func(resultRow));
@@ -432,7 +432,7 @@ namespace QueryLite {
 
                         if(hasEvents) {
 
-                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+                            List<RESULT> resultRows = result != null ? [result!] : [];
 
                             Settings.FireQueryPerformedEvent(
                                 database: database,
@@ -589,7 +589,7 @@ namespace QueryLite {
 
                         if(hasEvents) {
 
-                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+                            List<RESULT> resultRows = result != null ? [result!] : [];
 
                             Settings.FireQueryPerformedEvent(
                                 database: database,
@@ -727,7 +727,7 @@ namespace QueryLite {
                     }
                     command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                    List<RESULT> rowList = new List<RESULT>();
+                    List<RESULT> rowList = [];
 
                     await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
 
@@ -1024,7 +1024,7 @@ namespace QueryLite {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        List<RESULT> rowList = new List<RESULT>();
+                        List<RESULT> rowList = [];
 
                         while(reader.Read()) {
                             rowList.Add(func(resultRow));
@@ -1192,7 +1192,7 @@ namespace QueryLite {
 
                         if(hasEvents) {
 
-                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+                            List<RESULT> resultRows = result != null ? [result!] : [];
 
                             Settings.FireQueryPerformedEvent(
                                 database: database,
@@ -1347,7 +1347,7 @@ namespace QueryLite {
 
                         if(hasEvents) {
 
-                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+                            List<RESULT> resultRows = result != null ? [result!] : [];
 
                             Settings.FireQueryPerformedEvent(
                                 database: database,
@@ -1483,7 +1483,7 @@ namespace QueryLite {
                     }
                     command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                    List<RESULT> rowList = new List<RESULT>();
+                    List<RESULT> rowList = [];
 
                     await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
 
@@ -1640,7 +1640,7 @@ namespace QueryLite {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        List<RESULT> rowList = new List<RESULT>();
+                        List<RESULT> rowList = [];
 
                         while(reader.Read()) {
                             rowList.Add(outputFunc(resultRow));
@@ -1811,7 +1811,7 @@ namespace QueryLite {
 
                         if(hasEvents) {
 
-                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+                            List<RESULT> resultRows = result != null ? [result!] : [];
 
                             Settings.FireQueryPerformedEvent(
                                 database: database,
@@ -1970,7 +1970,7 @@ namespace QueryLite {
 
                         if(hasEvents) {
 
-                            List<RESULT> resultRows = result != null ? new List<RESULT> { result! } : new List<RESULT>();
+                            List<RESULT> resultRows = result != null ? [result!] : [];
 
                             Settings.FireQueryPerformedEvent(
                                 database: database,
@@ -2109,7 +2109,7 @@ namespace QueryLite {
                     }
                     command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
 
-                    List<RESULT> rowList = new List<RESULT>();
+                    List<RESULT> rowList = [];
 
                     await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
 

@@ -76,7 +76,7 @@ namespace QueryLite {
         }
         public ITable Table { get; }
         public string ConstraintName { get; }
-        public List<ForeignKeyReference> ColumnReferences { get; } = new List<ForeignKeyReference>();
+        public List<ForeignKeyReference> ColumnReferences { get; } = [];
 
         public ForeignKey References<TYPE>(AColumn<TYPE> foreignKeyColumn, AColumn<TYPE> primaryKeyColumn) where TYPE : notnull {
             ColumnReferences.Add(new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn));

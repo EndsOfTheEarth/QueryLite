@@ -32,7 +32,7 @@ namespace QueryLite.Databases {
 
     internal sealed class PreparedParameterList<PARAMETERS> {
 
-        private readonly List<IPreparedParameter<PARAMETERS>> _list = new List<IPreparedParameter<PARAMETERS>>();
+        private readonly List<IPreparedParameter<PARAMETERS>> _list = [];
 
         private int _paramCounter = 0;
 

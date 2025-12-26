@@ -30,11 +30,11 @@ namespace QueryLite {
         void IResultRow.Reset() {
             Fields.Clear();
         }
-        public List<IField> Fields { get; } = new List<IField>();
+        public List<IField> Fields { get; } = [];
 
         public List<IColumn> GetFieldsAsColumns() {
 
-            List<IColumn> columns = new List<IColumn>();
+            List<IColumn> columns = [];
 
             foreach(IField field in Fields) {
 

@@ -31,7 +31,7 @@ namespace QueryLite.DbSchema {
 
         public static string GenerateForAssembly(Assembly[] assemblies, string applicationName, string version) {
 
-            List<Type> types = new List<Type>();
+            List<Type> types = [];
 
             foreach(Assembly assembly in assemblies) {
 
@@ -58,11 +58,11 @@ namespace QueryLite.DbSchema {
 
         public static string GenerateForTableTypes(IEnumerable<Type> types, string applicationName, string version) {
 
-            List<ValidationItem> validation = new List<ValidationItem>();
+            List<ValidationItem> validation = [];
 
-            List<Table> tables = new List<Table>();
+            List<Table> tables = [];
 
-            Dictionary<Type, Table> tableLookup = new Dictionary<Type, Table>();
+            Dictionary<Type, Table> tableLookup = [];
 
             foreach(Type type in types) {
 
@@ -291,8 +291,6 @@ a, a:visited {
                 html.Append($"<h3>Foreign Keys({table.TableClass.ForeignKeys.Length})</h3><p>");
                 html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th><th style=\"text-align: center;\">References</th>");
                 
-                counter = 0;
-
                 foreach(ForeignKey foreignKey in table.TableClass.ForeignKeys) {
 
                     counter = 0;
@@ -341,7 +339,7 @@ a, a:visited {
 
             PropertyInfo[] properties = tableType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-            List<IColumn> columns = new List<IColumn>();
+            List<IColumn> columns = [];
 
             foreach(PropertyInfo property in properties) {
 
@@ -365,7 +363,7 @@ a, a:visited {
         private sealed class Table {
 
             public ITable TableClass { get; }
-            public List<IColumn> Columns { get; } = new List<IColumn>();
+            public List<IColumn> Columns { get; } = [];
 
             public Table(ITable table) {
                 TableClass = table;

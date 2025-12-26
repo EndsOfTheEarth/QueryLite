@@ -38,7 +38,7 @@ namespace QueryLite {
 
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            List<Type> types = new List<Type>();
+            List<Type> types = [];
 
             RowValidationResult result = new RowValidationResult();
 
@@ -69,7 +69,7 @@ namespace QueryLite {
 
         public static RowValidationResult ValidateRowsInAssembly(Assembly assembly) {
 
-            List<Type> types = new List<Type>();
+            List<Type> types = [];
 
             RowValidationResult result = new RowValidationResult();
 

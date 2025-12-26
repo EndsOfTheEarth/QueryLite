@@ -44,7 +44,7 @@ namespace QueryLite {
         public string TableName { get; private set; } = "";
 
         public bool HasErrors => ValidationMessages.Count > 0;
-        public List<string> ValidationMessages { get; } = new List<string>();
+        public List<string> ValidationMessages { get; } = [];
 
         public void Add(string message) {
             ValidationMessages.Add(message);
@@ -71,7 +71,7 @@ namespace QueryLite {
 
     public class ValidationResult {
 
-        public List<ValidationItem> Items { get; } = new List<ValidationItem>();
+        public List<ValidationItem> Items { get; } = [];
 
         public DatabaseSchema Schema { get; set; }
 
@@ -93,7 +93,7 @@ namespace QueryLite {
 
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            List<Type> types = new List<Type>();
+            List<Type> types = [];
 
             foreach(Assembly assembly in assemblies) {
 
@@ -116,7 +116,7 @@ namespace QueryLite {
                 }
             }
 
-            List<ITable> codeTables = new List<ITable>();
+            List<ITable> codeTables = [];
 
             foreach(Type type in types) {
 
@@ -141,7 +141,7 @@ namespace QueryLite {
 
             dbConnection.Close();
 
-            List<Type> types = new List<Type>();
+            List<Type> types = [];
 
             foreach(Assembly assembly in assemblies) {
 
@@ -164,7 +164,7 @@ namespace QueryLite {
 
             ValidationResult result = new ValidationResult(dbSchema);
 
-            List<ITable> codeTables = new List<ITable>();
+            List<ITable> codeTables = [];
 
             foreach(Type type in types) {
 
@@ -196,7 +196,7 @@ namespace QueryLite {
 
             ValidationResult result = new ValidationResult(dbSchema);
 
-            List<ITable> codeTables = new List<ITable>();
+            List<ITable> codeTables = [];
 
             foreach(Type type in types) {
 
@@ -303,7 +303,7 @@ namespace QueryLite {
 
         private static List<DatabaseTable> FindMatchingSchemaTables(IDatabase database, ITable table, DatabaseSchema dbSchema) {
 
-            List<DatabaseTable> foundTables = new List<DatabaseTable>();
+            List<DatabaseTable> foundTables = [];
 
             string mappedSchemaName = !string.IsNullOrEmpty(table.SchemaName) ? database.SchemaMap(table.SchemaName) : table.SchemaName;
 
@@ -455,7 +455,7 @@ namespace QueryLite {
 
             PropertyInfo[] tableProperties = tableType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-            List<PropertyInfo> columnProperties = new List<PropertyInfo>();
+            List<PropertyInfo> columnProperties = [];
 
             foreach(PropertyInfo tableProperty in tableProperties) {
 
@@ -775,7 +775,7 @@ namespace QueryLite {
 
             PropertyInfo[] properties = tableType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-            List<CodeColumnProperty> columns = new List<CodeColumnProperty>();
+            List<CodeColumnProperty> columns = [];
 
             foreach(PropertyInfo property in properties) {
 
