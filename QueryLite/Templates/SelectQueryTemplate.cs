@@ -60,6 +60,10 @@ namespace QueryLite {
         internal string GetSql<TYPE>(ILike<TYPE> like, IDatabase database);
     }
 
+    /*
+     * The less common query features exist in a second class to reduce memory allocation
+     * for the most common types of query.
+     */
     internal class TemplateExtra<RESULT> {
 
         public SelectQueryTemplate<RESULT>? ParentUnion { get; internal set; }

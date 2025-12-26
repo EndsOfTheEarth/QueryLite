@@ -53,6 +53,9 @@ namespace QueryLite {
             Template = template;
         }
         public IJoin<RESULT> On(ICondition on) {
+
+            ArgumentNullException.ThrowIfNull(on);
+
             _condition = on;
             return Template;
         }
