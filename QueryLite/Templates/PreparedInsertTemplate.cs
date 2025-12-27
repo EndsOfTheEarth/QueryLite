@@ -84,8 +84,12 @@ namespace QueryLite {
 
             if(_insertDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, bool>(_template, database, out PreparedParameterList<PARAMETERS> insertParameters, outputFunc: null);
-
+                string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, bool>(
+                    template: _template,
+                    database: database,
+                    parameters: out PreparedParameterList<PARAMETERS> insertParameters,
+                    outputFunc: null
+                );
                 insertDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, insertParameters);
                 _insertDetails[dbTypeIndex] = insertDetail;
             }
@@ -112,7 +116,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                       QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
@@ -168,8 +173,11 @@ namespace QueryLite {
 
             if(_insertDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedInsertGenerator.GetSql<PARAMETERS, RESULT>(_template, database, out PreparedParameterList<PARAMETERS> insertParameters, outputFunc: _outputFunc);
-
+                string sql = database.PreparedInsertGenerator.GetSql(
+                    template: _template, database: database,
+                    parameters: out PreparedParameterList<PARAMETERS> insertParameters,
+                    outputFunc: _outputFunc
+                );
                 insertDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, insertParameters);
                 _insertDetails[dbTypeIndex] = insertDetail;
             }
@@ -197,7 +205,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                            QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
@@ -250,7 +259,8 @@ namespace QueryLite {
             );
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(transaction.Database);
 
@@ -269,7 +279,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetInsertQuery(database);
 

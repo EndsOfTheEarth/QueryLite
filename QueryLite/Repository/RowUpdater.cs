@@ -161,9 +161,7 @@ namespace QueryLite {
                 }
 
 #if DEBUG
-                if(Settings.BreakOnInsertQuery && Debugger.IsAttached) {
-                    Debugger.Break();
-                }
+                DebugHelper.HitBreakPoint(QueryType.Insert);
 #endif
 
                 using(DbCommand command = transaction.CreateCommand(timeout.Value)) {
@@ -282,9 +280,7 @@ namespace QueryLite {
                 }
 
 #if DEBUG
-                if(Settings.BreakOnInsertQuery && Debugger.IsAttached) {
-                    Debugger.Break();
-                }
+                DebugHelper.HitBreakPoint(QueryType.Insert);
 #endif
 
                 await using(DbCommand command = await transaction.CreateCommandAsync(timeout.Value, cancellationToken)) {
@@ -403,9 +399,7 @@ namespace QueryLite {
                 }
 
 #if DEBUG
-                if(Settings.BreakOnUpdateQuery && Debugger.IsAttached) {
-                    Debugger.Break();
-                }
+                DebugHelper.HitBreakPoint(QueryType.Update);
 #endif
 
                 using(DbCommand command = transaction.CreateCommand(timeout.Value)) {
@@ -500,9 +494,7 @@ namespace QueryLite {
                 }
 
 #if DEBUG
-                if(Settings.BreakOnUpdateQuery && Debugger.IsAttached) {
-                    Debugger.Break();
-                }
+                DebugHelper.HitBreakPoint(QueryType.Update);
 #endif
 
                 await using(DbCommand command = await transaction.CreateCommandAsync(timeout.Value, cancellationToken)) {
@@ -597,9 +589,7 @@ namespace QueryLite {
                 }
 
 #if DEBUG
-                if(Settings.BreakOnDeleteQuery && Debugger.IsAttached) {
-                    Debugger.Break();
-                }
+                DebugHelper.HitBreakPoint(QueryType.Delete);
 #endif
 
                 using(DbCommand command = transaction.CreateCommand(timeout.Value)) {
@@ -692,9 +682,7 @@ namespace QueryLite {
                 }
 
 #if DEBUG
-                if(Settings.BreakOnDeleteQuery && Debugger.IsAttached) {
-                    Debugger.Break();
-                }
+                DebugHelper.HitBreakPoint(QueryType.Delete);
 #endif
 
                 await using(DbCommand command = await transaction.CreateCommandAsync(timeout.Value, cancellationToken)) {

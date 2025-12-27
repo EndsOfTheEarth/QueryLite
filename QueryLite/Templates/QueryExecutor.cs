@@ -68,7 +68,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -107,18 +107,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) { //Ideally we want to open the connection as late a possible and close it immediately after use so it is freed back into the connection pool for other threads to use
                         dbConnection.Open();
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     using(DbDataReader reader = command.ExecuteReader()) {
 
@@ -149,7 +144,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: false,
@@ -175,7 +170,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: false,
@@ -219,7 +214,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -259,18 +254,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         dbConnection.Open();
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     int rowsEffected = command.ExecuteNonQuery();
 
@@ -289,7 +279,7 @@ namespace QueryLite {
                             end: DateTimeOffset.Now,
                             elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                             exception: null,
-                            isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                            isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                             transactionId: transaction?.TransactionId,
                             timeout: timeout,
                             isAsync: false,
@@ -314,7 +304,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: false,
@@ -358,7 +348,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -398,18 +388,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         dbConnection.Open();
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     using(DbDataReader reader = command.ExecuteReader()) {
 
@@ -445,7 +430,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: false,
@@ -471,7 +456,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: false,
@@ -516,7 +501,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -556,18 +541,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     bool isFirst = true;
 
@@ -602,7 +582,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: true,
@@ -628,7 +608,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: true,
@@ -674,7 +654,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -714,18 +694,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     List<RESULT> rowList = [];
 
@@ -781,7 +756,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: true,
@@ -826,7 +801,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -866,18 +841,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
 
@@ -896,7 +866,7 @@ namespace QueryLite {
                             end: DateTimeOffset.Now,
                             elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                             exception: null,
-                            isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                            isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                             transactionId: transaction?.TransactionId,
                             timeout: timeout,
                             isAsync: true,
@@ -921,7 +891,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: true,
@@ -970,7 +940,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -1007,18 +977,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         dbConnection.Open();
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     using(DbDataReader reader = command.ExecuteReader()) {
 
@@ -1049,7 +1014,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: false,
@@ -1075,7 +1040,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: false,
@@ -1121,7 +1086,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -1158,18 +1123,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         dbConnection.Open();
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     using(DbDataReader reader = command.ExecuteReader()) {
 
@@ -1205,7 +1165,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: false,
@@ -1231,7 +1191,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: false,
@@ -1278,7 +1238,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -1315,18 +1275,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     RESULT? result = default;
                     bool isFirst = true;
@@ -1360,7 +1315,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: true,
@@ -1386,7 +1341,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: true,
@@ -1433,7 +1388,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -1470,18 +1425,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     List<RESULT> rowList = [];
 
@@ -1511,7 +1461,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: true,
@@ -1537,7 +1487,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: true,
@@ -1583,7 +1533,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -1623,18 +1573,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         dbConnection.Open();
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     using(DbDataReader reader = command.ExecuteReader()) {
 
@@ -1665,7 +1610,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: false,
@@ -1691,7 +1636,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: false,
@@ -1737,7 +1682,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -1777,18 +1722,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         dbConnection.Open();
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     using(DbDataReader reader = command.ExecuteReader()) {
 
@@ -1824,7 +1764,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: false,
@@ -1850,7 +1790,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: false,
@@ -1897,7 +1837,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -1937,18 +1877,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     bool isFirst = true;
 
@@ -1983,7 +1918,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: true,
@@ -2009,7 +1944,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: true,
@@ -2056,7 +1991,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -2096,18 +2031,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     List<RESULT> rowList = [];
 
@@ -2137,7 +2067,7 @@ namespace QueryLite {
                                 end: DateTimeOffset.Now,
                                 elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                                 exception: null,
-                                isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                                isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                                 transactionId: transaction?.TransactionId,
                                 timeout: timeout,
                                 isAsync: true,
@@ -2163,7 +2093,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: true,
@@ -2208,7 +2138,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -2248,18 +2178,13 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         dbConnection.Open();
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     int rowsEffected = command.ExecuteNonQuery();
 
@@ -2278,7 +2203,7 @@ namespace QueryLite {
                             end: DateTimeOffset.Now,
                             elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                             exception: null,
-                            isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                            isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                             transactionId: transaction?.TransactionId,
                             timeout: timeout,
                             isAsync: false,
@@ -2303,7 +2228,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: false,
@@ -2349,7 +2274,7 @@ namespace QueryLite {
                         sql: sql,
                         queryType: queryType,
                         start: start,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         debugName: debugName
@@ -2389,18 +2314,14 @@ namespace QueryLite {
                     }
 
 #if DEBUG
-                    if((queryType == QueryType.Select && Settings.BreakOnSelectQuery) || (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) || (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) || (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) || (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery)) {
-
-                        if(Debugger.IsAttached) {
-                            Debugger.Break();
-                        }
-                    }
+                    DebugHelper.HitBreakPoint(queryType);
 #endif
 
                     if(oneTimeConnection) {
                         await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
                     }
-                    command.Transaction = transaction != null ? transaction.GetTransaction(database)! : null;
+                    command.Transaction = transaction?.GetTransaction(database)! ?? null;
+
                     int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
 
                     NonQueryResult result = new NonQueryResult(sql, rowsEffected);
@@ -2418,7 +2339,7 @@ namespace QueryLite {
                             end: DateTimeOffset.Now,
                             elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                             exception: null,
-                            isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                            isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                             transactionId: transaction?.TransactionId,
                             timeout: timeout,
                             isAsync: true,
@@ -2443,7 +2364,7 @@ namespace QueryLite {
                         end: DateTimeOffset.Now,
                         elapsedTime: startTicks != null ? Stopwatch.GetElapsedTime(startTicks.Value) : null,
                         exception: ex,
-                        isolationLevel: transaction != null ? transaction.IsolationLevel : IsolationLevel.ReadCommitted,
+                        isolationLevel: transaction?.IsolationLevel ?? IsolationLevel.ReadCommitted,
                         transactionId: transaction?.TransactionId,
                         timeout: timeout,
                         isAsync: true,
@@ -2458,5 +2379,24 @@ namespace QueryLite {
                 }
             }
         }
+
+
     }
+#if DEBUG
+    internal static class DebugHelper {
+
+        public static void HitBreakPoint(QueryType queryType) {
+
+            bool hitBreakPoint = (queryType == QueryType.Select && Settings.BreakOnSelectQuery) ||
+                                 (queryType == QueryType.Insert && Settings.BreakOnInsertQuery) ||
+                                 (queryType == QueryType.Update && Settings.BreakOnUpdateQuery) ||
+                                 (queryType == QueryType.Delete && Settings.BreakOnDeleteQuery) ||
+                                 (queryType == QueryType.Truncate && Settings.BreakOnTruncateQuery);
+
+            if(hitBreakPoint && Debugger.IsAttached) {
+                Debugger.Break();
+            }
+        }
+    }
+#endif
 }

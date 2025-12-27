@@ -339,7 +339,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken,
+                                                            QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -364,7 +365,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken,
+                                                            QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -441,7 +443,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -468,7 +471,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 

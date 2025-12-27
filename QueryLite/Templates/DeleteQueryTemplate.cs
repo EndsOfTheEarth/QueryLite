@@ -85,7 +85,8 @@ namespace QueryLite {
             return database.DeleteGenerator.GetSql<bool>(this, database, parameters: null, outputFunc: null);
         }
 
-        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null,
+                                      Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -96,7 +97,8 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
+                                             (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql<bool>(this, database, parameters, outputFunc: null);
 
@@ -113,7 +115,9 @@ namespace QueryLite {
         }
 
 
-        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
+                                                   QueryTimeout? timeout = null,
+                                                   Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(func);
             ArgumentNullException.ThrowIfNull(transaction);
@@ -125,7 +129,8 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
+                                             (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters, func);
 
@@ -142,7 +147,9 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null,
+                                                       QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                                       string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -153,7 +160,8 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
+                                             (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql<bool>(this, database, parameters, outputFunc: null);
 
@@ -170,7 +178,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                                    QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(func);
             ArgumentNullException.ThrowIfNull(transaction);
@@ -182,7 +191,8 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) || (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
+                                             (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
             string sql = database.DeleteGenerator.GetSql(this, database, parameters, func);
 

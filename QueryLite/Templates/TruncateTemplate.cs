@@ -56,7 +56,9 @@ namespace QueryLite {
             );
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
+                                                       CancellationToken? cancellationToken = null,
+                                                       QueryTimeout? timeout = null, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);

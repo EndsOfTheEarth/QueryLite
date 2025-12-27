@@ -79,7 +79,8 @@ namespace QueryLite {
             return database.UpdateGenerator.GetSql<bool>(this, database, Parameters.Off, out _, outputFunc: null);
         }
 
-        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                      string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -104,7 +105,8 @@ namespace QueryLite {
             return result;
         }
 
-        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null,
+                                                   Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(func);
             ArgumentNullException.ThrowIfNull(transaction);
@@ -131,7 +133,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+                                                       Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -157,7 +160,9 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
+                                                                    CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+                                                                    Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(func);
             ArgumentNullException.ThrowIfNull(transaction);

@@ -26,7 +26,8 @@ using QueryLite.PreparedQuery;
 
 namespace QueryLite {
 
-    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>, IPreparedUpdateFrom<PARAMETERS>, IPreparedUpdateWhere<PARAMETERS>, IPreparedUpdateBuild<PARAMETERS> {
+    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>, IPreparedUpdateFrom<PARAMETERS>,
+                                                               IPreparedUpdateWhere<PARAMETERS>, IPreparedUpdateBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
@@ -98,7 +99,8 @@ namespace QueryLite {
 
         private readonly PreparedUpdateTemplate<PARAMETERS> _template;
 
-        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
 
         public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template) {
 
@@ -130,8 +132,12 @@ namespace QueryLite {
 
             if(_updateDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedUpdateGenerator.GetSql<PARAMETERS, bool>(_template, database, out PreparedParameterList<PARAMETERS> parameters, outputFunc: null);
-
+                string sql = database.PreparedUpdateGenerator.GetSql<PARAMETERS, bool>(
+                    template: _template,
+                    database: database,
+                    parameters: out PreparedParameterList<PARAMETERS> parameters,
+                    outputFunc: null
+                );
                 updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, parameters);
                 _updateDetails[dbTypeIndex] = updateDetail;
             }
@@ -158,7 +164,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                       QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -180,7 +187,10 @@ namespace QueryLite {
     internal sealed class PreparedUpdateQuery<PARAMETERS, RESULT> : IPreparedUpdateQuery<PARAMETERS, RESULT> {
 
         private readonly PreparedUpdateTemplate<PARAMETERS> _template;
-        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+
+        //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
+
         private Func<IResultRow, RESULT> _outputFunc;
 
         public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template, Func<IResultRow, RESULT> outputFunc) {
@@ -214,8 +224,12 @@ namespace QueryLite {
 
             if(_updateDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedUpdateGenerator.GetSql<PARAMETERS, RESULT>(_template, database, out PreparedParameterList<PARAMETERS> UpdateParameters, outputFunc: _outputFunc);
-
+                string sql = database.PreparedUpdateGenerator.GetSql(
+                    template: _template,
+                    database: database,
+                    parameters: out PreparedParameterList<PARAMETERS> UpdateParameters,
+                    outputFunc: _outputFunc
+                );
                 updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, UpdateParameters);
                 _updateDetails[dbTypeIndex] = updateDetail;
             }
@@ -243,7 +257,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                            QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -296,7 +311,8 @@ namespace QueryLite {
             );
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
 
@@ -315,7 +331,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
 

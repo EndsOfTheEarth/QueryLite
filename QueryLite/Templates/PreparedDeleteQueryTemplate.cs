@@ -26,7 +26,8 @@ using QueryLite.PreparedQuery;
 
 namespace QueryLite {
 
-    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteFrom<PARAMETERS>, IPreparedDeleteNoWhere<PARAMETERS>, IPreparedDeleteWhere<PARAMETERS>, IPreparedDeleteBuild<PARAMETERS> {
+    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteFrom<PARAMETERS>, IPreparedDeleteNoWhere<PARAMETERS>,
+                                                                    IPreparedDeleteWhere<PARAMETERS>, IPreparedDeleteBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public List<ITable>? FromTables { get; private set; }
@@ -116,8 +117,12 @@ namespace QueryLite {
 
             if(_deleteDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedDeleteQueryGenerator.GetSql<PARAMETERS, bool>(_template, database, out PreparedParameterList<PARAMETERS> parameters, outputFunc: null);
-
+                string sql = database.PreparedDeleteQueryGenerator.GetSql<PARAMETERS, bool>(
+                    template: _template,
+                    database: database,
+                    parameters: out PreparedParameterList<PARAMETERS> parameters,
+                    outputFunc: null
+                );
                 updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, parameters);
                 _deleteDetails[dbTypeIndex] = updateDetail;
             }
@@ -144,7 +149,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                       QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
@@ -200,8 +206,12 @@ namespace QueryLite {
 
             if(_updateDetails[dbTypeIndex] == null) {
 
-                string sql = database.PreparedDeleteQueryGenerator.GetSql(_template, database, out PreparedParameterList<PARAMETERS> UpdateParameters, outputFunc: _outputFunc);
-
+                string sql = database.PreparedDeleteQueryGenerator.GetSql(
+                    template: _template,
+                    database: database,
+                    parameters: out PreparedParameterList<PARAMETERS> UpdateParameters,
+                    outputFunc: _outputFunc
+                );
                 updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, UpdateParameters);
                 _updateDetails[dbTypeIndex] = updateDetail;
             }
@@ -229,7 +239,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                            QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
@@ -282,7 +293,8 @@ namespace QueryLite {
             );
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetDeleteQuery(transaction.Database);
 
@@ -301,7 +313,8 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetDeleteQuery(database);
 
