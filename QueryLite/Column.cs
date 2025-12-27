@@ -93,6 +93,12 @@ namespace QueryLite {
         bool Enclose { get; }
     }
 
+    /// <summary>
+    /// ColumnLength stores the length of a column. This can be either a specific value or
+    /// the maximum allowed length for the column type.
+    /// Note: Column lenghts are measured differently between databases. SqlSever measures
+    /// varchar(n) length in bytes and PostgreSql measures it in characters.
+    /// </summary>
     public readonly struct ColumnLength {
 
         public static ColumnLength MAX { get; } = new ColumnLength(LengthType.Max);
@@ -105,9 +111,6 @@ namespace QueryLite {
             LengthType = lengthType;
         }
 
-        /// <summary>
-        /// Length is measured in single byte characters for char based data types an in bytes for binary types.
-        /// </summary>
         public int Length { get; }
 
         public LengthType LengthType { get; } = LengthType.None;
