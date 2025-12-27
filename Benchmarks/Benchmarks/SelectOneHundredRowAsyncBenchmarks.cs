@@ -38,7 +38,7 @@ namespace Benchmarks {
 
             Test01Table table = Test01Table.Instance;
 
-            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -59,7 +59,7 @@ namespace Benchmarks {
 
         private readonly int _iterations = 2000;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(initialCount: 70);   //Limit the number of queries as PostgreSQL has a limit
+        private readonly SemaphoreSlim _semaphore = new(initialCount: 70);   //Limit the number of queries as PostgreSQL has a limit
 
         [Benchmark]
         public async Task Ado_One_Hundred_Row_SelectAsync() {
@@ -72,7 +72,7 @@ namespace Benchmarks {
 
                     await _semaphore.WaitAsync();
 
-                    await using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                    await using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                     await connection.OpenAsync();
 
@@ -106,7 +106,7 @@ namespace Benchmarks {
         [Benchmark]
         public async Task Dapper_One_Hundred_Row_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
@@ -114,12 +114,13 @@ namespace Benchmarks {
 
                     await _semaphore.WaitAsync();
 
-                    await using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                    await using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                     await connection.OpenAsync();
 
-                    IEnumerable<Test01> result = await connection.QueryAsync<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01");
-
+                    IEnumerable<Test01> result = await connection.QueryAsync<Test01>(
+                        sql: "SELECT id,row_guid,message,date FROM Test01"
+                    );
                     await connection.CloseAsync();
                     _semaphore.Release();
                 });
@@ -139,8 +140,10 @@ namespace Benchmarks {
 
                     await _semaphore.WaitAsync();
 
-                    QueryResult<Test01> result = await _preparedSelectQuery.ExecuteAsync(parameters: this, Databases.TestDatabase);
-
+                    QueryResult<Test01> result = await _preparedSelectQuery.ExecuteAsync(
+                        parameters: this,
+                        database: Databases.TestDatabase
+                    );
                     _semaphore.Release();
                 });
                 tasks.Add(task);
@@ -151,7 +154,7 @@ namespace Benchmarks {
         [Benchmark]
         public async Task QueryLite_One_Hundred_Row_Dynamic_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
@@ -178,7 +181,7 @@ namespace Benchmarks {
         [Benchmark]
         public async Task QueryLite_One_Hundred_Row_Repository_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
@@ -186,7 +189,7 @@ namespace Benchmarks {
 
                     await _semaphore.WaitAsync();
 
-                    Test01RowRepository repository = new Test01RowRepository();
+                    Test01RowRepository repository = new();
 
                     await repository.SelectRows.ExecuteAsync(Databases.TestDatabase, CancellationToken.None);
 
@@ -200,7 +203,7 @@ namespace Benchmarks {
         [Benchmark]
         public async Task EF_Core_One_Hundred_Row_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
@@ -208,7 +211,7 @@ namespace Benchmarks {
 
                     await _semaphore.WaitAsync();
 
-                    using TestContext context = new TestContext(Databases.ConnectionString);
+                    using TestContext context = new(Databases.ConnectionString);
 
                     List<Test01Row_EfCore> list = await context.TestRows.ToListAsync(CancellationToken.None);
 

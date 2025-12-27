@@ -4,7 +4,6 @@ using Dapper;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using QueryLite;
-using System.Data.Common;
 
 namespace Benchmarks {
 
@@ -15,7 +14,7 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        private IPreparedDeleteQuery<Guid> _preparedDeleteQuery;
+        private readonly IPreparedDeleteQuery<Guid> _preparedDeleteQuery;
 
         public DeleteSingleRowBenchmarks() {
 
@@ -37,7 +36,7 @@ namespace Benchmarks {
 
             Test01Table table = Test01Table.Instance;
 
-            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -61,7 +60,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -89,7 +88,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -109,7 +108,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 NonQueryResult result = _preparedDeleteQuery.Execute(parameters: _guid, transaction);
 
@@ -127,7 +126,7 @@ namespace Benchmarks {
 
                 Test01Table table = Test01Table.Instance;
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 NonQueryResult result = Query
                     .Delete(table)
@@ -146,14 +145,14 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Test01RowRepository repository = new Test01RowRepository();
+                Test01RowRepository repository = new();
 
                 repository.SelectRows.Execute(Databases.TestDatabase);
 
                 foreach(Test01Row row in repository) {
                     repository.DeleteRow(row);
                 }
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 int rowsEffected = repository.Update(transaction);
 
@@ -169,9 +168,9 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using TestContext context = new TestContext(Databases.ConnectionString);
+                using TestContext context = new(Databases.ConnectionString);
 
-                List<Test01Row_EfCore> list = context.TestRows.ToList();
+                List<Test01Row_EfCore> list = [.. context.TestRows];
 
                 foreach(Test01Row_EfCore row in list) {
                     context.TestRows.Remove(row);

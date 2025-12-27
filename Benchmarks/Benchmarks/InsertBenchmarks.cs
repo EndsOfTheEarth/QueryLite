@@ -10,7 +10,7 @@ namespace Benchmarks {
     [MemoryDiagnoser]
     public class InsertBenchmarks {
 
-        private IPreparedInsertQuery<InsertBenchmarks> _preparedInsertQuery;
+        private readonly IPreparedInsertQuery<InsertBenchmarks> _preparedInsertQuery;
 
         public InsertBenchmarks() {
 
@@ -36,7 +36,7 @@ namespace Benchmarks {
 
             Test01Table table = Test01Table.Instance;
 
-            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -55,7 +55,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -82,7 +82,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -90,8 +90,11 @@ namespace Benchmarks {
 
                 var parameters = new { A = _guid, B = _message, C = _date };
 
-                int rows = connection.Execute(sql: "INSERT INTO Test01 (row_guid,message,date) VALUES(@A, @B, @C)", parameters, transaction: transaction);
-
+                int rows = connection.Execute(
+                    sql: "INSERT INTO Test01 (row_guid,message,date) VALUES(@A, @B, @C)",
+                    param: parameters,
+                    transaction: transaction
+                );
                 transaction.Commit();
             }
         }
