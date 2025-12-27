@@ -48,7 +48,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
         private IDatabase? _database = null;
 
-        private List<DatabaseTable> Tables { get; set; } = new List<DatabaseTable>();
+        private List<DatabaseTable> Tables { get; set; } = [];
 
         public MainWindow() {
 
@@ -111,8 +111,14 @@ namespace QueryLite.CodeGeneratorUI.Views {
                 btnOutputAllToFile.IsEnabled = success;
             }
             catch(Exception ex) {
-                MessageDialog dialog = new MessageDialog();
-                await dialog.ShowMessage(this, title: "Exception Occurred", message: ex.ToString());
+
+                MessageDialog dialog = new();
+
+                await dialog.ShowMessage(
+                    parent: this,
+                    title: "Exception Occurred",
+                    message: ex.ToString()
+                );
             }
             finally {
                 btnLoad.IsEnabled = true;
@@ -136,15 +142,21 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
             if(string.Equals(item, POSTGRESQL, StringComparison.OrdinalIgnoreCase)) {
 
-                NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder(txtConnectionString.Text);
+                NpgsqlConnectionStringBuilder builder = new(txtConnectionString.Text);
 
-                _database = new PostgreSqlDatabase(name: builder.Database ?? "", connectionString: txtConnectionString.Text);
+                _database = new PostgreSqlDatabase(
+                    name: builder.Database ?? "",
+                    connectionString: txtConnectionString.Text
+                );
             }
             else if(string.Equals(item, SQL_SERVER, StringComparison.OrdinalIgnoreCase)) {
 
-                Microsoft.Data.SqlClient.SqlConnectionStringBuilder builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(txtConnectionString.Text);
+                Microsoft.Data.SqlClient.SqlConnectionStringBuilder builder = new(txtConnectionString.Text);
 
-                _database = new SqlServerDatabase(name: builder.InitialCatalog, connectionString: txtConnectionString.Text);
+                _database = new SqlServerDatabase(
+                    name: builder.InitialCatalog,
+                    connectionString: txtConnectionString.Text
+                );
             }
             else {
                 throw new Exception($"Unknown database type. Value = '{item}'");
@@ -153,8 +165,14 @@ namespace QueryLite.CodeGeneratorUI.Views {
             await LoadTablesAsync();
 
             if(Tables.Count == 0) {
-                MessageDialog dialog = new MessageDialog();
-                await dialog.ShowMessage(this, title: "No tables found", message: "No tables found");
+
+                MessageDialog dialog = new();
+
+                await dialog.ShowMessage(
+                    parent: this,
+                    title: "No tables found",
+                    message: "No tables found"
+                );
                 return false;
             }
             LoadTablesNodes(_database.DatabaseType);
@@ -180,8 +198,14 @@ namespace QueryLite.CodeGeneratorUI.Views {
             }
 
             if(Tables.Count == 0) {
-                MessageDialog dialog = new MessageDialog();
-                await dialog.ShowMessage(this, title: "No tables found", message: "No tables found");
+
+                MessageDialog dialog = new();
+
+                await dialog.ShowMessage(
+                    parent: this,
+                    title: "No tables found",
+                    message: "No tables found"
+                );
                 return;
             }
             LoadTablesNodes(_database.DatabaseType);
@@ -189,7 +213,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
         private void LoadTablesNodes(DatabaseType databaseType) {
 
-            Dictionary<StringKey<ISchemaName>, SchemaNode> schemaLookup = new Dictionary<StringKey<ISchemaName>, SchemaNode>();
+            Dictionary<StringKey<ISchemaName>, SchemaNode> schemaLookup = [];
 
             bool includeSystemSchemas = chkIncludeSystemSchemas.IsChecked ?? false;
 
@@ -203,7 +227,10 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
                 if(!includeSystemSchemas && databaseType == DatabaseType.PostgreSql) { //Skip system schemas
 
-                    if(string.Compare(table.Schema.Value, "pg_catalog", ignoreCase: true) == 0 || string.Compare(table.Schema.Value, "information_schema", ignoreCase: true) == 0) {
+                    bool skip = string.Equals(table.Schema.Value, "pg_catalog", StringComparison.OrdinalIgnoreCase) ||
+                                string.Equals(table.Schema.Value, "information_schema", StringComparison.OrdinalIgnoreCase);
+
+                    if(skip) {
                         continue;
                     }
                 }
@@ -213,7 +240,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                     schemaLookup.Add(table.Schema, schemaNode);
                     viewModel.Nodes.Add(schemaNode);
                 }
-                TableNode tableNode = new TableNode(table);
+                TableNode tableNode = new(table);
 
                 foreach(DatabaseColumn column in table.Columns) {
                     tableNode.Nodes.Add(new ColumnNode(tableNode, column));
@@ -225,9 +252,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
                 TreeViewItem? treeViewItem = (TreeViewItem?)tvwSchema.TreeContainerFromItem(node);
 
-                if(treeViewItem != null) {
-                    treeViewItem.IsExpanded = true;
-                }
+                treeViewItem?.IsExpanded = true;
             }
         }
 
@@ -293,67 +318,91 @@ namespace QueryLite.CodeGeneratorUI.Views {
                     tableNode = columnNode.TableNode;
                 }
 
-                if(tableNode != null) {
-
-                    DatabaseTable table = tableNode.Table;
-
-                    TablePrefix prefix;
-
-                    if(updatePrefix) {
-                        prefix = new TablePrefix(table);
-                        txtPrefix.Text = prefix.Prefix;
-                    }
-                    else {
-                        prefix = new TablePrefix(txtPrefix.Text ?? "");
-                    }
-                    string baseNamespace = txtNamespace.Text ?? "";
-
-                    Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}", classNamespace: $"{baseNamespace}", requestNamespace: $"{baseNamespace}", handlerNamespace: $"{baseNamespace}");
-
-                    CodeGeneratorSettings settings = new CodeGeneratorSettings() {
-                        IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.IsChecked ?? false,
-                        IncludeJsonAttributes = chkIncludeJsonAttributes.IsChecked ?? false,
-                        UseIdentifiers = GetIdentifierType(),
-                        IncludeDescriptions = chkIncludeDescriptions.IsChecked ?? false,
-                        IncludeConstraints = chkIncludeConstraints.IsChecked ?? false,
-                        NumberOfInstanceProperties = (int)(numNumberOfInstanceProperties.Value ?? 1),
-                        UsePreparedQueries = chkUsePreparedQueries.IsChecked ?? false,
-                        UseRepositoryPattern = chkUseRepositoryPattern.IsChecked ?? false,
-                        Namespaces = namespaces
-                    };
-
-                    CodeBuilder code = TableCodeGenerator.Generate(table, prefix, settings, includeUsings: true, generateKeyInterface: true);
-
-                    txtCode.Text = code.ToString();
-
-                    txtCode.Text += Environment.NewLine;
-
-                    CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(_database, table, prefix, settings, includeUsings: true);
-
-                    txtCode.Text += Environment.NewLine + classCode.ToString();
-
-                    if(!table.IsView) {
-
-                        CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
-
-                        txtCode.Text += Environment.NewLine + Environment.NewLine + validationCode.ToString();
-                    }
-
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, prefix, settings);
-                    txtCode.Text += MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, prefix, settings);
-
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorLoadListRequestGenerator.GetLoadListRequest(table);
-                    txtCode.Text += MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings);
-
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorCreateRequestGenerator.GetCreateRequest(table);
-                    txtCode.Text += MediatorCreateRequestGenerator.GetCreateHandlerCode(table, prefix, settings);
-
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorUpdateSingleRecordRequestGenerator.GetUpdateRequest(table, settings);
-                    txtCode.Text += MediatorUpdateSingleRecordRequestGenerator.GetUpdateHandlerCode(table, prefix, settings);
-
-                    txtCode.Text += Environment.NewLine + Environment.NewLine + MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, prefix, settings);
-                    txtCode.Text += MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, prefix, settings);
+                if(tableNode == null) {
+                    return;
                 }
+
+                DatabaseTable table = tableNode.Table;
+
+                TablePrefix prefix;
+
+                if(updatePrefix) {
+                    prefix = new TablePrefix(table);
+                    txtPrefix.Text = prefix.Prefix;
+                }
+                else {
+                    prefix = new TablePrefix(txtPrefix.Text ?? "");
+                }
+                string baseNamespace = txtNamespace.Text ?? "";
+
+                Namespaces namespaces = new(
+                    baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}",
+                    classNamespace: $"{baseNamespace}", requestNamespace: $"{baseNamespace}",
+                    handlerNamespace: $"{baseNamespace}"
+                );
+
+                CodeGeneratorSettings settings = new() {
+                    IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.IsChecked ?? false,
+                    IncludeJsonAttributes = chkIncludeJsonAttributes.IsChecked ?? false,
+                    UseIdentifiers = GetIdentifierType(),
+                    IncludeDescriptions = chkIncludeDescriptions.IsChecked ?? false,
+                    IncludeConstraints = chkIncludeConstraints.IsChecked ?? false,
+                    NumberOfInstanceProperties = (int)(numNumberOfInstanceProperties.Value ?? 1),
+                    UsePreparedQueries = chkUsePreparedQueries.IsChecked ?? false,
+                    UseRepositoryPattern = chkUseRepositoryPattern.IsChecked ?? false,
+                    Namespaces = namespaces
+                };
+
+                CodeBuilder code = TableCodeGenerator.Generate(
+                    table: table,
+                    prefix: prefix,
+                    settings: settings,
+                    includeUsings: true,
+                    generateKeyInterface: true
+                );
+
+                string nl = Environment.NewLine;
+
+                txtCode.Text = code.ToString();
+
+                txtCode.Text += nl;
+
+                CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(
+                    database: _database,
+                    table: table,
+                    prefix: prefix,
+                    settings: settings,
+                    includeUsings: true
+                );
+
+                txtCode.Text += nl + classCode.ToString();
+
+                if(!table.IsView) {
+
+                    CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(
+                        table: table,
+                        prefix: prefix,
+                        settings: settings,
+                        includeUsings: true
+                    );
+                    txtCode.Text += nl + nl + validationCode.ToString();
+                }
+
+                txtCode.Text += nl + nl + MediatorLoadSingleRecordRequestGenerator.GetLoadRequest(table, prefix, settings);
+                txtCode.Text += MediatorLoadSingleRecordRequestGenerator.GetLoadListHandlerCode(table, prefix, settings);
+
+                txtCode.Text += nl + nl + MediatorLoadListRequestGenerator.GetLoadListRequest(table);
+                txtCode.Text += MediatorLoadListRequestGenerator.GetLoadListHandlerCode(table, settings);
+
+                txtCode.Text += nl + nl + MediatorCreateRequestGenerator.GetCreateRequest(table);
+                txtCode.Text += MediatorCreateRequestGenerator.GetCreateHandlerCode(table, prefix, settings);
+
+                txtCode.Text += nl + nl + MediatorUpdateSingleRecordRequestGenerator.GetUpdateRequest(table, settings);
+                txtCode.Text += MediatorUpdateSingleRecordRequestGenerator.GetUpdateHandlerCode(table, prefix, settings);
+
+                txtCode.Text += nl + nl + MediatorDeleteSingleRecordRequestGenerator.GetDeleteRequest(table, prefix, settings);
+                txtCode.Text += MediatorDeleteSingleRecordRequestGenerator.GetDeleteHandlerCode(table, prefix, settings);
+
             }
             finally {
                 _ignoreChanges = false;
@@ -394,17 +443,14 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
             TreeViewItem? treeViewItem = (TreeViewItem?)tvwSchema.TreeContainerFromItem(parentNode);
 
-            if(treeViewItem != null) {
-                treeViewItem.IsExpanded = expand;
-            }
+            treeViewItem?.IsExpanded = expand;
 
             foreach(TreeNodeViewModel node in parentNode.Nodes) {
 
                 TreeViewItem? subTreeViewItem = (TreeViewItem?)tvwSchema.TreeContainerFromItem(node);
 
-                if(subTreeViewItem != null) {
-                    subTreeViewItem.IsExpanded = expand;
-                }
+                subTreeViewItem?.IsExpanded = expand;
+
                 SetExpandAll(node, expand: expand);
             }
         }
@@ -412,14 +458,22 @@ namespace QueryLite.CodeGeneratorUI.Views {
         private async void BtnOutputAllToFile_Click(object? sender, RoutedEventArgs e) {
 
             if(_database == null) {
+
                 MessageDialog dialog = new MessageDialog();
-                await dialog.ShowMessage(this, title: "Database not connected", message: $"{nameof(_database)} cannot be null");
+
+                await dialog.ShowMessage(
+                    parent: this,
+                    title: "Database not connected",
+                    message: $"{nameof(_database)} cannot be null"
+                );
                 return;
             }
 
             TopLevel? topLevel = GetTopLevel(this);
 
-            IReadOnlyList<IStorageFolder> folders = await topLevel!.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { AllowMultiple = false });
+            IReadOnlyList<IStorageFolder> folders = await topLevel!.StorageProvider.OpenFolderPickerAsync(
+                new FolderPickerOpenOptions { AllowMultiple = false }
+            );
 
             if(folders.Count == 0) {
                 return;
@@ -432,16 +486,28 @@ namespace QueryLite.CodeGeneratorUI.Views {
                 string folder = folders[0].Path.AbsolutePath;
 
                 if(Directory.GetFiles(folder).Length > 0) {
+
                     MessageDialog dialog = new MessageDialog();
-                    await dialog.ShowMessage(this, title: "Folder must be empty", message: "Selected output folder must be empty");
+
+                    await dialog.ShowMessage(
+                        parent: this,
+                        title: "Folder must be empty",
+                        message: "Selected output folder must be empty"
+                    );
                     return;
                 }
 
                 string baseNamespace = txtNamespace.Text ?? "";
 
-                Namespaces namespaces = new Namespaces(baseNamespace: baseNamespace, tableNamespace: $"{baseNamespace}", classNamespace: $"{baseNamespace}", requestNamespace: $"{baseNamespace}", handlerNamespace: $"{baseNamespace}");
+                Namespaces namespaces = new(
+                    baseNamespace: baseNamespace,
+                    tableNamespace: $"{baseNamespace}",
+                    classNamespace: $"{baseNamespace}",
+                    requestNamespace: $"{baseNamespace}",
+                    handlerNamespace: $"{baseNamespace}"
+                );
 
-                CodeGeneratorSettings settings = new CodeGeneratorSettings() {
+                CodeGeneratorSettings settings = new() {
                     IncludeMessagePackAttributes = chkIncludeMessagePackAttributes.IsChecked ?? false,
                     IncludeJsonAttributes = chkIncludeJsonAttributes.IsChecked ?? false,
                     UseIdentifiers = GetIdentifierType(),
@@ -456,7 +522,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                 //
                 //  Filter out system tables when needed
                 //
-                List<DatabaseTable> tables = new List<DatabaseTable>();
+                List<DatabaseTable> tables = [];
 
                 bool includeSystemSchemas = chkIncludeSystemSchemas.IsChecked ?? false;
 
@@ -464,7 +530,10 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
                     if(!includeSystemSchemas && _database.DatabaseType == DatabaseType.PostgreSql) { //Skip system schemas
 
-                        if(string.Compare(table.Schema.Value, "pg_catalog", ignoreCase: true) == 0 || string.Compare(table.Schema.Value, "information_schema", ignoreCase: true) == 0) {
+                        bool skip = string.Equals(table.Schema.Value, "pg_catalog", StringComparison.OrdinalIgnoreCase) ||
+                                    string.Equals(table.Schema.Value, "information_schema", StringComparison.OrdinalIgnoreCase);
+
+                        if(skip) {
                             continue;
                         }
                     }

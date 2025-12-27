@@ -32,8 +32,9 @@ namespace QueryLite.CodeGeneratorUI {
 
         public Control? Build(object? data) {
 
-            if(data is null)
+            if(data is null) {
                 return null;
+            }
 
             string name = data.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
 
@@ -44,7 +45,6 @@ namespace QueryLite.CodeGeneratorUI {
                 control.DataContext = data;
                 return control;
             }
-
             return new TextBlock { Text = "Not Found: " + name };
         }
         public bool Match(object? data) {

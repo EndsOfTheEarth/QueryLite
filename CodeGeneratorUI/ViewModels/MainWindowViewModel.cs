@@ -35,8 +35,8 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
         public ObservableCollection<TreeNodeViewModel> SelectedNodes { get; }
 
         public MainWindowViewModel() {
-            Nodes = new ObservableCollection<TreeNodeViewModel>();
-            SelectedNodes = new ObservableCollection<TreeNodeViewModel>();
+            Nodes = [];
+            SelectedNodes = [];
         }
     }
 
@@ -47,7 +47,7 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
         [ObservableProperty]
         private bool isEnabled = true;
 
-        public ObservableCollection<TreeNodeViewModel> Nodes { get; set; } = new ObservableCollection<TreeNodeViewModel>();
+        public ObservableCollection<TreeNodeViewModel> Nodes { get; set; } = [];
     }
     internal class SchemaNode : TreeNodeViewModel {
 
@@ -64,7 +64,7 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
 
         public TableNode(DatabaseTable table) {
             Table = table;
-            Text = table.TableName.Value + (table.IsView ? " (View)" : "");
+            Text = $"{table.TableName.Value}{(table.IsView ? " (View)" : "")}";
         }
     }
     internal partial class ColumnNode : TreeNodeViewModel {
