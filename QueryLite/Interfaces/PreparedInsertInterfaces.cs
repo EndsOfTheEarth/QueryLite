@@ -47,7 +47,7 @@ namespace QueryLite {
 
         NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+        Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
                                           QueryTimeout? timeout = null, string debugName = "");
     }
 
@@ -57,7 +57,7 @@ namespace QueryLite {
 
         QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
                                                QueryTimeout? timeout = null, string debugName = "");
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
                                                   QueryTimeout? timeout = null, string debugName = "");
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
                                                   QueryTimeout? timeout = null, string debugName = "");
     }
 

@@ -62,7 +62,7 @@ namespace {settings.Namespaces.BaseNamespace} {{
     }}
     public interface IRequestHandler<REQUEST, RESPONSE> {{
 
-        Task<RESPONSE> Handle(REQUEST request, CancellationToken cancellationToken);
+        Task<RESPONSE> Handle(REQUEST request, CancellationToken ct);
     }}
     
     public interface IMyDatabase : IDatabase {{ }}

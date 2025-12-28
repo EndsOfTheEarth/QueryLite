@@ -108,40 +108,40 @@ namespace QueryLite.Repository {
             Repository.PopulateWithExistingRows(result.Rows);
         }
 
-        public async Task ExecuteAsync(IDatabase database, CancellationToken cancellationToken) {
-            await ExecuteAsync(database, TimeoutLevel.ShortSelect, debugName: "", cancellationToken);
+        public async Task ExecuteAsync(IDatabase database, CancellationToken ct) {
+            await ExecuteAsync(database, TimeoutLevel.ShortSelect, debugName: "", ct);
         }
 
-        public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken cancellationToken) {
-            await ExecuteAsync(database, timeout, debugName: "", cancellationToken);
+        public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken ct) {
+            await ExecuteAsync(database, timeout, debugName: "", ct);
         }
 
-        public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
+        public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken ct) {
 
             ArgumentNullException.ThrowIfNull(database);
 
             Repository.ClearRows();
 
-            QueryResult<ROW> result = await QueryTemplate.ExecuteAsync(database, cancellationToken, timeout, debugName: debugName);
+            QueryResult<ROW> result = await QueryTemplate.ExecuteAsync(database, ct, timeout, debugName: debugName);
 
             Repository.PopulateWithExistingRows(result.Rows);
         }
 
-        public async Task ExecuteAsync(Transaction transaction, CancellationToken cancellationToken) {
-            await ExecuteAsync(transaction, TimeoutLevel.ShortSelect, debugName: "", cancellationToken);
+        public async Task ExecuteAsync(Transaction transaction, CancellationToken ct) {
+            await ExecuteAsync(transaction, TimeoutLevel.ShortSelect, debugName: "", ct);
         }
 
-        public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
-            await ExecuteAsync(transaction, timeout, debugName: "", cancellationToken);
+        public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct) {
+            await ExecuteAsync(transaction, timeout, debugName: "", ct);
         }
 
-        public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
+        public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct) {
 
             ArgumentNullException.ThrowIfNull(transaction);
 
             Repository.ClearRows();
 
-            QueryResult<ROW> result = await QueryTemplate.ExecuteAsync(transaction, cancellationToken, timeout, debugName: debugName);
+            QueryResult<ROW> result = await QueryTemplate.ExecuteAsync(transaction, ct, timeout, debugName: debugName);
 
             Repository.PopulateWithExistingRows(result.Rows);
         }

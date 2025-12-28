@@ -154,9 +154,9 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<{name}> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<{name}> Handle({requestName} request, CancellationToken ct) {{
 
-            QueryResult<{name}> result = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
+            QueryResult<{name}> result = await _query.ExecuteAsync(parameters: request, _database, ct);
 
             result.AssertRowCount(rows: 1);
             
@@ -204,7 +204,7 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<{name}> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<{name}> Handle({requestName} request, CancellationToken ct) {{
 
             {name}Table table = {name}Table.Instance;
 
@@ -214,7 +214,7 @@ namespace DbSchema.CodeGeneration {
                 )
                 .From(table)
                 .Where({whereClause})
-                .ExecuteAsync(_database, cancellationToken);
+                .ExecuteAsync(_database, ct);
 
             result.AssertRowCount(rows: 1);
             

@@ -101,7 +101,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null,
+        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
                                                        QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
                                                        string debugName = "") {
 
@@ -124,13 +124,13 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Insert,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }
 
         public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
-                                                                    CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+                                                                    CancellationToken? ct = null, QueryTimeout? timeout = null,
                                                                     Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(func);
@@ -154,7 +154,7 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Insert,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }

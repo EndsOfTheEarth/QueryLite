@@ -140,7 +140,7 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Custom,
                 debugName: debugName,
-                cancellationToken: ct
+                ct: ct
             );
         }
 
@@ -159,7 +159,7 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Custom,
                 debugName: debugName,
-                cancellationToken: ct
+                ct: ct
             );
         }
     }

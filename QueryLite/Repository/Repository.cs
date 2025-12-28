@@ -112,19 +112,19 @@ namespace QueryLite {
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        Task<int> UpdateAsync(Transaction transaction, CancellationToken cancellationToken);
+        Task<int> UpdateAsync(Transaction transaction, CancellationToken ct);
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken);
+        Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken ct);
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken cancellationToken);
+        Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
@@ -144,17 +144,17 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistInsertsOnlyAsync(Transaction transaction, CancellationToken cancellationToken);
+        Task<int> PersistInsertsOnlyAsync(Transaction transaction, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken);
+        Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
@@ -174,17 +174,17 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, CancellationToken cancellationToken);
+        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken);
+        Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
@@ -204,17 +204,17 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistDeletesOnlyAsync(Transaction transaction, CancellationToken cancellationToken);
+        Task<int> PersistDeletesOnlyAsync(Transaction transaction, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
+        Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken);
+        Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct);
     }
 
     /// <summary>
@@ -514,20 +514,20 @@ namespace QueryLite {
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public async Task<int> UpdateAsync(Transaction transaction, CancellationToken cancellationToken) {
-            return await UpdateAsync(transaction, timeout: null, cancellationToken);
+        public async Task<int> UpdateAsync(Transaction transaction, CancellationToken ct) {
+            return await UpdateAsync(transaction, timeout: null, ct);
         }
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken cancellationToken) {
-            return await UpdateAsync(transaction, timeout, debugName: "", cancellationToken);
+        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken ct) {
+            return await UpdateAsync(transaction, timeout, debugName: "", ct);
         }
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken cancellationToken) {
+        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken ct) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
@@ -538,7 +538,7 @@ namespace QueryLite {
             foreach(RowState row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
-                    totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, debugName: debugName, cancellationToken);
+                    totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, debugName: debugName, ct);
                 }
                 else if(row.State == RowUpdateState.Existing) {
 
@@ -549,7 +549,7 @@ namespace QueryLite {
                     bool rowHasChanged = !row.OldRow.Equals(row.NewRow);
 
                     if(rowHasChanged) {
-                        totalRowsEffected += await PerformUpdateAsync(transaction, timeout, newState, updater, row, debugName: debugName, cancellationToken);
+                        totalRowsEffected += await PerformUpdateAsync(transaction, timeout, newState, updater, row, debugName: debugName, ct);
                     }
                     else {
                         newState.Add(row);  //Add unchanged row
@@ -560,7 +560,7 @@ namespace QueryLite {
                     if(row.OldRow == null) {
                         throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
                     }
-                    totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, debugName: debugName, cancellationToken);
+                    totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, debugName: debugName, ct);
                 }
             }
             StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
@@ -582,9 +582,9 @@ namespace QueryLite {
 
         private static async Task<int> PerformInsertAsync(Transaction transaction, QueryTimeout? timeout, List<RowState> newState,
                                                     RowUpdater<TABLE, ROW> updater,
-                                                    RowState rowState, string debugName, CancellationToken cancellationToken) {
+                                                    RowState rowState, string debugName, CancellationToken ct) {
 
-            int rowsEffected = await updater.InsertAsync(rowState.NewRow, transaction, timeout, debugName, cancellationToken);
+            int rowsEffected = await updater.InsertAsync(rowState.NewRow, transaction, timeout, debugName, ct);
 
             if(rowsEffected != 1) {
                 throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
@@ -610,9 +610,9 @@ namespace QueryLite {
 
         private static async Task<int> PerformUpdateAsync(Transaction transaction, QueryTimeout? timeout,
                                                   List<RowState> newState, RowUpdater<TABLE, ROW> updater,
-                                                  RowState row, string debugName, CancellationToken cancellationToken) {
+                                                  RowState row, string debugName, CancellationToken ct) {
 
-            int rowsEffected = await updater.UpdateAsync(oldRow: row.OldRow!, newRow: row.NewRow, transaction, timeout, debugName: debugName, cancellationToken);
+            int rowsEffected = await updater.UpdateAsync(oldRow: row.OldRow!, newRow: row.NewRow, transaction, timeout, debugName: debugName, ct);
 
             if(rowsEffected == 0) {
                 throw new Exception("Concurrency violation. Maybe row was changed in the database?");
@@ -636,9 +636,9 @@ namespace QueryLite {
 
         private static async Task<int> PerformDeleteAsync(Transaction transaction, QueryTimeout? timeout,
                                                           RowUpdater<TABLE, ROW> updater, RowState row, string debugName,
-                                                          CancellationToken cancellationToken) {
+                                                          CancellationToken ct) {
 
-            int rowsEffected = await updater.DeleteAsync(existingRow: row.OldRow!, transaction, timeout, debugName: debugName, cancellationToken);
+            int rowsEffected = await updater.DeleteAsync(existingRow: row.OldRow!, transaction, timeout, debugName: debugName, ct);
 
             if(rowsEffected != 1) {
                 throw new Exception($"Delete failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
@@ -685,21 +685,21 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, CancellationToken cancellationToken) {
-            return await PersistInsertsOnlyAsync(transaction, timeout: TimeoutLevel.ShortInsert, cancellationToken);
+        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, CancellationToken ct) {
+            return await PersistInsertsOnlyAsync(transaction, timeout: TimeoutLevel.ShortInsert, ct);
         }
 
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
-            return await PersistInsertsOnlyAsync(transaction, timeout, debugName: "", cancellationToken);
+        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct) {
+            return await PersistInsertsOnlyAsync(transaction, timeout, debugName: "", ct);
         }
 
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
+        public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
@@ -710,7 +710,7 @@ namespace QueryLite {
             foreach(RowState row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
-                    totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, debugName: debugName, cancellationToken);
+                    totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, debugName: debugName, ct);
                 }
             }
             StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
@@ -769,21 +769,21 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, CancellationToken cancellationToken) {
-            return await PersistUpdatesOnlyAsync(transaction, timeout: TimeoutLevel.ShortUpdate, cancellationToken);
+        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, CancellationToken ct) {
+            return await PersistUpdatesOnlyAsync(transaction, timeout: TimeoutLevel.ShortUpdate, ct);
         }
 
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
-            return await PersistUpdatesOnlyAsync(transaction, timeout, debugName: "", cancellationToken);
+        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct) {
+            return await PersistUpdatesOnlyAsync(transaction, timeout, debugName: "", ct);
         }
 
         /// <summary>
         /// Persist only records that need to be updated. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
+        public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
@@ -802,7 +802,7 @@ namespace QueryLite {
                     bool rowHasChanged = !row.OldRow.Equals(row.NewRow);
 
                     if(rowHasChanged) {
-                        totalRowsEffected += await PerformUpdateAsync(transaction, timeout, newState, updater, row, debugName: debugName, cancellationToken);
+                        totalRowsEffected += await PerformUpdateAsync(transaction, timeout, newState, updater, row, debugName: debugName, ct);
                     }
                     else {
                         newState.Add(row);  //Add unchanged row
@@ -858,21 +858,21 @@ namespace QueryLite {
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, CancellationToken cancellationToken) {
-            return await PersistDeletesOnlyAsync(transaction, timeout: TimeoutLevel.ShortDelete, cancellationToken);
+        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, CancellationToken ct) {
+            return await PersistDeletesOnlyAsync(transaction, timeout: TimeoutLevel.ShortDelete, ct);
         }
 
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken) {
-            return await PersistDeletesOnlyAsync(transaction, timeout, debugName: "", cancellationToken);
+        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct) {
+            return await PersistDeletesOnlyAsync(transaction, timeout, debugName: "", ct);
         }
 
         /// <summary>
         /// Persist only records that need to be deleted. This is useful for situations where the order of inserts, update and deletes is important.
         /// </summary>
-        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken) {
+        public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
@@ -887,7 +887,7 @@ namespace QueryLite {
                     if(row.OldRow == null) {
                         throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
                     }
-                    totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, debugName: debugName, cancellationToken);
+                    totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, debugName: debugName, ct);
                 }
             }
             StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));

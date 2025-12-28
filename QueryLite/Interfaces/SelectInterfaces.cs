@@ -266,11 +266,11 @@ namespace QueryLite {
         
         public QueryResult<RESULT> Execute(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null,
+        public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
                                                       QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
                                                       string debugName = "");
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+        public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
                                                       Parameters useParameters = Parameters.Default, string debugName = "");
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+        public Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? ct = null, QueryTimeout? timeout = null,
                                                   Parameters useParameters = Parameters.Default, string debugName = "");
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+        public Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
                                                   Parameters useParameters = Parameters.Default, string debugName = "");
     }
 

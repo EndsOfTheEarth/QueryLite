@@ -930,7 +930,7 @@ namespace QueryLiteTest.Tests {
                     .ExecuteAsync(
                         result => new AllTypesInfo(result, table),
                         transaction,
-                        cancellationToken: null,
+                        ct: null,
                         TimeoutLevel.ShortInsert
                     );
 
@@ -1061,7 +1061,7 @@ namespace QueryLiteTest.Tests {
                     .ExecuteAsync(
                         result => new AllTypesInfo(result, allTypesTable),
                         transaction,
-                        cancellationToken: null,
+                        ct: null,
                         TimeoutLevel.ShortUpdate
                     );
 

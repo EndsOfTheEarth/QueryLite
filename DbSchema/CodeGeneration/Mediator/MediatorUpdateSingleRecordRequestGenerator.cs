@@ -134,7 +134,7 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<Response> Handle({requestName} request, CancellationToken ct) {{
 
             FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
 
@@ -144,7 +144,7 @@ namespace DbSchema.CodeGeneration {
 
             using(Transaction transaction = new Transaction(_database)) {{
 
-                NonQueryResult result = await _query.ExecuteAsync(parameters: request.{name}, transaction, cancellationToken);
+                NonQueryResult result = await _query.ExecuteAsync(parameters: request.{name}, transaction, ct);
 
                 result.AssertRowsEffected(rows: 1);
                 
@@ -208,7 +208,7 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<Response> Handle({requestName} request, CancellationToken ct) {{
 
             FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
 
@@ -228,7 +228,7 @@ namespace DbSchema.CodeGeneration {
 {setValues}
                     )
                     .Where({whereClause})
-                    .ExecuteAsync(transaction, cancellationToken);
+                    .ExecuteAsync(transaction, ct);
 
                 result.AssertRowsEffected(rows: 1);
                 

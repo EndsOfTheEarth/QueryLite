@@ -75,12 +75,12 @@ namespace QueryLite {
                                             QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
                                             string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null,
+        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
                                           QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
                                           string debugName = "");
 
         Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
-                                                       CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+                                                       CancellationToken? ct = null, QueryTimeout? timeout = null,
                                                        Parameters useParameters = Parameters.Default, string debugName = "");
     }
 }

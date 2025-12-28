@@ -298,7 +298,7 @@ namespace QueryLite {
         }
 
         public async Task<QueryResult<RESULT>> ExecuteAsync(
-            Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+            Transaction transaction, CancellationToken? ct = null, QueryTimeout? timeout = null,
             Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
@@ -322,13 +322,13 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Select,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }
 
         public async Task<QueryResult<RESULT>> ExecuteAsync(
-            IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+            IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
             Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(database);
@@ -352,7 +352,7 @@ namespace QueryLite {
                 sql: sql,
                 queryType: QueryType.Select,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }
@@ -441,7 +441,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? cancellationToken = null,
+        public async Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? ct = null,
                                                         QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
                                                         string debugName = "") {
 
@@ -459,7 +459,7 @@ namespace QueryLite {
 
             RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
                 database: transaction.Database,
-                cancellationToken: cancellationToken ?? CancellationToken.None,
+                ct: ct ?? CancellationToken.None,
                 transaction: transaction,
                 timeout: timeout.Value,
                 parameters: parameters,
@@ -471,7 +471,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+        public async Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
                                                         Parameters useParameters = Parameters.Default, string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(database);
@@ -488,7 +488,7 @@ namespace QueryLite {
 
             RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
                 database: database,
-                cancellationToken: cancellationToken ?? CancellationToken.None,
+                ct: ct ?? CancellationToken.None,
                 transaction: null,
                 timeout: timeout.Value,
                 parameters: parameters,

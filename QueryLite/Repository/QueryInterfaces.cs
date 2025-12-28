@@ -102,12 +102,12 @@ namespace QueryLite.Repository {
         void Execute(Transaction transaction, QueryTimeout timeout);
         void Execute(Transaction transaction, QueryTimeout timeout, string debugName);
 
-        Task ExecuteAsync(IDatabase database, CancellationToken cancellationToken);
-        Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken cancellationToken);
-        Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken cancellationToken);
+        Task ExecuteAsync(IDatabase database, CancellationToken ct);
+        Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken ct);
+        Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken ct);
 
-        Task ExecuteAsync(Transaction transaction, CancellationToken cancellationToken);
-        Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken cancellationToken);
-        Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken cancellationToken);
+        Task ExecuteAsync(Transaction transaction, CancellationToken ct);
+        Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct);
+        Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct);
     }
 }

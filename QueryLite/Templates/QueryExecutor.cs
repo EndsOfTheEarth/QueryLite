@@ -480,7 +480,7 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             string debugName,
-            CancellationToken cancellationToken) {
+            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -518,8 +518,8 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, ct).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -545,7 +545,7 @@ namespace QueryLite {
 #endif
 
                     if(oneTimeConnection) {
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
@@ -553,11 +553,11 @@ namespace QueryLite {
 
                     RESULT? result = default;
 
-                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(ct).ConfigureAwait(false)) {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                        while(await reader.ReadAsync(ct).ConfigureAwait(false)) {
 
                             if(!isFirst) {
                                 throw new Exception("More than one record exists in result");
@@ -633,7 +633,7 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             string debugName,
-            CancellationToken cancellationToken) {
+            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -671,8 +671,8 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, ct).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -698,17 +698,17 @@ namespace QueryLite {
 #endif
 
                     if(oneTimeConnection) {
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     List<RESULT> rowList = [];
 
-                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(ct).ConfigureAwait(false)) {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                        while(await reader.ReadAsync(ct).ConfigureAwait(false)) {
                             rowList.Add(func(resultRow));
                             resultRow.Reset();
                         }
@@ -780,7 +780,7 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             string debugName,
-            CancellationToken cancellationToken) {
+            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -818,8 +818,8 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, ct).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -845,11 +845,11 @@ namespace QueryLite {
 #endif
 
                     if(oneTimeConnection) {
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
-                    int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                    int rowsEffected = await command.ExecuteNonQueryAsync(ct).ConfigureAwait(false);
 
                     NonQueryResult result = new NonQueryResult(sql, rowsEffected);
 
@@ -1217,7 +1217,7 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             string debugName,
-            CancellationToken cancellationToken) {
+            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -1255,8 +1255,8 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, ct).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -1279,18 +1279,18 @@ namespace QueryLite {
 #endif
 
                     if(oneTimeConnection) {
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     RESULT? result = default;
                     bool isFirst = true;
 
-                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(ct).ConfigureAwait(false)) {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                        while(await reader.ReadAsync(ct).ConfigureAwait(false)) {
 
                             if(!isFirst) {
                                 throw new Exception("More than one record exists in result");
@@ -1367,7 +1367,7 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             string debugName,
-            CancellationToken cancellationToken) {
+            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -1405,8 +1405,8 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, ct).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -1429,17 +1429,17 @@ namespace QueryLite {
 #endif
 
                     if(oneTimeConnection) {
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     List<RESULT> rowList = [];
 
-                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(ct).ConfigureAwait(false)) {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                        while(await reader.ReadAsync(ct).ConfigureAwait(false)) {
                             rowList.Add(func(resultRow));
                             resultRow.Reset();
                         }
@@ -1816,7 +1816,7 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             string debugName,
-            CancellationToken cancellationToken) {
+            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -1854,8 +1854,8 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, ct).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -1881,7 +1881,7 @@ namespace QueryLite {
 #endif
 
                     if(oneTimeConnection) {
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
@@ -1889,11 +1889,11 @@ namespace QueryLite {
 
                     RESULT? result = default;
 
-                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(ct).ConfigureAwait(false)) {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                        while(await reader.ReadAsync(ct).ConfigureAwait(false)) {
 
                             if(!isFirst) {
                                 throw new Exception("More than one record exists in result");
@@ -1970,7 +1970,7 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             string debugName,
-            CancellationToken cancellationToken) {
+            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -2008,8 +2008,8 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, ct).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -2035,17 +2035,17 @@ namespace QueryLite {
 #endif
 
                     if(oneTimeConnection) {
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     List<RESULT> rowList = [];
 
-                    await using(DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false)) {
+                    await using(DbDataReader reader = await command.ExecuteReaderAsync(ct).ConfigureAwait(false)) {
 
                         IResultRow resultRow = SelectCollectorCache.Acquire(database.DatabaseType, reader);
 
-                        while(await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) {
+                        while(await reader.ReadAsync(ct).ConfigureAwait(false)) {
                             rowList.Add(outputFunc(resultRow));
                             resultRow.Reset();
                         }
@@ -2253,7 +2253,7 @@ namespace QueryLite {
             string sql,
             QueryType queryType,
             string debugName,
-            CancellationToken cancellationToken) {
+            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -2291,8 +2291,8 @@ namespace QueryLite {
 
                     if(dbTransaction == null) {
                         dbConnection = database.GetNewConnection();
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, cancellationToken).ConfigureAwait(false));
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
+                        transaction.SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(transaction.IsolationLevel, ct).ConfigureAwait(false));
                     }
                     else {
                         dbConnection = dbTransaction.Connection;
@@ -2318,11 +2318,11 @@ namespace QueryLite {
 #endif
 
                     if(oneTimeConnection) {
-                        await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                        await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
-                    int rowsEffected = await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                    int rowsEffected = await command.ExecuteNonQueryAsync(ct).ConfigureAwait(false);
 
                     NonQueryResult result = new NonQueryResult(sql, rowsEffected);
 

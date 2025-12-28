@@ -105,7 +105,7 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
+        public async Task<Response> Handle(Create{name}Request request, CancellationToken ct) {{
 
             FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
 
@@ -115,7 +115,7 @@ namespace DbSchema.CodeGeneration {
 
             using(Transaction transaction = new Transaction(_database)) {{
 
-                NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, cancellationToken);
+                NonQueryResult result = await _insertQuery.ExecuteAsync(request.{name}, transaction, ct);
 
                 result.AssertRowsEffected(rows: 1);
 
@@ -158,7 +158,7 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
+        public async Task<Response> Handle(Create{name}Request request, CancellationToken ct) {{
 
             FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
 
@@ -177,7 +177,7 @@ namespace DbSchema.CodeGeneration {
                     .Values(values => {{
 {setValues}
                     }}
-                    ).ExecuteAsync(transaction, cancellationToken);
+                    ).ExecuteAsync(transaction, ct);
 
                 result.AssertRowsEffected(rows: 1);
 
@@ -221,7 +221,7 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<Response> Handle(Create{name}Request request, CancellationToken cancellationToken) {{
+        public async Task<Response> Handle(Create{name}Request request, CancellationToken ct) {{
 
             FluentValidation.Results.ValidationResult validation = _validator.Validate(request.{name});
 
@@ -239,7 +239,7 @@ namespace DbSchema.CodeGeneration {
 
             using(Transaction transaction = new Transaction(_database)) {{
 
-                await repository.Update(transaction, cancellationToken);
+                await repository.Update(transaction, ct);
 
                 transaction.Commit();
             }}

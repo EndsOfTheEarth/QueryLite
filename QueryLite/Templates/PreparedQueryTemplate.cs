@@ -339,7 +339,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken,
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken ct,
                                                             QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
@@ -360,12 +360,12 @@ namespace QueryLite {
                 sql: queryDetail.Sql,
                 queryType: QueryType.Select,
                 debugName: debugName,
-                cancellationToken: cancellationToken
+                ct: ct
             );
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken,
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken ct,
                                                             QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
@@ -388,7 +388,7 @@ namespace QueryLite {
                 sql: queryDetail.Sql,
                 queryType: QueryType.Select,
                 debugName: debugName,
-                cancellationToken: cancellationToken
+                ct: ct
             );
             return result;
         }
@@ -443,7 +443,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
                                                         QueryTimeout? timeout = null, string debugName = "") {
 
             IDatabase database = transaction.Database;
@@ -466,12 +466,12 @@ namespace QueryLite {
                 sql: queryDetail.Sql,
                 queryType: QueryType.Select,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
                                                         QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
@@ -492,7 +492,7 @@ namespace QueryLite {
                 sql: queryDetail.Sql,
                 queryType: QueryType.Select,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }

@@ -737,8 +737,8 @@ repository.AddNewRow(row);
 
 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-    await repository.UpdateAsync(transaction, cancellationToken);
-    await transaction.CommitAsync(cancellationToken);
+    await repository.UpdateAsync(transaction, ct);
+    await transaction.CommitAsync(ct);
 }
 ```
 
@@ -751,7 +751,7 @@ await repository
     .SelectRows
     .Where(repository.Table.State == OrderState.New)
     .OrderBy(repository.Table.OrderDate)
-    .ExecuteAsync(TestDatabase.Database, cancellationToken);
+    .ExecuteAsync(TestDatabase.Database, ct);
 
 foreach(OrderRow row in repository) {   //Set a value on each row
     row.OrderState = OrderState.Processed;
@@ -759,8 +759,8 @@ foreach(OrderRow row in repository) {   //Set a value on each row
 
 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-    await repository.UpdateAsync(transaction, cancellationToken);
-    await transaction.CommitAsync(cancellationToken);
+    await repository.UpdateAsync(transaction, ct);
+    await transaction.CommitAsync(ct);
 }
 ```
 
@@ -772,7 +772,7 @@ OrderRepository repository = new OrderRepository();
 await repository
     .SelectRows
     .Where(repository.Table.Id == 100)
-    .ExecuteAsync(TestDatabase.Database, cancellationToken);
+    .ExecuteAsync(TestDatabase.Database, ct);
 
 OrderRow row = repository.First();
 
@@ -780,8 +780,8 @@ repository.DeleteRow(row);
 
 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-    await repository.UpdateAsync(transaction, cancellationToken);
-    await transaction.CommitAsync(cancellationToken);
+    await repository.UpdateAsync(transaction, ct);
+    await transaction.CommitAsync(ct);
 }
 ```
 
@@ -803,7 +803,7 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
         //...populate properties
     );
     OrderRepository.ExecuteInsert(row, Test01Table.Instance, transaction);
-    await transaction.CommitAsync(cancellationToken);
+    await transaction.CommitAsync(ct);
 }
 ```
 
@@ -817,7 +817,7 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
         //...populate properties
     );
     OrderRepository.ExecuteUpdate(row, Test01Table.Instance, transaction);
-    await transaction.CommitAsync(cancellationToken);
+    await transaction.CommitAsync(ct);
 }
 ```
 

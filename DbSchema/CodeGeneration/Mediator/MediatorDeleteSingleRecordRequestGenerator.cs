@@ -153,11 +153,11 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<Response> Handle({requestName} request, CancellationToken ct) {{
 
             using(Transaction transaction = new Transaction(_database)) {{
 
-                NonQueryResult result = await _query.ExecuteAsync(parameters: request, transaction, cancellationToken);
+                NonQueryResult result = await _query.ExecuteAsync(parameters: request, transaction, ct);
         
                 result.AssertRowsEffected(rows: 1);
                 
@@ -206,7 +206,7 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<Response> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<Response> Handle({requestName} request, CancellationToken ct) {{
 
             {name}Table table = {name}Table.Instance;
 
@@ -215,7 +215,7 @@ namespace DbSchema.CodeGeneration {
                 NonQueryResult result = await Query
                     .Delete(table)
                     .Where({whereClause})
-                    .ExecuteAsync(transaction, cancellationToken);
+                    .ExecuteAsync(transaction, ct);
 
                 result.AssertRowsEffected(rows: 1);
                 

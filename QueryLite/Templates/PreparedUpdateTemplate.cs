@@ -164,7 +164,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
                                                        QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
@@ -178,7 +178,7 @@ namespace QueryLite {
                 sql: UpdateDetail.Sql,
                 queryType: QueryType.Update,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }
@@ -257,7 +257,7 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
                                                             QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
@@ -272,7 +272,7 @@ namespace QueryLite {
                 sql: UpdateDetail.Sql,
                 queryType: QueryType.Update,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }
@@ -311,7 +311,7 @@ namespace QueryLite {
             );
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
                                                         QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
@@ -326,12 +326,12 @@ namespace QueryLite {
                 sql: insertDetail.Sql,
                 queryType: QueryType.Insert,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
                                                         QueryTimeout? timeout = null, string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
@@ -346,7 +346,7 @@ namespace QueryLite {
                 sql: insertDetail.Sql,
                 queryType: QueryType.Insert,
                 debugName: debugName,
-                cancellationToken: cancellationToken ?? CancellationToken.None
+                ct: ct ?? CancellationToken.None
             );
             return result;
         }

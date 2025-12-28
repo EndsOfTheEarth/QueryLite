@@ -508,7 +508,7 @@ namespace QueryLiteTest.Tests {
 
         private async Task AssertRowExistsAsync(AllTypes allTypes) {
 
-            QueryResult<AllTypesInfo> result = await _selectAllTypesQuery!.ExecuteAsync(parameters: allTypes, TestDatabase.Database, cancellationToken: CancellationToken.None);
+            QueryResult<AllTypesInfo> result = await _selectAllTypesQuery!.ExecuteAsync(parameters: allTypes, TestDatabase.Database, ct: CancellationToken.None);
 
             Assert.AreEqual(1, result.Rows.Count);
 
@@ -681,7 +681,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
+                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, ct: CancellationToken.None);
 
                 Assert.AreEqual(1, result.Rows.Count);
                 Assert.AreEqual(0, result.RowsEffected);
@@ -760,7 +760,7 @@ namespace QueryLiteTest.Tests {
 
             {
 
-                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, cancellationToken: CancellationToken.None);
+                QueryResult<int> result = await _selectAllCountQuery!.ExecuteAsync(parameters: true, TestDatabase.Database, ct: CancellationToken.None);
 
                 Assert.AreEqual(1, result.Rows.Count);
                 Assert.AreEqual(0, result.RowsEffected);
@@ -1065,7 +1065,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<AllTypesInfo> result = await updateQuery.ExecuteAsync(parameters: allTypes, transaction, cancellationToken: null, timeout: TimeoutLevel.ShortUpdate);
+                QueryResult<AllTypesInfo> result = await updateQuery.ExecuteAsync(parameters: allTypes, transaction, ct: null, timeout: TimeoutLevel.ShortUpdate);
 
                 Assert.AreEqual(1, result.RowsEffected);
                 Assert.AreEqual(1, result.Rows.Count);

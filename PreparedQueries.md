@@ -120,12 +120,12 @@ public sealed class ProductCostHandler {
         _database = database;
     }
 
-    public async Task<IList<ProductCostHistory>> LoadProductCostHistory(ProductId productId, CancellationToken cancellationToken) {
+    public async Task<IList<ProductCostHistory>> LoadProductCostHistory(ProductId productId, CancellationToken ct) {
 
         /*
          *  Execute the prepared query and passing 'productId' in as a parameter
          */
-        QueryResult<ProductCostHistory> result = await _loadCostHistoryQuery.ExecuteAsync(parameters: productId, _database, cancellationToken);
+        QueryResult<ProductCostHistory> result = await _loadCostHistoryQuery.ExecuteAsync(parameters: productId, _database, ct);
 
         return result.Rows;
     }
@@ -186,14 +186,14 @@ public sealed class AddProductHandler {
         _database = database;
     }
 
-    public async Task<ProductId> AddProduct(Product product, CancellationToken cancellationToken) {
+    public async Task<ProductId> AddProduct(Product product, CancellationToken ct) {
         
         /*
          *  Execute the prepared query and passing 'product' in as a parameter
          */
         using Transaction transaction = new Transaction(_database);
 
-        QueryResult<ProductId> result = await _insertProductQuery.ExecuteAsync(parameters: product, transaction, cancellationToken);
+        QueryResult<ProductId> result = await _insertProductQuery.ExecuteAsync(parameters: product, transaction, ct);
 
         transaction.Commit();
 
@@ -257,11 +257,11 @@ public class UpdateProductHandler {
         _database = database;
     }
 
-    public async Task UpdateProduct(Product product, CancellationToken cancellationToken) {
+    public async Task UpdateProduct(Product product, CancellationToken ct) {
 
         using Transaction transaction = new Transaction(_database);
 
-        NonQueryResult result = await _updateProductQuery.ExecuteAsync(parameters: product, transaction, cancellationToken);
+        NonQueryResult result = await _updateProductQuery.ExecuteAsync(parameters: product, transaction, ct);
 
         if(result.RowsEffected != 1) {
             throw new Exception($"Expected {nameof(result.RowsEffected)} == 1. Actual value == {result.RowsEffected}");
@@ -295,11 +295,11 @@ public sealed class DeleteProductHandler {
         _database = database;
     }
 
-    public async Task DeleteProduct(ProductId productId, CancellationToken cancellationToken) {
+    public async Task DeleteProduct(ProductId productId, CancellationToken ct) {
 
         using Transaction transaction = new Transaction(_database);
 
-        NonQueryResult result = await _deleteProductQuery.ExecuteAsync(parameters: productId, transaction, cancellationToken);
+        NonQueryResult result = await _deleteProductQuery.ExecuteAsync(parameters: productId, transaction, ct);
 
         if(result.RowsEffected != 1) {
             throw new Exception($"Expected {nameof(result.RowsEffected)} == 1. Actual value == {result.RowsEffected}");

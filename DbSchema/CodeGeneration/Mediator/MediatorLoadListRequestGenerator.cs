@@ -86,9 +86,9 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<IList<{name}>> Handle({requestName} request, CancellationToken ct) {{
 
-            QueryResult<{name}> list = await _query.ExecuteAsync(parameters: request, _database, cancellationToken);
+            QueryResult<{name}> list = await _query.ExecuteAsync(parameters: request, _database, ct);
 
             return list.Rows;
         }}
@@ -113,7 +113,7 @@ namespace DbSchema.CodeGeneration {
             _database = database;
         }}
 
-        public async Task<IList<{name}>> Handle({requestName} request, CancellationToken cancellationToken) {{
+        public async Task<IList<{name}>> Handle({requestName} request, CancellationToken ct) {{
 
             {name}Table table = {name}Table.Instance;
 
@@ -122,7 +122,7 @@ namespace DbSchema.CodeGeneration {
                     row => new {name}(table, row)
                 )
                 .From(table)
-                .ExecuteAsync(_database, cancellationToken);
+                .ExecuteAsync(_database, ct);
 
             return list.Rows;
         }}

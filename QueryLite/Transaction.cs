@@ -103,7 +103,7 @@ namespace QueryLite {
             return command;
         }
 
-        public async Task<DbCommand> CreateCommandAsync(QueryTimeout timeout, CancellationToken cancellationToken) {
+        public async Task<DbCommand> CreateCommandAsync(QueryTimeout timeout, CancellationToken ct) {
 
             DbTransaction? dbTransaction = GetTransaction(Database);
 
@@ -111,8 +111,8 @@ namespace QueryLite {
 
             if(dbTransaction == null) {
                 dbConnection = Database.GetNewConnection();
-                await dbConnection.OpenAsync(cancellationToken);
-                SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(IsolationLevel, cancellationToken));
+                await dbConnection.OpenAsync(ct);
+                SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(IsolationLevel, ct));
                 dbTransaction = DbTransaction;
             }
             else {
@@ -190,13 +190,13 @@ namespace QueryLite {
         /// <summary>
         /// Commit transaction in database
         /// </summary>
-        public async Task CommitAsync(CancellationToken cancellationToken = default) {
+        public async Task CommitAsync(CancellationToken ct = default) {
 
             if(DbTransaction != null) {
 
                 await using(DbTransaction) {
 
-                    await DbTransaction.CommitAsync(cancellationToken);
+                    await DbTransaction.CommitAsync(ct);
 
                     if(DbTransaction.Connection != null) {
                         await using(DbConnection connection = DbTransaction.Connection) {
@@ -252,7 +252,7 @@ namespace QueryLite {
         /// <summary>
         /// Rollback transaction in database
         /// </summary>
-        public async Task RollbackAsync(CancellationToken cancellationToken = default) {
+        public async Task RollbackAsync(CancellationToken ct = default) {
 
             if(DbTransaction != null) {
 
@@ -266,7 +266,7 @@ namespace QueryLite {
                                             DbTransaction.Connection.State != ConnectionState.Broken;
 
                             if(rollback) {
-                                await DbTransaction.RollbackAsync(cancellationToken);
+                                await DbTransaction.RollbackAsync(ct);
                             }
                             ResetIsolationLevel(connection);
                         }
