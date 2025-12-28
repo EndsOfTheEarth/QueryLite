@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-
 namespace QueryLite {
 
     public enum JoinType {
@@ -212,14 +211,16 @@ namespace QueryLite {
     public interface IOption<RESULT> : IExecute<RESULT> {
 
         /// <summary>
-        /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will ignore these table hints and execute without them.
+        /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will
+        /// ignore these table hints and execute without them.
         /// </summary>
         /// <param name="hints"></param>
         /// <returns></returns>
         IExecute<RESULT> Option(params SqlServerQueryOption[] options);
 
         /// <summary>
-        /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will ignore these table hints and execute without them.
+        /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will
+        /// ignore these table hints and execute without them.
         /// </summary>
         /// <param name="hints"></param>
         /// <returns></returns>
@@ -262,10 +263,15 @@ namespace QueryLite {
         public string GetSql(IDatabase database, IParametersBuilder? parameters = null);
 
         public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        
         public QueryResult<RESULT> Execute(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null,
+                                                      QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                                      string debugName = "");
+
+        public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+                                                      Parameters useParameters = Parameters.Default, string debugName = "");
 
         /// <summary>
         /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
@@ -295,7 +301,8 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        public Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+                                                  Parameters useParameters = Parameters.Default, string debugName = "");
 
         /// <summary>
         /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
@@ -305,7 +312,8 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        public Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+                                                  Parameters useParameters = Parameters.Default, string debugName = "");
     }
 
     public interface IQueryResult { }

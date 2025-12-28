@@ -26,6 +26,8 @@ namespace QueryLite {
     public interface ITruncate {
 
         NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
-        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
+
+        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null,
+                                          QueryTimeout? timeout = null, string debugName = "");
     }
 }

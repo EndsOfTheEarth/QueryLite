@@ -178,8 +178,6 @@ namespace QueryLite.PreparedQuery {
                 Operator.GREATER_THAN_OR_EQUAL => " >= ",
                 Operator.LESS_THAN => " < ",
                 Operator.LESS_THAN_OR_EQUAL => " <= ",
-                //Operator.LIKE => " LIKE ",
-                //Operator.NOT_LIKE => " NOT LIKE ",
                 _ => throw new Exception($"Unsupported join operator. {nameof(Operator)} == {_operator}")
             });
 

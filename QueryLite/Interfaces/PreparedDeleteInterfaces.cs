@@ -45,7 +45,8 @@ namespace QueryLite {
     public interface IPreparedDeleteNoWhere<PARAMETERS> : IPreparedDeleteWhere<PARAMETERS> {
 
         /// <summary>
-        /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used when there is no where clause on a delete query.
+        /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used
+        /// when there is no where clause on a delete query.
         /// </summary>
         /// <returns></returns>
         public IPreparedDeleteBuild<PARAMETERS> NoWhereCondition();
@@ -72,7 +73,9 @@ namespace QueryLite {
         void Initialize(IDatabase database);
 
         NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
-        Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
+
+        Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                          QueryTimeout? timeout = null, string debugName = "");
     }
 
     public interface IPreparedDeleteQuery<PARAMETERS, RESULT> {
@@ -80,7 +83,9 @@ namespace QueryLite {
         void Initialize(IDatabase database);
 
         QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
-        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
+
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                               QueryTimeout? timeout = null, string debugName = "");
 
         /// <summary>
         /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
@@ -110,7 +115,8 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                  QueryTimeout? timeout = null, string debugName = "");
 
         /// <summary>
         /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
@@ -120,6 +126,7 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+                                                  QueryTimeout? timeout = null, string debugName = "");
     }
 }

@@ -48,7 +48,7 @@ namespace QueryLite {
         /// <returns></returns>
         public IDeleteExecute NoWhereCondition();
     }
-    
+
     public interface IDeleteWhere {
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace QueryLite {
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
-        public IDeleteExecute Where(ICondition condition);        
+        public IDeleteExecute Where(ICondition condition);
     }
 
     public interface IDeleteExecute {
@@ -68,10 +68,19 @@ namespace QueryLite {
         /// <returns></returns>
         string GetSql(IDatabase database);
 
-        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                               string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+        QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
+                                            QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                            string debugName = "");
+
+        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? cancellationToken = null,
+                                          QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                          string debugName = "");
+
+        Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
+                                                       CancellationToken? cancellationToken = null, QueryTimeout? timeout = null,
+                                                       Parameters useParameters = Parameters.Default, string debugName = "");
     }
 }

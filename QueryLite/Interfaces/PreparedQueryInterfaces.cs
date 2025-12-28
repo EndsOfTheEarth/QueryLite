@@ -1,4 +1,27 @@
-﻿using QueryLite.PreparedQuery;
+﻿/*
+ * MIT License
+ *
+ * Copyright (c) 2025 EndsOfTheEarth
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ **/
+using QueryLite.PreparedQuery;
 
 namespace QueryLite {
 
@@ -180,7 +203,8 @@ namespace QueryLite {
     public interface IPreparedQueryExecute<PARAMETERS, RESULT> {
 
         /// <summary>
-        /// Initialize generates the underlying sql query if it does not already exist. This method is mostly used for benchmarking where we want the sql to be generated before the query is used.
+        /// Initialize generates the underlying sql query if it does not already exist. This method is mostly used for benchmarking where we want the sql to be
+        /// generated before the query is used.
         /// </summary>
         /// <param name="database"></param>
         void Initialize(IDatabase database);
@@ -188,8 +212,11 @@ namespace QueryLite {
         QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
         QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken = default, QueryTimeout? timeout = null, string debugName = "");
-        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken = default, QueryTimeout? timeout = null, string debugName = "");
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken cancellationToken = default,
+                                               QueryTimeout? timeout = null, string debugName = "");
+
+        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken cancellationToken = default,
+                                               QueryTimeout? timeout = null, string debugName = "");
 
         /// <summary>
         /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
@@ -219,7 +246,8 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? cancellationToken = null,
+                                                  QueryTimeout? timeout = null, string debugName = "");
 
         /// <summary>
         /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
@@ -229,6 +257,7 @@ namespace QueryLite {
         /// <param name="useParameters"></param>
         /// <param name="debugName"></param>
         /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null, QueryTimeout? timeout = null, string debugName = "");
+        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? cancellationToken = null,
+                                                  QueryTimeout? timeout = null, string debugName = "");
     }
 }
