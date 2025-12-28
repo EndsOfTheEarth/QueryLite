@@ -12,10 +12,10 @@
         public Column<GuidKey<IParent>> Id { get; }
         public Column<GuidKey<IParent>> Id2 { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Parent", Id);
+        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, name: "pk_Parent", Id);
 
         public override UniqueConstraint[] UniqueConstraints => [
-            new UniqueConstraint(this, constraintName: "unq_parent", Id2)
+            new UniqueConstraint(this, name: "unq_parent", Id2)
         ];
 
         private ParentTable() : base(tableName: "Parent", schemaName: "dbo") {

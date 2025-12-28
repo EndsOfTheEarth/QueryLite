@@ -31,7 +31,7 @@ namespace QueryLiteTest.Tables {
         public Column<DateOnly> DateOnly { get; }
         public Column<TimeOnly> TimeOnly { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_TableA", Id);
+        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, name: "pk_TableA", Id);
 
         private AllTypesTable() : base(tableName: "AllTypes", schemaName: "dbo") {
 

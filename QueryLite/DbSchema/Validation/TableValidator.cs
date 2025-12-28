@@ -575,8 +575,8 @@ namespace QueryLite {
             }
             else if(dbPrimaryKey != null && codePrimaryKey != null) {
 
-                if(string.Compare(dbPrimaryKey!.ConstraintName, codePrimaryKey!.ConstraintName, ignoreCase: true) != 0) {
-                    tableValidation.Add($"Code and database primary key constraint names are different. '{dbPrimaryKey.ConstraintName}' != '{codePrimaryKey.ConstraintName}'");
+                if(string.Compare(dbPrimaryKey!.ConstraintName, codePrimaryKey!.Name, ignoreCase: true) != 0) {
+                    tableValidation.Add($"Code and database primary key constraint names are different. '{dbPrimaryKey.ConstraintName}' != '{codePrimaryKey.Name}'");
                 }
 
                 if(dbPrimaryKey.ColumnNames.Count != codePrimaryKey.Columns.Length) {
@@ -609,7 +609,7 @@ namespace QueryLite {
 
                 foreach(UniqueConstraint tableUC in table.UniqueConstraints) {
 
-                    if(string.Equals(dbUniqueConstraint.ConstraintName, tableUC.ConstraintName, StringComparison.OrdinalIgnoreCase)) {
+                    if(string.Equals(dbUniqueConstraint.ConstraintName, tableUC.Name, StringComparison.OrdinalIgnoreCase)) {
 
                         if(tableUniqueConstraint != null) {
                             tableValidation.Add($"The unique constraint '{dbUniqueConstraint.ConstraintName}'is defined more than once in code");
@@ -649,13 +649,13 @@ namespace QueryLite {
 
                 foreach(DatabaseUniqueConstraint dbUniqueConstraint in dbTable.UniqueConstraints) {
 
-                    if(string.Equals(dbUniqueConstraint.ConstraintName, tableUniqueConstraint.ConstraintName, StringComparison.OrdinalIgnoreCase)) {
+                    if(string.Equals(dbUniqueConstraint.ConstraintName, tableUniqueConstraint.Name, StringComparison.OrdinalIgnoreCase)) {
                         found = true;
                         break;
                     }
                 }
                 if(!found) {
-                    tableValidation.Add($"The unique code constraint name '{tableUniqueConstraint.ConstraintName}' does not exist in the database.");
+                    tableValidation.Add($"The unique code constraint name '{tableUniqueConstraint.Name}' does not exist in the database.");
                 }
             }
         }
@@ -672,10 +672,10 @@ namespace QueryLite {
 
                 foreach(ForeignKey codeForeignKey in table.ForeignKeys) {
 
-                    if(string.Compare(dbForeignKey.ConstraintName, codeForeignKey.ConstraintName, ignoreCase: true) == 0) {
+                    if(string.Compare(dbForeignKey.ConstraintName, codeForeignKey.Name, ignoreCase: true) == 0) {
 
                         if(matchingForeignKey != null) {
-                            tableValidation.Add($"The foreign key '{matchingForeignKey.ConstraintName}'is defined more than once in code");
+                            tableValidation.Add($"The foreign key '{matchingForeignKey.Name}'is defined more than once in code");
                             break;
                         }
                         matchingForeignKey = codeForeignKey;
@@ -687,7 +687,7 @@ namespace QueryLite {
                 else {  //Compare referenced table and columns
 
                     if(dbForeignKey.References.Count != matchingForeignKey.ColumnReferences.Count) {
-                        tableValidation.Add($"The foreign key constraint '{matchingForeignKey.ConstraintName}' has a different number of column references between the code and database");
+                        tableValidation.Add($"The foreign key constraint '{matchingForeignKey.Name}' has a different number of column references between the code and database");
                     }
                     else {
 
@@ -701,7 +701,7 @@ namespace QueryLite {
                             string codeFkColumnName = codeReference.ForeignKeyColumn.ColumnName;
 
                             if(string.Compare(dbFkColumnName, codeFkColumnName, ignoreCase: true) != 0) {
-                                tableValidation.Add($"The foreign key constraint '{matchingForeignKey.ConstraintName}' column references do not match. '{dbFkColumnName} != '{codeFkColumnName}'. (Note: Columns must be in the same order between the code and database)");
+                                tableValidation.Add($"The foreign key constraint '{matchingForeignKey.Name}' column references do not match. '{dbFkColumnName} != '{codeFkColumnName}'. (Note: Columns must be in the same order between the code and database)");
                             }
                             else {
 
@@ -709,7 +709,7 @@ namespace QueryLite {
                                 string codePkTableName = codeReference.PrimaryKeyColumn.Table.TableName;
 
                                 if(string.Compare(dbPkTableName, codePkTableName, ignoreCase: true) != 0) {
-                                    tableValidation.Add($"The foreign key constraint '{matchingForeignKey.ConstraintName}' column '{dbFkColumnName}' reference table is different between code and database. Table name: '{dbPkTableName}' != '{codePkTableName}'");
+                                    tableValidation.Add($"The foreign key constraint '{matchingForeignKey.Name}' column '{dbFkColumnName}' reference table is different between code and database. Table name: '{dbPkTableName}' != '{codePkTableName}'");
                                 }
                             }
                         }
@@ -723,17 +723,17 @@ namespace QueryLite {
 
                 foreach(DatabaseForeignKey dbForeignKey in dbTable.ForeignKeys) {
 
-                    if(string.Compare(dbForeignKey.ConstraintName, codeForeignKey.ConstraintName, ignoreCase: true) == 0) {
+                    if(string.Compare(dbForeignKey.ConstraintName, codeForeignKey.Name, ignoreCase: true) == 0) {
 
                         if(matchFound) {
-                            tableValidation.Add($"The foreign key '{codeForeignKey.ConstraintName}' is defined more than once in table code definition");
+                            tableValidation.Add($"The foreign key '{codeForeignKey.Name}' is defined more than once in table code definition");
                         }
                         matchFound = true;
                     }
                 }
 
                 if(!matchFound) {
-                    tableValidation.Add($"The foreign key '{codeForeignKey.ConstraintName}' is defined in code but does not exist in the database");
+                    tableValidation.Add($"The foreign key '{codeForeignKey.Name}' is defined in code but does not exist in the database");
                 }
             }
         }

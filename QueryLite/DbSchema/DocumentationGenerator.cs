@@ -242,7 +242,7 @@ a, a:visited {
                     html.Append("<h3>Primary Key</h3><p>");
                     html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th>");
 
-                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(primaryKey.ConstraintName)).Append("</td>");
+                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(primaryKey.Name)).Append("</td>");
                     html.Append("<td>");
 
                     foreach(IColumn pkColumn in primaryKey.Columns) {
@@ -263,7 +263,7 @@ a, a:visited {
 
                 foreach(UniqueConstraint uniqueConstraint in table.TableClass.UniqueConstraints) {
 
-                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(uniqueConstraint.ConstraintName)).Append("</td>");
+                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(uniqueConstraint.Name)).Append("</td>");
                     html.Append("<td>");
 
                     foreach(IColumn columnName in uniqueConstraint.Columns) {
@@ -295,7 +295,7 @@ a, a:visited {
 
                     counter = 0;
 
-                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(foreignKey.ConstraintName)).Append("</td>");
+                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(foreignKey.Name)).Append("</td>");
                     html.Append("<td>");
 
                     foreach(ForeignKeyReference reference in foreignKey.ColumnReferences) {

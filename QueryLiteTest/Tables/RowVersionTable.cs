@@ -13,7 +13,7 @@ namespace QueryLiteTest.Tables {
         public Column<string> TextValue { get; }
         public Column<byte[]> RowVersion { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_RowVersionTest", Id);
+        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, name: "pk_RowVersionTest", Id);
 
         private RowVersionTestTable() : base(tableName: "RowVersionTest", schemaName: "dbo") {
 

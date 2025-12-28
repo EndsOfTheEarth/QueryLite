@@ -43,9 +43,9 @@ namespace QueryLite {
 
     public sealed class PrimaryKey {
 
-        public PrimaryKey(ITable table, string constraintName, params IColumn[] columns) {
+        public PrimaryKey(ITable table, string name, params IColumn[] columns) {
 
-            ArgumentException.ThrowIfNullOrEmpty(constraintName);
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             if(columns.Length == 0) {
                 throw new ArgumentException($"{nameof(columns)} must contain at least one column");
@@ -58,24 +58,24 @@ namespace QueryLite {
                 }
             }
             Table = table;
-            ConstraintName = constraintName;
+            Name = name;
             Columns = columns;
         }
         public ITable Table { get; }
-        public string ConstraintName { get; }
+        public string Name { get; }
         public IColumn[] Columns { get; }
     }
 
     public sealed class ForeignKey {
 
-        public ForeignKey(ITable table, string constraintName) {
+        public ForeignKey(ITable table, string name) {
 
-            ArgumentException.ThrowIfNullOrEmpty(constraintName);
+            ArgumentException.ThrowIfNullOrEmpty(name);
             Table = table;
-            ConstraintName = constraintName;
+            Name = name;
         }
         public ITable Table { get; }
-        public string ConstraintName { get; }
+        public string Name { get; }
         public List<ForeignKeyReference> ColumnReferences { get; } = [];
 
         public ForeignKey References<TYPE>(AColumn<TYPE> foreignKeyColumn, AColumn<TYPE> primaryKeyColumn) where TYPE : notnull {
@@ -100,9 +100,9 @@ namespace QueryLite {
 
     public sealed class UniqueConstraint {
 
-        public UniqueConstraint(ITable table, string constraintName, params IColumn[] columns) {
+        public UniqueConstraint(ITable table, string name, params IColumn[] columns) {
 
-            ArgumentException.ThrowIfNullOrEmpty(constraintName);
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             if(columns.Length == 0) {
                 throw new ArgumentException($"{nameof(columns)} must contain at least one column");
@@ -115,17 +115,17 @@ namespace QueryLite {
                 }
             }
             Table = table;
-            ConstraintName = constraintName;
+            Name = name;
             Columns = columns;
         }
         public ITable Table { get; }
-        public string ConstraintName { get; }
+        public string Name { get; }
         public IColumn[] Columns { get; }
     }
 
     public sealed class CheckConstraint {
 
-        public CheckConstraint(string name, ICondition? condition) {
+        public CheckConstraint(string name, ICondition? condition = null) {
             Name = name;
             Condition = condition;
         }

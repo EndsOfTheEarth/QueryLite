@@ -13,7 +13,7 @@ namespace QueryLiteTest.Tables {
         public Column<GuidKey<IGeoTest>> Guid { get; }
         public Column<IGeography> Geography { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_GeoTest", Guid);
+        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, name: "pk_GeoTest", Guid);
 
         private GeoTestTable() : base(tableName: "GeoTest", schemaName: "dbo") {
 

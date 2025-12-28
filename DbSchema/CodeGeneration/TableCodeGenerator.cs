@@ -171,7 +171,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             if(table.PrimaryKey != null && settings.IncludeConstraints) {
 
                 code.EndLine();
-                code.Indent(2).Append($"public override PrimaryKey? PrimaryKey => new(table: this, constraintName: \"{table.PrimaryKey.ConstraintName}\"");
+                code.Indent(2).Append($"public override PrimaryKey? PrimaryKey => new(table: this, name: \"{table.PrimaryKey.ConstraintName}\"");
 
                 foreach(string columnName in table.PrimaryKey.ColumnNames) {
 
@@ -199,7 +199,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     if(index > 0) {
                         code.Append(",").EndLine();
                     }
-                    code.Indent(3).Append($"new(this, constraintName: \"{uniqueConstraint.ConstraintName}\"");
+                    code.Indent(3).Append($"new(this, name: \"{uniqueConstraint.ConstraintName}\"");
 
                     foreach(StringKey<IColumnName> columnName in uniqueConstraint.ColumnNames) {
                         code.Append(", ").Append(prefix.GetColumnName(columnName.Value, className: tableClassName));
@@ -223,7 +223,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     if(index > 0) {
                         code.Append(",").EndLine();
                     }
-                    code.Indent(3).Append($"new ForeignKey(this, constraintName: \"{foreignKey.ConstraintName}\")");
+                    code.Indent(3).Append($"new ForeignKey(this, name: \"{foreignKey.ConstraintName}\")");
 
                     foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
 
@@ -238,6 +238,25 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                         code.Append($".References({foreignKeyColumnName}, {primaryKeyTableSchemaName}{primaryKeyTable}.Instance.{primaryKeyColumnName})");
                     }
+                }
+                code.EndLine();
+                code.Indent(2).Append("];").EndLine();
+            }
+
+            if(table.CheckConstraints.Count > 0 && settings.IncludeConstraints) {
+
+                code.EndLine();
+
+                code.Indent(2).Append("public override CheckConstraint[] CheckConstraints => [").EndLine();
+
+                for(int index = 0; index < table.CheckConstraints.Count; index++) {
+
+                    DatabaseCheckConstraint checkConstraint = table.CheckConstraints[index];
+
+                    if(index > 0) {
+                        code.Append(",").EndLine();
+                    }
+                    code.Indent(3).Append($"new(name: \"{checkConstraint.ConstraintName}\")");
                 }
                 code.EndLine();
                 code.Indent(2).Append("];").EndLine();

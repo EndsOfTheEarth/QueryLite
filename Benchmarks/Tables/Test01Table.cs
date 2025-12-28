@@ -15,7 +15,7 @@
         public Column<string> Message { get; }
         public Column<DateTime> Date { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "test01_pkey", Id);
+        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, name: "test01_pkey", Id);
 
         private Test01Table() : base(tableName: "test01", schemaName: "public") {
 
