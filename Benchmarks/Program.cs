@@ -29,6 +29,7 @@ namespace Benchmarks {
             //benchmark.Setup();
 
             //await benchmark.Ado_One_Hundred_Row_SelectAsync();
+            Console.Read();
         }
     }
 

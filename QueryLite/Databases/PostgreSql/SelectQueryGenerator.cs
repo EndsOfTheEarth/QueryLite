@@ -56,14 +56,31 @@ namespace QueryLite.Databases.PostgreSql {
                 if(template.Joins != null) {
                     GenerateJoins(sql, template, useAliases: useAliases, database, parameters);
                 }
-                GenerateWhereClause(sql, template, useAliases: useAliases, database, parameters);
-                GenerateGroupByClause(sql, template, useAliases: useAliases);
-                GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
-                GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
-                GenerateLimitClause(sql, template);
-                GenerateForClause(sql, template, useAliases: useAliases);
+                
+                if(template.WhereCondition != null) {
+                    GenerateWhereClause(sql, template, useAliases: useAliases, database, parameters);
+                }
 
-                if(template.Extras != null && template.Extras.ChildUnion != null) {
+                if(template.Extras?.GroupByFields?.Length > 0) {
+                    GenerateGroupByClause(sql, template, useAliases: useAliases);
+                }
+
+                if(template.Extras?.HavingCondition != null) {
+                    GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
+                }
+                
+                if(template.OrderByFields?.Length > 0) {
+                    GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
+                }
+                if(template.TopRows != null) {
+                    GenerateLimitClause(sql, template);
+                }
+
+                if(template.Extras?.ForType != null) {
+                    GenerateForClause(sql, template, useAliases: useAliases);
+                }
+
+                if(template.Extras?.ChildUnion != null) {
 
                     if(template.Extras.ChildUnionType == UnionType.Union) {
                         sql.Append(" UNION ");
@@ -200,7 +217,7 @@ namespace QueryLite.Databases.PostgreSql {
 
         private static void GenerateGroupByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
 
-            if(template.Extras != null && template.Extras.GroupByFields != null && template.Extras.GroupByFields.Length > 0) {
+            if(template.Extras?.GroupByFields?.Length > 0) {
 
                 sql.Append(" GROUP BY ");
 
@@ -230,7 +247,7 @@ namespace QueryLite.Databases.PostgreSql {
 
         private static void GenerateHavingClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
-            if(template.Extras != null && template.Extras.HavingCondition != null) {
+            if(template.Extras?.HavingCondition != null) {
                 sql.Append(" HAVING ");
                 template.Extras.HavingCondition.GetSql(sql, database, useAlias: useAliases, parameters);
             }
@@ -238,7 +255,7 @@ namespace QueryLite.Databases.PostgreSql {
 
         private static void GenerateOrderByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
 
-            if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
+            if(template.OrderByFields?.Length > 0) {
 
                 sql.Append(" ORDER BY ");
 
@@ -287,7 +304,7 @@ namespace QueryLite.Databases.PostgreSql {
 
         private static void GenerateForClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
 
-            if(template.Extras != null && template.Extras.ForType != null) {
+            if(template.Extras?.ForType != null) {
 
                 sql.Append(" FOR ");
 
