@@ -4,7 +4,6 @@ using Dapper;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using QueryLite;
-using System.Data.Common;
 
 namespace Benchmarks {
 
@@ -16,7 +15,7 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        private IPreparedUpdateQuery<UpdateSingleRowBenchmarks> _preparedUpdateQuery;
+        private readonly IPreparedUpdateQuery<UpdateSingleRowBenchmarks> _preparedUpdateQuery;
 
         public UpdateSingleRowBenchmarks() {
 
@@ -42,7 +41,7 @@ namespace Benchmarks {
 
             Test01Table table = Test01Table.Instance;
 
-            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -67,7 +66,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -94,7 +93,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -113,7 +112,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 NonQueryResult result = _preparedUpdateQuery.Execute(parameters: this, transaction);
 
@@ -128,7 +127,7 @@ namespace Benchmarks {
 
                 Test01Table table = Test01Table.Instance;
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 NonQueryResult result = Query
                     .Update(table)
@@ -148,9 +147,9 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Test01RowRepository repository = new Test01RowRepository();
+                Test01RowRepository repository = new();
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 repository
                     .SelectRows
@@ -173,9 +172,9 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
-                Test01Row row = new Test01Row(
+                Test01Row row = new(
                     id: Id,
                     row_guid: _guid,
                     message: "New Message",
@@ -191,7 +190,7 @@ namespace Benchmarks {
         [Benchmark]
         public void EF_Core_Single_Row_Update() {
 
-            Test01Row_EfCore row = new Test01Row_EfCore(
+            Test01Row_EfCore row = new(
                 id: Id,
                 row_guid: _guid,
                 message: "New Message",
@@ -200,7 +199,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using TestContext context = new TestContext(Databases.ConnectionString);
+                using TestContext context = new(Databases.ConnectionString);
 
                 using IDbContextTransaction transaction = context.Database.BeginTransaction();
 

@@ -13,7 +13,7 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        private IPreparedQueryExecute<SelectOneHundredRowBenchmarks, Test01> _preparedSelectQuery;
+        private readonly IPreparedQueryExecute<SelectOneHundredRowBenchmarks, Test01> _preparedSelectQuery;
 
         public SelectOneHundredRowBenchmarks() {
 
@@ -37,7 +37,7 @@ namespace Benchmarks {
 
             Test01Table table = Test01Table.Instance;
 
-            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -56,14 +56,14 @@ namespace Benchmarks {
             }
         }
 
-        private int _iterations = 2000;
+        private readonly int _iterations = 2000;
 
         [Benchmark]
         public void Ado_One_Hundred_Row_Select() {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -73,7 +73,7 @@ namespace Benchmarks {
 
                 using NpgsqlDataReader reader = command.ExecuteReader();
 
-                List<Test01> list = new List<Test01>();
+                List<Test01> list = [];
 
                 while(reader.Read()) {
 
@@ -94,11 +94,13 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
-                IEnumerable<Test01> result = connection.Query<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01");
+                IEnumerable<Test01> result = connection.Query<Test01>(
+                    sql: "SELECT id,row_guid,message,date FROM Test01"
+                );
             }
         }
 
@@ -132,7 +134,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Test01RowRepository repository = new Test01RowRepository();
+                Test01RowRepository repository = new();
 
                 repository.SelectRows.Execute(Databases.TestDatabase);
             }
@@ -141,7 +143,7 @@ namespace Benchmarks {
         [Benchmark]
         public void EF_Core_One_Hundred_Row_Select() {
 
-            using TestContext context = new TestContext(Databases.ConnectionString);
+            using TestContext context = new(Databases.ConnectionString);
 
             for(int index = 0; index < _iterations; index++) {
 

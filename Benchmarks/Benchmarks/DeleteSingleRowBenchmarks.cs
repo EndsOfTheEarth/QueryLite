@@ -94,7 +94,11 @@ namespace Benchmarks {
 
                 using NpgsqlTransaction transaction = connection.BeginTransaction();
 
-                int rows = connection.Execute(sql: "DELETE FROM Test01 WHERE row_guid=@row_guid", new { row_guid = _guid }, transaction: transaction);
+                int rows = connection.Execute(
+                    sql: "DELETE FROM Test01 WHERE row_guid=@row_guid",
+                    param: new { row_guid = _guid },
+                    transaction: transaction
+                );
 
                 if(rows != 1) {
                     throw new Exception();

@@ -37,7 +37,7 @@ namespace Benchmarks {
 
         public readonly static string ConnectionString = "Server=127.0.0.1;Port=5432;Database=Benchmarks;User Id=postgres;Password=1;";
 
-        public static QueryLite.IDatabase TestDatabase = new QueryLite.Databases.PostgreSql.PostgreSqlDatabase(
+        public readonly static QueryLite.IDatabase TestDatabase = new QueryLite.Databases.PostgreSql.PostgreSqlDatabase(
             name: "Benchmarks",
             connectionString: ConnectionString
         );

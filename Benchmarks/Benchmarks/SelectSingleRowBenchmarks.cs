@@ -15,7 +15,7 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        private IPreparedQueryExecute<SelectSingleRowBenchmarks, Test01> _preparedSelectQuery;
+        private readonly IPreparedQueryExecute<SelectSingleRowBenchmarks, Test01> _preparedSelectQuery;
 
         public SelectSingleRowBenchmarks() {
 
@@ -40,7 +40,7 @@ namespace Benchmarks {
 
             Test01Table table = Test01Table.Instance;
 
-            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -57,14 +57,14 @@ namespace Benchmarks {
             }
         }
 
-        private int _iterations = 2000;
+        private readonly int _iterations = 2000;
 
         [Benchmark]
         public void Ado_Single_Row_Select() {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -83,7 +83,7 @@ namespace Benchmarks {
                     row_guid: reader.GetGuid(1),
                     message: reader.GetString(2),
                     date: reader.GetDateTime(3)
-                );                
+                );
             }
         }
 
@@ -92,7 +92,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                 connection.Open();
 
@@ -131,7 +131,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Test01RowRepository repository = new Test01RowRepository();
+                Test01RowRepository repository = new();
 
                 repository
                     .SelectRows
@@ -143,7 +143,7 @@ namespace Benchmarks {
         [Benchmark]
         public void EF_Core_Single_Row_Select() {
 
-            using TestContext context = new TestContext(Databases.ConnectionString);
+            using TestContext context = new(Databases.ConnectionString);
 
             for(int index = 0; index < _iterations; index++) {
 

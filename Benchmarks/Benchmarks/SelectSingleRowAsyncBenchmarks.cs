@@ -15,7 +15,7 @@ namespace Benchmarks {
         private readonly string _message = "this is my new message";
         private readonly DateTime _date = DateTime.Now;
 
-        private IPreparedQueryExecute<SelectSingleRowAsyncBenchmarks, Test01> _preparedSelectQuery;
+        private readonly IPreparedQueryExecute<SelectSingleRowAsyncBenchmarks, Test01> _preparedSelectQuery;
 
         public SelectSingleRowAsyncBenchmarks() {
 
@@ -40,7 +40,7 @@ namespace Benchmarks {
 
             Test01Table table = Test01Table.Instance;
 
-            using(Transaction transaction = new Transaction(Databases.TestDatabase)) {
+            using(Transaction transaction = new(Databases.TestDatabase)) {
 
                 Query.Truncate(table).Execute(transaction);
 
@@ -62,13 +62,13 @@ namespace Benchmarks {
         [Benchmark]
         public async Task Ado_Single_Row_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
-                Task task = Task.Run(async() => {
+                Task task = Task.Run(async () => {
 
-                    await using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                    await using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                     await connection.OpenAsync();
 
@@ -82,7 +82,7 @@ namespace Benchmarks {
 
                     await reader.ReadAsync();
 
-                    List<Test01> list = new List<Test01>();
+                    List<Test01> list = [];
 
                     Test01 test01 = new Test01(
                         id: reader.GetInt32(0),
@@ -100,17 +100,19 @@ namespace Benchmarks {
         [Benchmark]
         public async Task Dapper_Single_Row_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
                 Task task = Task.Run(async () => {
 
-                    await using NpgsqlConnection connection = new NpgsqlConnection(Databases.ConnectionString);
+                    await using NpgsqlConnection connection = new(Databases.ConnectionString);
 
                     await connection.OpenAsync();
 
-                    IEnumerable<Test01> result = await connection.QueryAsync<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@_guid", new { _guid });
+                    IEnumerable<Test01> result = await connection.QueryAsync<Test01>(
+                        sql: "SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@_guid", new { _guid }
+                    );
                 });
                 tasks.Add(task);
             }
@@ -120,7 +122,7 @@ namespace Benchmarks {
         [Benchmark]
         public async Task QueryLite_Single_Row_Prepared_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
@@ -136,7 +138,7 @@ namespace Benchmarks {
         [Benchmark]
         public async Task QueryLite_Single_Row_Dynamic_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
@@ -160,13 +162,13 @@ namespace Benchmarks {
         [Benchmark]
         public async Task QueryLite_Single_Row_Repository_SelectAsync() {
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
                 Task task = Task.Run(async () => {
 
-                    Test01RowRepository repository = new Test01RowRepository();
+                    Test01RowRepository repository = new();
 
                     repository
                         .SelectRows
@@ -181,9 +183,9 @@ namespace Benchmarks {
         [Benchmark]
         public async Task EF_Core_Single_Row_SelectAsync() {
 
-            using TestContext context = new TestContext(Databases.ConnectionString);
+            using TestContext context = new(Databases.ConnectionString);
 
-            List<Task> tasks = new List<Task>(_iterations);
+            List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
@@ -192,7 +194,7 @@ namespace Benchmarks {
                     List<Test01Row_EfCore> result = await context.TestRows
                         .Select(row => row)
                         .Where(row => row.Row_guid == _guid)
-                        .ToListAsync();                    
+                        .ToListAsync();
                 });
                 tasks.Add(task);
             }

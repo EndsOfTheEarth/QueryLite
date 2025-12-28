@@ -104,7 +104,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 NonQueryResult result = _preparedInsertQuery.Execute(parameters: this, transaction);
 
@@ -119,7 +119,7 @@ namespace Benchmarks {
 
                 Test01Table table = Test01Table.Instance;
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 NonQueryResult result = Query
                     .Insert(table)
@@ -139,9 +139,9 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                Test01RowRepository repository = new Test01RowRepository();
+                Test01RowRepository repository = new();
 
-                Test01Row row = new Test01Row(
+                Test01Row row = new(
                     id: 0,
                     row_guid: _guid,
                     message: _message,
@@ -149,7 +149,7 @@ namespace Benchmarks {
                 );
                 repository.AddNewRow(row);
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 repository.Update(transaction);
 
@@ -169,7 +169,7 @@ namespace Benchmarks {
                     date: _date
                 );
 
-                using Transaction transaction = new Transaction(Databases.TestDatabase);
+                using Transaction transaction = new(Databases.TestDatabase);
 
                 Test01RowRepository.ExecuteInsert(row, Test01Table.Instance, transaction);
 
@@ -182,9 +182,9 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using TestContext context = new TestContext(Databases.ConnectionString);
+                using TestContext context = new(Databases.ConnectionString);
 
-                Test01Row_EfCore row = new Test01Row_EfCore(
+                Test01Row_EfCore row = new(
                     id: 0,
                     row_guid: _guid,
                     message: _message,

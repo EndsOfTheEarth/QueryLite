@@ -1,14 +1,11 @@
-﻿namespace Benchmarks.Classes {
+﻿using Benchmarks.Tables;
+using QueryLite;
 
-    using Benchmarks.Tables;
-    using QueryLite;
-    using System;
+namespace Benchmarks.Classes {
 
     public sealed class Test01 {
 
-        public Test01() {
-
-        }
+        public Test01() { }
 
         public Test01(int id, Guid row_guid, string message, DateTime date) {
             Id = id;
