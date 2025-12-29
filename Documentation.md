@@ -1497,16 +1497,16 @@ namespace Tables {
 
     public sealed class ParentTable : ATable {
 
-        public static readonly ParentTable Instance = new ParentTable();
+        public static readonly ParentTable Instance = new();
 
         public Column<ParentId, Guid> Id { get; }
         public Column<Guid> Id2 { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Parent", Id);
+        public override PrimaryKey? PrimaryKey => new(table: this, name: "pk_Parent", Id);
 
-        public override UniqueConstraint[] UniqueConstraints => new UniqueConstraint[] {
-            new UniqueConstraint(this, constraintName: "unq_parent", Id2)
-        };
+        public override UniqueConstraint[] UniqueConstraints => [
+            new(this, name: "unq_parent", Id2)
+        ];
 
         private ParentTable() : base(tableName:"Parent", schemaName: "dbo") {
 
@@ -1517,16 +1517,16 @@ namespace Tables {
 
     public sealed class ChildTable : ATable {
 
-        public static readonly ChildTable Instance = new ChildTable();
+        public static readonly ChildTable Instance = new();
 
         public Column<ChildId, Guid> Id { get; }
         public Column<ParentId, Guid> ParentId { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, constraintName: "pk_Child", Id);
+        public override PrimaryKey? PrimaryKey => new(table: this, name: "pk_Child", Id);
 
-        public override ForeignKey[] ForeignKeys => new ForeignKey[] {
-            new ForeignKey(this, constraintName: "fk_Child_Parent").References(ParentId, ParentTable.Instance.Id)
-        };
+        public override ForeignKey[] ForeignKeys => [
+            new ForeignKey(this, name: "fk_Child_Parent").References(ParentId, ParentTable.Instance.Id)
+        ];
 
         private ChildTable() : base(tableName:"Child", schemaName: "dbo") {
 
