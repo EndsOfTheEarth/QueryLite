@@ -1404,6 +1404,7 @@ SchemaValidationSettings settings = new SchemaValidationSettings() {
     ValidatePrimaryKeys = true,
     ValidateUniqueConstraints = true,
     ValidateForeignKeys = true,
+    ValidateCheckConstraintNames = true,
     ValidateMissingCodeTables = true
 };
 
