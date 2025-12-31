@@ -9,20 +9,26 @@ using Northwind.Tables;
 using Northwind;
 
 OrderTable orderTable = OrderTable.Instance;
+OrderStatusTable statusTable = OrderStatusTable.Instance;
 CustomerTable customerTable = CustomerTable.Instance;
 
 var result = Query
     .Select(
         row => new {
-            OrderId = row.Get(orderTable.OrderID),
-            CustomerId = row.Get(customerTable.CustomerID),
-            CompanyName = row.Get(customerTable.CompanyName)
+            OrderId = row.Get(orderTable.OrderId),
+            CustomerId = row.Get(customerTable.CustomerId),
+            CompanyName = row.Get(customerTable.CompanyName),
+            OrderStatus = row.Guid(statusTable.Status)
         }
     )
     .From(orderTable)
-    .Join(customerTable).On(orderTable.CustomerID == customerTable.CustomerID)
-    .Where(orderTable.OrderDate < DateTime.Now & customerTable.ContactName == "Jane")
-    .OrderBy(orderTable.OrderID.ASC)
+    .Join(customerTable).On(orderTable.CustomerId == customerTable.CustomerId)
+    .LeftJoin(statusTable).On(orderTable.StatusId == statusTable.Id)    
+    .Where(
+        orderTable.OrderDate < DateTime.Now &
+        customerTable.ContactName == "Jane"
+    )
+    .OrderBy(orderTable.OrderId.ASC)
     .Execute(DB.Northwind);
 
 string sql = result.Sql;    //Generated sql is available on the result
@@ -70,19 +76,20 @@ Query Lite is part of a set of personal projects exploring the optimal design fo
 
 ## Core features
 
-* Typesafe queries in code
-  - Designed to work with nullable reference types and .net 8.0
-* Sql Select, insert, update, delete and truncate queries
-* Supports sql syntax e.g. Join, Left Join, Where, Order By, Group By, Union and Nested Queries
-* Does not do any client side filtering like linq to sql
-* Debugging features that show sql queries being executed
-  - Events Like - QueryExecuting, QueryPerformed
-  - Query results contain the executed sql
-  - Breakpoint on query
-* Code generation tool for table definitions
-* Table definition validator
-* Supports both Sql Server and PostgreSql
-* Schema description attributes to allow documentation generation
+* Typesafe queries in code.
+  - Designed to work with nullable reference types and .net 8.0.
+* Sql Select, insert, update, delete and truncate queries.
+* Supports sql syntax e.g. Join, Left Join, Where, Order By, Group By, Union and Nested Queries.
+* Does not do any client side filtering like linq to sql.
+* Query syntax clear and easy to read.
+* Debugging features that show sql queries being executed.
+  - Events Like - QueryExecuting, QueryPerformed.
+  - Query results contain the executed sql.
+  - Breakpoint on query.
+* Code generation tool for table definitions.
+* Table definition validator.
+* Supports both Sql Server and PostgreSql.
+* Schema description attributes to allow documentation generation.
 
 ## Dynamic And Prepared Queries
 
