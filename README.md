@@ -18,7 +18,7 @@ var result = Query
             OrderId = row.Get(orderTable.OrderId),
             CustomerId = row.Get(customerTable.CustomerId),
             CompanyName = row.Get(customerTable.CompanyName),
-            OrderStatus = row.Guid(orderStatusTable.Status)
+            OrderStatus = row.Get(orderStatusTable.Status)
         }
     )
     .From(orderTable)
