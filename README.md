@@ -9,7 +9,7 @@ using Northwind.Tables;
 using Northwind;
 
 OrderTable orderTable = OrderTable.Instance;
-OrderStatusTable statusTable = OrderStatusTable.Instance;
+OrderStatusTable orderStatusTable = OrderStatusTable.Instance;
 CustomerTable customerTable = CustomerTable.Instance;
 
 var result = Query
@@ -18,12 +18,12 @@ var result = Query
             OrderId = row.Get(orderTable.OrderId),
             CustomerId = row.Get(customerTable.CustomerId),
             CompanyName = row.Get(customerTable.CompanyName),
-            OrderStatus = row.Guid(statusTable.Status)
+            OrderStatus = row.Guid(orderStatusTable.Status)
         }
     )
     .From(orderTable)
     .Join(customerTable).On(orderTable.CustomerId == customerTable.CustomerId)
-    .LeftJoin(statusTable).On(orderTable.StatusId == statusTable.Id)    
+    .LeftJoin(orderStatusTable).On(orderTable.StatusId == orderStatusTable.Id)    
     .Where(
         orderTable.OrderDate < DateTime.Now &
         customerTable.ContactName == "Jane"
