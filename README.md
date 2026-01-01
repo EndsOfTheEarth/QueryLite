@@ -140,7 +140,7 @@ using Northwind;
 
 CustomerId customerId = CustomerId.ValueOf("ABC");
 
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     CustomerTable table = CustomerTable.Instance;
 
@@ -184,7 +184,7 @@ using Northwind;
 
 CustomerId customerId = CustomerId.ValueOf("ABC");
 
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     CustomerTable table = CustomerTable.Instance;
 
@@ -209,7 +209,7 @@ using Northwind;
 
 CustomerId customerId = CustomerId.ValueOf("ABC");
 
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     CustomerTable table = CustomerTable.Instance;
 
@@ -289,7 +289,7 @@ public static class DB {
 
 public sealed class CustomerTable : ATable {
 
-    public static readonly CustomerTable Instance = new CustomerTable();
+    public static readonly CustomerTable Instance = new();
     
     public Column<CustomerId, string> CustomerId { get; }
     public Column<string> CompanyName { get; }
@@ -320,7 +320,7 @@ public sealed class CustomerTable : ATable {
 
 public sealed class OrderTable : ATable {
 
-    public static readonly OrderTable Instance = new OrderTable();
+    public static readonly OrderTable Instance = new();
     
     public Column<OrderId, int> OrderId { get; }
     public NullableColumn<CustomerId, string> CustomerId { get; }
@@ -423,17 +423,38 @@ Currently executing queries can be monitored by subscribing the to the `QueryExe
 
 ``` C#
 QueryLite.Settings.QueryExecuting += Settings_QueryExecuting;
-
-//Called when an sql query is about to be executed
-void Settings_QueryExecuting(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
-    throw new NotImplementedException();
-}
-
 QueryLite.Settings.QueryPerformed += Settings_QueryPerformed;
 
+//Called when an sql query is about to be executed
+void Settings_QueryExecuting(QueryExecutingDetail queryDetail) {
+
+    IDatabase database = queryDetail.Database;
+    string sql = queryDetail.Sql;
+    QueryType queryType = queryDetail.QueryType;
+    DateTimeOffset? start = queryDetail.Start;
+    System.Data.IsolationLevel isolationLevel = queryDetail.IsolationLevel;
+    ulong? transactionId = queryDetail.TransactionId;
+    QueryTimeout timeout = queryDetail.QueryTimeout;
+    string debugName = queryDetail.DebugName;
+}
+
 //Called when an sql query is executed
-void Settings_QueryPerformed(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception, System.Data.IsolationLevel isolationLevel, ulong? transactionId) {
-    
+void Settings_QueryPerformed(QueryDetail queryDetail) {
+
+    IDatabase database = queryDetail.Database;
+    string sql = queryDetail.Sql;
+    int rows = queryDetail.Rows;
+    int rowsEffected = queryDetail.RowsEffected;
+    QueryType queryType = queryDetail.QueryType;
+    IQueryResult? result = queryDetail.Result;
+    DateTimeOffset? start = queryDetail.Start;
+    DateTimeOffset? end = queryDetail.End;
+    TimeSpan? elapsedTime = queryDetail.ElapsedTime;
+    Exception? exception = queryDetail.Exception;
+    System.Data.IsolationLevel isolationLevel = queryDetail.IsolationLevel;
+    ulong? transactionId = queryDetail.TransactionId;
+    QueryTimeout timeout = queryDetail.QueryTimeout;
+    string debugName = queryDetail.DebugName;
 }
 ```
 

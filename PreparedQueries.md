@@ -66,13 +66,14 @@ var query = Query
     .Select(row => table.Id)
     .From(table)
     .Where(where =>
-        where.EQUALS(table.GivenName, person => person.GivenName) &  //Use the Person parameter in each condition
+        //Use the Person parameter in each condition
+        where.EQUALS(table.GivenName, person => person.GivenName) &
         where.EQUALS(table.Surname, person => person.Surname) &
         where.NOT_EQUALS(table.Id, person => person.Id)
     )
     .Build();
 
-Person person = new Person() { Id = 25, GivenName = "Glen", Surname = "Smith" };
+Person person = new() { Id = 25, GivenName = "Glen", Surname = "Smith" };
 
 var result = query.Execute(parameters: person, _database);  //Provide the person class when executing query
 ```
@@ -191,7 +192,7 @@ public sealed class AddProductHandler {
         /*
          *  Execute the prepared query and passing 'product' in as a parameter
          */
-        using Transaction transaction = new Transaction(_database);
+        using Transaction transaction = new(_database);
 
         QueryResult<ProductId> result = await _insertProductQuery.ExecuteAsync(parameters: product, transaction, ct);
 
@@ -259,7 +260,7 @@ public class UpdateProductHandler {
 
     public async Task UpdateProduct(Product product, CancellationToken ct) {
 
-        using Transaction transaction = new Transaction(_database);
+        using Transaction transaction = new(_database);
 
         NonQueryResult result = await _updateProductQuery.ExecuteAsync(parameters: product, transaction, ct);
 
@@ -297,7 +298,7 @@ public sealed class DeleteProductHandler {
 
     public async Task DeleteProduct(ProductId productId, CancellationToken ct) {
 
-        using Transaction transaction = new Transaction(_database);
+        using Transaction transaction = new(_database);
 
         NonQueryResult result = await _deleteProductQuery.ExecuteAsync(parameters: productId, transaction, ct);
 
