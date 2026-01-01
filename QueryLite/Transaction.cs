@@ -27,6 +27,9 @@ using System.Data.Common;
 
 namespace QueryLite {
 
+    public enum TransactionState {
+
+    }
     /// <summary>
     /// Database transaction
     /// </summary>
@@ -37,8 +40,6 @@ namespace QueryLite {
         /// </summary>
         public ulong TransactionId { get; }
 
-        private bool mCommitted = false;
-        private bool mRolledBack = false;
         public IDatabase Database { get; }
 
         /// <summary>
@@ -56,7 +57,6 @@ namespace QueryLite {
         }
 
         private DbTransaction? DbTransaction { get; set; }
-        private DbConnection? DbConnection { get; set; }
 
         internal DbTransaction? GetTransaction(IDatabase database) {
 
@@ -66,15 +66,11 @@ namespace QueryLite {
             return DbTransaction;
         }
 
-        internal void SetTransaction(DbConnection dbConnection, DbTransaction dbTransaction) {
+        internal void SetTransaction(DbTransaction dbTransaction) {
 
-            if(DbConnection != null) {
-                throw new Exception($"Cannot set {nameof(DbConnection)} twice");
-            }
             if(DbTransaction != null) {
                 throw new Exception($"Cannot set {nameof(DbTransaction)} twice");
             }
-            DbConnection = dbConnection;
             DbTransaction = dbTransaction;
         }
 
@@ -91,7 +87,7 @@ namespace QueryLite {
             if(dbTransaction == null) {
                 dbConnection = Database.GetNewConnection();
                 dbConnection.Open();
-                SetTransaction(dbConnection, dbConnection.BeginTransaction(IsolationLevel));
+                SetTransaction(dbConnection.BeginTransaction(IsolationLevel));
                 dbTransaction = DbTransaction;
             }
             else {
@@ -112,7 +108,7 @@ namespace QueryLite {
             if(dbTransaction == null) {
                 dbConnection = Database.GetNewConnection();
                 await dbConnection.OpenAsync(ct);
-                SetTransaction(dbConnection, await dbConnection.BeginTransactionAsync(IsolationLevel, ct));
+                SetTransaction(await dbConnection.BeginTransactionAsync(IsolationLevel, ct));
                 dbTransaction = DbTransaction;
             }
             else {
@@ -138,24 +134,16 @@ namespace QueryLite {
         /// </summary>
         public void Dispose() {
 
-            bool rollback = DbTransaction != null && !mCommitted && !mRolledBack;
-
-            if(rollback) {
+            using(DbConnection? connection = DbTransaction?.Connection) {
                 Rollback();
             }
-            DbConnection?.Dispose();
             GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync() {
 
-            bool rollback = DbTransaction != null && !mCommitted && !mRolledBack;
-
-            if(rollback) {
+            using(DbConnection? connection = DbTransaction?.Connection) {
                 await RollbackAsync().ConfigureAwait(false);
-            }
-            if(DbConnection != null) {
-                await DbConnection.DisposeAsync().ConfigureAwait(false);
             }
             GC.SuppressFinalize(this);
         }
@@ -165,26 +153,22 @@ namespace QueryLite {
         /// </summary>
         public void Commit() {
 
-            if(DbTransaction != null) {
+            if(DbTransaction == null) {
+                return;
+            }
+            try {
 
-                using(DbTransaction) {
+                using(DbConnection? connection = DbTransaction.Connection) {
 
-                    DbTransaction.Commit();
-
-                    if(DbTransaction.Connection != null) {
-                        using(DbConnection connection = DbTransaction.Connection) {
-                            ResetIsolationLevel(connection);
-                        }
+                    using(DbTransaction) {
+                        DbTransaction.Commit();
+                        ResetIsolationLevel(connection);
                     }
                 }
             }
-            if(DbConnection != null) {
-
-                using(DbConnection) {
-                    DbConnection.Close();
-                }
+            finally {
+                DbTransaction = null;
             }
-            mCommitted = true;
         }
 
         /// <summary>
@@ -192,26 +176,22 @@ namespace QueryLite {
         /// </summary>
         public async Task CommitAsync(CancellationToken ct = default) {
 
-            if(DbTransaction != null) {
+            if(DbTransaction == null) {
+                return;
+            }
+            try {
 
-                await using(DbTransaction) {
+                await using(DbConnection? connection = DbTransaction.Connection) {
 
-                    await DbTransaction.CommitAsync(ct);
-
-                    if(DbTransaction.Connection != null) {
-                        await using(DbConnection connection = DbTransaction.Connection) {
-                            ResetIsolationLevel(connection);
-                        }
+                    await using(DbTransaction) {
+                        await DbTransaction.CommitAsync(ct);
+                        await ResetIsolationLevelAsync(connection);
                     }
                 }
             }
-            if(DbConnection != null) {
-
-                await using(DbConnection) {
-                    await DbConnection.CloseAsync();
-                }
+            finally {
+                DbTransaction = null;
             }
-            mCommitted = true;
         }
 
         /// <summary>
@@ -219,16 +199,19 @@ namespace QueryLite {
         /// </summary>
         public void Rollback() {
 
-            if(DbTransaction != null) {
+            if(DbTransaction == null) {
+                return;
+            }
+            try {
 
-                using(DbTransaction) {
+                using(DbConnection? connection = DbTransaction.Connection) {
 
-                    if(DbTransaction.Connection != null) {
+                    using(DbTransaction) {
 
-                        using(DbConnection connection = DbTransaction.Connection) {
+                        if(connection != null) {
 
-                            bool rollback = DbTransaction.Connection.State != ConnectionState.Closed &&
-                                            DbTransaction.Connection.State != ConnectionState.Broken;
+                            bool rollback = connection.State != ConnectionState.Closed &&
+                                            connection.State != ConnectionState.Broken;
 
                             if(rollback) {
                                 DbTransaction.Rollback();
@@ -237,16 +220,10 @@ namespace QueryLite {
                         }
                     }
                 }
+            }
+            finally {
                 DbTransaction = null;
             }
-            if(DbConnection != null) {
-
-                using(DbConnection) {
-                    DbConnection.Close();
-                }
-                DbConnection = null;
-            }
-            mRolledBack = true;
         }
 
         /// <summary>
@@ -254,45 +231,54 @@ namespace QueryLite {
         /// </summary>
         public async Task RollbackAsync(CancellationToken ct = default) {
 
-            if(DbTransaction != null) {
+            if(DbTransaction == null) {
+                return;
+            }
+            try {
+                await using(DbConnection? connection = DbTransaction.Connection) {
 
-                await using(DbTransaction) {
+                    await using(DbTransaction) {
 
-                    if(DbTransaction.Connection != null) {
+                        if(connection != null) {
 
-                        await using(DbConnection connection = DbTransaction.Connection) {
-
-                            bool rollback = DbTransaction.Connection.State != ConnectionState.Closed &&
-                                            DbTransaction.Connection.State != ConnectionState.Broken;
+                            bool rollback = connection.State != ConnectionState.Closed &&
+                                            connection.State != ConnectionState.Broken;
 
                             if(rollback) {
                                 await DbTransaction.RollbackAsync(ct);
                             }
-                            ResetIsolationLevel(connection);
+                            await ResetIsolationLevelAsync(connection);
+
                         }
                     }
                 }
+            }
+            finally {
                 DbTransaction = null;
             }
-            if(DbConnection != null) {
-
-                await using(DbConnection) {
-                    await DbConnection.CloseAsync();
-                }
-                DbConnection = null;
-            }
-            mRolledBack = true;
         }
 
-        private static void ResetIsolationLevel(DbConnection connection) {
+        private static void ResetIsolationLevel(DbConnection? connection) {
             //
-            //  For sql server we need to reset the isolation level
+            //  For Sql Server we need to reset the isolation level
             //
             if(connection is SqlConnection) {
 
                 using(DbCommand command = connection.CreateCommand()) {
                     command.CommandText = "SET TRANSACTION ISOLATION LEVEL READ COMMITTED";
                     command.ExecuteNonQuery();
+                }
+            }
+        }
+        private static async Task ResetIsolationLevelAsync(DbConnection? connection) {
+            //
+            //  For Sql Server we need to reset the isolation level
+            //
+            if(connection is SqlConnection) {
+
+                using(DbCommand command = connection.CreateCommand()) {
+                    command.CommandText = "SET TRANSACTION ISOLATION LEVEL READ COMMITTED";
+                    await command.ExecuteNonQueryAsync();
                 }
             }
         }

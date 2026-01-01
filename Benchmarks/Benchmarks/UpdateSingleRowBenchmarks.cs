@@ -161,7 +161,7 @@ namespace Benchmarks {
                 row.Message = "New Message";
                 row.Date = DateTime.Now;
 
-                repository.Update(transaction);
+                repository.SaveChanges(transaction);
 
                 transaction.Commit();
             }

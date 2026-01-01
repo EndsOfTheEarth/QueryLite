@@ -78,7 +78,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
                 
@@ -98,7 +98,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
                 AssertNumberOfRowsExists(rows: 1);
@@ -112,7 +112,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
                 AssertNumberOfRowsExists(rows: 0);
@@ -131,7 +131,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
 
@@ -151,7 +151,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
                 AssertNumberOfRowsExists(rows: 1);
@@ -165,7 +165,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
                 AssertNumberOfRowsExists(rows: 0);
@@ -194,7 +194,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
 
@@ -264,7 +264,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
                 AssertNumberOfRowsExists(rows: 2);
@@ -287,7 +287,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
 
@@ -345,7 +345,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
                 Assert.AreEqual(2, repository.Count);
@@ -387,7 +387,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
                 AssertNumberOfRowsExists(rows: 2);
@@ -415,7 +415,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
 
@@ -444,7 +444,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    repository.Update(transaction, TimeoutLevel.ShortInsert);
+                    repository.SaveChanges(transaction, TimeoutLevel.ShortInsert);
                     transaction.Commit();
                 }
 
@@ -479,7 +479,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
 
@@ -553,7 +553,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
                 AssertNumberOfRowsExists(rows: 2);
@@ -576,7 +576,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
 
@@ -635,7 +635,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
                 Assert.AreEqual(2, repository.Count);
@@ -677,7 +677,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
                 AssertNumberOfRowsExists(rows: 2);
@@ -705,7 +705,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
 
@@ -734,7 +734,7 @@ namespace QueryLiteTest.Tests {
 
                 using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                    await repository.UpdateAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
+                    await repository.SaveChangesAsync(transaction, TimeoutLevel.ShortInsert, CancellationToken.None);
                     await transaction.CommitAsync();
                 }
 

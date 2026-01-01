@@ -151,7 +151,7 @@ namespace Benchmarks {
 
                 using Transaction transaction = new(Databases.TestDatabase);
 
-                repository.Update(transaction);
+                repository.SaveChanges(transaction);
 
                 transaction.Commit();
             }

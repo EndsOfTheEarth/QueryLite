@@ -328,7 +328,7 @@ namespace QueryLiteTest.Tests {
 
                 repository.AddNewRow(row);
 
-                int rowsEffected = repository.Update(transaction);
+                int rowsEffected = repository.SaveChanges(transaction);
 
                 transaction.Commit();
 
@@ -424,7 +424,7 @@ namespace QueryLiteTest.Tests {
 
                 repository.AddNewRow(row);
 
-                int rowsEffected = repository.Update(transaction);
+                int rowsEffected = repository.SaveChanges(transaction);
 
                 transaction.Commit();
 
@@ -494,7 +494,7 @@ namespace QueryLiteTest.Tests {
                     timeOnly: allTypes.TimeOnly
                 );
 
-                int rowsEffected = repository.Update(transaction);
+                int rowsEffected = repository.SaveChanges(transaction);
 
                 Assert.AreEqual(1, rowsEffected);
                 Assert.AreEqual(1, repository.Count);
@@ -560,7 +560,7 @@ namespace QueryLiteTest.Tests {
                     timeOnly: allTypes.TimeOnly
                 );
 
-                int rowsEffected = await repository.UpdateAsync(transaction, CancellationToken.None);
+                int rowsEffected = await repository.SaveChangesAsync(transaction, CancellationToken.None);
 
                 Assert.AreEqual(1, rowsEffected);
                 Assert.AreEqual(1, repository.Count);
@@ -591,7 +591,7 @@ namespace QueryLiteTest.Tests {
 
                 repository.DeleteRow(repository[0]);
 
-                int rowsEffected = repository.Update(transaction);
+                int rowsEffected = repository.SaveChanges(transaction);
 
                 Assert.AreEqual(1, rowsEffected);
 
@@ -643,7 +643,7 @@ namespace QueryLiteTest.Tests {
 
                 repository.DeleteRow(repository[0]);
 
-                int rowsEffected = await repository.UpdateAsync(transaction, CancellationToken.None);
+                int rowsEffected = await repository.SaveChangesAsync(transaction, CancellationToken.None);
 
                 Assert.AreEqual(1, rowsEffected);
 
@@ -758,7 +758,7 @@ namespace QueryLiteTest.Tests {
 
                 repository.AddNewRow(row);
 
-                int rowsEffected = repository.Update(transaction);
+                int rowsEffected = repository.SaveChanges(transaction);
 
                 Assert.AreEqual(1, repository.Count);
                 Assert.AreEqual(1, rowsEffected);
@@ -830,7 +830,7 @@ namespace QueryLiteTest.Tests {
                 row.DateOnly = newAllTypes.DateOnly;
                 row.TimeOnly = newAllTypes.TimeOnly;
 
-                int rowsEffected = repository.Update(transaction);
+                int rowsEffected = repository.SaveChanges(transaction);
 
                 Assert.AreEqual(1, rowsEffected);
                 Assert.AreEqual(1, repository.Count);

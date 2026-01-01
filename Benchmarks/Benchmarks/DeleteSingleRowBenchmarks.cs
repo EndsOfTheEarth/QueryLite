@@ -158,7 +158,7 @@ namespace Benchmarks {
                 }
                 using Transaction transaction = new(Databases.TestDatabase);
 
-                int rowsEffected = repository.Update(transaction);
+                int rowsEffected = repository.SaveChanges(transaction);
 
                 if(rowsEffected != 1) {
                     throw new Exception();

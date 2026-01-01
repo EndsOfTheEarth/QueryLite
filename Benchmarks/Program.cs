@@ -6,11 +6,11 @@ namespace Benchmarks {
 
         static async Task Main(string[] args) {
 
-            //BenchmarkRunner.Run<InsertBenchmarks>();
+            BenchmarkRunner.Run<InsertBenchmarks>();
             //BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
             //BenchmarkRunner.Run<DeleteSingleRowBenchmarks>();
 
-            BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
+            //BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
             //BenchmarkRunner.Run<SelectTenRowBenchmarks>();
             //BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
             //BenchmarkRunner.Run<SelectOneThousandRowBenchmarks>();

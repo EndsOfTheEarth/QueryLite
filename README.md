@@ -535,15 +535,15 @@ SELECT id,row_guid,message,date FROM Test01
 ```SQL
 INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)
 ```
-| Method                                    | Mean     | Error    | StdDev   | Median   | Gen0      | Allocated |
-|------------------------------------------ |---------:|---------:|---------:|---------:|----------:|----------:|
-| Ado_Single_Insert                         | 397.9 ms |  3.13 ms |  2.93 ms | 398.6 ms |         - |   3.37 MB |
-| Dapper_Single_Insert                      | 419.8 ms |  7.19 ms | 10.08 ms | 416.5 ms |         - |   3.49 MB |
-| QueryLite_Single_Compiled_Insert          | 428.1 ms |  8.41 ms | 14.28 ms | 427.4 ms |         - |    3.6 MB |
-| QueryLite_Single_Dynamic_Insert           | 422.3 ms |  8.16 ms | 21.07 ms | 422.0 ms |         - |    4.5 MB |
-| QueryLite_Single_Repository_Insert        | 438.0 ms |  8.69 ms | 23.65 ms | 431.2 ms |         - |   5.36 MB |
-| QueryLite_Single_Repository_Static_Insert | 418.7 ms |  4.38 ms |  3.88 ms | 419.0 ms |         - |   3.89 MB |
-| EF_Core_Single_Insert                     | 765.8 ms | 14.92 ms | 15.97 ms | 764.7 ms | 7000.0000 | 114.65 MB |
+| Method                                    | Mean     | Error   | StdDev  | Gen0      | Allocated |
+|------------------------------------------ |---------:|--------:|--------:|----------:|----------:|
+| Ado_Single_Insert                         | 365.4 ms | 4.13 ms | 3.86 ms |         - |   3.37 MB |
+| Dapper_Single_Insert                      | 366.6 ms | 2.76 ms | 2.45 ms |         - |   3.49 MB |
+| QueryLite_Single_Compiled_Insert          | 368.6 ms | 2.40 ms | 2.25 ms |         - |   3.59 MB |
+| QueryLite_Single_Dynamic_Insert           | 370.9 ms | 3.45 ms | 3.23 ms |         - |   4.49 MB |
+| QueryLite_Single_Repository_Insert        | 385.8 ms | 1.96 ms | 1.83 ms |         - |   5.34 MB |
+| QueryLite_Single_Repository_Static_Insert | 384.0 ms | 1.89 ms | 1.67 ms |         - |   3.88 MB |
+| EF_Core_Single_Insert                     | 647.1 ms | 4.22 ms | 3.95 ms | 7000.0000 | 114.65 MB |
 
 (Note: This benchmark creates a new EF Core context for each insert to simulate unrelated requests).
 

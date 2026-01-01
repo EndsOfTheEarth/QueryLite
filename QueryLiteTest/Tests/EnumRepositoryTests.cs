@@ -19,7 +19,7 @@ namespace QueryLiteTest.Tests {
                 foreach(EnumRow row in repository) {
                     repository.DeleteRow(row);
                 }
-                repository.Update(transaction);
+                repository.SaveChanges(transaction);
                 transaction.Commit();
             }
         }
@@ -144,7 +144,7 @@ namespace QueryLiteTest.Tests {
                 row.IntNullEnum = intNullValue;
                 row.LongNullEnum = longNullValue;
 
-                repository.Update(transaction);
+                repository.SaveChanges(transaction);
 
                 transaction.Commit();
             }

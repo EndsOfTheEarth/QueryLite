@@ -94,37 +94,37 @@ namespace QueryLite {
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        int Update(Transaction transaction);
+        int SaveChanges(Transaction transaction);
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        int Update(Transaction transaction, QueryTimeout? timeout);
+        int SaveChanges(Transaction transaction, QueryTimeout? timeout);
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        int Update(Transaction transaction, QueryTimeout? timeout, string debugName);
+        int SaveChanges(Transaction transaction, QueryTimeout? timeout, string debugName);
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        Task<int> UpdateAsync(Transaction transaction, CancellationToken ct);
+        Task<int> SaveChangesAsync(Transaction transaction, CancellationToken ct);
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken ct);
+        Task<int> SaveChangesAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken ct);
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
-        Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken ct);
+        Task<int> SaveChangesAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken ct);
 
         /// <summary>
         /// Persist only records that need to be inserted. This is useful for situations where the order of inserts, update and deletes is important.
@@ -456,21 +456,21 @@ namespace QueryLite {
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public int Update(Transaction transaction) {
-            return Update(transaction, timeout: null);
+        public int SaveChanges(Transaction transaction) {
+            return SaveChanges(transaction, timeout: null);
         }
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public int Update(Transaction transaction, QueryTimeout? timeout) {
-            return Update(transaction, timeout, debugName: "");
+        public int SaveChanges(Transaction transaction, QueryTimeout? timeout) {
+            return SaveChanges(transaction, timeout, debugName: "");
         }
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public int Update(Transaction transaction, QueryTimeout? timeout, string debugName) {
+        public int SaveChanges(Transaction transaction, QueryTimeout? timeout, string debugName) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
@@ -514,20 +514,20 @@ namespace QueryLite {
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public async Task<int> UpdateAsync(Transaction transaction, CancellationToken ct) {
-            return await UpdateAsync(transaction, timeout: null, ct);
+        public async Task<int> SaveChangesAsync(Transaction transaction, CancellationToken ct) {
+            return await SaveChangesAsync(transaction, timeout: null, ct);
         }
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken ct) {
-            return await UpdateAsync(transaction, timeout, debugName: "", ct);
+        public async Task<int> SaveChangesAsync(Transaction transaction, QueryTimeout? timeout, CancellationToken ct) {
+            return await SaveChangesAsync(transaction, timeout, debugName: "", ct);
         }
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
-        public async Task<int> UpdateAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken ct) {
+        public async Task<int> SaveChangesAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken ct) {
 
             List<RowState> newState = new List<RowState>(Rows.Count);
 
