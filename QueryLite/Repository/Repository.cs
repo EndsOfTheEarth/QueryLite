@@ -199,13 +199,19 @@ namespace QueryLite {
 
             List<ColumnAndSetter<ROW>> list = CreateColumnsAndSettersMap(table);  //Get second set of parameter creators with different parameter names for use in the where clause
 
-            if(matchOn != MatchOn.PrimaryKey || table.PrimaryKey == null) {
+            if(matchOn != MatchOn.PrimaryKey) {
+                return list;
+            }
+
+            PrimaryKey? primaryKey = table.PrimaryKey;  //Most primary key properties allocate a new object on every call. So we hold it as a variable to reduce allocations.
+
+            if(primaryKey == null) {
                 return list;
             }
 
             Dictionary<string, ColumnAndSetter<ROW>> lookup = list.ToDictionary(cs => cs.Column.ColumnName);
 
-            return [.. table.PrimaryKey.Columns.Select(pkColumn => lookup[pkColumn.ColumnName])];
+            return [.. primaryKey.Columns.Select(pkColumn => lookup[pkColumn.ColumnName])];
         }
 
         public IRepositoryWith<TABLE, ROW> SelectRows {
