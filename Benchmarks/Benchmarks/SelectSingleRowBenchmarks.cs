@@ -148,7 +148,6 @@ namespace Benchmarks {
             for(int index = 0; index < _iterations; index++) {
 
                 Test01Row_EfCore? result = context.TestRows
-                    .Select(row => row)
                     .Where(row => row.Row_guid == _guid)
                     .SingleOrDefault();
             }
