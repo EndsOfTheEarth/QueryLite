@@ -25,7 +25,7 @@ namespace QueryLite.Databases.Functions {
         /// Gives the ability to include ISelectable columns/functions that have a different TYPE constraint.
         /// </summary>
         /// <param name="selectables"></param>
-        public void IncludeIgnoringType(ISelectable[] selectables) {
+        public void IncludeIgnoringTypeConstraint(ISelectable[] selectables) {
 
             ArgumentNullException.ThrowIfNull(selectables);
 
