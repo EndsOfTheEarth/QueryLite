@@ -60,6 +60,8 @@ namespace QueryLite {
 
         internal DbTransaction? GetTransaction(IDatabase database) {
 
+            ArgumentNullException.ThrowIfNull(database);
+
             if(Database != database) {
                 throw new Exception("Transaction is being used to query two different connections");
             }
@@ -67,6 +69,9 @@ namespace QueryLite {
         }
 
         internal void SetTransaction(DbTransaction dbTransaction) {
+
+            ArgumentNullException.ThrowIfNull(dbTransaction);
+            ArgumentNullException.ThrowIfNull(dbTransaction.Connection);
 
             if(DbTransaction != null) {
                 throw new Exception($"Cannot set {nameof(DbTransaction)} twice");
