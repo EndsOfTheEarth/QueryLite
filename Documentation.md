@@ -161,7 +161,7 @@ using QueryLite;
 
 public sealed class ShipperTable : ATable {
 
-    public static readonly ShipperTable Instance = new ShippersTable();
+    public static readonly ShipperTable Instance = new();
 
     public Column<int> Id { get; }
     public Column<string> CompanyName { get; }
@@ -306,40 +306,40 @@ These are the available predefined timeout defaults:
 public static class TimeoutLevel {
 
     // Short select query timeout defaults to 60 seconds
-    public static QueryTimeout ShortSelect { get; set; } = new QueryTimeout(seconds: 60);
+    public static QueryTimeout ShortSelect { get; set; } = new(seconds: 60);
 
     // Short insert query timeout defaults to 60 seconds
-    public static QueryTimeout ShortInsert { get; set; } = new QueryTimeout(seconds: 60);
+    public static QueryTimeout ShortInsert { get; set; } = new(seconds: 60);
 
     // Short update query timeout defaults to 60 seconds
-    public static QueryTimeout ShortUpdate { get; set; } = new QueryTimeout(seconds: 60);
+    public static QueryTimeout ShortUpdate { get; set; } = new(seconds: 60);
 
     // Short delete query timeout defaults to 60 seconds
-    public static QueryTimeout ShortDelete { get; set; } = new QueryTimeout(seconds: 60);
+    public static QueryTimeout ShortDelete { get; set; } = new(seconds: 60);
 
     // Medium select query timeout defaults to 300 seconds
-    public static QueryTimeout MediumSelect { get; set; } = new QueryTimeout(seconds: 300);
+    public static QueryTimeout MediumSelect { get; set; } = new(seconds: 300);
 
     // Medium insert query timeout defaults to 300 seconds
-    public static QueryTimeout MediumInsert { get; set; } = new QueryTimeout(seconds: 300);
+    public static QueryTimeout MediumInsert { get; set; } = new(seconds: 300);
 
     // Medium update query timeout defaults to 300 seconds
-    public static QueryTimeout MediumUpdate { get; set; } = new QueryTimeout(seconds: 300);
+    public static QueryTimeout MediumUpdate { get; set; } = new(seconds: 300);
 
     // Medium delete query timeout defaults to 300 seconds
-    public static QueryTimeout MediumDelete { get; set; } = new QueryTimeout(seconds: 300);
+    public static QueryTimeout MediumDelete { get; set; } = new(seconds: 300);
 
     // Long select query timeout defaults to 1800 seconds
-    public static QueryTimeout LongSelect { get; set; } = new QueryTimeout(seconds: 1800);
+    public static QueryTimeout LongSelect { get; set; } = new(seconds: 1800);
 
     // Long insert query timeout defaults to 1800 seconds
-    public static QueryTimeout LongInsert { get; set; } = new QueryTimeout(seconds: 1800);
+    public static QueryTimeout LongInsert { get; set; } = new(seconds: 1800);
 
     // Long update query timeout defaults to 1800 seconds
-    public static QueryTimeout LongUpdate { get; set; } = new QueryTimeout(seconds: 1800);
+    public static QueryTimeout LongUpdate { get; set; } = new(seconds: 1800);
 
     // Long delete query timeout defaults to 1800 seconds
-    public static QueryTimeout LongDelete { get; set; } = new QueryTimeout(seconds: 1800);
+    public static QueryTimeout LongDelete { get; set; } = new(seconds: 1800);
 }
 ```
 
@@ -479,7 +479,7 @@ var result = Query
 ## Insert Query
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     ShipperTable shipperTable = ShipperTable.Instance;
 
@@ -504,7 +504,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 ## Update Query
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     ShipperTable shipperTable = ShipperTable.Instance;
 
@@ -523,7 +523,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 ## Update Returning Query
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     ShipperTable shipperTable = ShipperTable.Instance;
 
@@ -547,7 +547,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 ## Update From Query
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     OrdersTable orderTable = OrdersTable.Instance;
     CustomersTable customersTable = CustomersTable.Instance;
@@ -558,7 +558,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
             .Set(orderTable.ShipVia, null)
         )
         .From(customersTable)
-        .Where(orderTable.CustomerID == customersTable.CustomerID & customersTable.Region.IsNull)
+        .Where(
+            orderTable.CustomerID == customersTable.CustomerID &
+            customersTable.Region.IsNull
+        )
         .Execute(transaction);
 
     transaction.Commit();
@@ -585,7 +588,7 @@ For example:
 ## Delete Query
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     ShipperTable shipperTable = ShipperTable.Instance;
 
@@ -601,7 +604,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 ## Delete Returning Query
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     ShipperTable shipperTable = ShipperTable.Instance;
 
@@ -624,7 +627,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 Note: The `From` and `Using` methods are equivalent syntax and can be used for both PostgreSql and Sql Server.
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     OrdersTable orderTable = OrdersTable.Instance;
     CustomersTable customersTable = CustomersTable.Instance;
@@ -632,7 +635,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     NonQueryResult result = Query
         .Delete(orderTable)
         .From(customersTable)    //Note: More than one table can be set in the 'From' method
-        .Where(orderTable.CustomerID == customersTable.CustomerID & customersTable.Region.IsNull)
+        .Where(
+            orderTable.CustomerID == customersTable.CustomerID &
+            customersTable.Region.IsNull
+        )
         .Execute(transaction);
 
     transaction.Commit();
@@ -640,7 +646,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 ```
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     OrdersTable orderTable = OrdersTable.Instance;
     CustomersTable customersTable = CustomersTable.Instance;
@@ -648,7 +654,10 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
     NonQueryResult result = Query
         .Delete(orderTable)
         .Using(customersTable)    //Note: More than one table can be set in the 'Using' method
-        .Where(orderTable.CustomerID == customersTable.CustomerID & customersTable.Region.IsNull)
+        .Where(
+            orderTable.CustomerID == customersTable.CustomerID &
+            customersTable.Region.IsNull
+        )
         .Execute(transaction);
 
     transaction.Commit();
@@ -658,7 +667,7 @@ using(Transaction transaction = new Transaction(DB.Northwind)) {
 ## Truncate Query
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind)) {
+using(Transaction transaction = new(DB.Northwind)) {
 
     ShipperTable shipperTable = ShipperTable.Instance;
 
@@ -727,16 +736,14 @@ public partial record OrderRow {
 Here is an example of creating a new row.
 
 ```C#
-OrderRow row = new OrderRow() {
+OrderRepository repository = new();
+
+OrderRow row = new() {
     //...populate properties
 }
-
-OrderRepository repository = new OrderRepository();
-
 repository.AddNewRow(row);
 
-using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
+using(Transaction transaction = new(TestDatabase.Database)) {
     await repository.UpdateAsync(transaction, ct);
     await transaction.CommitAsync(ct);
 }
@@ -745,7 +752,7 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 Here is an example of updating rows.
 
 ```C#
-OrderRepository repository = new OrderRepository();
+OrderRepository repository = new();
 
 await repository
     .SelectRows
@@ -757,8 +764,7 @@ foreach(OrderRow row in repository) {   //Set a value on each row
     row.OrderState = OrderState.Processed;
 }
 
-using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
+using(Transaction transaction = new(TestDatabase.Database)) {
     await repository.UpdateAsync(transaction, ct);
     await transaction.CommitAsync(ct);
 }
@@ -767,7 +773,7 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 Here is an example of deleing rows.
 
 ```C#
-OrderRepository repository = new OrderRepository();
+OrderRepository repository = new();
 
 await repository
     .SelectRows
@@ -778,8 +784,7 @@ OrderRow row = repository.First();
 
 repository.DeleteRow(row);
 
-using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
+using(Transaction transaction = new(TestDatabase.Database)) {
     await repository.UpdateAsync(transaction, ct);
     await transaction.CommitAsync(ct);
 }
@@ -796,10 +801,9 @@ if the transaction fails.
 Insert Example:
 
 ```C#
+using(Transaction transaction = new(TestDatabase.Database)) {
 
-using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-    OrderRow row = new OrderRow(
+    OrderRow row = new(
         //...populate properties
     );
     OrderRepository.ExecuteInsert(row, Test01Table.Instance, transaction);
@@ -811,9 +815,9 @@ Update Example:
 
 ```C#
 
-using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+using(Transaction transaction = new(TestDatabase.Database)) {
 
-    OrderRow row = new OrderRow(
+    OrderRow row = new(
         //...populate properties
     );
     OrderRepository.ExecuteUpdate(row, Test01Table.Instance, transaction);
@@ -907,7 +911,7 @@ This is how to include the custom function in a query:
 ```C#
 ShipperTable shipperTable = ShipperTable.Instance;
 
-Length length = new Length(shipperTable.CompanyName);
+Length length = new(shipperTable.CompanyName);
 
 var result = Query
    .Select(
@@ -920,7 +924,6 @@ var result = Query
    .Execute(_northwindDatabase);
 
 foreach(var row in result.Rows) {
-
     string companyName = row.CompanyName;
     int stringLength = row.StringLength;
 }
@@ -1032,14 +1035,13 @@ using QueryLite;
 
 public sealed class ShipperTable : ATable {
 
-    public static readonly ShipperTable Instance = new ShippersTable();
+    public static readonly ShipperTable Instance = new();
 
     public Column<IntKey<IShipper>> Id { get; } //Now an IntKey<> type
     public Column<string> CompanyName { get; }
     public NullableColumn<string> Phone { get; }
 
     private ShippersTable() : base(tableName:"Shipper", schemaName: "dbo") {
-
         Id = new Column<IntKey<IShipper>>(this, columnName: "Id", isAutoGenerated: true);
         CompanyName = new Column<string>(this, columnName: "CompanyName", length: new(40));
         Phone = new NullableColumn<string>(this, columnName: "Phone", length: new(24));
@@ -1079,14 +1081,13 @@ the Column<,> property which is the underlying type.
 ```C#
 public sealed class ShipperTable : ATable {
 
-    public static readonly ShipperTable Instance = new ShippersTable();
+    public static readonly ShipperTable Instance = new();
 
     public Column<ShipperId, int> Id { get; } //Now a custom type
     public Column<string> CompanyName { get; }
     public NullableColumn<string> Phone { get; }
 
     private ShippersTable() : base(tableName:"Shipper", schemaName: "dbo") {
-
         Id = new Column<ShipperId, int>(this, columnName: "Id", isAutoGenerated: true);
         CompanyName = new Column<string>(this, columnName: "CompanyName", length: new(40));
         Phone = new NullableColumn<string>(this, columnName: "Phone", length: new(24));
@@ -1200,11 +1201,11 @@ Here is a code example querying the database with a subset of the geography func
 GeoTestTable table = GeoTestTable.Instance;
 
 //Define a 'STPointFromText(...)' sql function
-STPointFromText stPointFromText = new STPointFromText(kwText: "POINT(-122.34900 47.65100)");
+STPointFromText stPointFromText = new(kwText: "POINT(-122.34900 47.65100)");
 
 GeoTestGuid guid = GeoTestGuid.ValueOf(Guid.NewGuid());
 
-using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+using(Transaction transaction = new(TestDatabase.Database)) {
 
     //Insert a record into the database
     NonQueryResult insertResult = Query
@@ -1221,22 +1222,22 @@ using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 }
 
 //Define a 'geography::Point' sql function
-GeographyPoint geographyPoint = new GeographyPoint(latitude: 47.65100, longitude: -122.34900);
+GeographyPoint geographyPoint = new(latitude: 47.65100, longitude: -122.34900);
 
 //Define a 'STDistance()' sql function
-STDistance distance = new STDistance(table.Geography, geographyPoint);
+STDistance distance = new(table.Geography, geographyPoint);
 
 //Define a 'STAsBinary()' sql function
-STAsBinary stAsBinary = new STAsBinary(table.Geography);
+STAsBinary stAsBinary = new(table.Geography);
 
 //Define a 'STAsText()' sql function
-STAsText stAsText = new STAsText(table.Geography);
+STAsText stAsText = new(table.Geography);
 
 //Define a '.Long' sql property
-Longitude longitude = new Longitude(table.Geography);
+Longitude longitude = new(table.Geography);
 
 //Define a '.Lat' sql property
-Latitude latitude = new Latitude(table.Geography);
+Latitude latitude = new(table.Geography);
 
 var result = Query
     .Select(
@@ -1286,7 +1287,7 @@ Sql server types like `hierarchyid` are known to not work.
 Isolation levels can be set on transactions. Please note that levels like 'Snapshot' are only supported by Sql Server. If the code returns from the using statement before calling `transaction.Commit()` the transaction will be rolled back.
 
 ```C#
-using(Transaction transaction = new Transaction(DB.Northwind, IsolationLevel.ReadCommitted)) {
+using(Transaction transaction = new(DB.Northwind, IsolationLevel.ReadCommitted)) {
     ...
     transaction.Commit();
 }
@@ -1323,7 +1324,7 @@ If you need to execute custom SQL / TSQL within an existing transaction, you can
 Note: Remember to correctly dispose of the command object.
 
 ```C#
-using(Transaction transaction = new Transaction(database)) {
+using(Transaction transaction = new(database)) {
 
     using DbCommand command = transaction.CreateCommand(timeout: TimeoutLevel.ShortSelect);
 
@@ -1400,7 +1401,7 @@ Table definitions can be validated against a database. The validation checks for
 Here is a code example of calling the schema validation.
 
 ```C#
-SchemaValidationSettings settings = new SchemaValidationSettings() {
+SchemaValidationSettings settings = new() {
     ValidatePrimaryKeys = true,
     ValidateUniqueConstraints = true,
     ValidateForeignKeys = true,
@@ -1413,26 +1414,26 @@ ValidationResult result = SchemaValidator.ValidateTablesInAssembly(database, Ass
 //There are other methods like validating table in an Assembly e.g.
 //ValidationResult result = SchemaValidator.ValidateTablesInCurrentDomain(database, settings);
 
-StringBuilder output = new StringBuilder();
+StringBuilder output = new();
 
 foreach(TableValidation tableValidation in result.TableValidation) {
 
-    if(tableValidation.HasErrors) {
-
-        string tableSchema = tableValidation.Table?.SchemaName ?? "";
-        string tableName = tableValidation.Table?.TableName ?? "";
-
-        foreach(string message in tableValidation.ValidationMessages) {
-            
-            if(!string.IsNullOrWhiteSpace(tableSchema) && !string.IsNullOrWhiteSpace(tableName)) {
-                output.AppendLine($"[{tableSchema}].[{tableName}] =>    {message}");
-            }
-            else {
-                output.AppendLine($"{message}");
-            }
-        }
-        output.Append(Environment.NewLine);
+    if(!tableValidation.HasErrors) {
+        continue;
     }
+    string tableSchema = tableValidation.Table?.SchemaName ?? "";
+    string tableName = tableValidation.Table?.TableName ?? "";
+
+    foreach(string message in tableValidation.ValidationMessages) {
+            
+        if(!string.IsNullOrWhiteSpace(tableName)) {
+            output.AppendLine($"[{tableSchema}].[{tableName}] =>    {message}");
+        }
+        else {
+            output.AppendLine($"{message}");
+        }
+    }
+    output.Append(Environment.NewLine);
 }
 string text = output.ToString();
 ```
@@ -1446,7 +1447,7 @@ In this case `MyColumn` might map to an unsupported database type.
 ```C#
 public sealed class MyTable : ATable {
 
-        public static readonly MyTable Instance = new MyTable();
+        public static readonly MyTable Instance = new();
 
         //This attribute will suppress any validation errors when the 'object' type does not map to the database schema type
         [SuppressColumnTypeValidation]
@@ -1509,7 +1510,6 @@ namespace Tables {
         ];
 
         private ParentTable() : base(tableName:"Parent", schemaName: "dbo") {
-
             Id = new Column<ParentId, Guid>(this, columnName: "Id");
             Id2 = new Column<Guid>(this, columnName: "Id2");
         }
@@ -1529,7 +1529,6 @@ namespace Tables {
         ];
 
         private ChildTable() : base(tableName:"Child", schemaName: "dbo") {
-
             Id = new Column<ChildId, Guid>(this, columnName: "Id");
             ParentId = new Column<ParentId, Guid>(this, columnName: "ParentId");
         }
@@ -1548,15 +1547,23 @@ The code generator works well for common data types and simple key constrains bu
 HTML documentation can be generated by calling `DocumentationGenerator.GenerateForAssembly(...)`. Table classes are loaded from the provided assembly(s) and an html documentation file is generated.
 
 ```C#
-string htmlDoc = DocumentationGenerator.GenerateForAssembly(new Assembly[] { Assembly.GetExecutingAssembly() }, applicationName: "My Application", version: "v1.0.0");
+string htmlDoc = DocumentationGenerator.GenerateForAssembly(
+    assemblies: [Assembly.GetExecutingAssembly()],
+    applicationName: "My Application",
+    version: "v1.0.0"
+);
 ```
 Or documentation can be generated by passing a list of table instances.
 ```C#
-List<Table> tables = new List<Table>();
+List<Table> tables = [];
 
 //...Populate tables list...//
 
-string htmlDoc = DocumentationGenerator.GenerateForTables(tables, applicationName: "My Application", version: "v1.0.0");
+string htmlDoc = DocumentationGenerator.GenerateForTables(
+    tables: tables,
+    applicationName: "My Application",
+    version: "v1.0.0"
+);
 ```
 
 Descriptions can be added to tables and columns. These descriptions are included in the generated documentation.
@@ -1567,7 +1574,7 @@ using QueryLite;
 
 public sealed class TerritoryTable : ATable {
 
-    public static readonly TerritoryTable Instance = new TerritoryTable();
+    public static readonly TerritoryTable Instance = new();
 
     public Column<TerritoryId, string> TerritoryId { get; }
     public Column<string> TerritoryDescription { get; }
