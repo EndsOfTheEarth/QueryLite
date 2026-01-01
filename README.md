@@ -491,30 +491,28 @@ SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 ```SQL
 SELECT id,row_guid,message,date FROM Test01
 ```
-
-| Method                              | Mean     | Error   | StdDev  | Allocated |
-|------------------------------------ |---------:|--------:|--------:|----------:|
-| Ado_Ten_Row_Select                  | 181.5 ms | 1.51 ms | 1.41 ms |   4.43 MB |
-| Dapper_Ten_Row_Select               | 183.3 ms | 3.10 ms | 3.19 ms |   6.76 MB |
-| QueryLite_Ten_Row_Prepared_Select   | 184.9 ms | 1.26 ms | 1.11 ms |   4.43 MB |
-| QueryLite_Ten_Row_Dynamic_Select    | 186.8 ms | 2.41 ms | 2.14 ms |   5.16 MB |
-| QueryLite_Ten_Row_Repository_Select | 240.7 ms | 4.50 ms | 4.82 ms |   9.84 MB |
-| EF_Core_Ten_Row_Select              | 209.1 ms | 1.57 ms | 1.47 ms |   9.84 MB |
+| Method                              | Mean     | Error   | StdDev  | Median   | Allocated |
+|------------------------------------ |---------:|--------:|--------:|---------:|----------:|
+| Ado_Ten_Row_Select                  | 140.0 ms | 1.96 ms | 1.64 ms | 139.9 ms |   4.43 MB |
+| Dapper_Ten_Row_Select               | 139.5 ms | 2.76 ms | 3.07 ms | 138.9 ms |   6.76 MB |
+| QueryLite_Ten_Row_Prepared_Select   | 146.6 ms | 2.83 ms | 6.61 ms | 144.2 ms |   4.43 MB |
+| QueryLite_Ten_Row_Dynamic_Select    | 142.4 ms | 1.46 ms | 1.29 ms | 142.0 ms |   5.16 MB |
+| QueryLite_Ten_Row_Repository_Select | 184.0 ms | 1.51 ms | 1.34 ms | 183.6 ms |   8.42 MB |
+| EF_Core_Ten_Row_Select              | 149.9 ms | 1.54 ms | 1.44 ms | 149.8 ms |   9.84 MB |
 
 ### Select One Hundred Rows To List (2000 Sequential Iterations)
 
 ```SQL
 SELECT id,row_guid,message,date FROM Test01
 ```
-
-| Method                                      | Mean     | Error   | StdDev  | Gen0      | Allocated |
-|-------------------------------------------- |---------:|--------:|--------:|----------:|----------:|
-| Ado_One_Hundred_Row_Select                  | 232.2 ms | 2.59 ms | 2.42 ms | 1000.0000 |  29.95 MB |
-| Dapper_One_Hundred_Row_Select               | 234.2 ms | 2.34 ms | 2.19 ms | 2000.0000 |  46.02 MB |
-| QueryLite_One_Hundred_Row_Prepared_Select   | 239.7 ms | 1.64 ms | 1.37 ms | 1000.0000 |  29.95 MB |
-| QueryLite_One_Hundred_Row_Dynamic_Select    | 240.7 ms | 2.11 ms | 1.97 ms | 1000.0000 |  30.69 MB |
-| QueryLite_One_Hundred_Row_Repository_Select | 319.0 ms | 2.01 ms | 1.88 ms | 4000.0000 |  72.95 MB |
-| EF_Core_One_Hundred_Row_Select              | 267.2 ms | 3.95 ms | 3.30 ms | 3000.0000 |  56.02 MB |
+| Method                                      | Mean     | Error   | StdDev   | Gen0      | Allocated |
+|-------------------------------------------- |---------:|--------:|---------:|----------:|----------:|
+| Ado_One_Hundred_Row_Select                  | 233.1 ms | 4.56 ms |  4.04 ms | 1000.0000 |  29.95 MB |
+| Dapper_One_Hundred_Row_Select               | 231.1 ms | 2.02 ms |  1.69 ms | 2000.0000 |  46.02 MB |
+| QueryLite_One_Hundred_Row_Prepared_Select   | 249.3 ms | 4.97 ms | 10.05 ms | 1000.0000 |  29.95 MB |
+| QueryLite_One_Hundred_Row_Dynamic_Select    | 245.5 ms | 4.85 ms |  4.54 ms | 1000.0000 |  30.69 MB |
+| QueryLite_One_Hundred_Row_Repository_Select | 318.5 ms | 6.32 ms | 16.88 ms | 3000.0000 |  56.99 MB |
+| EF_Core_One_Hundred_Row_Select              | 262.9 ms | 2.28 ms |  2.02 ms | 3000.0000 |  56.02 MB |
 
 ### Select One Thousand Rows To List (2000 Sequential Iterations)
 
@@ -523,12 +521,12 @@ SELECT id,row_guid,message,date FROM Test01
 ```
 | Method                                       | Mean     | Error   | StdDev  | Gen0       | Gen1       | Allocated |
 |--------------------------------------------- |---------:|--------:|--------:|-----------:|-----------:|----------:|
-| Ado_One_Thousand_Row_Select                  | 530.2 ms | 1.84 ms | 1.53 ms | 17000.0000 |  5000.0000 | 277.16 MB |
-| Dapper_One_Thousand_Row_Select               | 530.9 ms | 3.18 ms | 2.82 ms | 26000.0000 |  8000.0000 | 430.56 MB |
-| QueryLite_One_Thousand_Row_Prepared_Select   | 533.7 ms | 1.54 ms | 1.37 ms | 17000.0000 |  8000.0000 | 277.16 MB |
-| QueryLite_One_Thousand_Row_Dynamic_Select    | 536.9 ms | 3.18 ms | 2.82 ms | 17000.0000 |  9000.0000 | 277.89 MB |
-| QueryLite_One_Thousand_Row_Repository_Select | 955.4 ms | 4.04 ms | 3.58 ms | 43000.0000 | 25000.0000 | 687.96 MB |
-| EF_Core_One_Thousand_Row_Select              | 579.7 ms | 1.57 ms | 1.31 ms | 31000.0000 |  1000.0000 | 509.79 MB |
+| Ado_One_Thousand_Row_Select                  | 523.6 ms | 1.28 ms | 1.07 ms | 17000.0000 |  5000.0000 | 277.16 MB |
+| Dapper_One_Thousand_Row_Select               | 523.1 ms | 2.33 ms | 1.95 ms | 26000.0000 |  8000.0000 | 430.56 MB |
+| QueryLite_One_Thousand_Row_Prepared_Select   | 526.9 ms | 4.03 ms | 3.57 ms | 17000.0000 |  8000.0000 | 277.16 MB |
+| QueryLite_One_Thousand_Row_Dynamic_Select    | 528.6 ms | 3.41 ms | 3.02 ms | 17000.0000 |  9000.0000 | 277.89 MB |
+| QueryLite_One_Thousand_Row_Repository_Select | 973.2 ms | 4.72 ms | 4.42 ms | 33000.0000 | 16000.0000 | 535.86 MB |
+| EF_Core_One_Thousand_Row_Select              | 569.9 ms | 2.82 ms | 2.36 ms | 31000.0000 |  1000.0000 | 509.79 MB |
 
 ### Insert Single Row (2000 Sequential Iterations)
 

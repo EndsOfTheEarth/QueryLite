@@ -81,6 +81,11 @@ namespace QueryLite {
         void PopulateWithExistingRows(IEnumerable<ROW> rows);
 
         /// <summary>
+        /// Populate repository with rows that already exist in the database and are unchanged.
+        /// </summary>
+        void PopulateWithExistingRows(IList<ROW> rows);
+
+        /// <summary>
         /// Adds row to repository to be inserted when UpdateAsync(...) or PersistInsertsOnlyAsync(...) is called.
         /// </summary>
         ROW AddNewRow(ROW row);
@@ -421,6 +426,18 @@ namespace QueryLite {
         }
 
         public void PopulateWithExistingRows(IEnumerable<ROW> rows) {
+
+            foreach(ROW row in rows) {
+                RowState rowState = new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row), newRow: row);
+                StateLookup.Add(new RefCompare<ROW>(row), rowState);
+                Rows.Add(rowState);
+            }
+        }
+
+        public void PopulateWithExistingRows(IList<ROW> rows) {
+
+            StateLookup.EnsureCapacity(Rows.Count + rows.Count);
+            Rows.EnsureCapacity(Rows.Count + rows.Count);
 
             foreach(ROW row in rows) {
                 RowState rowState = new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row), newRow: row);
@@ -1025,7 +1042,7 @@ namespace QueryLite {
             }
         }
 
-        private class RowState {
+        private sealed class RowState {
 
             public RowState(RowUpdateState state, ROW? oldRow, ROW newRow) {
                 State = state;
@@ -1045,7 +1062,7 @@ namespace QueryLite {
         Deleted
     }
 
-    public class ColumnAndSetter<ROW> {
+    public sealed class ColumnAndSetter<ROW> {
 
         public ColumnAndSetter(IColumn column, Func<ROW, object?> getter, Action<ROW, IResultRow> setter) {
             Column = column;
