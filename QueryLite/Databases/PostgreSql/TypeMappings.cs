@@ -70,7 +70,7 @@ namespace QueryLite.Databases.PostgreSql {
         public override string? GetCSharpCodeSet(Type dotNetType) {
 
             if(dotNetType == typeof(string)) {
-                return "string.Empty";
+                return "\"\"";
             }
             return null;
         }
