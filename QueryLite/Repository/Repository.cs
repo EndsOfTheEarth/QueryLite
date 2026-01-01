@@ -99,6 +99,12 @@ namespace QueryLite {
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// Deleted row objects are removed from the repository.
         /// </summary>
+        int SaveChanges(IDatabase database);
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// Deleted row objects are removed from the repository.
+        /// </summary>
         int SaveChanges(Transaction transaction);
 
         /// <summary>
@@ -112,6 +118,12 @@ namespace QueryLite {
         /// Deleted row objects are removed from the repository.
         /// </summary>
         int SaveChanges(Transaction transaction, QueryTimeout? timeout, string debugName);
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// Deleted row objects are removed from the repository.
+        /// </summary>
+        Task<int> SaveChangesAsync(IDatabase database, CancellationToken ct);
 
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
@@ -473,6 +485,20 @@ namespace QueryLite {
         /// <summary>
         /// Persist all changes to database. Inserts, updates and deletes in row order.
         /// </summary>
+        public int SaveChanges(IDatabase database) {
+
+            using Transaction transaction = new(database);
+
+            int result = SaveChanges(transaction, timeout: null);
+
+            transaction.Commit();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// </summary>
         public int SaveChanges(Transaction transaction) {
             return SaveChanges(transaction, timeout: null);
         }
@@ -526,6 +552,20 @@ namespace QueryLite {
             StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
             Rows = newState;
             return totalRowsEffected;
+        }
+
+        /// <summary>
+        /// Persist all changes to database. Inserts, updates and deletes in row order.
+        /// </summary>
+        public async Task<int> SaveChangesAsync(IDatabase database, CancellationToken ct) {
+
+            using Transaction transaction = new(database);
+
+            int result = await SaveChangesAsync(transaction, timeout: null, ct);
+
+            await transaction.CommitAsync(ct);
+
+            return result;
         }
 
         /// <summary>

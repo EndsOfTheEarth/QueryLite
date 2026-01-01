@@ -744,7 +744,7 @@ OrderRow row = new() {
 repository.AddNewRow(row);
 
 using(Transaction transaction = new(TestDatabase.Database)) {
-    await repository.UpdateAsync(transaction, ct);
+    await repository.SaveChangesAsync(transaction, ct);
     await transaction.CommitAsync(ct);
 }
 ```
@@ -765,7 +765,7 @@ foreach(OrderRow row in repository) {   //Set a value on each row
 }
 
 using(Transaction transaction = new(TestDatabase.Database)) {
-    await repository.UpdateAsync(transaction, ct);
+    await repository.SaveChangesAsync(transaction, ct);
     await transaction.CommitAsync(ct);
 }
 ```
@@ -785,7 +785,7 @@ OrderRow row = repository.First();
 repository.DeleteRow(row);
 
 using(Transaction transaction = new(TestDatabase.Database)) {
-    await repository.UpdateAsync(transaction, ct);
+    await repository.SaveChangesAsync(transaction, ct);
     await transaction.CommitAsync(ct);
 }
 ```
