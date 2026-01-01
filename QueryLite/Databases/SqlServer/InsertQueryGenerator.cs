@@ -76,7 +76,6 @@ namespace QueryLite.Databases.SqlServer {
                 GetReturningSyntax(sql, outputFunc);
 
                 sql.Append(" VALUES(").Append(valuesCollector.ParamsSql).Append(')');
-
             }
             return StringBuilderCache.ToStringAndRelease(sql);
         }
