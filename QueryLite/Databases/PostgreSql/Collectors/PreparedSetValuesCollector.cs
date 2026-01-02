@@ -247,54 +247,6 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(ENUM?)));
         }
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(Column<StringKey<TYPE>> column, Func<PARAMETERS, StringKey<TYPE>> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(StringKey<TYPE>)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(NullableColumn<StringKey<TYPE>> column, Func<PARAMETERS, StringKey<TYPE>?> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(StringKey<TYPE>?)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(Column<GuidKey<TYPE>> column, Func<PARAMETERS, GuidKey<TYPE>> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(GuidKey<TYPE>)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(NullableColumn<GuidKey<TYPE>> column, Func<PARAMETERS, GuidKey<TYPE>?> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(GuidKey<TYPE>?)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(Column<ShortKey<TYPE>> column, Func<PARAMETERS, ShortKey<TYPE>> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(ShortKey<TYPE>)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(NullableColumn<ShortKey<TYPE>> column, Func<PARAMETERS, ShortKey<TYPE>?> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(ShortKey<TYPE>?)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(Column<IntKey<TYPE>> column, Func<PARAMETERS, IntKey<TYPE>> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(IntKey<TYPE>)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(NullableColumn<IntKey<TYPE>> column, Func<PARAMETERS, IntKey<TYPE>?> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(IntKey<TYPE>?)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(Column<LongKey<TYPE>> column, Func<PARAMETERS, LongKey<TYPE>> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(LongKey<TYPE>)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(NullableColumn<LongKey<TYPE>> column, Func<PARAMETERS, LongKey<TYPE>?> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(LongKey<TYPE>?)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(Column<BoolValue<TYPE>> column, Func<PARAMETERS, BoolValue<TYPE>> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(BoolValue<TYPE>)));
-        }
-
-        public IPreparedSetValuesCollector<PARAMETERS> Set<TYPE>(NullableColumn<BoolValue<TYPE>> column, Func<PARAMETERS, BoolValue<TYPE>?> value) where TYPE : notnull {
-            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(BoolValue<TYPE>?)));
-        }
-
         public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<string> column, AFunction<string> value) {
             return AddFunction(column, value);
         }

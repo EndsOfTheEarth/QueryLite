@@ -88,7 +88,7 @@ namespace QueryLiteTest.Tests {
 
             STPointFromText stPointFromText = new STPointFromText(kwText: "POINT(-122.34900 47.65100)");
 
-            GuidKey<IGeoTest> guid = GuidKey<IGeoTest>.ValueOf(Guid.NewGuid());
+            GeoTestId guid = GeoTestId.ValueOf(Guid.NewGuid());
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -191,7 +191,7 @@ namespace QueryLiteTest.Tests {
 
             STLineFromText stLineFromText = new STLineFromText(kwText: "LINESTRING(-122.360 47.656, -122.343 47.656)");
 
-            GuidKey<IGeoTest> guid = GuidKey<IGeoTest>.ValueOf(Guid.NewGuid());
+            GeoTestId guid = GeoTestId.ValueOf(Guid.NewGuid());
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -263,7 +263,7 @@ namespace QueryLiteTest.Tests {
             //Sql server only
             GeographyParse geography_Parse = new GeographyParse(kwtText: "CURVEPOLYGON (COMPOUNDCURVE (CIRCULARSTRING (-122.200928 47.454094, -122.810669 47.00648, -122.942505 46.687131, -121.14624 45.786679, -119.119263 46.183634), (-119.119263 46.183634, -119.273071 47.107523, -120.640869 47.569114, -122.200928 47.454094)))");
 
-            GuidKey<IGeoTest> guid = GuidKey<IGeoTest>.ValueOf(Guid.NewGuid());
+            GeoTestId guid = GeoTestId.ValueOf(Guid.NewGuid());
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 

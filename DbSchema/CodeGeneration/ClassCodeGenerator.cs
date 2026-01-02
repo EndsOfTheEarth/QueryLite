@@ -38,7 +38,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             code.Append("using System;").EndLine();
             code.Append("using QueryLite;").EndLine();
 
-            List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
+            List<SchemaName> schemaNames = new List<SchemaName>();
 
             foreach(DatabaseTable table in tables) {
 
@@ -51,7 +51,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             int count = 0;
 
-            foreach(StringKey<ISchemaName> schema in schemaNames) {
+            foreach(SchemaName schema in schemaNames) {
 
                 if(count > 0) {
                     code.EndLine();

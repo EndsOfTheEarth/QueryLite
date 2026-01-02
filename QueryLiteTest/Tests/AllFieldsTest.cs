@@ -58,42 +58,42 @@ namespace QueryLiteTest.Tests {
         public void BasicWithQueriesAndNoParameters() {
 
             Settings.UseParameters = false;
-            AllFieldsTest.BasicInsertUpdateAndDeleteWithQueries();
+            BasicInsertUpdateAndDeleteWithQueries();
         }
 
         [TestMethod]
         public async Task BasicWithQueriesAndNoParametersAsync() {
 
             Settings.UseParameters = false;
-            await AllFieldsTest.BasicInsertUpdateAndDeleteWithQueriesAsync();
+            await BasicInsertUpdateAndDeleteWithQueriesAsync();
         }
 
         [TestMethod]
         public void BasicInsertAndTruncationWithQueries() {
 
             Settings.UseParameters = false;
-            AllFieldsTest.BasicInsertAndTruncateWithQueries();
+            BasicInsertAndTruncateWithQueries();
         }
 
         [TestMethod]
         public async Task BasicInsertAndTruncationWithQueriesAsync() {
 
             Settings.UseParameters = false;
-            await AllFieldsTest.BasicInsertAndTruncateWithQueriesAsync();
+            await BasicInsertAndTruncateWithQueriesAsync();
         }
 
         [TestMethod]
         public void BasicWithQueriesAndParameters() {
 
             Settings.UseParameters = true;
-            AllFieldsTest.BasicInsertUpdateAndDeleteWithQueries();
+            BasicInsertUpdateAndDeleteWithQueries();
         }
 
         [TestMethod]
         public async Task BasicWithQueriesAndParametersAsync() {
 
             Settings.UseParameters = true;
-            await AllFieldsTest.BasicInsertUpdateAndDeleteWithQueriesAsync();
+            await BasicInsertUpdateAndDeleteWithQueriesAsync();
         }
 
         [TestMethod]
@@ -108,14 +108,14 @@ namespace QueryLiteTest.Tests {
 
             Settings.UseParameters = false;
 
-            AllFieldsTest.UpdateJoinTest();
+            UpdateJoinTest();
         }
         [TestMethod]
         public void UpdateJoinTestWithoutParams2() {
 
             Settings.UseParameters = false;
 
-            AllFieldsTest.UpdateJoinTest2();
+            UpdateJoinTest2();
         }
 
         [TestMethod]
@@ -123,14 +123,14 @@ namespace QueryLiteTest.Tests {
 
             Settings.UseParameters = true;
 
-            AllFieldsTest.UpdateJoinTest();
+            UpdateJoinTest();
         }
         [TestMethod]
         public void UpdateJoinTestWithParams2() {
 
             Settings.UseParameters = true;
 
-            AllFieldsTest.UpdateJoinTest2();
+            UpdateJoinTest2();
         }
 
         [TestMethod]
@@ -138,14 +138,14 @@ namespace QueryLiteTest.Tests {
 
             Settings.UseParameters = false;
 
-            await AllFieldsTest.UpdateJoinTestAsync();
+            await UpdateJoinTestAsync();
         }
         [TestMethod]
         public async Task UpdateJoinTestWithoutParamsAsync2() {
 
             Settings.UseParameters = false;
 
-            await AllFieldsTest.UpdateJoinTestAsync2();
+            await UpdateJoinTestAsync2();
         }
 
         [TestMethod]
@@ -153,14 +153,14 @@ namespace QueryLiteTest.Tests {
 
             Settings.UseParameters = true;
 
-            await AllFieldsTest.UpdateJoinTestAsync();
+            await UpdateJoinTestAsync();
         }
         [TestMethod]
         public async Task UpdateJoinTestWithParamsAsync2() {
 
             Settings.UseParameters = true;
 
-            await AllFieldsTest.UpdateJoinTestAsync2();
+            await UpdateJoinTestAsync2();
         }
 
         [TestMethod]
@@ -222,187 +222,14 @@ namespace QueryLiteTest.Tests {
             }
             else if(TestDatabase.Database.DatabaseType == DatabaseType.PostgreSql) {
                 Settings.UseParameters = true;
-                await AllFieldsTest.BasicInsertAndDeleteJoinQueriesPostgreSqlAsync();
+                await BasicInsertAndDeleteJoinQueriesPostgreSqlAsync();
             }
-        }
-
-        [TestMethod]
-        public void KeyTest() {
-
-            //Test that the key types equals operator does not cause a stack overflow
-
-            {
-                GuidKey<AllTypes>? guidKey = GuidKey<AllTypes>.ValueOf(Guid.NewGuid());
-
-                Assert.IsFalse(guidKey == null);
-                Assert.IsTrue(guidKey != null);
-
-                guidKey = null;
-
-                Assert.IsTrue(guidKey == null);
-                Assert.IsFalse(guidKey != null);
-            }
-
-            {
-                StringKey<AllTypes>? stringKey = StringKey<AllTypes>.ValueOf("abc");
-
-                if(stringKey == null) { }
-                if(stringKey != null) { }
-
-                Assert.IsFalse(stringKey == null);
-                Assert.IsTrue(stringKey != null);
-
-                stringKey = null;
-
-                Assert.IsTrue(stringKey == null);
-                Assert.IsFalse(stringKey != null);
-            }
-
-            {
-                ShortKey<AllTypes>? shortKey = ShortKey<AllTypes>.ValueOf(1);
-
-                if(shortKey == null) { }
-                if(shortKey != null) { }
-
-                Assert.IsFalse(shortKey == null);
-                Assert.IsTrue(shortKey != null);
-
-                shortKey = null;
-
-                Assert.IsTrue(shortKey == null);
-                Assert.IsFalse(shortKey != null);
-            }
-
-            {
-                IntKey<AllTypes>? intKey = IntKey<AllTypes>.ValueOf(1);
-
-                Assert.IsFalse(intKey == null);
-                Assert.IsTrue(intKey != null);
-
-                intKey = null;
-
-                Assert.IsTrue(intKey == null);
-                Assert.IsFalse(intKey != null);
-            }
-
-            {
-                LongKey<AllTypes>? longKey = LongKey<AllTypes>.ValueOf(1);
-
-                Assert.IsFalse(longKey == null);
-                Assert.IsTrue(longKey != null);
-
-                longKey = null;
-
-                Assert.IsTrue(longKey == null);
-                Assert.IsFalse(longKey != null);
-            }
-
-            {
-                BoolValue<AllTypes>? boolValue = BoolValue<AllTypes>.ValueOf(true);
-
-                Assert.IsFalse(boolValue == null);
-                Assert.IsTrue(boolValue != null);
-
-                boolValue = null;
-
-                Assert.IsTrue(boolValue == null);
-                Assert.IsFalse(boolValue != null);
-            }
-        }
-
-        [TestMethod]
-        public void JsonSerializationTest() {
-
-            {
-                Guid guid = new Guid("0a0d021f-4385-4a33-b7cf-cb5dd14bedbe");
-
-                GuidKey<AllTypes> key1 = GuidKey<AllTypes>.ValueOf(guid);
-
-                Assert.AreEqual(key1.Value, guid);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                GuidKey<AllTypes> key2 = JsonSerializer.Deserialize<GuidKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                string str = "jkadkjfahdf";
-
-                StringKey<AllTypes> key1 = StringKey<AllTypes>.ValueOf(str);
-
-                Assert.AreEqual(key1.Value, str);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                StringKey<AllTypes> key2 = JsonSerializer.Deserialize<StringKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                short shortValue = 123;
-
-                ShortKey<AllTypes> key1 = ShortKey<AllTypes>.ValueOf(shortValue);
-
-                Assert.AreEqual(key1.Value, shortValue);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                ShortKey<AllTypes> key2 = JsonSerializer.Deserialize<ShortKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                int intValue = 123456789;
-
-                IntKey<AllTypes> key1 = IntKey<AllTypes>.ValueOf(intValue);
-
-                Assert.AreEqual(key1.Value, intValue);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                IntKey<AllTypes> key2 = JsonSerializer.Deserialize<IntKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                long longValue = 1234567892123122;
-
-                LongKey<AllTypes> key1 = LongKey<AllTypes>.ValueOf(longValue);
-
-                Assert.AreEqual(key1.Value, longValue);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                LongKey<AllTypes> key2 = JsonSerializer.Deserialize<LongKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                bool boolValue = true;
-
-                BoolValue<AllTypes> key1 = BoolValue<AllTypes>.ValueOf(boolValue);
-
-                Assert.AreEqual(key1.Value, boolValue);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                BoolValue<AllTypes> key2 = JsonSerializer.Deserialize<BoolValue<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-            return;
         }
 
         private static AllTypes GetAllTypes1() {
 
             return new AllTypes(
-                id: IntKey<AllTypes>.NotSet,
+                id: AllTypesId.NotSet,
                 guid: Guid.NewGuid(),
                 @string: "88udskj🐘a8adf😀q23",
                 smallInt: 7261,
@@ -538,105 +365,105 @@ namespace QueryLiteTest.Tests {
 
         private static void BasicInsertUpdateAndDeleteWithQueries() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
-            AllFieldsTest.InsertWithQuery(allTypes1);
-            AllFieldsTest.InsertWithQuery(allTypes2);
-            AllFieldsTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
-            AllFieldsTest.JoinQuery(allTypes1);
-            AllFieldsTest.JoinQuery(allTypes2);
-            AllFieldsTest.JoinQuery(allTypes3);
+            JoinQuery(allTypes1);
+            JoinQuery(allTypes2);
+            JoinQuery(allTypes3);
 
-            AllFieldsTest.DeleteWithQueryAndRollback(allTypes1);
-            AllFieldsTest.DeleteWithQueryAndRollback(allTypes2);
-            AllFieldsTest.DeleteWithQueryAndRollback(allTypes3);
+            DeleteWithQueryAndRollback(allTypes1);
+            DeleteWithQueryAndRollback(allTypes2);
+            DeleteWithQueryAndRollback(allTypes3);
 
-            AllFieldsTest.UpdateWithQuery(allTypes1);
-            AllFieldsTest.UpdateWithQuery(allTypes2);
-            AllFieldsTest.UpdateWithQuery(allTypes3);
+            UpdateWithQuery(allTypes1);
+            UpdateWithQuery(allTypes2);
+            UpdateWithQuery(allTypes3);
 
-            AllFieldsTest.UpdateWithQueryAndRollback(allTypes1);
-            AllFieldsTest.UpdateWithQueryAndRollback(allTypes2);
-            AllFieldsTest.UpdateWithQueryAndRollback(allTypes3);
+            UpdateWithQueryAndRollback(allTypes1);
+            UpdateWithQueryAndRollback(allTypes2);
+            UpdateWithQueryAndRollback(allTypes3);
 
-            AllFieldsTest.DeleteWithQuery(allTypes1);
-            AllFieldsTest.DeleteWithQuery(allTypes2);
-            AllFieldsTest.DeleteWithQueryReturning(allTypes3);
+            DeleteWithQuery(allTypes1);
+            DeleteWithQuery(allTypes2);
+            DeleteWithQueryReturning(allTypes3);
 
-            AllFieldsTest.InsertWithQueryAndRollback(AllFieldsTest.GetAllTypes1());
-            AllFieldsTest.InsertWithQueryAndRollback(AllFieldsTest.GetAllTypes1());
-            AllFieldsTest.InsertWithQueryAndRollback(AllFieldsTest.GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
         }
 
         private static void BasicInsertAndTruncateWithQueries() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
-            AllFieldsTest.InsertWithQuery(allTypes1);
-            AllFieldsTest.InsertWithQuery(allTypes2);
-            AllFieldsTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
-            AllFieldsTest.Truncate();
+            Truncate();
         }
 
         private static async Task BasicInsertAndTruncateWithQueriesAsync() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
-            AllFieldsTest.InsertWithQuery(allTypes1);
-            AllFieldsTest.InsertWithQuery(allTypes2);
-            AllFieldsTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
-            await AllFieldsTest.TruncateAsync();
+            await TruncateAsync();
         }
 
         private static async Task BasicInsertUpdateAndDeleteWithQueriesAsync() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
             await InsertWithQueryAsync(allTypes1);
             await InsertWithQueryAsync(allTypes2);
             await InsertWithQueryAsync(allTypes3);
 
-            await AllFieldsTest.JoinQueryAsync(allTypes1);
-            await AllFieldsTest.JoinQueryAsync(allTypes2);
-            await AllFieldsTest.JoinQueryAsync(allTypes3);
+            await JoinQueryAsync(allTypes1);
+            await JoinQueryAsync(allTypes2);
+            await JoinQueryAsync(allTypes3);
 
-            AllFieldsTest.DeleteWithQueryAndRollback(allTypes1);
-            AllFieldsTest.DeleteWithQueryAndRollback(allTypes2);
-            AllFieldsTest.DeleteWithQueryAndRollback(allTypes3);
+            DeleteWithQueryAndRollback(allTypes1);
+            DeleteWithQueryAndRollback(allTypes2);
+            DeleteWithQueryAndRollback(allTypes3);
 
-            await AllFieldsTest.UpdateWithQueryAsync(allTypes1);
-            await AllFieldsTest.UpdateWithQueryAsync(allTypes2);
-            await AllFieldsTest.UpdateWithQueryAsync(allTypes3);
+            await UpdateWithQueryAsync(allTypes1);
+            await UpdateWithQueryAsync(allTypes2);
+            await UpdateWithQueryAsync(allTypes3);
 
-            AllFieldsTest.UpdateWithQueryAndRollback(allTypes1);
-            AllFieldsTest.UpdateWithQueryAndRollback(allTypes2);
-            AllFieldsTest.UpdateWithQueryAndRollback(allTypes3);
+            UpdateWithQueryAndRollback(allTypes1);
+            UpdateWithQueryAndRollback(allTypes2);
+            UpdateWithQueryAndRollback(allTypes3);
 
-            await AllFieldsTest.DeleteWithQueryAsync(allTypes1);
-            await AllFieldsTest.DeleteWithQueryAsync(allTypes2);
-            await AllFieldsTest.DeleteWithQueryReturningAsync(allTypes3);
+            await DeleteWithQueryAsync(allTypes1);
+            await DeleteWithQueryAsync(allTypes2);
+            await DeleteWithQueryReturningAsync(allTypes3);
 
-            AllFieldsTest.InsertWithQueryAndRollback(AllFieldsTest.GetAllTypes1());
-            AllFieldsTest.InsertWithQueryAndRollback(AllFieldsTest.GetAllTypes1());
-            AllFieldsTest.InsertWithQueryAndRollback(AllFieldsTest.GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
+            InsertWithQueryAndRollback(GetAllTypes1());
         }
 
         private static async Task BasicInsertAndDeleteJoinQueriesSqlServerAsync() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
             await InsertWithQueryAsync(allTypes1);
             await InsertWithQueryAsync(allTypes2);
@@ -716,9 +543,9 @@ namespace QueryLiteTest.Tests {
 
         private static async Task BasicInsertAndDeleteJoinQueriesPostgreSqlAsync() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
             await InsertWithQueryAsync(allTypes1);
             await InsertWithQueryAsync(allTypes2);
@@ -847,7 +674,7 @@ namespace QueryLiteTest.Tests {
 
                 Assert.IsTrue(allTypes.Id.IsValid);
 
-                AllFieldsTest.AssertRowExists(allTypes);
+                AssertRowExists(allTypes);
             }
         }
 
@@ -1008,7 +835,7 @@ namespace QueryLiteTest.Tests {
 
                 transaction.Commit();
 
-                AllFieldsTest.AssertRowExists(allTypes);
+                AssertRowExists(allTypes);
             }
         }
 
@@ -1080,7 +907,7 @@ namespace QueryLiteTest.Tests {
 
             Assert.IsTrue(allTypes.Id.IsValid);
 
-            int beginRowCount = AllFieldsTest.GetNumberOfRows();
+            int beginRowCount = GetNumberOfRows();
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
@@ -1117,14 +944,14 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(0, countValue!.Value);
             }
-            Assert.AreEqual(beginRowCount, AllFieldsTest.GetNumberOfRows() + 1);
+            Assert.AreEqual(beginRowCount, GetNumberOfRows() + 1);
         }
 
         private static void DeleteWithQueryReturning(AllTypes allTypes) {
 
             Assert.IsTrue(allTypes.Id.IsValid);
 
-            int beginRowCount = AllFieldsTest.GetNumberOfRows();
+            int beginRowCount = GetNumberOfRows();
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
@@ -1169,14 +996,14 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(0, countValue!.Value);
             }
-            Assert.AreEqual(beginRowCount, AllFieldsTest.GetNumberOfRows() + 1);
+            Assert.AreEqual(beginRowCount, GetNumberOfRows() + 1);
         }
 
         private static async Task DeleteWithQueryAsync(AllTypes allTypes) {
 
             Assert.IsTrue(allTypes.Id.IsValid);
 
-            int beginRowCount = await AllFieldsTest.GetNumberOfRowsAsync();
+            int beginRowCount = await GetNumberOfRowsAsync();
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
@@ -1213,14 +1040,14 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(0, countValue!.Value);
             }
-            Assert.AreEqual(beginRowCount, await AllFieldsTest.GetNumberOfRowsAsync() + 1);
+            Assert.AreEqual(beginRowCount, await GetNumberOfRowsAsync() + 1);
         }
 
         private static async Task DeleteWithQueryReturningAsync(AllTypes allTypes) {
 
             Assert.IsTrue(allTypes.Id.IsValid);
 
-            int beginRowCount = await AllFieldsTest.GetNumberOfRowsAsync();
+            int beginRowCount = await GetNumberOfRowsAsync();
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
@@ -1264,7 +1091,7 @@ namespace QueryLiteTest.Tests {
                 Assert.IsNotNull(countValue);
                 Assert.AreEqual(0, countValue!.Value);
             }
-            Assert.AreEqual(beginRowCount, await AllFieldsTest.GetNumberOfRowsAsync() + 1);
+            Assert.AreEqual(beginRowCount, await GetNumberOfRowsAsync() + 1);
         }
 
         private static int GetNumberOfRows() {
@@ -1335,7 +1162,7 @@ namespace QueryLiteTest.Tests {
                 .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
                 .Join(allTypesTable2).On(allTypesTable1.Id == allTypesTable2.Id)
                 .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
-                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new IntKey<AllTypes>(928756923))
+                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == AllTypesId.ValueOf(928756923))
                 .Where(allTypesTable1.Id == allTypes.Id)
                 .Option(labelName: "Label 1", SqlServerQueryOption.FORCE_ORDER)
                 .Execute(TestDatabase.Database);
@@ -1428,13 +1255,13 @@ namespace QueryLiteTest.Tests {
 
                 Assert.IsTrue(allTypes.Id.IsValid);
 
-                AllFieldsTest.AssertRowExists(allTypes, transaction);
+                AssertRowExists(allTypes, transaction);
 
                 transaction.Rollback();
 
-                AllFieldsTest.AssertRowDoesNotExists(allTypes);
+                AssertRowDoesNotExists(allTypes);
 
-                allTypes.Id = IntKey<AllTypes>.NotSet;
+                allTypes.Id = AllTypesId.NotSet;
             }
         }
 
@@ -1494,10 +1321,10 @@ namespace QueryLiteTest.Tests {
                 Assert.AreEqual(1, result.Rows.Count);
 
                 AssertRow(result.Rows[0], newAllTypes);
-                AllFieldsTest.AssertRowExists(newAllTypes, transaction);
+                AssertRowExists(newAllTypes, transaction);
 
                 transaction.Rollback();
-                AllFieldsTest.AssertRowExists(initialAllTypes);   //Assert initial values
+                AssertRowExists(initialAllTypes);   //Assert initial values
             }
         }
 
@@ -1505,7 +1332,7 @@ namespace QueryLiteTest.Tests {
 
             Assert.IsTrue(allTypes.Id.IsValid);
 
-            int beginRowCount = AllFieldsTest.GetNumberOfRows();
+            int beginRowCount = GetNumberOfRows();
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
@@ -1518,13 +1345,13 @@ namespace QueryLiteTest.Tests {
 
                 Assert.AreEqual(1, result.RowsEffected);
 
-                AllFieldsTest.AssertRowDoesNotExists(allTypes, transaction);
+                AssertRowDoesNotExists(allTypes, transaction);
 
                 transaction.Rollback();
 
-                AllFieldsTest.AssertRowExists(allTypes);
+                AssertRowExists(allTypes);
             }
-            Assert.AreEqual(beginRowCount, AllFieldsTest.GetNumberOfRows());
+            Assert.AreEqual(beginRowCount, GetNumberOfRows());
         }
 
 
@@ -1533,18 +1360,18 @@ namespace QueryLiteTest.Tests {
          */
         private static void UpdateJoinTest() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
             allTypes2.BigInt = 1;
             allTypes3.BigInt = 1;
 
-            AllFieldsTest.InsertWithQuery(allTypes1);
-            AllFieldsTest.InsertWithQuery(allTypes2);
-            AllFieldsTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -1583,7 +1410,7 @@ namespace QueryLiteTest.Tests {
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
                  */
-                AllFieldsTest.AssertRowExists(allTypes1, transaction);
+                AssertRowExists(allTypes1, transaction);
 
                 allTypes2.Guid = allTypes1.Guid;
                 allTypes2.String = allTypes1.String;
@@ -1601,7 +1428,7 @@ namespace QueryLiteTest.Tests {
                 allTypes2.DateOnly = allTypes1.DateOnly;
                 allTypes2.TimeOnly = allTypes1.TimeOnly;
 
-                AllFieldsTest.AssertRowExists(allTypes2, transaction);
+                AssertRowExists(allTypes2, transaction);
 
                 allTypes3.Guid = allTypes1.Guid;
                 allTypes3.String = allTypes1.String;
@@ -1619,7 +1446,7 @@ namespace QueryLiteTest.Tests {
                 allTypes3.DateOnly = allTypes1.DateOnly;
                 allTypes3.TimeOnly = allTypes1.TimeOnly;
 
-                AllFieldsTest.AssertRowExists(allTypes3, transaction);
+                AssertRowExists(allTypes3, transaction);
 
                 transaction.Commit();
             }
@@ -1630,18 +1457,18 @@ namespace QueryLiteTest.Tests {
          */
         private static async Task UpdateJoinTestAsync() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
             allTypes2.BigInt = 1;
             allTypes3.BigInt = 1;
 
-            AllFieldsTest.InsertWithQuery(allTypes1);
-            AllFieldsTest.InsertWithQuery(allTypes2);
-            AllFieldsTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -1680,7 +1507,7 @@ namespace QueryLiteTest.Tests {
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
                  */
-                AllFieldsTest.AssertRowExists(allTypes1, transaction);
+                AssertRowExists(allTypes1, transaction);
 
                 allTypes2.Guid = allTypes1.Guid;
                 allTypes2.String = allTypes1.String;
@@ -1698,7 +1525,7 @@ namespace QueryLiteTest.Tests {
                 allTypes2.DateOnly = allTypes1.DateOnly;
                 allTypes2.TimeOnly = allTypes1.TimeOnly;
 
-                AllFieldsTest.AssertRowExists(allTypes2, transaction);
+                AssertRowExists(allTypes2, transaction);
 
                 allTypes3.Guid = allTypes1.Guid;
                 allTypes3.String = allTypes1.String;
@@ -1716,7 +1543,7 @@ namespace QueryLiteTest.Tests {
                 allTypes3.DateOnly = allTypes1.DateOnly;
                 allTypes3.TimeOnly = allTypes1.TimeOnly;
 
-                AllFieldsTest.AssertRowExists(allTypes3, transaction);
+                AssertRowExists(allTypes3, transaction);
 
                 transaction.Commit();
             }
@@ -1727,18 +1554,18 @@ namespace QueryLiteTest.Tests {
          */
         private static void UpdateJoinTest2() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
             allTypes2.BigInt = 1;
             allTypes3.BigInt = 1;
 
-            AllFieldsTest.InsertWithQuery(allTypes1);
-            AllFieldsTest.InsertWithQuery(allTypes2);
-            AllFieldsTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -1777,7 +1604,7 @@ namespace QueryLiteTest.Tests {
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
                  */
-                AllFieldsTest.AssertRowExists(allTypes1, transaction);
+                AssertRowExists(allTypes1, transaction);
 
                 allTypes2.Guid = allTypes1.Guid;
                 allTypes2.String = allTypes1.String;
@@ -1795,8 +1622,8 @@ namespace QueryLiteTest.Tests {
                 allTypes2.DateOnly = allTypes1.DateOnly;
                 allTypes2.TimeOnly = allTypes1.TimeOnly;
 
-                AllFieldsTest.AssertRowExists(allTypes2, transaction);
-                AllFieldsTest.AssertRowExists(allTypes3, transaction);
+                AssertRowExists(allTypes2, transaction);
+                AssertRowExists(allTypes3, transaction);
 
                 transaction.Commit();
             }
@@ -1807,18 +1634,18 @@ namespace QueryLiteTest.Tests {
          */
         private static async Task UpdateJoinTestAsync2() {
 
-            AllTypes allTypes1 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes2 = AllFieldsTest.GetAllTypes1();
-            AllTypes allTypes3 = AllFieldsTest.GetAllTypes1();
+            AllTypes allTypes1 = GetAllTypes1();
+            AllTypes allTypes2 = GetAllTypes1();
+            AllTypes allTypes3 = GetAllTypes1();
 
             //Set all BigInt to the same value so we can update join on it and set all records to the same values
             allTypes1.BigInt = 1;
             allTypes2.BigInt = 1;
             allTypes3.BigInt = 1;
 
-            AllFieldsTest.InsertWithQuery(allTypes1);
-            AllFieldsTest.InsertWithQuery(allTypes2);
-            AllFieldsTest.InsertWithQuery(allTypes3);
+            InsertWithQuery(allTypes1);
+            InsertWithQuery(allTypes2);
+            InsertWithQuery(allTypes3);
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
@@ -1857,7 +1684,7 @@ namespace QueryLiteTest.Tests {
                 /*
                  *  Not that all rows have been set to the same values (except the Id field), we need to check those fields have the correct values
                  */
-                AllFieldsTest.AssertRowExists(allTypes1, transaction);
+                AssertRowExists(allTypes1, transaction);
 
                 allTypes2.Guid = allTypes1.Guid;
                 allTypes2.String = allTypes1.String;
@@ -1875,8 +1702,8 @@ namespace QueryLiteTest.Tests {
                 allTypes2.DateOnly = allTypes1.DateOnly;
                 allTypes2.TimeOnly = allTypes1.TimeOnly;
 
-                AllFieldsTest.AssertRowExists(allTypes2, transaction);
-                AllFieldsTest.AssertRowExists(allTypes3, transaction);
+                AssertRowExists(allTypes2, transaction);
+                AssertRowExists(allTypes3, transaction);
 
                 transaction.Commit();
             }

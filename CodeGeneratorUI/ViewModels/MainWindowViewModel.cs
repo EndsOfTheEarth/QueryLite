@@ -51,9 +51,9 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
     }
     internal class SchemaNode : TreeNodeViewModel {
 
-        public StringKey<ISchemaName> SchemaName { get; }
+        public SchemaName SchemaName { get; }
 
-        public SchemaNode(StringKey<ISchemaName> schemaName) {
+        public SchemaNode(SchemaName schemaName) {
             SchemaName = schemaName;
             Text = SchemaName.Value;
         }

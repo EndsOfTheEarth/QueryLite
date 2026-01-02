@@ -78,7 +78,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<IntKey<AllTypes>> result = Query
+                QueryResult<AllTypesId> result = Query
                     .Insert(table)
                     .Values(values => values
                         .Set(table.Guid, NEWID.Instance)
@@ -247,7 +247,7 @@ namespace QueryLiteTest.Tests {
 
         private static AllTypes GetAllTypes1() {
             return new AllTypes(
-                id: IntKey<AllTypes>.NotSet,
+                id: AllTypesId.NotSet,
                 guid: Guid.NewGuid(),
                 @string: Guid.NewGuid().ToString(),
                 smallInt: 7261,

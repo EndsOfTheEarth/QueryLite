@@ -21,17 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Utility;
-
 namespace QueryLite.DbSchema.Tables.SqlServer {
 
     public sealed class ColumnsTable : ATable {
 
-        public static readonly ColumnsTable Instance = new ColumnsTable();
+        public static readonly ColumnsTable Instance = new();
 
-        public Column<StringKey<ISchemaName>> Table_schema { get; }
-        public Column<StringKey<ITableName>> Table_name { get; }
-        public Column<StringKey<IColumnName>> Column_name { get; }
+        public Column<SchemaName, string> Table_schema { get; }
+        public Column<TableName, string> Table_name { get; }
+        public Column<ColumnName, string> Column_name { get; }
         public NullableColumn<int> Ordinal_position { get; }
         public Column<string> Column_default { get; }
         public Column<string> Is_nullable { get; }
@@ -54,9 +52,9 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public ColumnsTable() : base(tableName: "columns", schemaName: "information_schema") {
 
-            Table_schema = new Column<StringKey<ISchemaName>>(table: this, columnName: "table_schema");
-            Table_name = new Column<StringKey<ITableName>>(table: this, columnName: "table_name");
-            Column_name = new Column<StringKey<IColumnName>>(table: this, columnName: "column_name");
+            Table_schema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
+            Table_name = new Column<TableName, string>(table: this, columnName: "table_name");
+            Column_name = new Column<ColumnName, string>(table: this, columnName: "column_name");
             Ordinal_position = new NullableColumn<int>(table: this, columnName: "ordinal_position");
             Column_default = new Column<string>(table: this, columnName: "column_default");
             Is_nullable = new Column<string>(table: this, columnName: "is_nullable");
@@ -108,11 +106,11 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
             Domain_name = result.Get(table.Domain_name);
         }
 
-        public StringKey<ISchemaName> Table_schema { get; set; }
+        public SchemaName Table_schema { get; set; }
 
-        public StringKey<ITableName> Table_name { get; set; }
+        public TableName Table_name { get; set; }
 
-        public StringKey<IColumnName> Column_name { get; set; }
+        public ColumnName Column_name { get; set; }
 
         public int? Ordinal_position { get; set; }
 

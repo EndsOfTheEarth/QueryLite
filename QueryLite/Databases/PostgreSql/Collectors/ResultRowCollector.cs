@@ -416,123 +416,6 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
         }
 
-        public StringKey<TYPE> Get<TYPE>(Column<StringKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return StringKey<TYPE>.NotSet;
-            }
-            return new StringKey<TYPE>(_reader.GetString(_ordinal));
-        }
-        public StringKey<TYPE>? Get<TYPE>(NullableColumn<StringKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new StringKey<TYPE>(_reader.GetString(_ordinal));
-        }
-
-        public GuidKey<TYPE> Get<TYPE>(Column<GuidKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return GuidKey<TYPE>.NotSet;
-            }
-            return new GuidKey<TYPE>(_reader.GetGuid(_ordinal));
-        }
-
-        public GuidKey<TYPE>? Get<TYPE>(NullableColumn<GuidKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new GuidKey<TYPE>(_reader.GetGuid(_ordinal));
-        }
-
-        public ShortKey<TYPE> Get<TYPE>(Column<ShortKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return ShortKey<TYPE>.NotSet;
-            }
-            return new ShortKey<TYPE>(_reader.GetInt16(_ordinal));
-
-        }
-        public ShortKey<TYPE>? Get<TYPE>(NullableColumn<ShortKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new ShortKey<TYPE>(_reader.GetInt16(_ordinal));
-        }
-
-        public IntKey<TYPE> Get<TYPE>(Column<IntKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return IntKey<TYPE>.NotSet;
-            }
-            return new IntKey<TYPE>(_reader.GetInt32(_ordinal));
-        }
-        public IntKey<TYPE>? Get<TYPE>(NullableColumn<IntKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new IntKey<TYPE>(_reader.GetInt32(_ordinal));
-        }
-
-        public LongKey<TYPE> Get<TYPE>(Column<LongKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return LongKey<TYPE>.NotSet;
-            }
-            return new LongKey<TYPE>(_reader.GetInt64(_ordinal));
-        }
-        public LongKey<TYPE>? Get<TYPE>(NullableColumn<LongKey<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new LongKey<TYPE>(_reader.GetInt64(_ordinal));
-        }
-
-
-        public BoolValue<TYPE> Get<TYPE>(Column<BoolValue<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return BoolValue<TYPE>.ValueOf(false);
-            }
-            return new BoolValue<TYPE>(_reader.GetBoolean(_ordinal));
-        }
-        public BoolValue<TYPE>? Get<TYPE>(NullableColumn<BoolValue<TYPE>> column) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new BoolValue<TYPE>(_reader.GetBoolean(_ordinal));
-        }
-
         public string Get(Function<string> function) {
 
             _ordinal++;
@@ -877,122 +760,6 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return IntegerToEnum<int, ENUM>.Convert(value);
         }
 
-        public StringKey<TYPE> Get<TYPE>(Function<StringKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return StringKey<TYPE>.NotSet;
-            }
-            return new StringKey<TYPE>(_reader.GetString(_ordinal));
-        }
-        public StringKey<TYPE>? Get<TYPE>(NullableFunction<StringKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new StringKey<TYPE>(_reader.GetString(_ordinal));
-        }
-
-        public GuidKey<TYPE> Get<TYPE>(Function<GuidKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return GuidKey<TYPE>.NotSet;
-            }
-            return new GuidKey<TYPE>(_reader.GetGuid(_ordinal));
-        }
-
-        public GuidKey<TYPE>? Get<TYPE>(NullableFunction<GuidKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new GuidKey<TYPE>(_reader.GetGuid(_ordinal));
-        }
-
-        public ShortKey<TYPE> Get<TYPE>(Function<ShortKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return ShortKey<TYPE>.NotSet;
-            }
-            return new ShortKey<TYPE>(_reader.GetInt16(_ordinal));
-
-        }
-        public ShortKey<TYPE>? Get<TYPE>(NullableFunction<ShortKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new ShortKey<TYPE>(_reader.GetInt16(_ordinal));
-        }
-
-        public IntKey<TYPE> Get<TYPE>(Function<IntKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return IntKey<TYPE>.NotSet;
-            }
-            return new IntKey<TYPE>(_reader.GetInt32(_ordinal));
-        }
-        public IntKey<TYPE>? Get<TYPE>(NullableFunction<IntKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new IntKey<TYPE>(_reader.GetInt32(_ordinal));
-        }
-
-        public LongKey<TYPE> Get<TYPE>(Function<LongKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return LongKey<TYPE>.NotSet;
-            }
-            return new LongKey<TYPE>(_reader.GetInt64(_ordinal));
-        }
-        public LongKey<TYPE>? Get<TYPE>(NullableFunction<LongKey<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new LongKey<TYPE>(_reader.GetInt64(_ordinal));
-        }
-
-        public BoolValue<TYPE> Get<TYPE>(Function<BoolValue<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return BoolValue<TYPE>.ValueOf(false);
-            }
-            return new BoolValue<TYPE>(_reader.GetBoolean(_ordinal));
-        }
-        public BoolValue<TYPE>? Get<TYPE>(NullableFunction<BoolValue<TYPE>> function) where TYPE : notnull {
-
-            _ordinal++;
-
-            if(_reader.IsDBNull(_ordinal)) {
-                return null;
-            }
-            return new BoolValue<TYPE>(_reader.GetBoolean(_ordinal));
-        }
-
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
 
             _ordinal++;
@@ -1295,7 +1062,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return readValue(_reader, _ordinal);
         }
 
-        public TYPE LoadFromReader<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> readValue, TYPE @default)
+        public CUSTOM_TYPE LoadFromReader<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue, CUSTOM_TYPE @default)
                                                  where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
                                                  where TYPE : notnull {
             _ordinal++;
@@ -1306,7 +1073,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return readValue(_reader, _ordinal);
         }
 
-        public TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NullableColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> readValue)
+        public CUSTOM_TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NullableColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue)
                                                   where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
                                                   where TYPE : notnull {
             _ordinal++;

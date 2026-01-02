@@ -21,17 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Utility;
-
 namespace QueryLite.DbSchema.Tables.PostgreSql {
 
     public sealed class TablesTable : ATable {
 
-        public static readonly TablesTable Instance = new TablesTable();
+        public static readonly TablesTable Instance = new();
 
         public Column<string> Table_catalog { get; }
-        public Column<StringKey<ISchemaName>> Table_schema { get; }
-        public Column<StringKey<ITableName>> Table_name { get; }
+        public Column<SchemaName, string> Table_schema { get; }
+        public Column<TableName, string> Table_name { get; }
         public Column<string> Table_type { get; }
         public Column<string> Self_referencing_column_name { get; }
         public Column<string> Reference_generation { get; }
@@ -45,8 +43,8 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public TablesTable() : base(tableName: "tables", schemaName: "information_schema") {
 
             Table_catalog = new Column<string>(table: this, columnName: "table_catalog");
-            Table_schema = new Column<StringKey<ISchemaName>>(table: this, columnName: "table_schema");
-            Table_name = new Column<StringKey<ITableName>>(table: this, columnName: "table_name");
+            Table_schema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
+            Table_name = new Column<TableName, string>(table: this, columnName: "table_name");
             Table_type = new Column<string>(table: this, columnName: "table_type");
             Self_referencing_column_name = new Column<string>(table: this, columnName: "self_referencing_column_name");
             Reference_generation = new Column<string>(table: this, columnName: "reference_generation");

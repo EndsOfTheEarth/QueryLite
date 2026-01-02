@@ -26,16 +26,16 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
     public sealed class CheckConstraintsTable : ATable {
 
-        public static readonly CheckConstraintsTable Instance = new CheckConstraintsTable();
+        public static readonly CheckConstraintsTable Instance = new();
 
         public Column<string> Constraint_catalog { get; }
-        public Column<string> Constraint_schema { get; }
+        public Column<SchemaName, string> Constraint_schema { get; }
         public Column<string> Constraint_name { get; }
         public Column<string> Check_caluse { get; }
 
         public CheckConstraintsTable() : base(tableName: "check_constraints", schemaName: "information_schema") {
             Constraint_catalog = new Column<string>(table: this, columnName: "constraint_catalog");
-            Constraint_schema = new Column<string>(table: this, columnName: "constraint_schema");
+            Constraint_schema = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
             Constraint_name = new Column<string>(table: this, columnName: "constraint_name");
             Check_caluse = new Column<string>(table: this, columnName: "check_clause");
         }

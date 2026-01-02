@@ -212,29 +212,5 @@ namespace QueryLite.Databases.SqlServer {
         protected override SqlParameter CreateParameter(string name, IValue<TimeOnly>? value) {
             return CreateParameter(name, value?.Value);
         }
-
-        protected override SqlParameter CreateParameter(string name, IGuidType? value) {
-            return CreateParameter(name, value?.Value);
-        }
-
-        protected override SqlParameter CreateParameter(string name, IStringType? value) {
-            return CreateParameter(name, value?.Value);
-        }
-
-        protected override SqlParameter CreateParameter(string name, IInt16Type? value) {
-            return CreateParameter(name, value?.Value);
-        }
-
-        protected override SqlParameter CreateParameter(string name, IInt32Type? value) {
-            return CreateParameter(name, value?.Value);
-        }
-
-        protected override SqlParameter CreateParameter(string name, IInt64Type? value) {
-            return CreateParameter(name, value?.Value);
-        }
-
-        protected override SqlParameter CreateParameter(string name, IBoolType? value) {
-            return CreateParameter(name, value?.Value);
-        }
     }
 }

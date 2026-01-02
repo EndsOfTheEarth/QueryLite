@@ -139,54 +139,6 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             return this;
         }
 
-        public ISetValuesCollector Set<TYPE>(Column<StringKey<TYPE>> column, StringKey<TYPE> value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.NVarChar, value.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<StringKey<TYPE>> column, StringKey<TYPE>? value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.NVarChar, value?.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<GuidKey<TYPE>> column, GuidKey<TYPE> value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.UniqueIdentifier, value.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<GuidKey<TYPE>> column, GuidKey<TYPE>? value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.UniqueIdentifier, value?.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<ShortKey<TYPE>> column, ShortKey<TYPE> value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.SmallInt, value.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<ShortKey<TYPE>> column, ShortKey<TYPE>? value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.SmallInt, value?.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<IntKey<TYPE>> column, IntKey<TYPE> value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.Int, value.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<IntKey<TYPE>> column, IntKey<TYPE>? value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.Int, value?.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<LongKey<TYPE>> column, LongKey<TYPE> value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.BigInt, value.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<LongKey<TYPE>> column, LongKey<TYPE>? value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.BigInt, value?.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<BoolValue<TYPE>> column, BoolValue<TYPE> value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.Bit, value.Value);
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<BoolValue<TYPE>> column, BoolValue<TYPE>? value) where TYPE : notnull {
-            return AddParameter(column, SqlDbType.Bit, value?.Value);
-        }
-
         private static SqlDbType GetEnumDbType<ENUM>() where ENUM : notnull, Enum {
 
             NumericType integerType = EnumHelper.GetNumericType<ENUM>();
@@ -210,11 +162,11 @@ namespace QueryLite.Databases.SqlServer.Collectors {
         }
 
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum {
-            return AddParameter(column, SqlServerSetValuesParameterCollector.GetEnumDbType<ENUM>(), value);
+            return AddParameter(column, GetEnumDbType<ENUM>(), value);
         }
 
         public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
-            return AddParameter(column, SqlServerSetValuesParameterCollector.GetEnumDbType<ENUM>(), value);
+            return AddParameter(column, GetEnumDbType<ENUM>(), value);
         }
 
         public ISetValuesCollector Set(Column<string> column, string value) {
@@ -778,78 +730,6 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
             if(value != null) {
                 return SetValue(column, EnumHelper.GetEnumNumberAsString(value.Value));
-            }
-            return SetValue(column, "null");
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<StringKey<TYPE>> column, StringKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<StringKey<TYPE>> column, StringKey<TYPE>? value) where TYPE : notnull {
-
-            if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
-            }
-            return SetValue(column, "null");
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<GuidKey<TYPE>> column, GuidKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<GuidKey<TYPE>> column, GuidKey<TYPE>? value) where TYPE : notnull {
-
-            if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
-            }
-            return SetValue(column, "null");
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<ShortKey<TYPE>> column, ShortKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<ShortKey<TYPE>> column, ShortKey<TYPE>? value) where TYPE : notnull {
-
-            if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
-            }
-            return SetValue(column, "null");
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<IntKey<TYPE>> column, IntKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<IntKey<TYPE>> column, IntKey<TYPE>? value) where TYPE : notnull {
-
-            if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
-            }
-            return SetValue(column, "null");
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<LongKey<TYPE>> column, LongKey<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<LongKey<TYPE>> column, LongKey<TYPE>? value) where TYPE : notnull {
-
-            if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
-            }
-            return SetValue(column, "null");
-        }
-
-        public ISetValuesCollector Set<TYPE>(Column<BoolValue<TYPE>> column, BoolValue<TYPE> value) where TYPE : notnull {
-            return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
-        }
-
-        public ISetValuesCollector Set<TYPE>(NullableColumn<BoolValue<TYPE>> column, BoolValue<TYPE>? value) where TYPE : notnull {
-
-            if(value != null) {
-                return SetValue(column, SqlServerSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
         }

@@ -213,7 +213,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
         private void LoadTablesNodes(DatabaseType databaseType) {
 
-            Dictionary<StringKey<ISchemaName>, SchemaNode> schemaLookup = [];
+            Dictionary<SchemaName, SchemaNode> schemaLookup = [];
 
             bool includeSystemSchemas = chkIncludeSystemSchemas.IsChecked ?? false;
 

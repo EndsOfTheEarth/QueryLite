@@ -77,7 +77,7 @@ namespace QueryLiteTest.Tests {
                     NonQueryResult insertResult = Query
                         .Insert(table)
                         .Values(values => values
-                            .Set(table.Id, IntKey<IRowVersionTest>.ValueOf(index))
+                            .Set(table.Id, RowVersionId.ValueOf(index))
                             .Set(table.TextValue, index.ToString())
                         )
                         .Execute(transaction);

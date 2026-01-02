@@ -75,7 +75,7 @@ namespace {settings.Namespaces.BaseNamespace} {{
     }}
 }}
 ");
-            List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
+            List<SchemaName> schemaNames = new List<SchemaName>();
 
             foreach(DatabaseTable table in tables) {
 
@@ -88,7 +88,7 @@ namespace {settings.Namespaces.BaseNamespace} {{
 
             int count = 0;
 
-            foreach(StringKey<ISchemaName> schema in schemaNames) {
+            foreach(SchemaName schema in schemaNames) {
 
                 if(count > 0) {
                     code.EndLine();
@@ -154,7 +154,7 @@ namespace {settings.Namespaces.BaseNamespace} {{
             code.Append("using QueryLite;").EndLine();
             code.Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
-            List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
+            List<SchemaName> schemaNames = [];
 
             foreach(DatabaseTable table in tables) {
 
@@ -167,7 +167,7 @@ namespace {settings.Namespaces.BaseNamespace} {{
 
             int count = 0;
 
-            foreach(StringKey<ISchemaName> schema in schemaNames) {
+            foreach(SchemaName schema in schemaNames) {
 
                 if(count > 0) {
                     code.EndLine();

@@ -1,21 +1,19 @@
-﻿namespace QueryLiteTest.Tables {
+﻿using QueryLite;
+using System;
 
-    using QueryLite;
-    using QueryLite.Utility;
-
-    public interface IChild { }
+namespace QueryLiteTest.Tables {
 
     public sealed class ChildTable : ATable {
 
-        public static readonly ChildTable Instance = new ChildTable();
-        public static readonly ChildTable Instance2 = new ChildTable();
-        public static readonly ChildTable Instance3 = new ChildTable();
+        public static readonly ChildTable Instance = new();
+        public static readonly ChildTable Instance2 = new();
+        public static readonly ChildTable Instance3 = new();
 
-        public Column<GuidKey<IChild>> Id { get; }
+        public Column<ChildId, Guid> Id { get; }
 
-        public Column<GuidKey<IParent>> ParentId { get; }
+        public Column<ParentId, Guid> ParentId { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, name: "pk_Child", Id);
+        public override PrimaryKey? PrimaryKey => new(table: this, name: "pk_Child", Id);
 
         public override ForeignKey[] ForeignKeys => [
             new ForeignKey(this, name: "fk_Child_Parent").References(ParentId, ParentTable.Instance.Id),
@@ -23,9 +21,8 @@
         ];
 
         private ChildTable() : base(tableName: "Child", schemaName: "dbo") {
-
-            Id = new Column<GuidKey<IChild>>(this, columnName: "Id");
-            ParentId = new Column<GuidKey<IParent>>(this, columnName: "ParentId");
+            Id = new Column<ChildId, Guid>(this, columnName: "Id");
+            ParentId = new Column<ParentId, Guid>(this, columnName: "ParentId");
         }
     }
 }

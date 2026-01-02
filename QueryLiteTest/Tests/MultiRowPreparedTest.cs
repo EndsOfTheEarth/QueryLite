@@ -248,7 +248,7 @@ namespace QueryLiteTest.Tests {
 
         private static AllTypes GetAllTypes1(short index) {
             return new AllTypes(
-                id: IntKey<AllTypes>.NotSet,
+                id: AllTypesId.NotSet,
                 guid: Guid.NewGuid(),
                 @string: Guid.NewGuid().ToString(),
                 smallInt: (short)(7261 + index),

@@ -27,8 +27,8 @@ using QueryLite.Utility;
 
 namespace QueryLite.DbSchema {
 
-    using TableColumnKey = Key<StringKey<ISchemaName>, StringKey<ITableName>, StringKey<IColumnName>>;
-    using TableKey = Key<StringKey<ISchemaName>, StringKey<ITableName>>;
+    using TableColumnKey = Key<SchemaName, TableName, ColumnName>;
+    using TableKey = Key<SchemaName, TableName>;
 
     public sealed class PostgreSqlSchemaLoader {
 
@@ -55,7 +55,7 @@ namespace QueryLite.DbSchema {
                 )
                 .From(tablesTable)
                 .Join(columnsTable).On(tablesTable.Table_schema == columnsTable.Table_schema & tablesTable.Table_name == columnsTable.Table_name)
-                //.Where(tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") & tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema"))
+                //.Where(tablesTable.Table_schema != SchemaName.ValueOf("pg_catalog") & tablesTable.Table_schema != SchemaName.ValueOf("information_schema"))
                 .OrderBy(columnsTable.Ordinal_position)
                 .Execute(database);
 
@@ -79,8 +79,6 @@ namespace QueryLite.DbSchema {
                 }
 
                 DataType dataType = new DataType(name: columnRow.Data_type, dotNetType: (dotNetType ?? typeof(IUnknownType)));
-
-
 
                 bool isNullable = string.Compare(columnRow.Is_nullable, "YES", true) == 0;
 
@@ -164,8 +162,8 @@ namespace QueryLite.DbSchema {
                     tableConstraints.Constraint_type == "PRIMARY KEY" &
                     keyColumnUsage.Ordinal_position.IsNotNull
                 //&
-                //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                //tableConstraints.Table_schema != SchemaName.ValueOf("pg_catalog") &
+                //tableConstraints.Table_schema != SchemaName.ValueOf("information_schema")
                 )
                 .OrderBy(keyColumnUsage.Ordinal_position)
                 .Execute(database, TimeoutLevel.ShortSelect);
@@ -218,8 +216,8 @@ namespace QueryLite.DbSchema {
                     tableConstraints.Constraint_type == "UNIQUE" &
                     keyColumnUsage.Ordinal_position.IsNotNull
                 //&
-                //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                //tableConstraints.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                //tableConstraints.Table_schema != SchemaName.ValueOf("pg_catalog") &
+                //tableConstraints.Table_schema != SchemaName.ValueOf("information_schema")
                 )
                 .OrderBy(keyColumnUsage.Ordinal_position)
                 .Execute(database, TimeoutLevel.ShortSelect);
@@ -420,8 +418,8 @@ namespace QueryLite.DbSchema {
                     .From(tablesTable)
                     .Where(
                         tablesTable.Table_type == "BASE TABLE" &
-                        //tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                        //tablesTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema") &
+                        //tablesTable.Table_schema != SchemaName.ValueOf("pg_catalog") &
+                        //tablesTable.Table_schema != SchemaName.ValueOf("information_schema") &
                         obj_Description.IsNotNull
                     )
                     .Execute(database);
@@ -455,8 +453,8 @@ namespace QueryLite.DbSchema {
                     .Where(
                         column_Obj_Description.IsNotNull
                     //&
-                    //columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("pg_catalog") &
-                    //columnsTable.Table_schema != StringKey<ISchemaName>.ValueOf("information_schema")
+                    //columnsTable.Table_schema != SchemaName.ValueOf("pg_catalog") &
+                    //columnsTable.Table_schema != SchemaName.ValueOf("information_schema")
                     )
                     .Execute(database);
 
@@ -473,11 +471,11 @@ namespace QueryLite.DbSchema {
 
         private sealed class ForeignK {
 
-            private readonly StringKey<ISchemaName> SchemaName;
-            private readonly StringKey<ITableName> TableName;
+            private readonly SchemaName SchemaName;
+            private readonly TableName TableName;
             private readonly string ConstraintName;
 
-            public ForeignK(StringKey<ISchemaName> schemaName, StringKey<ITableName> tableName, string constraintName) {
+            public ForeignK(SchemaName schemaName, TableName tableName, string constraintName) {
                 SchemaName = schemaName;
                 TableName = tableName;
                 ConstraintName = constraintName;

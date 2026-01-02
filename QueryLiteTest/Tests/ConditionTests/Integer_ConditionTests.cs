@@ -450,9 +450,6 @@ namespace QueryLiteTest.Tests.ConditionTests {
                 AllFieldsTest.AssertRow(result.Rows[2], types3);
             }
 
-
-
-
             AllTypesTable table2 = AllTypesTable.Instance2;
 
             /*
@@ -569,7 +566,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
         private static AllTypes GetAllType() {
 
             return new AllTypes(
-                id: IntKey<AllTypes>.NotSet,
+                id: AllTypesId.NotSet,
                 guid: Guid.NewGuid(),
                 @string: "88udskja8adfq23",
                 smallInt: 7261,

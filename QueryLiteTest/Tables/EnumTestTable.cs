@@ -4,7 +4,7 @@ namespace QueryLiteTest.Tables {
 
     public sealed class EnumTestTableTable : ATable {
 
-        public static readonly EnumTestTableTable Instance = new EnumTestTableTable();
+        public static readonly EnumTestTableTable Instance = new();
 
         public Column<ByteTestEnum> ByteEnum { get; }
         public Column<ShortTestEnum> ShortEnum { get; }

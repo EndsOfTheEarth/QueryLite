@@ -104,25 +104,7 @@ namespace QueryLite.Databases {
 
             ToSqlStringDelegate? toSqlStringDelegate = null;
 
-            if(value is IGuidType) {
-                toSqlStringDelegate = value => toSql.ToSqlString(((IGuidType)value).Value);
-            }
-            else if(value is IStringType) {
-                toSqlStringDelegate = value => toSql.ToSqlString(((IStringType)value).Value);
-            }
-            else if(value is IInt16Type) {
-                toSqlStringDelegate = value => toSql.ToSqlString(((IInt16Type)value).Value);
-            }
-            else if(value is IInt32Type) {
-                toSqlStringDelegate = value => toSql.ToSqlString(((IInt32Type)value).Value);
-            }
-            else if(value is IInt64Type) {
-                toSqlStringDelegate = value => toSql.ToSqlString(((IInt64Type)value).Value);
-            }
-            else if(value is IBoolType) {
-                toSqlStringDelegate = value => toSql.ToSqlString(((IBoolType)value).Value);
-            }
-            else if(value is IValue<Guid>) {
+            if(value is IValue<Guid>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<Guid>)value).Value);
             }
             else if(value is IValue<short>) {
@@ -221,16 +203,7 @@ namespace QueryLite.Databases {
                 return dbt;
             }
 
-            /*
-             *  Map Key Types
-             */
-            DBTYPE? dbType = TryGetDbTypeForKeyType(type);
-
-            if(dbType != null) {
-                return dbType.Value;
-            }
-
-            dbType = TryGetDbTypeForCustomType(type);
+            DBTYPE? dbType = TryGetDbTypeForCustomType(type);
 
             if(dbType != null) {
                 return dbType.Value;
@@ -239,15 +212,6 @@ namespace QueryLite.Databases {
             Type? underlyingType = Nullable.GetUnderlyingType(type);
 
             if(underlyingType != null) {
-
-                /*
-                 *  Map Nullable Key Types
-                 */
-                dbType = TryGetDbTypeForKeyType(underlyingType);
-
-                if(dbType != null) {
-                    return dbType.Value;
-                }
 
                 /*
                  *  Map Nullable Custom Types
@@ -267,7 +231,6 @@ namespace QueryLite.Databases {
             if(dbType != null) {
                 return dbType.Value;
             }
-
             throw new Exception($"Unknown parameter type '{type.FullName}'");
         }
 
@@ -319,30 +282,6 @@ namespace QueryLite.Databases {
             }
             return null;
         }
-
-        private DBTYPE? TryGetDbTypeForKeyType(Type type) {
-
-            if(type.IsAssignableTo(typeof(IGuidType))) {
-                return AddDbType(type, Guid);
-            }
-            if(type.IsAssignableTo(typeof(IStringType))) {
-                return AddDbType(type, String);
-            }
-            if(type.IsAssignableTo(typeof(IInt16Type))) {
-                return AddDbType(type, Short);
-            }
-            if(type.IsAssignableTo(typeof(IInt32Type))) {
-                return AddDbType(type, Integer);
-            }
-            if(type.IsAssignableTo(typeof(IInt64Type))) {
-                return AddDbType(type, Long);
-            }
-            if(type.IsAssignableTo(typeof(IBoolType))) {
-                return AddDbType(type, Boolean);
-            }
-            return null;
-        }
-
         private DBTYPE? TryGetDbTypeForCustomType(Type type) {
 
             /*
@@ -495,13 +434,6 @@ namespace QueryLite.Databases {
         protected abstract PARAMETER CreateParameter(string name, IValue<DateOnly>? value);
         protected abstract PARAMETER CreateParameter(string name, IValue<TimeOnly>? value);
 
-        protected abstract PARAMETER CreateParameter(string name, IGuidType? value);
-        protected abstract PARAMETER CreateParameter(string name, IStringType? value);
-        protected abstract PARAMETER CreateParameter(string name, IInt16Type? value);
-        protected abstract PARAMETER CreateParameter(string name, IInt32Type? value);
-        protected abstract PARAMETER CreateParameter(string name, IInt64Type? value);
-        protected abstract PARAMETER CreateParameter(string name, IBoolType? value);
-
         /// <summary>
         /// Returns default type / create parameter delegate mappings.
         /// </summary>
@@ -572,27 +504,6 @@ namespace QueryLite.Databases {
             if(underlyingType != null) {
 
                 createParameterDelegate = TryGetCustomTypeCreateParameterDelegate(underlyingType);
-
-                if(createParameterDelegate != null) {
-                    return createParameterDelegate;
-                }
-            }
-
-            /*
-             * Map Key Types
-             */
-            createParameterDelegate = TryGetKeyTypeCreateParameterDelegate(type);
-
-            if(createParameterDelegate != null) {
-                return createParameterDelegate;
-            }
-
-            /*
-             * Map Nullable Key Types
-             */
-            if(underlyingType != null) {
-
-                createParameterDelegate = TryGetKeyTypeCreateParameterDelegate(underlyingType);
 
                 if(createParameterDelegate != null) {
                     return createParameterDelegate;
@@ -699,32 +610,6 @@ namespace QueryLite.Databases {
             }
             if(type.IsAssignableTo(typeof(IValue<Bit>))) {
                 return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<Bit>?)value));
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Returns a create parameter delegate if 'type' is a key value type.
-        /// </summary>
-        private CreateParameterDelegate? TryGetKeyTypeCreateParameterDelegate(Type type) {
-
-            if(type.IsAssignableTo(typeof(IGuidType))) {
-                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IGuidType?)value));
-            }
-            if(type.IsAssignableTo(typeof(IStringType))) {
-                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IStringType?)value));
-            }
-            if(type.IsAssignableTo(typeof(IInt16Type))) {
-                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IInt16Type?)value));
-            }
-            if(type.IsAssignableTo(typeof(IInt32Type))) {
-                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IInt32Type?)value));
-            }
-            if(type.IsAssignableTo(typeof(IInt64Type))) {
-                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IInt64Type?)value));
-            }
-            if(type.IsAssignableTo(typeof(IBoolType))) {
-                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IBoolType?)value));
             }
             return null;
         }

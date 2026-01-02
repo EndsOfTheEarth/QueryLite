@@ -136,24 +136,6 @@ namespace QueryLiteTest.Tests {
                 typeof(CustomDouble),
                 typeof(CustomDouble?),
 
-                typeof(GuidKey<TestingType>),
-                typeof(GuidKey<TestingType>?),
-
-                typeof(ShortKey<TestingType>),
-                typeof(ShortKey<TestingType>?),
-
-                typeof(IntKey<TestingType>),
-                typeof(IntKey<TestingType>?),
-
-                typeof(LongKey<TestingType>),
-                typeof(LongKey<TestingType>?),
-
-                typeof(StringKey<TestingType>),
-                typeof(StringKey<TestingType>?),
-
-                typeof(BoolValue<TestingType>),
-                typeof(BoolValue<TestingType>?),
-
                 typeof(Bit),
                 typeof(Bit?),
 
@@ -183,8 +165,6 @@ namespace QueryLiteTest.Tests {
             };
             return list;
         }
-
-        private class TestingType { }
 
         private enum UShortEnum : ushort {
             A, B, C

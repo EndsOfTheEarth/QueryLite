@@ -34,8 +34,8 @@ namespace QueryLiteTest.Tests {
 
                 Query.Insert(table)
                     .Values(values => values
-                        .Set(table.Id, GuidKey<IParent>.ValueOf(Guid.NewGuid()))
-                        .Set(table.Id2, GuidKey<IParent>.ValueOf(Guid.NewGuid()))
+                        .Set(table.Id, ParentId.ValueOf(Guid.NewGuid()))
+                        .Set(table.Id2, ParentId.ValueOf(Guid.NewGuid()))
                     )
                     .Execute(transaction);
             }
@@ -43,8 +43,8 @@ namespace QueryLiteTest.Tests {
 
             var result = Query.Select(
                 row => new {
-                    Id = row.LoadFromReader(table.Id, (reader, ordinal) => GuidKey<IParent>.ValueOf(reader.GetGuid(ordinal)), GuidKey<IParent>.NotSet),
-                    Id2 = row.LoadFromReader(table.Id2, (reader, ordinal) => GuidKey<IParent>.ValueOf(reader.GetGuid(ordinal)), GuidKey<IParent>.NotSet),
+                    Id = row.LoadFromReader(table.Id, (reader, ordinal) => ParentId.ValueOf(reader.GetGuid(ordinal)), ParentId.NotSet),
+                    Id2 = row.LoadFromReader(table.Id2, (reader, ordinal) => ParentId.ValueOf(reader.GetGuid(ordinal)), ParentId.NotSet),
                 }
             )
             .From(table)

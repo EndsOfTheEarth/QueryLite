@@ -1,27 +1,24 @@
-﻿namespace QueryLiteTest.Tables {
+﻿using QueryLite;
+using System;
 
-    using QueryLite;
-    using QueryLite.Utility;
-
-    public interface IParent { }
+namespace QueryLiteTest.Tables {
 
     public sealed class ParentTable : ATable {
 
-        public static readonly ParentTable Instance = new ParentTable();
+        public static readonly ParentTable Instance = new();
 
-        public Column<GuidKey<IParent>> Id { get; }
-        public Column<GuidKey<IParent>> Id2 { get; }
+        public Column<ParentId, Guid> Id { get; }
+        public Column<ParentId, Guid> Id2 { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, name: "pk_Parent", Id);
+        public override PrimaryKey? PrimaryKey => new(table: this, name: "pk_Parent", Id);
 
         public override UniqueConstraint[] UniqueConstraints => [
             new UniqueConstraint(this, name: "unq_parent", Id2)
         ];
 
         private ParentTable() : base(tableName: "Parent", schemaName: "dbo") {
-
-            Id = new Column<GuidKey<IParent>>(this, columnName: "Id");
-            Id2 = new Column<GuidKey<IParent>>(this, columnName: "Id2");
+            Id = new Column<ParentId, Guid>(this, columnName: "Id");
+            Id2 = new Column<ParentId, Guid>(this, columnName: "Id2");
         }
     }
 }

@@ -27,8 +27,8 @@ using QueryLite.Utility;
 
 namespace QueryLite.DbSchema {
 
-    using TableColumnKey = Key<StringKey<ISchemaName>, StringKey<ITableName>, StringKey<IColumnName>>;
-    using TableKey = Key<StringKey<ISchemaName>, StringKey<ITableName>>;
+    using TableColumnKey = Key<SchemaName, TableName, ColumnName>;
+    using TableKey = Key<SchemaName, TableName>;
 
     public sealed class SqlServerSchemaLoader {
 
@@ -146,7 +146,7 @@ namespace QueryLite.DbSchema {
             }
             else if(string.Equals("nvarchar", columnRow.Data_type, StringComparison.OrdinalIgnoreCase) && columnRow.Character_maximum_length == -1) {
                 length = new ColumnLength(LengthType.Max);
-            }            
+            }
             else {
 
                 if(columnRow.Character_octet_length != null) {
@@ -437,11 +437,11 @@ namespace QueryLite.DbSchema {
 
         private sealed class ForeignK {
 
-            private readonly StringKey<ISchemaName> SchemaName;
-            private readonly StringKey<ITableName> TableName;
+            private readonly SchemaName SchemaName;
+            private readonly TableName TableName;
             private readonly string ConstraintName;
 
-            public ForeignK(StringKey<ISchemaName> schemaName, StringKey<ITableName> tableName, string constraintName) {
+            public ForeignK(SchemaName schemaName, TableName tableName, string constraintName) {
                 SchemaName = schemaName;
                 TableName = tableName;
                 ConstraintName = constraintName;

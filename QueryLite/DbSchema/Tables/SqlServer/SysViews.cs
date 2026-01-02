@@ -21,13 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Utility;
-
 namespace QueryLite.DbSchema.Tables.SqlServer {
 
     public sealed class ExtendedPropertiesView : ATable {
 
-        public static readonly ExtendedPropertiesView Instance = new ExtendedPropertiesView();
+        public static readonly ExtendedPropertiesView Instance = new();
 
         public Column<short> Class { get; }
         public NullableColumn<string> Class_Desc { get; }
@@ -49,47 +47,47 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
     public sealed class TablesView : ATable {
 
-        public static readonly TablesView Instance = new TablesView();
+        public static readonly TablesView Instance = new();
 
         public Column<int> Object_Id { get; }
         public Column<int> Schema_Id { get; }
-        public Column<StringKey<ITableName>> Table_Name { get; }
+        public Column<TableName, string> Table_Name { get; }
 
         public TablesView() : base(tableName: "tables", schemaName: "sys") {
 
             Object_Id = new Column<int>(this, columnName: "object_id");
             Schema_Id = new Column<int>(this, columnName: "schema_id");
-            Table_Name = new Column<StringKey<ITableName>>(this, columnName: "name", length: new(128));
+            Table_Name = new Column<TableName, string>(this, columnName: "name", length: new(128));
         }
     }
 
     public sealed class ColumnsView : ATable {
 
-        public static readonly ColumnsView Instance = new ColumnsView();
+        public static readonly ColumnsView Instance = new();
 
         public Column<int> Object_Id { get; }
         public Column<int> Column_Id { get; }
-        public Column<StringKey<IColumnName>> Column_Name { get; }
+        public Column<ColumnName, string> Column_Name { get; }
 
         public ColumnsView() : base(tableName: "columns", schemaName: "sys") {
 
             Object_Id = new Column<int>(this, columnName: "object_id");
             Column_Id = new Column<int>(this, columnName: "column_id");
-            Column_Name = new Column<StringKey<IColumnName>>(this, columnName: "name", length: new(128));
+            Column_Name = new Column<ColumnName, string>(this, columnName: "name", length: new(128));
         }
     }
 
     public sealed class SchemasView : ATable {
 
-        public static readonly SchemasView Instance = new SchemasView();
+        public static readonly SchemasView Instance = new();
 
         public Column<int> Schema_Id { get; }
-        public Column<StringKey<ISchemaName>> Schema_Name { get; }
+        public Column<SchemaName, string> Schema_Name { get; }
 
         public SchemasView() : base(tableName: "schemas", schemaName: "sys") {
 
             Schema_Id = new Column<int>(this, columnName: "schema_id");
-            Schema_Name = new Column<StringKey<ISchemaName>>(this, columnName: "name", length: new(128));
+            Schema_Name = new Column<SchemaName, string>(this, columnName: "name", length: new(128));
         }
     }
 }

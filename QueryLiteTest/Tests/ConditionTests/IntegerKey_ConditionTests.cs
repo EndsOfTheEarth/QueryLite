@@ -127,7 +127,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<IntKey<AllTypes>>.TryCreateFrom([types1.Id, types2.Id, types3.Id], out Sequence<IntKey<AllTypes>>? allTypes)) {
+                if(!Sequence<AllTypesId>.TryCreateFrom([types1.Id, types2.Id, types3.Id], out Sequence<AllTypesId>? allTypes)) {
                     throw new Exception();
                 }
 
@@ -183,7 +183,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id == IntKey<AllTypes>.ValueOf(int.MaxValue))
+                    .Where(table.Id == AllTypesId.ValueOf(int.MaxValue))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -230,7 +230,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id < IntKey<AllTypes>.ValueOf(int.MinValue))
+                    .Where(table.Id < AllTypesId.ValueOf(int.MinValue))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -243,7 +243,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id <= IntKey<AllTypes>.ValueOf(int.MinValue))
+                    .Where(table.Id <= AllTypesId.ValueOf(int.MinValue))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -290,7 +290,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id > IntKey<AllTypes>.ValueOf(int.MaxValue))
+                    .Where(table.Id > AllTypesId.ValueOf(int.MaxValue))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -303,7 +303,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id >= IntKey<AllTypes>.ValueOf(int.MaxValue))
+                    .Where(table.Id >= AllTypesId.ValueOf(int.MaxValue))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -350,7 +350,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                         row => new AllTypesInfo(row, table)
                     )
                     .From(table)
-                    .Where(table.Id.SqlEquals_NonTypeSafe(IntKey<AllTypes>.ValueOf(int.MaxValue)))
+                    .Where(table.Id.SqlEquals_NonTypeSafe(AllTypesId.ValueOf(int.MaxValue)))
                     .OrderBy(table.Id.ASC)
                     .ExecuteAsync(TestDatabase.Database);
 
@@ -516,7 +516,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
         private static AllTypes GetAllType() {
 
             return new AllTypes(
-                id: IntKey<AllTypes>.NotSet,
+                id: AllTypesId.NotSet,
                 guid: Guid.NewGuid(),
                 @string: "88udskja8adfq23",
                 smallInt: 7261,

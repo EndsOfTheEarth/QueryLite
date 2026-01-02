@@ -1,13 +1,14 @@
-﻿
+﻿using System;
+
 namespace QueryLite {
 
-    [global::System.AttributeUsage(global::System.AttributeTargets.Class)]
-    public class RepositoryAttribute<TABLE> : global::System.Attribute where TABLE : global::QueryLite.ATable {
+    [AttributeUsage(AttributeTargets.Class)]
+    public class RepositoryAttribute<TABLE> : Attribute where TABLE : ATable {
 
-        public global::QueryLite.MatchOn MatchOn { get; init; }
+        public MatchOn MatchOn { get; init; }
         public string RepositoryName { get; } = "";
 
-        public RepositoryAttribute(global::QueryLite.MatchOn matchOn, string repositoryName = "") {
+        public RepositoryAttribute(MatchOn matchOn, string repositoryName = "") {
             MatchOn = matchOn;
             RepositoryName = repositoryName;
         }

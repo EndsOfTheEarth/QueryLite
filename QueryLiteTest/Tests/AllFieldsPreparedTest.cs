@@ -2,7 +2,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.DbSchema;
-using QueryLite.Utility;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
@@ -52,7 +51,7 @@ namespace QueryLiteTest.Tests {
         private IPreparedQueryExecute<AllTypes, int>? _selectAllTypesCountQuery;
 
         private IPreparedDeleteQuery<AllTypes>? _deleteQuery1;
-        private IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo>? _deleteQuery4;
+        private IPreparedDeleteQuery<AllTypesId, AllTypesInfo>? _deleteQuery4;
 
         public void InitQueries() {
 
@@ -110,7 +109,7 @@ namespace QueryLiteTest.Tests {
                 .Build();
 
             _deleteQuery4 = Query
-                .Prepare<IntKey<AllTypes>>()
+                .Prepare<AllTypesId>()
                 .Delete(allTypesTable)
                 .From(allTypesTable2)
                 .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable2.Id) & where.EQUALS(allTypesTable.Id, id => id))
@@ -249,90 +248,6 @@ namespace QueryLiteTest.Tests {
             }
         }
 
-        [TestMethod]
-        public void KeyTest() {
-
-            //Test that the key types equals operator does not cause a stack overflow
-
-            {
-                GuidKey<AllTypes>? guidKey = GuidKey<AllTypes>.ValueOf(Guid.NewGuid());
-
-                Assert.IsFalse(guidKey == null);
-                Assert.IsTrue(guidKey != null);
-
-                guidKey = null;
-
-                Assert.IsTrue(guidKey == null);
-                Assert.IsFalse(guidKey != null);
-            }
-
-            {
-                StringKey<AllTypes>? stringKey = StringKey<AllTypes>.ValueOf("abc");
-
-                if(stringKey == null) { }
-                if(stringKey != null) { }
-
-                Assert.IsFalse(stringKey == null);
-                Assert.IsTrue(stringKey != null);
-
-                stringKey = null;
-
-                Assert.IsTrue(stringKey == null);
-                Assert.IsFalse(stringKey != null);
-            }
-
-            {
-                ShortKey<AllTypes>? shortKey = ShortKey<AllTypes>.ValueOf(1);
-
-                if(shortKey == null) { }
-                if(shortKey != null) { }
-
-                Assert.IsFalse(shortKey == null);
-                Assert.IsTrue(shortKey != null);
-
-                shortKey = null;
-
-                Assert.IsTrue(shortKey == null);
-                Assert.IsFalse(shortKey != null);
-            }
-
-            {
-                IntKey<AllTypes>? intKey = IntKey<AllTypes>.ValueOf(1);
-
-                Assert.IsFalse(intKey == null);
-                Assert.IsTrue(intKey != null);
-
-                intKey = null;
-
-                Assert.IsTrue(intKey == null);
-                Assert.IsFalse(intKey != null);
-            }
-
-            {
-                LongKey<AllTypes>? longKey = LongKey<AllTypes>.ValueOf(1);
-
-                Assert.IsFalse(longKey == null);
-                Assert.IsTrue(longKey != null);
-
-                longKey = null;
-
-                Assert.IsTrue(longKey == null);
-                Assert.IsFalse(longKey != null);
-            }
-
-            {
-                BoolValue<AllTypes>? boolValue = BoolValue<AllTypes>.ValueOf(true);
-
-                Assert.IsFalse(boolValue == null);
-                Assert.IsTrue(boolValue != null);
-
-                boolValue = null;
-
-                Assert.IsTrue(boolValue == null);
-                Assert.IsFalse(boolValue != null);
-            }
-        }
-
         private static readonly IPreparedInsertQuery<AllTypes> _insertQueryWithoutReturning = Query
             .Prepare<AllTypes>()
             .Insert(AllTypesTable.Instance)
@@ -386,99 +301,10 @@ namespace QueryLiteTest.Tests {
             AssertRow(row, allTypes1);
         }
 
-        [TestMethod]
-        public void JsonSerializationTest() {
-
-            {
-                Guid guid = new Guid("0a0d021f-4385-4a33-b7cf-cb5dd14bedbe");
-
-                GuidKey<AllTypes> key1 = GuidKey<AllTypes>.ValueOf(guid);
-
-                Assert.AreEqual(key1.Value, guid);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                GuidKey<AllTypes> key2 = JsonSerializer.Deserialize<GuidKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                string str = "jkadkjfahdf";
-
-                StringKey<AllTypes> key1 = StringKey<AllTypes>.ValueOf(str);
-
-                Assert.AreEqual(key1.Value, str);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                StringKey<AllTypes> key2 = JsonSerializer.Deserialize<StringKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                short shortValue = 123;
-
-                ShortKey<AllTypes> key1 = ShortKey<AllTypes>.ValueOf(shortValue);
-
-                Assert.AreEqual(key1.Value, shortValue);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                ShortKey<AllTypes> key2 = JsonSerializer.Deserialize<ShortKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                int intValue = 123456789;
-
-                IntKey<AllTypes> key1 = IntKey<AllTypes>.ValueOf(intValue);
-
-                Assert.AreEqual(key1.Value, intValue);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                IntKey<AllTypes> key2 = JsonSerializer.Deserialize<IntKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                long longValue = 1234567892123122;
-
-                LongKey<AllTypes> key1 = LongKey<AllTypes>.ValueOf(longValue);
-
-                Assert.AreEqual(key1.Value, longValue);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                LongKey<AllTypes> key2 = JsonSerializer.Deserialize<LongKey<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-
-            {
-                bool boolValue = true;
-
-                BoolValue<AllTypes> key1 = BoolValue<AllTypes>.ValueOf(boolValue);
-
-                Assert.AreEqual(key1.Value, boolValue);
-
-                string json = JsonSerializer.Serialize(key1);
-
-                BoolValue<AllTypes> key2 = JsonSerializer.Deserialize<BoolValue<AllTypes>>(json);
-
-                Assert.AreEqual(key1, key2);
-            }
-            return;
-        }
-
         private static AllTypes GetAllTypes1() {
 
             return new AllTypes(
-                id: IntKey<AllTypes>.NotSet,
+                id: AllTypesId.NotSet,
                 guid: Guid.NewGuid(),
                 @string: "88udskja8adfq23",
                 smallInt: 7261,
@@ -773,8 +599,8 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo> deleteQuery7 = Query
-                    .Prepare<IntKey<AllTypes>>()
+                IPreparedDeleteQuery<AllTypesId, AllTypesInfo> deleteQuery7 = Query
+                    .Prepare<AllTypesId>()
                     .Delete(allTypesTable)
                     .Using(allTypesTable2)
                     .Where(where => where.EQUALS(allTypesTable.Id, allTypesTable2.Id) & where.EQUALS(allTypesTable.Id, id => id))
@@ -1126,8 +952,8 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo> deleteQuery9 = Query
-                    .Prepare<IntKey<AllTypes>>()
+                IPreparedDeleteQuery<AllTypesId, AllTypesInfo> deleteQuery9 = Query
+                    .Prepare<AllTypesId>()
                     .Delete(allTypesTable)
                     .Where(where => where.EQUALS(allTypesTable.Id, id => id))
                     .Build(deleted => new AllTypesInfo(deleted, allTypesTable));
@@ -1168,8 +994,8 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                IPreparedDeleteQuery<IntKey<AllTypes>> deleteQuery10 = Query
-                    .Prepare<IntKey<AllTypes>>()
+                IPreparedDeleteQuery<AllTypesId> deleteQuery10 = Query
+                    .Prepare<AllTypesId>()
                     .Delete(allTypesTable)
                     .Where(where => where.EQUALS(allTypesTable.Id, id => id))
                     .Build();
@@ -1206,8 +1032,8 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                IPreparedDeleteQuery<IntKey<AllTypes>, AllTypesInfo> deleteQuery10 = Query
-                    .Prepare<IntKey<AllTypes>>()
+                IPreparedDeleteQuery<AllTypesId, AllTypesInfo> deleteQuery10 = Query
+                    .Prepare<AllTypesId>()
                     .Delete(allTypesTable)
                     .Where(where => where.EQUALS(allTypesTable.Id, id => id))
                     .Build(deleted => new AllTypesInfo(deleted, allTypesTable));
@@ -1280,17 +1106,17 @@ namespace QueryLiteTest.Tests {
 
         private class JoinQueryParams {
 
-            public JoinQueryParams(AllTypes allTypes, IntKey<AllTypes> id) {
+            public JoinQueryParams(AllTypes allTypes, AllTypesId id) {
                 AllTypes = allTypes;
                 Id = id;
             }
             public AllTypes AllTypes { get; }
-            public IntKey<AllTypes> Id { get; }
+            public AllTypesId Id { get; }
         }
 
         private static void JoinQuery(AllTypes allTypes) {
 
-            IntKey<AllTypes> id = new IntKey<AllTypes>(928756923);
+            AllTypesId id = new AllTypesId(928756923);
 
             JoinQueryParams joinQueryParams = new JoinQueryParams(allTypes, id);
 
@@ -1434,7 +1260,7 @@ namespace QueryLiteTest.Tests {
 
                 AssertRowDoesNotExists(allTypes);
 
-                allTypes.Id = IntKey<AllTypes>.NotSet;
+                allTypes.Id = AllTypesId.NotSet;
             }
         }
 
@@ -1513,8 +1339,8 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                IPreparedDeleteQuery<IntKey<AllTypes>> deleteQuery11 = Query
-                    .Prepare<IntKey<AllTypes>>()
+                IPreparedDeleteQuery<AllTypesId> deleteQuery11 = Query
+                    .Prepare<AllTypesId>()
                     .Delete(allTypesTable)
                     .Where(where => where.EQUALS(allTypesTable.Id, id => id))
                     .Build();
@@ -1755,10 +1581,10 @@ namespace QueryLiteTest.Tests {
                 AllTypesTable tableA = AllTypesTable.Instance;
                 AllTypesTable tableB = AllTypesTable.Instance2;
 
-                (AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3) parameters = new(allTypes1, allTypes1.Id, allTypes3.Id);
+                (AllTypes Info, AllTypesId Id1, AllTypesId Id3) parameters = new(allTypes1, allTypes1.Id, allTypes3.Id);
 
-                IPreparedUpdateQuery<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3), AllTypesInfo> updateQuery = Query
-                    .Prepare<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3)>()
+                IPreparedUpdateQuery<(AllTypes Info, AllTypesId Id1, AllTypesId Id3), AllTypesInfo> updateQuery = Query
+                    .Prepare<(AllTypes Info, AllTypesId Id1, AllTypesId Id3)>()
                     .Update(tableA)
                     .Values(values => values
                         .Set(tableA.Guid, x => x.Info.Guid)
@@ -1842,10 +1668,10 @@ namespace QueryLiteTest.Tests {
                 AllTypesTable tableA = AllTypesTable.Instance;
                 AllTypesTable tableB = AllTypesTable.Instance2;
 
-                (AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3) parameters = new(allTypes1, allTypes1.Id, allTypes3.Id);
+                (AllTypes Info, AllTypesId Id1, AllTypesId Id3) parameters = new(allTypes1, allTypes1.Id, allTypes3.Id);
 
-                IPreparedUpdateQuery<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3), AllTypesInfo> updateQuery = Query
-                    .Prepare<(AllTypes Info, IntKey<AllTypes> Id1, IntKey<AllTypes> Id3)>()
+                IPreparedUpdateQuery<(AllTypes Info, AllTypesId Id1, AllTypesId Id3), AllTypesInfo> updateQuery = Query
+                    .Prepare<(AllTypes Info, AllTypesId Id1, AllTypesId Id3)>()
                     .Update(tableA)
                     .Values(values => values
                         .Set(tableA.Guid, x => x.Info.Guid)

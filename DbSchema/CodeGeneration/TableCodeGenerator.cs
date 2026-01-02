@@ -54,7 +54,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 code.Append("}").EndLine();
             }
 
-            List<StringKey<ISchemaName>> schemaNames = new List<StringKey<ISchemaName>>();
+            List<SchemaName> schemaNames = [];
 
             foreach(DatabaseTable table in tables) {
 
@@ -67,7 +67,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             int count = 0;
 
-            foreach(StringKey<ISchemaName> schema in schemaNames) {
+            foreach(SchemaName schema in schemaNames) {
 
                 if(count > 0) {
                     code.EndLine();
@@ -201,7 +201,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     }
                     code.Indent(3).Append($"new(this, name: \"{uniqueConstraint.ConstraintName}\"");
 
-                    foreach(StringKey<IColumnName> columnName in uniqueConstraint.ColumnNames) {
+                    foreach(ColumnName columnName in uniqueConstraint.ColumnNames) {
                         code.Append(", ").Append(prefix.GetColumnName(columnName.Value, className: tableClassName));
                     }
                     code.Append(")");

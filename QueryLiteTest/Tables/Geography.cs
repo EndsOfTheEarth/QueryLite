@@ -1,23 +1,20 @@
-﻿
+﻿using QueryLite;
+using System;
+
 namespace QueryLiteTest.Tables {
-
-    using QueryLite;
-    using QueryLite.Utility;
-
-    public interface IGeoTest { }
 
     public sealed class GeoTestTable : ATable {
 
-        public static readonly GeoTestTable Instance = new GeoTestTable();
+        public static readonly GeoTestTable Instance = new();
 
-        public Column<GuidKey<IGeoTest>> Guid { get; }
+        public Column<GeoTestId, Guid> Guid { get; }
         public Column<IGeography> Geography { get; }
 
-        public override PrimaryKey? PrimaryKey => new PrimaryKey(table: this, name: "pk_GeoTest", Guid);
+        public override PrimaryKey? PrimaryKey => new(table: this, name: "pk_GeoTest", Guid);
 
         private GeoTestTable() : base(tableName: "GeoTest", schemaName: "dbo") {
 
-            Guid = new Column<GuidKey<IGeoTest>>(this, columnName: "gtGuid");
+            Guid = new Column<GeoTestId, Guid>(this, columnName: "gtGuid");
             Geography = new Column<IGeography>(this, columnName: "gtGeography", length: ColumnLength.MAX);
         }
     }

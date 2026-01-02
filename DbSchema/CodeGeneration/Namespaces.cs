@@ -46,7 +46,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
         private string RequestNamespace { get; set; }
         private string HandlerNamespace { get; set; }
 
-        public string GetTableNamespace(StringKey<ISchemaName> schema) {
+        public string GetTableNamespace(SchemaName schema) {
 
             string schemaName = schema.Value;
 
@@ -60,7 +60,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             }
         }
 
-        public string GetClassesNamespace(StringKey<ISchemaName> schema) {
+        public string GetClassesNamespace(SchemaName schema) {
 
             string schemaName = schema.Value;
 
@@ -74,7 +74,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             }
         }
 
-        public string GetRequestsNamespace(StringKey<ISchemaName> schema) {
+        public string GetRequestsNamespace(SchemaName schema) {
 
             string schemaName = schema.Value;
 
@@ -88,7 +88,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             }
         }
 
-        public string GetHandlersNamespace(StringKey<ISchemaName> schema) {
+        public string GetHandlersNamespace(SchemaName schema) {
 
             string schemaName = schema.Value;
 
@@ -102,7 +102,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             }
         }
 
-        public static bool IsDefaultSchema(StringKey<ISchemaName> schema) {
+        public static bool IsDefaultSchema(SchemaName schema) {
             return string.Equals(schema.Value, "dbo", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(schema.Value, "public", StringComparison.OrdinalIgnoreCase);
         }

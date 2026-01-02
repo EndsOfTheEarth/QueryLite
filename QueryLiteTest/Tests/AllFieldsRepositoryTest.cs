@@ -100,7 +100,7 @@ namespace QueryLiteTest.Tests {
         private static AllTypes GetAllTypes1() {
 
             return new AllTypes(
-                id: IntKey<AllTypes>.NotSet,
+                id: AllTypesId.NotSet,
                 guid: Guid.NewGuid(),
                 @string: "88udskj🐘a8adf😀q23",
                 smallInt: 7261,
@@ -738,7 +738,7 @@ namespace QueryLiteTest.Tests {
                 AllTypesRow row = new AllTypesRow();
 
                 row.SetValues(
-                    id: IntKey<AllTypes>.NotSet,
+                    id: AllTypesId.NotSet,
                     guid: allTypes.Guid,
                     @string: allTypes.String,
                     smallInt: allTypes.SmallInt,
@@ -775,7 +775,7 @@ namespace QueryLiteTest.Tests {
 
                 AssertRowDoesNotExists(allTypes);
 
-                allTypes.Id = IntKey<AllTypes>.NotSet;
+                allTypes.Id = AllTypesId.NotSet;
             }
         }
 
@@ -881,7 +881,7 @@ namespace QueryLiteTest.Tests {
                 .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
                 .Join(allTypesTable2).On(repository.Table.Id == allTypesTable2.Id)
                 .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
-                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new IntKey<AllTypes>(928756923))
+                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new AllTypesId(928756923))
                 .Where(allTypesTable3.Id == allTypes.Id)
                 .Execute(TestDatabase.Database);
 
@@ -904,7 +904,7 @@ namespace QueryLiteTest.Tests {
                 .With(SqlServerTableHint.UPDLOCK, SqlServerTableHint.SERIALIZABLE)
                 .Join(allTypesTable2).On(repository.Table.Id == allTypesTable2.Id)
                 .Join(allTypesTable3).On(allTypesTable2.Id == allTypesTable3.Id)
-                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new IntKey<AllTypes>(928756923))
+                .LeftJoin(allTypesTable4).On(allTypesTable4.Id == new AllTypesId(928756923))
                 .Where(allTypesTable3.Id == allTypes.Id)
                 .ExecuteAsync(TestDatabase.Database, CancellationToken.None);
 

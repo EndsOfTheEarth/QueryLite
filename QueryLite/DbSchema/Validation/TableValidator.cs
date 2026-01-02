@@ -811,28 +811,7 @@ namespace QueryLite {
 
         private static Type ConvertToAdoType(Type type) {
 
-            if(type.IsGenericType) {
-
-                if(type.GetGenericTypeDefinition() == typeof(ShortKey<>)) {
-                    type = typeof(short);
-                }
-                else if(type.GetGenericTypeDefinition() == typeof(IntKey<>)) {
-                    type = typeof(int);
-                }
-                else if(type.GetGenericTypeDefinition() == typeof(LongKey<>)) {
-                    type = typeof(long);
-                }
-                else if(type.GetGenericTypeDefinition() == typeof(GuidKey<>)) {
-                    type = typeof(Guid);
-                }
-                else if(type.GetGenericTypeDefinition() == typeof(StringKey<>)) {
-                    type = typeof(string);
-                }
-                else if(type.GetGenericTypeDefinition() == typeof(BoolValue<>)) {
-                    type = typeof(bool);
-                }
-            }
-            else if(type.IsAssignableTo(typeof(IValue<Guid>))) {
+            if(type.IsAssignableTo(typeof(IValue<Guid>))) {
                 type = typeof(Guid);
             }
             else if(type.IsAssignableTo(typeof(IValue<short>))) {

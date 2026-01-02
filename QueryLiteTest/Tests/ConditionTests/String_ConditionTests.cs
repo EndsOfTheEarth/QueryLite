@@ -462,7 +462,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
         private static AllTypes GetAllType() {
 
             return new AllTypes(
-                id: IntKey<AllTypes>.NotSet,
+                id: AllTypesId.NotSet,
                 guid: Guid.NewGuid(),
                 @string: "88udsk📏ja8ad🖥fq23",
                 smallInt: 7261,
