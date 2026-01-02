@@ -21,8 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.DbSchema.Tables;
-using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 
@@ -38,21 +36,6 @@ namespace QueryLite.DbSchema.CodeGeneration {
             code.Append("using QueryLite;").EndLine();
 
             bool skipInterfaces = tables.Count == 1 && tables[0].IsView;
-
-            if(!skipInterfaces && settings.UseIdentifiers == IdentifierType.Key) {
-
-                code.EndLine().Append($"namespace {settings.Namespaces.TableNamespace} {{").EndLine().EndLine();
-
-                foreach(DatabaseTable table in tables) {
-
-                    if(!table.IsView) {
-                        string tableName = CodeHelper.GetTableName(table, includePostFix: false);
-                        code.Indent(1).Append($"public interface I{tableName}Id {{}}").EndLine();
-                    }
-                }
-
-                code.Append("}").EndLine();
-            }
 
             List<SchemaName> schemaNames = [];
 
@@ -97,12 +80,6 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 code.Indent(1).Append("using System;").EndLine();
                 code.Indent(1).Append("using QueryLite;").EndLine();
-            }
-
-            if(generateKeyInterface && settings.UseIdentifiers == IdentifierType.Key) {
-                code.EndLine();
-                string tableName = CodeHelper.GetTableName(table, includePostFix: false);
-                code.Indent(1).Append($"public interface I{tableName}Id {{}}").EndLine();
             }
 
             code.EndLine();

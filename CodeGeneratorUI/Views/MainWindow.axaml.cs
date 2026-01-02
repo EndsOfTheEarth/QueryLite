@@ -82,7 +82,6 @@ namespace QueryLite.CodeGeneratorUI.Views {
             numNumberOfInstanceProperties.ValueChanged += (sender, e) => UpdateCode(updatePrefix: false);
 
             radioNone.IsCheckedChanged += (sender, e) => UpdateCode(updatePrefix: false);
-            radioIdentifierKeyType.IsCheckedChanged += (sender, e) => UpdateCode(updatePrefix: false);
             radioIdentifierCustom.IsCheckedChanged += (sender, e) => UpdateCode(updatePrefix: false);
 
             chkIncludeDescriptions.IsCheckedChanged += (sender, e) => UpdateCode(updatePrefix: false);
@@ -409,15 +408,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
             }
         }
         public IdentifierType GetIdentifierType() {
-
-            IdentifierType type = IdentifierType.None;
-
-            if(radioIdentifierKeyType.IsChecked ?? false) {
-                type = IdentifierType.Key;
-            }
-            else if(radioIdentifierCustom.IsChecked ?? false) {
-                type = IdentifierType.Custom;
-            }
+            IdentifierType type = (radioIdentifierCustom.IsChecked ?? false) ? IdentifierType.Custom : IdentifierType.None;
             return type;
         }
 

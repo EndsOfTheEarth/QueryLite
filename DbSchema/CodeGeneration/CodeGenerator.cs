@@ -43,7 +43,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
         public required bool IncludeJsonAttributes { get; set; }
 
         /// <summary>
-        /// Use key structs on primary key and foreign key columns e.g. GuidKey<>, IntKey<> etc.
+        /// Use key structs on primary key and foreign key columns.
         /// </summary>
         public required IdentifierType UseIdentifiers { get; set; }
 
@@ -74,7 +74,6 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public enum IdentifierType {
         None,
-        Key,
         Custom
     }
 
@@ -202,36 +201,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             bool isPrimaryOrForeignKey = referencedTable != null || column.IsPrimaryKey;
 
-            if(useIdentifiers == IdentifierType.Key && isPrimaryOrForeignKey) {
-
-                columnInfo.IdentifierType = IdentifierType.Key;
-
-                string keyName;
-
-                if(referencedTable != null) {
-                    keyName = $"I{GetTableName(referencedTable, includePostFix: false)}Id";
-                }
-                else {
-                    keyName = $"I{GetTableName(table, includePostFix: false)}Id";
-                }
-
-                if(columnInfo.DotNetType == typeof(string)) {
-                    columnInfo.ColumnTypeName = $"StringKey<{keyName}>";
-                }
-                if(columnInfo.DotNetType == typeof(Guid)) {
-                    columnInfo.ColumnTypeName = $"GuidKey<{keyName}>";
-                }
-                if(columnInfo.DotNetType == typeof(short)) {
-                    columnInfo.ColumnTypeName = $"ShortKey<{keyName}>";
-                }
-                if(columnInfo.DotNetType == typeof(int)) {
-                    columnInfo.ColumnTypeName = $"IntKey<{keyName}>";
-                }
-                if(columnInfo.DotNetType == typeof(long)) {
-                    columnInfo.ColumnTypeName = $"LongKey<{keyName}>";
-                }
-            }
-            else if(useIdentifiers == IdentifierType.Custom && isPrimaryOrForeignKey) {
+            if(useIdentifiers == IdentifierType.Custom && isPrimaryOrForeignKey) {
 
                 columnInfo.IdentifierType = IdentifierType.Custom;
                 columnInfo.UnderlyingTypeName = typeDefaults?.ColumnType ?? "";

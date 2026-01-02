@@ -84,7 +84,6 @@
 			<CheckBox Name="chkUseRepositoryPattern" Margin="0,0,20,0">Use Repository Pattern</CheckBox>
             <TextBlock VerticalAlignment="Center" Margin="0,0,20,0">Custom Identifiers</TextBlock>
             <RadioButton Name="radioNone" GroupName="CustomIdentifiers" Margin="0,0,20,0">None</RadioButton>
-            <RadioButton Name="radioIdentifierKeyType" GroupName="CustomIdentifiers" Margin="0,0,20,0">Key Types</RadioButton>
             <RadioButton Name="radioIdentifierCustom" GroupName="CustomIdentifiers" Margin="0,0,20,0" IsChecked="true">Custom</RadioButton>
           </WrapPanel>			
           <TextBox Grid.Row="3" Grid.Column="0" Name="txtCode" AcceptsReturn="True" Margin="0" FontFamily="Consolas" VerticalAlignment="Stretch"></TextBox>
