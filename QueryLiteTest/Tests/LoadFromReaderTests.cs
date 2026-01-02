@@ -60,8 +60,6 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void TestLoadFromReaderCustomSqlFunction() {
 
-            ParentTable table = ParentTable.Instance;
-
             RawSqlFunction<string> concat = new(sql: "CONCAT('abc', 'efg')");
 
             QueryResult<string> result = Query.Select(

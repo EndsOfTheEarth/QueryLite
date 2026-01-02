@@ -17,6 +17,8 @@
 - [Select Union Query](#select-union-query)
 - [Select Distinct Query](#select-distinct-query)
 - [Select TOP Query](#select-top-query)
+- [Loading Values Directly From DbDataReader](#loading-values-directly-from-dbdatareader)
+- [Query Without A FROM Clause](#query-without-a-from-clause)
 - [Nested Query](#nested-query)
 - [Insert Query](#insert-query)
 - [Update Query](#update-query)
@@ -419,6 +421,40 @@ var result = Query
     .Top(100)
     .From(shipperTable)
     .Execute(DB.Northwind); 
+```
+
+## Loading Values Directly From DbDataReader
+
+For cases where a data type is not directly supported by QueryLite, you can load values directly from the DbDataSet.
+
+Example:
+```C#
+RawSqlFunction<string> concat = new(sql: "CONCAT('abc', 'efg')");
+
+QueryResult<string> result = Query
+    .Select(
+        row => row.LoadFromReader(
+            function: concat,
+            readValue: (reader, ordinal) => reader.GetString(ordinal),
+            @default: ""
+        )
+    )
+    .NoFromClause()
+    .Execute(TestDatabase.Database);
+```
+
+## Query Without A FROM Clause
+
+Queries that do not have a `FROM` caluse can be defined by calling `.NoFromClause()` within the query.
+
+Example:
+```C#
+GETDATE getDate = new();
+
+QueryResult<string> result = Query
+    .Select(row => row.Get(getDate))
+    .NoFromClause()
+    .Execute(TestDatabase.Database);
 ```
 
 ## Dynamic Conditions

@@ -1275,27 +1275,27 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return CUSTOM_TYPE.ValueOf(_reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE);
         }
 
-        public TYPE LoadFromReader<TYPE>(Column<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull {
+        public TYPE LoadFromReader<TYPE>(Column<TYPE> column, ReadValueDelegate<TYPE> readValue, TYPE @default) where TYPE : notnull {
 
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
                 return @default;
             }
-            return getValue(_reader, _ordinal);
+            return readValue(_reader, _ordinal);
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableColumn<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NullableColumn<TYPE> column, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
                 return default;
             }
-            return getValue(_reader, _ordinal);
+            return readValue(_reader, _ordinal);
         }
 
-        public TYPE LoadFromReader<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default)
+        public TYPE LoadFromReader<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> readValue, TYPE @default)
                                                  where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
                                                  where TYPE : notnull {
             _ordinal++;
@@ -1303,10 +1303,10 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return @default;
             }
-            return getValue(_reader, _ordinal);
+            return readValue(_reader, _ordinal);
         }
 
-        public TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NullableColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> getValue)
+        public TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NullableColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> readValue)
                                                   where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
                                                   where TYPE : notnull {
             _ordinal++;
@@ -1314,47 +1314,47 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return default;
             }
-            return getValue(_reader, _ordinal);
+            return readValue(_reader, _ordinal);
         }
 
-        public TYPE LoadFromReader<TYPE>(Function<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull {
+        public TYPE LoadFromReader<TYPE>(Function<TYPE> function, ReadValueDelegate<TYPE> readValue, TYPE @default) where TYPE : notnull {
             
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
                 return @default;
             }
-            return getValue(_reader, _ordinal);
+            return readValue(_reader, _ordinal);
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
                 return default;
             }
-            return getValue(_reader, _ordinal);
+            return readValue(_reader, _ordinal);
         }
 
-        public TYPE LoadFromReader<TYPE>(RawSqlFunction<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull {
+        public TYPE LoadFromReader<TYPE>(RawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue, TYPE @default) where TYPE : notnull {
 
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
                 return @default;
             }
-            return getValue(_reader, _ordinal);
+            return readValue(_reader, _ordinal);
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
                 return default;
             }
-            return getValue(_reader, _ordinal);
+            return readValue(_reader, _ordinal);
         }
     }
 }

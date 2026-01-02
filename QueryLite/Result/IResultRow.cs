@@ -350,41 +350,41 @@ namespace QueryLite {
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE LoadFromReader<TYPE>(Column<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull;
+        public TYPE LoadFromReader<TYPE>(Column<TYPE> column, ReadValueDelegate<TYPE> readValue, TYPE @default) where TYPE : notnull;
 
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE? LoadFromReader<TYPE>(NullableColumn<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull;
+        public TYPE? LoadFromReader<TYPE>(NullableColumn<TYPE> column, ReadValueDelegate<TYPE> readValue) where TYPE : notnull;
 
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE LoadFromReader<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE> where TYPE : notnull;
+        public TYPE LoadFromReader<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> readValue, TYPE @default) where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE> where TYPE : notnull;
 
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NullableColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> getValue) where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE> where TYPE : notnull;
+        public TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NullableColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> readValue) where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE> where TYPE : notnull;
 
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE LoadFromReader<TYPE>(Function<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull;
+        public TYPE LoadFromReader<TYPE>(Function<TYPE> function, ReadValueDelegate<TYPE> readValue, TYPE @default) where TYPE : notnull;
 
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull;
+        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull;
 
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE LoadFromReader<TYPE>(RawSqlFunction<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull;
+        public TYPE LoadFromReader<TYPE>(RawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue, TYPE @default) where TYPE : notnull;
 
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull;
+        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull;
     }
 }
