@@ -147,6 +147,8 @@ namespace QueryLite {
             return this;
         }
 
+        public IExecute<RESULT> NoFromClause() => this;
+
         public IJoin<RESULT> With(params SqlServerTableHint[] hints) {
 
             ArgumentNullException.ThrowIfNull(hints);

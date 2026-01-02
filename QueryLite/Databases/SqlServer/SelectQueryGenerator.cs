@@ -147,7 +147,7 @@ namespace QueryLite.Databases.SqlServer {
         private static void GenerateFromClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database) {
 
             if(template.FromTable == null) {
-                throw new Exception($"From table is null. Please check query");
+                return;
             }
             sql.Append(" FROM ");
 

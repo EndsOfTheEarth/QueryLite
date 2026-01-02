@@ -74,7 +74,7 @@ namespace QueryLite.Databases.PostgreSql {
         }
 
         private VALUE Add<VALUE>(AFunction<VALUE> function) where VALUE : notnull {
-            throw new NotSupportedException();
+            return Add(function);
         }
 
         public string Get(Column<string> column) {
@@ -540,6 +540,47 @@ namespace QueryLite.Databases.PostgreSql {
 
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
             return Add(column);
+        }
+
+        public TYPE LoadFromReader<TYPE>(Column<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull {
+            return Add(column);
+        }
+        public TYPE? LoadFromReader<TYPE>(NullableColumn<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull {
+            return Add(column);
+        }
+
+        public TYPE LoadFromReader<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default)
+                                                 where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
+                                                 where TYPE : notnull {
+            Add(column);
+            return @default;
+        }
+
+        public TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NullableColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<TYPE> getValue)
+                                                  where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
+                                                  where TYPE : notnull {
+            Add(column);
+            return default;
+        }
+
+        public TYPE LoadFromReader<TYPE>(Function<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull {
+            Add(column);
+            return @default;
+        }
+
+        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull {
+            Add(column);
+            return default;
+        }
+
+        public TYPE LoadFromReader<TYPE>(RawSqlFunction<TYPE> column, ReadValueDelegate<TYPE> getValue, TYPE @default) where TYPE : notnull {
+            Add(column);
+            return @default;
+        }
+
+        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> column, ReadValueDelegate<TYPE> getValue) where TYPE : notnull {
+            Add(column);
+            return default;
         }
     }
 }

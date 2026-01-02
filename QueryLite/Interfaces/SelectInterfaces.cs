@@ -82,6 +82,11 @@ namespace QueryLite {
         /// <param name="table"></param>
         /// <returns></returns>
         IHint<RESULT> From(ITable table);
+
+        /// <summary>
+        /// Explicitly state this query does not have a from statement.
+        /// </summary>
+        IExecute<RESULT> NoFromClause();
     }
 
     public interface IHint<RESULT> : IJoin<RESULT> {
