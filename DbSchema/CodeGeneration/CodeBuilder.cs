@@ -28,7 +28,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public sealed class CodeBuilder {
 
-        private readonly StringBuilder mText = new StringBuilder();
+        private readonly StringBuilder mText = new();
 
         private readonly string mIndent;
 

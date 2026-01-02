@@ -36,9 +36,9 @@ namespace DbSchema.CodeGeneration {
 
             string requestName = GetDeleteRequestName(name);
 
-            StringBuilder parametersText = new StringBuilder();
-            StringBuilder settersText = new StringBuilder();
-            StringBuilder propertiesText = new StringBuilder();
+            StringBuilder parametersText = new();
+            StringBuilder settersText = new();
+            StringBuilder propertiesText = new();
 
             foreach(DatabaseColumn column in table.Columns) {
 
@@ -111,7 +111,7 @@ namespace DbSchema.CodeGeneration {
             string requestName = GetDeleteRequestName(name);
             string handlerName = GetDeleteHandlerName(name);
 
-            StringBuilder whereClause = new StringBuilder();
+            StringBuilder whereClause = new();
 
             foreach(DatabaseColumn column in table.Columns) {
 
@@ -177,7 +177,7 @@ namespace DbSchema.CodeGeneration {
             string requestName = GetDeleteRequestName(name);
             string handlerName = GetDeleteHandlerName(name);
 
-            StringBuilder whereClause = new StringBuilder();
+            StringBuilder whereClause = new();
 
             foreach(DatabaseColumn column in table.Columns) {
 

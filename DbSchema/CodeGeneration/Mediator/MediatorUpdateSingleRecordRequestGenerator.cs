@@ -73,9 +73,9 @@ namespace DbSchema.CodeGeneration {
             string requestName = GetUpdateRequestName(name);
             string handlerName = GetUpdateHandlerName(name);
 
-            StringBuilder whereClause = new StringBuilder();
+            StringBuilder whereClause = new();
 
-            StringBuilder setValues = new StringBuilder();
+            StringBuilder setValues = new();
 
             foreach(DatabaseColumn column in table.Columns) {
 
@@ -164,9 +164,9 @@ namespace DbSchema.CodeGeneration {
             string requestName = GetUpdateRequestName(name);
             string handlerName = GetUpdateHandlerName(name);
 
-            StringBuilder setValues = new StringBuilder();
+            StringBuilder setValues = new();
 
-            StringBuilder whereClause = new StringBuilder();
+            StringBuilder whereClause = new();
 
             foreach(DatabaseColumn column in table.Columns) {
 

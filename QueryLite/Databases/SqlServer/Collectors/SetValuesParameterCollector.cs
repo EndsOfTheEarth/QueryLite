@@ -484,7 +484,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
             _collectorMode = collectorMode;
 
             if(_collectorMode == CollectorMode.Insert) {
-                ParamsSql = new StringBuilder();
+                ParamsSql = new();
             }
             _useAlias = useAlias;
         }

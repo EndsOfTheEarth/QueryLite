@@ -62,7 +62,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                     if(string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
                         TablePrefix prefix = new TablePrefix(table);
-                        code.Append(Generate(table, prefix, settings, includeUsings: false, generateKeyInterface: false).ToString());
+                        code.Append(Generate(table, prefix, settings, includeUsings: false).ToString());
                     }
                 }
                 code.Append("}");
@@ -70,7 +70,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             return code;
         }
 
-        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings, bool generateKeyInterface) {
+        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
 
             CodeBuilder code = new CodeBuilder();
 
@@ -94,7 +94,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 code.Indent(2).Append($"public static readonly {tableClassName} Instance{index + 1} = new();").EndLine();
             }
 
-            List<string> lines = new List<string>();
+            List<string> lines = [];
 
             code.EndLine();
 

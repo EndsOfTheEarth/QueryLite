@@ -23,8 +23,6 @@
  **/
 using QueryLite.DbSchema;
 using QueryLite.DbSchema.CodeGeneration;
-using QueryLite.DbSchema.Tables;
-using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 
@@ -32,7 +30,7 @@ namespace DbSchema.CodeGeneration {
 
     public static class MediatorCodeGenerator {
 
-        public static CodeBuilder GenerateMediatorRequestsCode(List<DatabaseTable> tables, CodeGeneratorSettings settings, bool includeUsings) {
+        public static CodeBuilder GenerateMediatorRequestsCode(List<DatabaseTable> tables, CodeGeneratorSettings settings) {
 
             CodeBuilder code = new CodeBuilder();
 
@@ -75,7 +73,7 @@ namespace {settings.Namespaces.BaseNamespace} {{
     }}
 }}
 ");
-            List<SchemaName> schemaNames = new List<SchemaName>();
+            List<SchemaName> schemaNames = [];
 
             foreach(DatabaseTable table in tables) {
 
@@ -146,7 +144,7 @@ namespace {settings.Namespaces.BaseNamespace} {{
             return code;
         }
 
-        public static CodeBuilder GenerateMediatorHandlersCode(List<DatabaseTable> tables, CodeGeneratorSettings settings, bool includeUsings) {
+        public static CodeBuilder GenerateMediatorHandlersCode(List<DatabaseTable> tables, CodeGeneratorSettings settings) {
 
             CodeBuilder code = new CodeBuilder();
 

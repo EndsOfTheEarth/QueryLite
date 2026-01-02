@@ -70,8 +70,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 CodeBuilder tableCode = TableCodeGenerator.Generate(tables, settings);
                 CodeBuilder classCode = ClassCodeGenerator.Generate(database, tables, settings);
                 CodeBuilder validationCode = FluentValidationGenerator.Generate(tables, settings);
-                CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(tables, settings, includeUsings: true);
-                CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(tables, settings, includeUsings: true);
+                CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(tables, settings);
+                CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(tables, settings);
 
                 File.WriteAllText(Path.Combine(folder, "Tables.cs"), tableCode.ToString());
                 File.WriteAllText(Path.Combine(folder, "Classes.cs"), classCode.ToString());
@@ -148,7 +148,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 Directory.CreateDirectory(tablesAndSchemaFolder);
             }
 
-            CodeBuilder tableCode = TableCodeGenerator.Generate(new List<DatabaseTable>() { table }, settings);
+            CodeBuilder tableCode = TableCodeGenerator.Generate([table], settings);
 
             string tableFileName = Path.Combine(tablesAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
             File.WriteAllText(tableFileName, tableCode.ToString());

@@ -32,8 +32,6 @@ using QueryLite.Databases.PostgreSql;
 using QueryLite.Databases.SqlServer;
 using QueryLite.DbSchema;
 using QueryLite.DbSchema.CodeGeneration;
-using QueryLite.DbSchema.Tables;
-using QueryLite.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -356,8 +354,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                     table: table,
                     prefix: prefix,
                     settings: settings,
-                    includeUsings: true,
-                    generateKeyInterface: true
+                    includeUsings: true
                 );
 
                 string nl = Environment.NewLine;

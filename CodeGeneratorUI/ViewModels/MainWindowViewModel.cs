@@ -23,8 +23,6 @@
  **/
 using CommunityToolkit.Mvvm.ComponentModel;
 using QueryLite.DbSchema;
-using QueryLite.DbSchema.Tables;
-using QueryLite.Utility;
 using System.Collections.ObjectModel;
 
 namespace QueryLite.CodeGeneratorUI.ViewModels {

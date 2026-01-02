@@ -189,7 +189,7 @@ namespace QueryLiteTest.Tests {
 
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
-            StringBuilder messages = new StringBuilder();
+            StringBuilder messages = new();
 
             foreach(ValidationItem item in result.Items) {
 

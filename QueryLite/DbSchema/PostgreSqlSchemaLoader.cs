@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.DbSchema.Tables;
 using QueryLite.DbSchema.Tables.PostgreSql;
 using QueryLite.Utility;
 
@@ -265,7 +264,7 @@ namespace QueryLite.DbSchema {
                 .From(tableConstraints)
                 .Join(checkConstraintsTable).On(
                     tableConstraints.Constraint_catalog == checkConstraintsTable.Constraint_catalog &
-                    tableConstraints.Constraint_schema == checkConstraintsTable.Constraint_schema &  
+                    tableConstraints.Constraint_schema == checkConstraintsTable.Constraint_schema &
                     tableConstraints.Constraint_name == checkConstraintsTable.Constraint_name
                 )
                 .Where(tableConstraints.Constraint_type == "CHECK")

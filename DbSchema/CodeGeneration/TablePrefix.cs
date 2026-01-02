@@ -46,7 +46,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             bool stop = false;
 
-            StringBuilder prefix = new StringBuilder();
+            StringBuilder prefix = new();
 
             for(int index = 0; index < 10; index++) {   // Limit prefix up to 10 characters
 

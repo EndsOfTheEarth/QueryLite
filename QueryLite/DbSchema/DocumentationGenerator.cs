@@ -91,7 +91,7 @@ namespace QueryLite.DbSchema {
 
         private static string GenerateForTables(List<Table> tables, string applicationName, string version) {
 
-            StringBuilder html = new StringBuilder();
+            StringBuilder html = new();
 
             html.Append("<html><header>");
 
@@ -167,7 +167,7 @@ a, a:visited {
 
         private static string GenerateForTable(Table table, int id) {
 
-            StringBuilder html = new StringBuilder();
+            StringBuilder html = new();
 
             html.Append("<hr/>");
             html.Append($"<h2 id={id}>{(table.TableClass.IsView ? "View" : "Table")}: ").Append(WebUtility.HtmlEncode($"[{table.TableClass.SchemaName}].{table.TableClass.TableName}")).Append("</h2>");

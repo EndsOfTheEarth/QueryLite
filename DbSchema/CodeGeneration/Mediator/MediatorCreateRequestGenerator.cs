@@ -64,7 +64,7 @@ namespace DbSchema.CodeGeneration {
 
             string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-            StringBuilder setValues = new StringBuilder();
+            StringBuilder setValues = new();
 
             foreach(DatabaseColumn column in table.Columns) {
 
@@ -132,7 +132,7 @@ namespace DbSchema.CodeGeneration {
 
             string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-            StringBuilder setValues = new StringBuilder();
+            StringBuilder setValues = new();
 
             foreach(DatabaseColumn column in table.Columns) {
 
@@ -194,7 +194,7 @@ namespace DbSchema.CodeGeneration {
 
             string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-            StringBuilder setValues = new StringBuilder();
+            StringBuilder setValues = new();
 
             foreach(DatabaseColumn column in table.Columns) {
 
