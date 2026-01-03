@@ -27,27 +27,27 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public static readonly TableConstraintsTable Instance = new();
 
-        public Column<string> Constraint_catalog { get; }
-        public Column<SchemaName, string> Constraint_schema { get; }
-        public Column<string> Constraint_name { get; }
-        public Column<string> Table_catalog { get; }
-        public Column<SchemaName, string> Table_schema { get; }
-        public Column<TableName, string> Table_name { get; }
-        public Column<string> Constraint_type { get; }
-        public Column<string> Is_deferrable { get; }
-        public Column<string> Initially_deferred { get; }
+        public Column<string> ConstraintCatalog { get; }
+        public Column<SchemaName, string> ConstraintSchema { get; }
+        public Column<string> ConstraintName { get; }
+        public Column<string> TableCatalog { get; }
+        public Column<SchemaName, string> TableSchema { get; }
+        public Column<TableName, string> TableName_ { get; }
+        public Column<string> ConstraintType { get; }
+        public Column<string> IsDeferrable { get; }
+        public Column<string> InitiallyDeferred { get; }
 
         public TableConstraintsTable() : base(tableName: "table_constraints", schemaName: "information_schema") {
 
-            Constraint_catalog = new Column<string>(table: this, columnName: "constraint_catalog");
-            Constraint_schema = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
-            Constraint_name = new Column<string>(table: this, columnName: "constraint_name");
-            Table_catalog = new Column<string>(table: this, columnName: "table_catalog");
-            Table_schema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            Table_name = new Column<TableName, string>(table: this, columnName: "table_name");
-            Constraint_type = new Column<string>(table: this, columnName: "constraint_type");
-            Is_deferrable = new Column<string>(table: this, columnName: "is_deferrable");
-            Initially_deferred = new Column<string>(table: this, columnName: "initially_deferred");
+            ConstraintCatalog = new Column<string>(table: this, columnName: "constraint_catalog");
+            ConstraintSchema = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
+            ConstraintName = new Column<string>(table: this, columnName: "constraint_name");
+            TableCatalog = new Column<string>(table: this, columnName: "table_catalog");
+            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
+            ConstraintType = new Column<string>(table: this, columnName: "constraint_type");
+            IsDeferrable = new Column<string>(table: this, columnName: "is_deferrable");
+            InitiallyDeferred = new Column<string>(table: this, columnName: "initially_deferred");
         }
     }
 }

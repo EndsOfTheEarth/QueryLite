@@ -27,33 +27,33 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public static readonly TablesTable Instance = new();
 
-        public Column<string> Table_catalog { get; }
-        public Column<SchemaName, string> Table_schema { get; }
-        public Column<TableName, string> Table_name { get; }
-        public Column<string> Table_type { get; }
-        public Column<string> Self_referencing_column_name { get; }
-        public Column<string> Reference_generation { get; }
-        public Column<string> User_defined_type_catalog { get; }
-        public Column<string> User_defined_type_schema { get; }
-        public Column<string> User_defined_type_name { get; }
-        public Column<string> Is_insertable_into { get; }
-        public Column<string> Is_typed { get; }
-        public Column<string> Commit_action { get; }
+        public Column<string> TableCatalog { get; }
+        public Column<SchemaName, string> TableSchema { get; }
+        public Column<TableName, string> TableName_ { get; }
+        public Column<string> TableType { get; }
+        public Column<string> SelfReferencingColumnName { get; }
+        public Column<string> ReferenceGeneration { get; }
+        public Column<string> UserDefinedTypeCatalog { get; }
+        public Column<string> UserDefinedTypeSchema { get; }
+        public Column<string> UserDefinedTypeName { get; }
+        public Column<string> IsInsertableInto { get; }
+        public Column<string> IsTyped { get; }
+        public Column<string> CommitAction { get; }
 
         public TablesTable() : base(tableName: "tables", schemaName: "information_schema") {
 
-            Table_catalog = new Column<string>(table: this, columnName: "table_catalog");
-            Table_schema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            Table_name = new Column<TableName, string>(table: this, columnName: "table_name");
-            Table_type = new Column<string>(table: this, columnName: "table_type");
-            Self_referencing_column_name = new Column<string>(table: this, columnName: "self_referencing_column_name");
-            Reference_generation = new Column<string>(table: this, columnName: "reference_generation");
-            User_defined_type_catalog = new Column<string>(table: this, columnName: "user_defined_type_catalog");
-            User_defined_type_schema = new Column<string>(table: this, columnName: "user_defined_type_schema");
-            User_defined_type_name = new Column<string>(table: this, columnName: "user_defined_type_name");
-            Is_insertable_into = new Column<string>(table: this, columnName: "is_insertable_into");
-            Is_typed = new Column<string>(table: this, columnName: "is_typed");
-            Commit_action = new Column<string>(table: this, columnName: "commit_action");
+            TableCatalog = new Column<string>(table: this, columnName: "table_catalog");
+            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
+            TableType = new Column<string>(table: this, columnName: "table_type");
+            SelfReferencingColumnName = new Column<string>(table: this, columnName: "self_referencing_column_name");
+            ReferenceGeneration = new Column<string>(table: this, columnName: "reference_generation");
+            UserDefinedTypeCatalog = new Column<string>(table: this, columnName: "user_defined_type_catalog");
+            UserDefinedTypeSchema = new Column<string>(table: this, columnName: "user_defined_type_schema");
+            UserDefinedTypeName = new Column<string>(table: this, columnName: "user_defined_type_name");
+            IsInsertableInto = new Column<string>(table: this, columnName: "is_insertable_into");
+            IsTyped = new Column<string>(table: this, columnName: "is_typed");
+            CommitAction = new Column<string>(table: this, columnName: "commit_action");
         }
     }
 }

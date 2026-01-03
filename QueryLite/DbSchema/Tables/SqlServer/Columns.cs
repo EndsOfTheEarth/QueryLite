@@ -27,53 +27,53 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public static readonly ColumnsTable Instance = new();
 
-        public Column<SchemaName, string> Table_schema { get; }
-        public Column<TableName, string> Table_name { get; }
-        public Column<ColumnName, string> Column_name { get; }
-        public NullableColumn<int> Ordinal_position { get; }
-        public Column<string> Column_default { get; }
-        public Column<string> Is_nullable { get; }
-        public Column<string> Data_type { get; }
-        public NullableColumn<int> Character_maximum_length { get; }
-        public NullableColumn<int> Character_octet_length { get; }
-        public NullableColumn<byte> Numeric_precision { get; }
-        public NullableColumn<short> Numeric_precision_radix { get; }
-        public NullableColumn<int> Numeric_scale { get; }
-        public NullableColumn<short> Datetime_precision { get; }
-        public Column<string> Character_set_catalog { get; }
-        public Column<string> Character_set_schema { get; }
-        public Column<string> Character_set_name { get; }
-        public Column<string> Collation_catalog { get; }
-        public Column<string> Collation_schema { get; }
-        public Column<string> Collation_name { get; }
-        public Column<string> Domain_catalog { get; }
-        public Column<string> Domain_schema { get; }
-        public Column<string> Domain_name { get; }
+        public Column<SchemaName, string> TableSchema { get; }
+        public Column<TableName, string> TableName_ { get; }
+        public Column<ColumnName, string> ColumnName { get; }
+        public NullableColumn<int> OrdinalPosition { get; }
+        public Column<string> Columndefault { get; }
+        public Column<string> IsNullable { get; }
+        public Column<string> DataType { get; }
+        public NullableColumn<int> CharacterMaximumLength { get; }
+        public NullableColumn<int> CharacterOctetLength { get; }
+        public NullableColumn<byte> NumericPrecision { get; }
+        public NullableColumn<short> NumericPrecisionRadix { get; }
+        public NullableColumn<int> NumericScale { get; }
+        public NullableColumn<short> DatetimePrecision { get; }
+        public Column<string> CharacterSetCatalog { get; }
+        public Column<string> CharacterSetSchema { get; }
+        public Column<string> CharacterSetName { get; }
+        public Column<string> CollationCatalog { get; }
+        public Column<string> CollationSchema { get; }
+        public Column<string> CollationName { get; }
+        public Column<string> DomainCatalog { get; }
+        public Column<string> DomainSchema { get; }
+        public Column<string> DomainName { get; }
 
         public ColumnsTable() : base(tableName: "columns", schemaName: "information_schema") {
 
-            Table_schema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            Table_name = new Column<TableName, string>(table: this, columnName: "table_name");
-            Column_name = new Column<ColumnName, string>(table: this, columnName: "column_name");
-            Ordinal_position = new NullableColumn<int>(table: this, columnName: "ordinal_position");
-            Column_default = new Column<string>(table: this, columnName: "column_default");
-            Is_nullable = new Column<string>(table: this, columnName: "is_nullable");
-            Data_type = new Column<string>(table: this, columnName: "data_type");
-            Character_maximum_length = new NullableColumn<int>(table: this, columnName: "character_maximum_length");
-            Character_octet_length = new NullableColumn<int>(table: this, columnName: "character_octet_length");
-            Numeric_precision = new NullableColumn<byte>(table: this, columnName: "numeric_precision");
-            Numeric_precision_radix = new NullableColumn<short>(table: this, columnName: "numeric_precision_radix");
-            Numeric_scale = new NullableColumn<int>(table: this, columnName: "numeric_scale");
-            Datetime_precision = new NullableColumn<short>(table: this, columnName: "datetime_precision");
-            Character_set_catalog = new Column<string>(table: this, columnName: "character_set_catalog");
-            Character_set_schema = new Column<string>(table: this, columnName: "character_set_schema");
-            Character_set_name = new Column<string>(table: this, columnName: "character_set_name");
-            Collation_catalog = new Column<string>(table: this, columnName: "collation_catalog");
-            Collation_schema = new Column<string>(table: this, columnName: "collation_schema");
-            Collation_name = new Column<string>(table: this, columnName: "collation_name");
-            Domain_catalog = new Column<string>(table: this, columnName: "domain_catalog");
-            Domain_schema = new Column<string>(table: this, columnName: "domain_schema");
-            Domain_name = new Column<string>(table: this, columnName: "domain_name");
+            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
+            ColumnName = new Column<ColumnName, string>(table: this, columnName: "column_name");
+            OrdinalPosition = new NullableColumn<int>(table: this, columnName: "ordinal_position");
+            Columndefault = new Column<string>(table: this, columnName: "column_default");
+            IsNullable = new Column<string>(table: this, columnName: "is_nullable");
+            DataType = new Column<string>(table: this, columnName: "data_type");
+            CharacterMaximumLength = new NullableColumn<int>(table: this, columnName: "character_maximum_length");
+            CharacterOctetLength = new NullableColumn<int>(table: this, columnName: "character_octet_length");
+            NumericPrecision = new NullableColumn<byte>(table: this, columnName: "numeric_precision");
+            NumericPrecisionRadix = new NullableColumn<short>(table: this, columnName: "numeric_precision_radix");
+            NumericScale = new NullableColumn<int>(table: this, columnName: "numeric_scale");
+            DatetimePrecision = new NullableColumn<short>(table: this, columnName: "datetime_precision");
+            CharacterSetCatalog = new Column<string>(table: this, columnName: "character_set_catalog");
+            CharacterSetSchema = new Column<string>(table: this, columnName: "character_set_schema");
+            CharacterSetName = new Column<string>(table: this, columnName: "character_set_name");
+            CollationCatalog = new Column<string>(table: this, columnName: "collation_catalog");
+            CollationSchema = new Column<string>(table: this, columnName: "collation_schema");
+            CollationName = new Column<string>(table: this, columnName: "collation_name");
+            DomainCatalog = new Column<string>(table: this, columnName: "domain_catalog");
+            DomainSchema = new Column<string>(table: this, columnName: "domain_schema");
+            DomainName = new Column<string>(table: this, columnName: "domain_name");
         }
     }
 
@@ -82,28 +82,28 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public ColumnsRow() { }
 
         public ColumnsRow(IResultRow result, ColumnsTable table) {
-            Table_schema = result.Get(table.Table_schema);
-            Table_name = result.Get(table.Table_name);
-            Column_name = result.Get(table.Column_name);
-            Ordinal_position = result.Get(table.Ordinal_position);
-            Column_default = result.Get(table.Column_default);
-            Is_nullable = result.Get(table.Is_nullable);
-            Data_type = result.Get(table.Data_type);
-            Character_maximum_length = result.Get(table.Character_maximum_length);
-            Character_octet_length = result.Get(table.Character_octet_length);
-            Numeric_precision = result.Get(table.Numeric_precision);
-            Numeric_precision_radix = result.Get(table.Numeric_precision_radix);
-            Numeric_scale = result.Get(table.Numeric_scale);
-            Datetime_precision = result.Get(table.Datetime_precision);
-            Character_set_catalog = result.Get(table.Character_set_catalog);
-            Character_set_schema = result.Get(table.Character_set_schema);
-            Character_set_name = result.Get(table.Character_set_name);
-            Collation_catalog = result.Get(table.Collation_catalog);
-            Collation_schema = result.Get(table.Collation_schema);
-            Collation_name = result.Get(table.Collation_name);
-            Domain_catalog = result.Get(table.Domain_catalog);
-            Domain_schema = result.Get(table.Domain_schema);
-            Domain_name = result.Get(table.Domain_name);
+            Table_schema = result.Get(table.TableSchema);
+            Table_name = result.Get(table.TableName_);
+            Column_name = result.Get(table.ColumnName);
+            Ordinal_position = result.Get(table.OrdinalPosition);
+            Column_default = result.Get(table.Columndefault);
+            Is_nullable = result.Get(table.IsNullable);
+            Data_type = result.Get(table.DataType);
+            Character_maximum_length = result.Get(table.CharacterMaximumLength);
+            Character_octet_length = result.Get(table.CharacterOctetLength);
+            Numeric_precision = result.Get(table.NumericPrecision);
+            Numeric_precision_radix = result.Get(table.NumericPrecisionRadix);
+            Numeric_scale = result.Get(table.NumericScale);
+            Datetime_precision = result.Get(table.DatetimePrecision);
+            Character_set_catalog = result.Get(table.CharacterSetCatalog);
+            Character_set_schema = result.Get(table.CharacterSetSchema);
+            Character_set_name = result.Get(table.CharacterSetName);
+            Collation_catalog = result.Get(table.CollationCatalog);
+            Collation_schema = result.Get(table.CollationSchema);
+            Collation_name = result.Get(table.CollationName);
+            Domain_catalog = result.Get(table.DomainCatalog);
+            Domain_schema = result.Get(table.DomainSchema);
+            Domain_name = result.Get(table.DomainName);
         }
 
         public SchemaName Table_schema { get; set; }

@@ -46,16 +46,16 @@ namespace QueryLite.DbSchema {
             var query = Query
                 .Select(
                     result => new {
-                        Table_schema = result.Get(tablesTable.Table_schema),
-                        Table_name = result.Get(tablesTable.Table_name),
-                        Table_type = result.Get(tablesTable.Table_type),
+                        Table_schema = result.Get(tablesTable.TableSchema),
+                        Table_name = result.Get(tablesTable.TableName_),
+                        Table_type = result.Get(tablesTable.TableType),
                         ColumnsRow = new ColumnsRow(result, columnsTable)
                     }
                 )
                 .From(tablesTable)
-                .Join(columnsTable).On(tablesTable.Table_schema == columnsTable.Table_schema & tablesTable.Table_name == columnsTable.Table_name)
+                .Join(columnsTable).On(tablesTable.TableSchema == columnsTable.TableSchema & tablesTable.TableName_ == columnsTable.TableName_)
                 //.Where(tablesTable.Table_schema != SchemaName.ValueOf("pg_catalog") & tablesTable.Table_schema != SchemaName.ValueOf("information_schema"))
-                .OrderBy(columnsTable.Ordinal_position)
+                .OrderBy(columnsTable.OrdinalPosition)
                 .Execute(database);
 
             for(int index = 0; index < query.Rows.Count; index++) {
@@ -145,26 +145,26 @@ namespace QueryLite.DbSchema {
             var result = Query
                 .Select(
                     row => new {
-                        Table_schema = row.Get(keyColumnUsage.Table_schema),
-                        Table_name = row.Get(keyColumnUsage.Table_name),
-                        Column_name = row.Get(keyColumnUsage.Column_name),
-                        Constraint_Name = row.Get(tableConstraints.Constraint_name)
+                        Table_schema = row.Get(keyColumnUsage.TableSchema),
+                        Table_name = row.Get(keyColumnUsage.TableName_),
+                        Column_name = row.Get(keyColumnUsage.ColumnName),
+                        Constraint_Name = row.Get(tableConstraints.ConstraintName)
                     }
                 )
                 .From(tableConstraints)
                 .Join(keyColumnUsage).On(
-                    tableConstraints.Table_schema == keyColumnUsage.Table_schema &
-                    tableConstraints.Table_name == keyColumnUsage.Table_name &
-                    tableConstraints.Constraint_name == keyColumnUsage.Constraint_name
+                    tableConstraints.TableSchema == keyColumnUsage.TableSchema &
+                    tableConstraints.TableName_ == keyColumnUsage.TableName_ &
+                    tableConstraints.ConstraintName == keyColumnUsage.ConstraintName
                 )
                 .Where(
-                    tableConstraints.Constraint_type == "PRIMARY KEY" &
-                    keyColumnUsage.Ordinal_position.IsNotNull
+                    tableConstraints.ConstraintType == "PRIMARY KEY" &
+                    keyColumnUsage.OrdinalPosition.IsNotNull
                 //&
                 //tableConstraints.Table_schema != SchemaName.ValueOf("pg_catalog") &
                 //tableConstraints.Table_schema != SchemaName.ValueOf("information_schema")
                 )
-                .OrderBy(keyColumnUsage.Ordinal_position)
+                .OrderBy(keyColumnUsage.OrdinalPosition)
                 .Execute(database, TimeoutLevel.ShortSelect);
 
             foreach(var row in result.Rows) {
@@ -199,26 +199,26 @@ namespace QueryLite.DbSchema {
             var result = Query
                 .Select(
                     row => new {
-                        Table_schema = row.Get(keyColumnUsage.Table_schema),
-                        Table_name = row.Get(keyColumnUsage.Table_name),
-                        Column_name = row.Get(keyColumnUsage.Column_name),
-                        Constraint_Name = row.Get(tableConstraints.Constraint_name)
+                        Table_schema = row.Get(keyColumnUsage.TableSchema),
+                        Table_name = row.Get(keyColumnUsage.TableName_),
+                        Column_name = row.Get(keyColumnUsage.ColumnName),
+                        Constraint_Name = row.Get(tableConstraints.ConstraintName)
                     }
                 )
                 .From(tableConstraints)
                 .Join(keyColumnUsage).On(
-                    tableConstraints.Table_schema == keyColumnUsage.Table_schema &
-                    tableConstraints.Table_name == keyColumnUsage.Table_name &
-                    tableConstraints.Constraint_name == keyColumnUsage.Constraint_name
+                    tableConstraints.TableSchema == keyColumnUsage.TableSchema &
+                    tableConstraints.TableName_ == keyColumnUsage.TableName_ &
+                    tableConstraints.ConstraintName == keyColumnUsage.ConstraintName
                 )
                 .Where(
-                    tableConstraints.Constraint_type == "UNIQUE" &
-                    keyColumnUsage.Ordinal_position.IsNotNull
+                    tableConstraints.ConstraintType == "UNIQUE" &
+                    keyColumnUsage.OrdinalPosition.IsNotNull
                 //&
                 //tableConstraints.Table_schema != SchemaName.ValueOf("pg_catalog") &
                 //tableConstraints.Table_schema != SchemaName.ValueOf("information_schema")
                 )
-                .OrderBy(keyColumnUsage.Ordinal_position)
+                .OrderBy(keyColumnUsage.OrdinalPosition)
                 .Execute(database, TimeoutLevel.ShortSelect);
 
             Dictionary<Key<TableKey, string>, DatabaseUniqueConstraint> dbUniqueConstraintLookup = [];
@@ -255,19 +255,19 @@ namespace QueryLite.DbSchema {
             var result = Query
                 .Select(
                     row => new {
-                        Table_schema = row.Get(tableConstraints.Table_schema),
-                        Table_name = row.Get(tableConstraints.Table_name),
-                        Constraint_Name = row.Get(tableConstraints.Constraint_name),
-                        CheckClause = row.Get(checkConstraintsTable.Check_caluse),
+                        Table_schema = row.Get(tableConstraints.TableSchema),
+                        Table_name = row.Get(tableConstraints.TableName_),
+                        Constraint_Name = row.Get(tableConstraints.ConstraintName),
+                        CheckClause = row.Get(checkConstraintsTable.CheckCaluse),
                     }
                 )
                 .From(tableConstraints)
                 .Join(checkConstraintsTable).On(
-                    tableConstraints.Constraint_catalog == checkConstraintsTable.Constraint_catalog &
-                    tableConstraints.Constraint_schema == checkConstraintsTable.Constraint_schema &
-                    tableConstraints.Constraint_name == checkConstraintsTable.Constraint_name
+                    tableConstraints.ConstraintCatalog == checkConstraintsTable.ConstraintCatalog &
+                    tableConstraints.ConstraintSchema == checkConstraintsTable.ConstraintSchema &
+                    tableConstraints.ConstraintName == checkConstraintsTable.ConstraintName
                 )
-                .Where(tableConstraints.Constraint_type == "CHECK")
+                .Where(tableConstraints.ConstraintType == "CHECK")
                 .Execute(database, TimeoutLevel.ShortSelect);
 
             Dictionary<Key<TableKey, string>, DatabaseCheckConstraint> lookup = [];
@@ -336,28 +336,28 @@ namespace QueryLite.DbSchema {
             var result = Query
                 .Select(
                     row => new {
-                        FOREIGN_KEY_TABLE_SCHEMA = row.Get(foreignKcuTable.Table_schema),
-                        FOREIGN_KEY_TABLE_NAME = row.Get(foreignKcuTable.Table_name),
+                        FOREIGN_KEY_TABLE_SCHEMA = row.Get(foreignKcuTable.TableSchema),
+                        FOREIGN_KEY_TABLE_NAME = row.Get(foreignKcuTable.TableName_),
                         FOREIGN_KEY_CONSTRAINT_NAME = row.Get(rcTable.CONSTRAINT_NAME),
-                        FOREIGN_KEY_COLUMN_NAME = row.Get(foreignKcuTable.Column_name),
-                        UNIQUE_KEY_TABLE_SCHEMA = row.Get(uniqueKcuTable.Table_schema),
-                        UNIQUE_KEY_TABLE_NAME = row.Get(uniqueKcuTable.Table_name),
-                        UNIQUE_KEY_COLUMN_NAME = row.Get(uniqueKcuTable.Column_name)
+                        FOREIGN_KEY_COLUMN_NAME = row.Get(foreignKcuTable.ColumnName),
+                        UNIQUE_KEY_TABLE_SCHEMA = row.Get(uniqueKcuTable.TableSchema),
+                        UNIQUE_KEY_TABLE_NAME = row.Get(uniqueKcuTable.TableName_),
+                        UNIQUE_KEY_COLUMN_NAME = row.Get(uniqueKcuTable.ColumnName)
                     }
                 )
                 .From(rcTable)
                 .Join(foreignKcuTable).On(
-                    rcTable.CONSTRAINT_CATALOG == foreignKcuTable.Constraint_catalog &
-                    rcTable.CONSTRAINT_SCHEMA == foreignKcuTable.Constraint_schema &
-                    rcTable.CONSTRAINT_NAME == foreignKcuTable.Constraint_name
+                    rcTable.CONSTRAINT_CATALOG == foreignKcuTable.ConstraintCatalog &
+                    rcTable.CONSTRAINT_SCHEMA == foreignKcuTable.ConstraintSchema &
+                    rcTable.CONSTRAINT_NAME == foreignKcuTable.ConstraintName
                 )
                 .Join(uniqueKcuTable).On(
-                    rcTable.UNIQUE_CONSTRAINT_CATALOG == uniqueKcuTable.Constraint_catalog &
-                    rcTable.UNIQUE_CONSTRAINT_SCHEMA == uniqueKcuTable.Constraint_schema &
-                    rcTable.UNIQUE_CONSTRAINT_NAME == uniqueKcuTable.Constraint_name &
-                    foreignKcuTable.Ordinal_position == uniqueKcuTable.Ordinal_position
+                    rcTable.UNIQUE_CONSTRAINT_CATALOG == uniqueKcuTable.ConstraintCatalog &
+                    rcTable.UNIQUE_CONSTRAINT_SCHEMA == uniqueKcuTable.ConstraintSchema &
+                    rcTable.UNIQUE_CONSTRAINT_NAME == uniqueKcuTable.ConstraintName &
+                    foreignKcuTable.OrdinalPosition == uniqueKcuTable.OrdinalPosition
                 )
-                .OrderBy(rcTable.CONSTRAINT_NAME, foreignKcuTable.Ordinal_position)
+                .OrderBy(rcTable.CONSTRAINT_NAME, foreignKcuTable.OrdinalPosition)
                 .Execute(database);
 
 
@@ -409,14 +409,14 @@ namespace QueryLite.DbSchema {
                 var result = Query
                     .Select(
                         row => new {
-                            tableSchema = row.Get(tablesTable.Table_schema),
-                            tableName = row.Get(tablesTable.Table_name),
+                            tableSchema = row.Get(tablesTable.TableSchema),
+                            tableName = row.Get(tablesTable.TableName_),
                             description = row.Get(obj_Description)
                         }
                     )
                     .From(tablesTable)
                     .Where(
-                        tablesTable.Table_type == "BASE TABLE" &
+                        tablesTable.TableType == "BASE TABLE" &
                         //tablesTable.Table_schema != SchemaName.ValueOf("pg_catalog") &
                         //tablesTable.Table_schema != SchemaName.ValueOf("information_schema") &
                         obj_Description.IsNotNull
@@ -442,9 +442,9 @@ namespace QueryLite.DbSchema {
                 var result = Query
                     .Select(
                         row => new {
-                            tableSchema = row.Get(columnsTable.Table_schema),
-                            tableName = row.Get(columnsTable.Table_name),
-                            columnName = row.Get(columnsTable.Column_name),
+                            tableSchema = row.Get(columnsTable.TableSchema),
+                            tableName = row.Get(columnsTable.TableName_),
+                            columnName = row.Get(columnsTable.ColumnName),
                             description = row.Get(column_Obj_Description)
                         }
                     )

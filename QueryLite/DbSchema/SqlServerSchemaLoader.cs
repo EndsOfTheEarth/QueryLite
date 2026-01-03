@@ -40,10 +40,10 @@ namespace QueryLite.DbSchema {
             }
             public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
                 if(useAlias) {
-                    return $"COLUMNPROPERTY(object_id({Table.Alias}.{Table.Table_schema.ColumnName} + '.' + {Table.Alias}.{Table.Table_name.ColumnName}), COLUMN_NAME, 'IsIdentity')";
+                    return $"COLUMNPROPERTY(object_id({Table.Alias}.{Table.TableSchema.ColumnName} + '.' + {Table.Alias}.{Table.TableName_.ColumnName}), COLUMN_NAME, 'IsIdentity')";
                 }
                 else {
-                    return $"COLUMNPROPERTY(object_id({Table.Table_schema.ColumnName} + '.' + {Table.Table_name.ColumnName}), COLUMN_NAME, 'IsIdentity')";
+                    return $"COLUMNPROPERTY(object_id({Table.TableSchema.ColumnName} + '.' + {Table.TableName_.ColumnName}), COLUMN_NAME, 'IsIdentity')";
                 }
             }
         }
@@ -73,7 +73,7 @@ namespace QueryLite.DbSchema {
                     }
                 )
                 .From(tablesTable)
-                .Join(columnsTable).On(tablesTable.TABLE_SCHEMA == columnsTable.Table_schema & tablesTable.TABLE_NAME == columnsTable.Table_name)
+                .Join(columnsTable).On(tablesTable.TABLE_SCHEMA == columnsTable.TableSchema & tablesTable.TABLE_NAME == columnsTable.TableName_)
                 .Execute(database, TimeoutLevel.ShortSelect);
 
             for(int index = 0; index < result.Rows.Count; index++) {
@@ -175,16 +175,16 @@ namespace QueryLite.DbSchema {
                         TABLE_SCHEMA = row.Get(keyColumnUsage.TABLE_SCHEMA),
                         TABLE_NAME = row.Get(keyColumnUsage.TABLE_NAME),
                         COLUMN_NAME = row.Get(keyColumnUsage.COLUMN_NAME),
-                        Constraint_Name = row.Get(tableConstraints.Constraint_name)
+                        Constraint_Name = row.Get(tableConstraints.ConstraintName)
                     }
                 )
                 .From(tableConstraints)
                 .Join(keyColumnUsage).On(
-                    tableConstraints.Table_schema == keyColumnUsage.TABLE_SCHEMA &
-                    tableConstraints.Table_name == keyColumnUsage.TABLE_NAME &
-                    tableConstraints.Constraint_name == keyColumnUsage.CONSTRAINT_NAME
+                    tableConstraints.TableSchema == keyColumnUsage.TABLE_SCHEMA &
+                    tableConstraints.TableName_ == keyColumnUsage.TABLE_NAME &
+                    tableConstraints.ConstraintName == keyColumnUsage.CONSTRAINT_NAME
                 )
-                .Where(tableConstraints.Constraint_type == "PRIMARY KEY" & keyColumnUsage.ORDINAL_POSITION.IsNotNull)
+                .Where(tableConstraints.ConstraintType == "PRIMARY KEY" & keyColumnUsage.ORDINAL_POSITION.IsNotNull)
                 .OrderBy(keyColumnUsage.ORDINAL_POSITION)
                 .Execute(database);
 
@@ -223,16 +223,16 @@ namespace QueryLite.DbSchema {
                         TABLE_SCHEMA = row.Get(keyColumnUsage.TABLE_SCHEMA),
                         TABLE_NAME = row.Get(keyColumnUsage.TABLE_NAME),
                         COLUMN_NAME = row.Get(keyColumnUsage.COLUMN_NAME),
-                        Constraint_Name = row.Get(tableConstraints.Constraint_name)
+                        Constraint_Name = row.Get(tableConstraints.ConstraintName)
                     }
                 )
                 .From(tableConstraints)
                 .Join(keyColumnUsage).On(
-                    tableConstraints.Table_schema == keyColumnUsage.TABLE_SCHEMA &
-                    tableConstraints.Table_name == keyColumnUsage.TABLE_NAME &
-                    tableConstraints.Constraint_name == keyColumnUsage.CONSTRAINT_NAME
+                    tableConstraints.TableSchema == keyColumnUsage.TABLE_SCHEMA &
+                    tableConstraints.TableName_ == keyColumnUsage.TABLE_NAME &
+                    tableConstraints.ConstraintName == keyColumnUsage.CONSTRAINT_NAME
                 )
-                .Where(tableConstraints.Constraint_type == "UNIQUE" & keyColumnUsage.ORDINAL_POSITION.IsNotNull)
+                .Where(tableConstraints.ConstraintType == "UNIQUE" & keyColumnUsage.ORDINAL_POSITION.IsNotNull)
                 .OrderBy(keyColumnUsage.ORDINAL_POSITION)
                 .Execute(database);
 
@@ -270,19 +270,19 @@ namespace QueryLite.DbSchema {
             var result = Query
                 .Select(
                     row => new {
-                        TableSchema = row.Get(tableConstraints.Table_schema),
-                        TableName = row.Get(tableConstraints.Table_name),
-                        ConstraintName = row.Get(tableConstraints.Constraint_name),
-                        CheckClause = row.Get(checkConstraintsTable.Check_caluse),
+                        TableSchema = row.Get(tableConstraints.TableSchema),
+                        TableName = row.Get(tableConstraints.TableName_),
+                        ConstraintName = row.Get(tableConstraints.ConstraintName),
+                        CheckClause = row.Get(checkConstraintsTable.CheckCaluse),
                     }
                 )
                 .From(tableConstraints)
                 .Join(checkConstraintsTable).On(
-                    tableConstraints.Constraint_catalog == checkConstraintsTable.Constraint_catalog &
-                    tableConstraints.Constraint_schema == checkConstraintsTable.Constraint_schema &
-                    tableConstraints.Constraint_name == checkConstraintsTable.Constraint_name
+                    tableConstraints.ConstraintCatalog == checkConstraintsTable.ConstraintCatalog &
+                    tableConstraints.ConstraintSchema == checkConstraintsTable.ConstraintSchema &
+                    tableConstraints.ConstraintName == checkConstraintsTable.ConstraintName
                 )
-                .Where(tableConstraints.Constraint_type == "CHECK")
+                .Where(tableConstraints.ConstraintType == "CHECK")
                 .Execute(database, TimeoutLevel.ShortSelect);
 
             Dictionary<Key<TableKey, string>, DatabaseCheckConstraint> dbLookup = [];
@@ -405,8 +405,8 @@ namespace QueryLite.DbSchema {
                     }
                 )
                 .From(extPropView)
-                .Join(tablesView).On(extPropView.Major_Id == tablesView.Object_Id)
-                .LeftJoin(columnsView).On(extPropView.Major_Id == columnsView.Object_Id & extPropView.Minor_Id == columnsView.Column_Id)
+                .Join(tablesView).On(extPropView.MajorId == tablesView.Object_Id)
+                .LeftJoin(columnsView).On(extPropView.MajorId == columnsView.Object_Id & extPropView.MinorId == columnsView.Column_Id)
                 .Join(schemasView).On(tablesView.Schema_Id == schemasView.Schema_Id)
                 .Where(extPropView.Class == 1 & extPropView.Name == "MS_Description")
                 .Execute(database);

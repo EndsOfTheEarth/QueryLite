@@ -27,97 +27,97 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public static readonly ColumnsTable Instance = new();
 
-        public Column<string> Table_catalog { get; }
-        public Column<SchemaName, string> Table_schema { get; }
-        public Column<TableName, string> Table_name { get; }
-        public Column<ColumnName, string> Column_name { get; }
-        public NullableColumn<int> Ordinal_position { get; }
-        public Column<string> Column_default { get; }
-        public Column<string> Is_nullable { get; }
-        public Column<string> Data_type { get; }
-        public NullableColumn<int> Character_maximum_length { get; }
-        public NullableColumn<int> Character_octet_length { get; }
-        public NullableColumn<int> Numeric_precision { get; }
-        public NullableColumn<int> Numeric_precision_radix { get; }
-        public NullableColumn<int> Numeric_scale { get; }
-        public NullableColumn<int> Datetime_precision { get; }
-        public Column<string> Interval_type { get; }
-        public Column<string> Interval_precision { get; }
-        public Column<string> Character_set_catalog { get; }
-        public Column<string> Character_set_schema { get; }
-        public Column<string> Character_set_name { get; }
-        public Column<string> Collation_catalog { get; }
-        public Column<string> Collation_schema { get; }
-        public Column<string> Collation_name { get; }
-        public Column<string> Domain_catalog { get; }
-        public Column<string> Domain_schema { get; }
-        public Column<string> Domain_name { get; }
-        public Column<string> Udt_catalog { get; }
-        public Column<string> Udt_schema { get; }
-        public Column<string> Udt_name { get; }
-        public Column<string> Scope_catalog { get; }
-        public Column<string> Scope_schema { get; }
+        public Column<string> TableCatalog { get; }
+        public Column<SchemaName, string> TableSchema { get; }
+        public Column<TableName, string> TableName_ { get; }
+        public Column<ColumnName, string> ColumnName { get; }
+        public NullableColumn<int> OrdinalPosition { get; }
+        public Column<string> ColumnDefault { get; }
+        public Column<string> IsNullable { get; }
+        public Column<string> DataType { get; }
+        public NullableColumn<int> CharacterMaximumLength { get; }
+        public NullableColumn<int> CharacterOctetLength { get; }
+        public NullableColumn<int> NumericPrecision { get; }
+        public NullableColumn<int> NumericPrecisionRadix { get; }
+        public NullableColumn<int> NumericScale { get; }
+        public NullableColumn<int> DatetimePrecision { get; }
+        public Column<string> IntervalType { get; }
+        public Column<string> IntervalPrecision { get; }
+        public Column<string> CharacterSetCatalog { get; }
+        public Column<string> CharacterSetSchema { get; }
+        public Column<string> CharacterSetName { get; }
+        public Column<string> CollationCatalog { get; }
+        public Column<string> CollationSchema { get; }
+        public Column<string> CollationName { get; }
+        public Column<string> DomainCatalog { get; }
+        public Column<string> DomainSchema { get; }
+        public Column<string> DomainName { get; }
+        public Column<string> UdtCatalog { get; }
+        public Column<string> UdtSchema { get; }
+        public Column<string> UdtName { get; }
+        public Column<string> ScopeCatalog { get; }
+        public Column<string> ScopeSchema { get; }
         public Column<string> Scope_name { get; }
-        public NullableColumn<int> Maximum_cardinality { get; }
-        public Column<string> Dtd_identifier { get; }
-        public Column<string> Is_self_referencing { get; }
-        public Column<string> Is_identity { get; }
-        public Column<string> Identity_generation { get; }
-        public Column<string> Identity_start { get; }
-        public Column<string> Identity_increment { get; }
-        public Column<string> Identity_maximum { get; }
-        public Column<string> Identity_minimum { get; }
-        public Column<string> Identity_cycle { get; }
-        public Column<string> Is_generated { get; }
-        public Column<string> Generation_expression { get; }
-        public Column<string> Is_updatable { get; }
+        public NullableColumn<int> MaximumCardinality { get; }
+        public Column<string> DtdIdentifier { get; }
+        public Column<string> IsSelfReferencing { get; }
+        public Column<string> IsIdentity { get; }
+        public Column<string> IdentityGeneration { get; }
+        public Column<string> IdentityStart { get; }
+        public Column<string> IdentityIncrement { get; }
+        public Column<string> IdentityMaximum { get; }
+        public Column<string> IdentityMinimum { get; }
+        public Column<string> IdentityCycle { get; }
+        public Column<string> IsGenerated { get; }
+        public Column<string> GenerationExpression { get; }
+        public Column<string> IsUpdatable { get; }
 
         public ColumnsTable() : base(tableName: "columns", schemaName: "information_schema") {
 
-            Table_catalog = new Column<string>(table: this, columnName: "table_catalog");
-            Table_schema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            Table_name = new Column<TableName, string>(table: this, columnName: "table_name");
-            Column_name = new Column<ColumnName, string>(table: this, columnName: "column_name");
-            Ordinal_position = new NullableColumn<int>(table: this, columnName: "ordinal_position");
-            Column_default = new Column<string>(table: this, columnName: "column_default");
-            Is_nullable = new Column<string>(table: this, columnName: "is_nullable");
-            Data_type = new Column<string>(table: this, columnName: "data_type");
-            Character_maximum_length = new NullableColumn<int>(table: this, columnName: "character_maximum_length");
-            Character_octet_length = new NullableColumn<int>(table: this, columnName: "character_octet_length");
-            Numeric_precision = new NullableColumn<int>(table: this, columnName: "numeric_precision");
-            Numeric_precision_radix = new NullableColumn<int>(table: this, columnName: "numeric_precision_radix");
-            Numeric_scale = new NullableColumn<int>(table: this, columnName: "numeric_scale");
-            Datetime_precision = new NullableColumn<int>(table: this, columnName: "datetime_precision");
-            Interval_type = new Column<string>(table: this, columnName: "interval_type");
-            Interval_precision = new Column<string>(table: this, columnName: "interval_precision");
-            Character_set_catalog = new Column<string>(table: this, columnName: "character_set_catalog");
-            Character_set_schema = new Column<string>(table: this, columnName: "character_set_schema");
-            Character_set_name = new Column<string>(table: this, columnName: "character_set_name");
-            Collation_catalog = new Column<string>(table: this, columnName: "collation_catalog");
-            Collation_schema = new Column<string>(table: this, columnName: "collation_schema");
-            Collation_name = new Column<string>(table: this, columnName: "collation_name");
-            Domain_catalog = new Column<string>(table: this, columnName: "domain_catalog");
-            Domain_schema = new Column<string>(table: this, columnName: "domain_schema");
-            Domain_name = new Column<string>(table: this, columnName: "domain_name");
-            Udt_catalog = new Column<string>(table: this, columnName: "udt_catalog");
-            Udt_schema = new Column<string>(table: this, columnName: "udt_schema");
-            Udt_name = new Column<string>(table: this, columnName: "udt_name");
-            Scope_catalog = new Column<string>(table: this, columnName: "scope_catalog");
-            Scope_schema = new Column<string>(table: this, columnName: "scope_schema");
+            TableCatalog = new Column<string>(table: this, columnName: "table_catalog");
+            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
+            ColumnName = new Column<ColumnName, string>(table: this, columnName: "column_name");
+            OrdinalPosition = new NullableColumn<int>(table: this, columnName: "ordinal_position");
+            ColumnDefault = new Column<string>(table: this, columnName: "column_default");
+            IsNullable = new Column<string>(table: this, columnName: "is_nullable");
+            DataType = new Column<string>(table: this, columnName: "data_type");
+            CharacterMaximumLength = new NullableColumn<int>(table: this, columnName: "character_maximum_length");
+            CharacterOctetLength = new NullableColumn<int>(table: this, columnName: "character_octet_length");
+            NumericPrecision = new NullableColumn<int>(table: this, columnName: "numeric_precision");
+            NumericPrecisionRadix = new NullableColumn<int>(table: this, columnName: "numeric_precision_radix");
+            NumericScale = new NullableColumn<int>(table: this, columnName: "numeric_scale");
+            DatetimePrecision = new NullableColumn<int>(table: this, columnName: "datetime_precision");
+            IntervalType = new Column<string>(table: this, columnName: "interval_type");
+            IntervalPrecision = new Column<string>(table: this, columnName: "interval_precision");
+            CharacterSetCatalog = new Column<string>(table: this, columnName: "character_set_catalog");
+            CharacterSetSchema = new Column<string>(table: this, columnName: "character_set_schema");
+            CharacterSetName = new Column<string>(table: this, columnName: "character_set_name");
+            CollationCatalog = new Column<string>(table: this, columnName: "collation_catalog");
+            CollationSchema = new Column<string>(table: this, columnName: "collation_schema");
+            CollationName = new Column<string>(table: this, columnName: "collation_name");
+            DomainCatalog = new Column<string>(table: this, columnName: "domain_catalog");
+            DomainSchema = new Column<string>(table: this, columnName: "domain_schema");
+            DomainName = new Column<string>(table: this, columnName: "domain_name");
+            UdtCatalog = new Column<string>(table: this, columnName: "udt_catalog");
+            UdtSchema = new Column<string>(table: this, columnName: "udt_schema");
+            UdtName = new Column<string>(table: this, columnName: "udt_name");
+            ScopeCatalog = new Column<string>(table: this, columnName: "scope_catalog");
+            ScopeSchema = new Column<string>(table: this, columnName: "scope_schema");
             Scope_name = new Column<string>(table: this, columnName: "scope_name");
-            Maximum_cardinality = new NullableColumn<int>(table: this, columnName: "maximum_cardinality");
-            Dtd_identifier = new Column<string>(table: this, columnName: "dtd_identifier");
-            Is_self_referencing = new Column<string>(table: this, columnName: "is_self_referencing");
-            Is_identity = new Column<string>(table: this, columnName: "is_identity");
-            Identity_generation = new Column<string>(table: this, columnName: "identity_generation");
-            Identity_start = new Column<string>(table: this, columnName: "identity_start");
-            Identity_increment = new Column<string>(table: this, columnName: "identity_increment");
-            Identity_maximum = new Column<string>(table: this, columnName: "identity_maximum");
-            Identity_minimum = new Column<string>(table: this, columnName: "identity_minimum");
-            Identity_cycle = new Column<string>(table: this, columnName: "identity_cycle");
-            Is_generated = new Column<string>(table: this, columnName: "is_generated");
-            Generation_expression = new Column<string>(table: this, columnName: "generation_expression");
-            Is_updatable = new Column<string>(table: this, columnName: "is_updatable");
+            MaximumCardinality = new NullableColumn<int>(table: this, columnName: "maximum_cardinality");
+            DtdIdentifier = new Column<string>(table: this, columnName: "dtd_identifier");
+            IsSelfReferencing = new Column<string>(table: this, columnName: "is_self_referencing");
+            IsIdentity = new Column<string>(table: this, columnName: "is_identity");
+            IdentityGeneration = new Column<string>(table: this, columnName: "identity_generation");
+            IdentityStart = new Column<string>(table: this, columnName: "identity_start");
+            IdentityIncrement = new Column<string>(table: this, columnName: "identity_increment");
+            IdentityMaximum = new Column<string>(table: this, columnName: "identity_maximum");
+            IdentityMinimum = new Column<string>(table: this, columnName: "identity_minimum");
+            IdentityCycle = new Column<string>(table: this, columnName: "identity_cycle");
+            IsGenerated = new Column<string>(table: this, columnName: "is_generated");
+            GenerationExpression = new Column<string>(table: this, columnName: "generation_expression");
+            IsUpdatable = new Column<string>(table: this, columnName: "is_updatable");
         }
     }
 
@@ -126,50 +126,50 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public ColumnsRow() { }
 
         public ColumnsRow(IResultRow result, ColumnsTable table) {
-            Table_catalog = result.Get(table.Table_catalog);
-            Table_schema = result.Get(table.Table_schema);
-            Table_name = result.Get(table.Table_name);
-            Column_name = result.Get(table.Column_name);
-            Ordinal_position = result.Get(table.Ordinal_position);
-            Column_default = result.Get(table.Column_default);
-            Is_nullable = result.Get(table.Is_nullable);
-            Data_type = result.Get(table.Data_type);
-            Character_maximum_length = result.Get(table.Character_maximum_length);
-            Character_octet_length = result.Get(table.Character_octet_length);
-            Numeric_precision = result.Get(table.Numeric_precision);
-            Numeric_precision_radix = result.Get(table.Numeric_precision_radix);
-            Numeric_scale = result.Get(table.Numeric_scale);
-            Datetime_precision = result.Get(table.Datetime_precision);
-            Interval_type = result.Get(table.Interval_type);
-            Interval_precision = result.Get(table.Interval_precision);
-            Character_set_catalog = result.Get(table.Character_set_catalog);
-            Character_set_schema = result.Get(table.Character_set_schema);
-            Character_set_name = result.Get(table.Character_set_name);
-            Collation_catalog = result.Get(table.Collation_catalog);
-            Collation_schema = result.Get(table.Collation_schema);
-            Collation_name = result.Get(table.Collation_name);
-            Domain_catalog = result.Get(table.Domain_catalog);
-            Domain_schema = result.Get(table.Domain_schema);
-            Domain_name = result.Get(table.Domain_name);
-            Udt_catalog = result.Get(table.Udt_catalog);
-            Udt_schema = result.Get(table.Udt_schema);
-            Udt_name = result.Get(table.Udt_name);
-            Scope_catalog = result.Get(table.Scope_catalog);
-            Scope_schema = result.Get(table.Scope_schema);
+            Table_catalog = result.Get(table.TableCatalog);
+            Table_schema = result.Get(table.TableSchema);
+            Table_name = result.Get(table.TableName_);
+            Column_name = result.Get(table.ColumnName);
+            Ordinal_position = result.Get(table.OrdinalPosition);
+            Column_default = result.Get(table.ColumnDefault);
+            Is_nullable = result.Get(table.IsNullable);
+            Data_type = result.Get(table.DataType);
+            Character_maximum_length = result.Get(table.CharacterMaximumLength);
+            Character_octet_length = result.Get(table.CharacterOctetLength);
+            Numeric_precision = result.Get(table.NumericPrecision);
+            Numeric_precision_radix = result.Get(table.NumericPrecisionRadix);
+            Numeric_scale = result.Get(table.NumericScale);
+            Datetime_precision = result.Get(table.DatetimePrecision);
+            Interval_type = result.Get(table.IntervalType);
+            Interval_precision = result.Get(table.IntervalPrecision);
+            Character_set_catalog = result.Get(table.CharacterSetCatalog);
+            Character_set_schema = result.Get(table.CharacterSetSchema);
+            Character_set_name = result.Get(table.CharacterSetName);
+            Collation_catalog = result.Get(table.CollationCatalog);
+            Collation_schema = result.Get(table.CollationSchema);
+            Collation_name = result.Get(table.CollationName);
+            Domain_catalog = result.Get(table.DomainCatalog);
+            Domain_schema = result.Get(table.DomainSchema);
+            Domain_name = result.Get(table.DomainName);
+            Udt_catalog = result.Get(table.UdtCatalog);
+            Udt_schema = result.Get(table.UdtSchema);
+            Udt_name = result.Get(table.UdtName);
+            Scope_catalog = result.Get(table.ScopeCatalog);
+            Scope_schema = result.Get(table.ScopeSchema);
             Scope_name = result.Get(table.Scope_name);
-            Maximum_cardinality = result.Get(table.Maximum_cardinality);
-            Dtd_identifier = result.Get(table.Dtd_identifier);
-            Is_self_referencing = result.Get(table.Is_self_referencing);
-            Is_identity = result.Get(table.Is_identity);
-            Identity_generation = result.Get(table.Identity_generation);
-            Identity_start = result.Get(table.Identity_start);
-            Identity_increment = result.Get(table.Identity_increment);
-            Identity_maximum = result.Get(table.Identity_maximum);
-            Identity_minimum = result.Get(table.Identity_minimum);
-            Identity_cycle = result.Get(table.Identity_cycle);
-            Is_generated = result.Get(table.Is_generated);
-            Generation_expression = result.Get(table.Generation_expression);
-            Is_updatable = result.Get(table.Is_updatable);
+            Maximum_cardinality = result.Get(table.MaximumCardinality);
+            Dtd_identifier = result.Get(table.DtdIdentifier);
+            Is_self_referencing = result.Get(table.IsSelfReferencing);
+            Is_identity = result.Get(table.IsIdentity);
+            Identity_generation = result.Get(table.IdentityGeneration);
+            Identity_start = result.Get(table.IdentityStart);
+            Identity_increment = result.Get(table.IdentityIncrement);
+            Identity_maximum = result.Get(table.IdentityMaximum);
+            Identity_minimum = result.Get(table.IdentityMinimum);
+            Identity_cycle = result.Get(table.IdentityCycle);
+            Is_generated = result.Get(table.IsGenerated);
+            Generation_expression = result.Get(table.GenerationExpression);
+            Is_updatable = result.Get(table.IsUpdatable);
         }
 
         public string Table_catalog { get; set; } = "";

@@ -28,18 +28,18 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public static readonly ExtendedPropertiesView Instance = new();
 
         public Column<short> Class { get; }
-        public NullableColumn<string> Class_Desc { get; }
-        public Column<int> Major_Id { get; }
-        public Column<int> Minor_Id { get; }
+        public NullableColumn<string> ClassDesc { get; }
+        public Column<int> MajorId { get; }
+        public Column<int> MinorId { get; }
         public Column<string> Name { get; }
         public NullableColumn<string> Value { get; }
 
         public ExtendedPropertiesView() : base(tableName: "extended_properties", schemaName: "sys") {
 
             Class = new Column<short>(this, columnName: "class");
-            Class_Desc = new NullableColumn<string>(this, columnName: "class_desc", length: new(60));
-            Major_Id = new Column<int>(this, columnName: "major_id");
-            Minor_Id = new Column<int>(this, columnName: "minor_id");
+            ClassDesc = new NullableColumn<string>(this, columnName: "class_desc", length: new(60));
+            MajorId = new Column<int>(this, columnName: "major_id");
+            MinorId = new Column<int>(this, columnName: "minor_id");
             Name = new Column<string>(this, columnName: "name", length: new(128));
             Value = new NullableColumn<string>(this, columnName: "value");
         }

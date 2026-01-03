@@ -28,27 +28,27 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public static readonly KeyColumnUsageTable Instance = new();
         public static readonly KeyColumnUsageTable Instance2 = new();
 
-        public Column<string> Constraint_catalog { get; }
-        public Column<SchemaName, string> Constraint_schema { get; }
-        public Column<string> Constraint_name { get; }
-        public Column<string> Table_catalog { get; }
-        public Column<SchemaName, string> Table_schema { get; }
-        public Column<TableName, string> Table_name { get; }
-        public Column<ColumnName, string> Column_name { get; }
-        public NullableColumn<int> Ordinal_position { get; }
-        public NullableColumn<int> Position_in_unique_constraint { get; }
+        public Column<string> ConstraintCatalog { get; }
+        public Column<SchemaName, string> ConstraintSchema { get; }
+        public Column<string> ConstraintName { get; }
+        public Column<string> TableCatalog { get; }
+        public Column<SchemaName, string> TableSchema { get; }
+        public Column<TableName, string> TableName_ { get; }
+        public Column<ColumnName, string> ColumnName { get; }
+        public NullableColumn<int> OrdinalPosition { get; }
+        public NullableColumn<int> PositionInUniqueConstraint { get; }
 
         public KeyColumnUsageTable() : base(tableName: "key_column_usage", schemaName: "information_schema") {
 
-            Constraint_catalog = new Column<string>(table: this, columnName: "constraint_catalog");
-            Constraint_schema = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
-            Constraint_name = new Column<string>(table: this, columnName: "constraint_name");
-            Table_catalog = new Column<string>(table: this, columnName: "table_catalog");
-            Table_schema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            Table_name = new Column<TableName, string>(table: this, columnName: "table_name");
-            Column_name = new Column<ColumnName, string>(table: this, columnName: "column_name");
-            Ordinal_position = new NullableColumn<int>(this, columnName: "ordinal_position");
-            Position_in_unique_constraint = new NullableColumn<int>(this, columnName: "position_in_unique_constraint");
+            ConstraintCatalog = new Column<string>(table: this, columnName: "constraint_catalog");
+            ConstraintSchema = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
+            ConstraintName = new Column<string>(table: this, columnName: "constraint_name");
+            TableCatalog = new Column<string>(table: this, columnName: "table_catalog");
+            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
+            ColumnName = new Column<ColumnName, string>(table: this, columnName: "column_name");
+            OrdinalPosition = new NullableColumn<int>(this, columnName: "ordinal_position");
+            PositionInUniqueConstraint = new NullableColumn<int>(this, columnName: "position_in_unique_constraint");
         }
     }
 }
