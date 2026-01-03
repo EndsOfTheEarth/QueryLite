@@ -19,6 +19,8 @@
 - [Select TOP Query](#select-top-query)
 - [Loading Values Directly From DbDataReader](#loading-values-directly-from-dbdatareader)
 - [Query Without A FROM Clause](#query-without-a-from-clause)
+- [Dynamic Conditions](#dynamic-conditions)
+- [Custom Expressions](#custom-expressions)
 - [Nested Query](#nested-query)
 - [Insert Query](#insert-query)
 - [Update Query](#update-query)
@@ -487,6 +489,52 @@ var result = Query
     .LeftJoin(customersTable).On(ordersTable.CustomerID == customersTable.CustomerID)
     .Where(condition)
     .Execute(DB.Northwind, TimeoutLevel.ShortSelect);
+```
+
+## Custom Expressions
+
+Custom expressions can be used for expressions and conditions that are complex and are not specifically supported by QueryLite.
+
+Note: The type argument in an expression defines the return type.
+
+Simple Example:
+```C#
+Expression<bool> expression = new("true", "=", "true");
+
+QueryResult<bool> result = Query.Select(
+        row => row.Get(expression)
+    )
+    .NoFromClause()
+    .Execute(TestDatabase.Database);
+
+    bool value = result.Rows.First();
+```
+
+Json Example:
+```C#
+Expression<Jsonb> expression = new(SqlText.QuotedAsJson(new { A = 1, B = 2 }), "::jsonb @>", SqlText.QuotedAsJson(new { B = 2 }), "::jsonb");
+
+QueryResult<bool> result = Query.Select(
+        row => row.Get(expression)
+    )
+    .NoFromClause()
+    .Execute(TestDatabase.Database);
+
+    Jsonb value = result.Rows.First();
+```
+
+Condition Example:
+```C#
+QueryResult<Jsonb> result = Query
+    .Select(
+        row => row.Get(table.Detail)
+    )
+    .From(table)
+    .Where(
+        table.Id == id &
+        new Expression<bool>(table.Detail) + "::jsonb ?" + SqlText.Quoted("ProductId")
+    )
+    .Execute(TestDatabase.Database);
 ```
 
 ## Nested Query

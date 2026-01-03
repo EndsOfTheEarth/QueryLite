@@ -250,5 +250,71 @@ namespace QueryLiteTest.Tests {
             Assert.AreEqual(json1.A, json2.A);
             Assert.AreEqual(json1.B, json2.B);
         }
+
+        [TestMethod]
+        public void ConditionTest() {
+
+            JsonTable table = JsonTable.Instance;
+
+            Product product = new() { ProductId = "#150323", Name = "Keyboard" };
+
+            Guid id = new Guid("{3F9EDA4F-5D07-4DF3-9C4E-1E8DF711081D}");
+
+            using(Transaction transaction = new(TestDatabase.Database)) {
+
+                Jsonb json = new(JsonSerializer.Serialize(product));
+
+                Query.Insert(table)
+                    .Values(values => values
+                        .Set(table.Id, id)
+                        .Set(table.Detail, json)
+                    )
+                    .Execute(transaction);
+
+                transaction.Commit();
+            }
+
+            ValidateRecord(id, product);
+            TestExpressions(id, product);
+
+            {
+                QueryResult<Jsonb> result = Query
+                    .Select(
+                        row => row.Get(table.Detail)
+                    )
+                    .From(table)
+                    .Where(
+                        table.Id == id &
+                        new Expression<bool>(table.Detail) + "::jsonb ?" + SqlText.Quoted("ProductId")
+                    )
+                    .Execute(TestDatabase.Database);
+
+                Assert.HasCount(1, result.Rows);
+
+                foreach(Jsonb detail in result.Rows) {
+
+                    Product? rtnProduct = JsonSerializer.Deserialize<Product>(detail.Value);
+
+                    Assert.IsNotNull(rtnProduct);
+                    Assert.AreEqual(product.ProductId, rtnProduct.ProductId);
+                    Assert.AreEqual(product.Name, rtnProduct.Name);
+                }
+            }
+
+            {
+                QueryResult<Jsonb> result = Query
+                    .Select(
+                        row => row.Get(table.Detail)
+                    )
+                    .From(table)
+                    .Where(
+                        table.Id == id &
+                        new Expression<bool>(table.Detail) + "::jsonb ?" + SqlText.Quoted("ProductId__")    //Condition that evaluates to false
+                    )
+                    .Execute(TestDatabase.Database);
+
+                Assert.HasCount(0, result.Rows);
+            }
+        }
     }
 }

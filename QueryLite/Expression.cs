@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace QueryLite {
 
-    public class Expression<TYPE> : Function<TYPE> where TYPE : notnull {
+    public class Expression<TYPE> : Function<TYPE>, ICondition where TYPE : notnull {
 
         private readonly List<object> _values = [];
 
@@ -47,6 +47,9 @@ namespace QueryLite {
                 ConditionHelper.AppendSqlValue(value, sql, database, useAlias: useAlias, parameters);
             }
             return StringBuilderCache.ToStringAndRelease(sql);
+        }
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+            sql.Append(GetSql(database, useAlias, parameters));
         }
     }
     
