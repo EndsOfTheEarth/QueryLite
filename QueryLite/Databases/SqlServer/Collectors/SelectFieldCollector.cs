@@ -344,7 +344,7 @@ namespace QueryLite.Databases.SqlServer {
         public byte[]? Get(NullableFunction<byte[]> column) {
             return Add(column);
         }
-        
+
         public ENUM Get<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
@@ -504,6 +504,52 @@ namespace QueryLite.Databases.SqlServer {
         public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
             Add(function);
             return default;
+        }
+
+        public Json Get(Function<Json> function) {
+            return Add(function);
+        }
+
+        public Json? Get(NullableFunction<Json> function) {
+            return Add(function);
+        }
+
+        public Jsonb Get(Function<Jsonb> column) {
+            return Add(column);
+        }
+
+        public Jsonb? Get(NullableFunction<Jsonb> column) {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return Add(column);
+        }
+
+        public Json Get(Column<Json> column) {
+            return Add(column);
+        }
+        public Json? Get(NullableColumn<Json> column) {
+            return Add(column);
+        }
+
+        public Jsonb Get(Column<Jsonb> column) {
+            return Add(column);
+        }
+        public Jsonb? Get(NullableColumn<Jsonb> column) {
+            return Add(column);
         }
     }
 }

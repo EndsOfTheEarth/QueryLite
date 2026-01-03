@@ -67,6 +67,10 @@ namespace QueryLite.Databases.SqlServer {
 
         public override string ToSqlString(string value) => value.Length > 0 ? $"N'{Helpers.EscapeForSql(value)}'" : "''";
 
+        public override string ToSqlString(Json value) => $"N'{Helpers.EscapeForSql(value.Value)}'";
+
+        public override string ToSqlString(Jsonb value) => $"N'{Helpers.EscapeForSql(value.Value)}'";
+
         public override string? GetCSharpCodeSet(Type dotNetType) {
 
             if(dotNetType == typeof(string)) {
@@ -98,5 +102,7 @@ namespace QueryLite.Databases.SqlServer {
         public override SqlDbType Integer => SqlDbType.Int;
         public override SqlDbType Long => SqlDbType.BigInt;
         public override SqlDbType Bit => SqlDbType.Bit;
+        public override SqlDbType Json => SqlDbType.Json;
+        public override SqlDbType JsonB => SqlDbType.Json;
     }
 }

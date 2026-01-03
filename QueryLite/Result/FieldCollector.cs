@@ -551,5 +551,63 @@ namespace QueryLite {
             Fields.Add(function);
             return default;
         }
+
+        public Json Get(Function<Json> function) {
+            Fields.Add(function);
+            return Json.Empty;
+        }
+
+        public Json? Get(NullableFunction<Json> function) {
+            Fields.Add(function);
+            return null;
+        }
+
+        public Jsonb Get(Function<Jsonb> column) {
+            Fields.Add(column);
+            return Jsonb.Empty;
+        }
+
+        public Jsonb? Get(NullableFunction<Jsonb> column) {
+            Fields.Add(column);
+            return null;
+        }
+
+        public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+
+        public Json Get(Column<Json> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public Json? Get(NullableColumn<Json> column) {
+            Fields.Add(column);
+            return default;
+        }
+
+        public Jsonb Get(Column<Jsonb> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public Jsonb? Get(NullableColumn<Jsonb> column) {
+            Fields.Add(column);
+            return default;
+        }
     }
 }

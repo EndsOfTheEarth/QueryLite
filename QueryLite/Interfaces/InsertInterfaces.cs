@@ -101,6 +101,12 @@ namespace QueryLite {
         public ISetValuesCollector Set(Column<byte[]> column, byte[] value);
         public ISetValuesCollector Set(NullableColumn<byte[]> column, byte[]? value);
 
+        public ISetValuesCollector Set(Column<Json> column, Json value);
+        public ISetValuesCollector Set(NullableColumn<Json> column, Json? value);
+
+        public ISetValuesCollector Set(Column<Jsonb> column, Jsonb value);
+        public ISetValuesCollector Set(NullableColumn<Jsonb> column, Jsonb? value);
+
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum;
         public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum;
 
@@ -179,5 +185,11 @@ namespace QueryLite {
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
         public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
     }
 }

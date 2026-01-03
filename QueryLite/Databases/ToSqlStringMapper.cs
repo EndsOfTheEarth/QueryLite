@@ -47,6 +47,8 @@ namespace QueryLite.Databases {
         public abstract string ToSqlString(int value);
         public abstract string ToSqlString(long value);
         public abstract string ToSqlString(string value);
+        public abstract string ToSqlString(Json value);
+        public abstract string ToSqlString(Jsonb value);
 
         public abstract string? GetCSharpCodeSet(Type dotNetType);
 
@@ -90,7 +92,9 @@ namespace QueryLite.Databases {
                 { typeof(short), value => toSql.ToSqlString((short)value) },
                 { typeof(int), value => toSql.ToSqlString((int)value) },
                 { typeof(long), value => toSql.ToSqlString((long)value) },
-                { typeof(string), value => toSql.ToSqlString((string)value) }
+                { typeof(string), value => toSql.ToSqlString((string)value) },
+                { typeof(Json), value => toSql.ToSqlString((Json)value) },
+                { typeof(Jsonb), value => toSql.ToSqlString((Jsonb)value) }
             };
             return lookup;
         }
@@ -146,6 +150,12 @@ namespace QueryLite.Databases {
             else if(value is IValue<Bit>) {
                 toSqlStringDelegate = value => toSql.ToSqlString(((IValue<Bit>)value).Value);
             }
+            else if(value is IValue<Json>) {
+                toSqlStringDelegate = value => toSql.ToSqlString(((IValue<Json>)value).Value);
+            }
+            else if(value is IValue<Jsonb>) {
+                toSqlStringDelegate = value => toSql.ToSqlString(((IValue<Jsonb>)value).Value);
+            }
             else {
 
                 if(value.GetType().IsEnum) {
@@ -182,6 +192,8 @@ namespace QueryLite.Databases {
         public abstract DBTYPE Integer { get; }
         public abstract DBTYPE Long { get; }
         public abstract DBTYPE Bit { get; }
+        public abstract DBTYPE Json { get; }
+        public abstract DBTYPE JsonB { get; }
 
         private Dictionary<Type, DBTYPE> DbTypeLookup { get; }
 
@@ -278,7 +290,7 @@ namespace QueryLite.Databases {
                 }
                 else {
                     throw new Exception($"Unknown {nameof(integerType)} type. Value = '{integerType}');");
-                }                
+                }
             }
             return null;
         }
@@ -329,6 +341,12 @@ namespace QueryLite.Databases {
             if(type.IsAssignableTo(typeof(IValue<Bit>))) {
                 return AddDbType(type, Bit);
             }
+            if(type.IsAssignableTo(typeof(IValue<Json>))) {
+                return AddDbType(type, Json);
+            }
+            if(type.IsAssignableTo(typeof(IValue<Jsonb>))) {
+                return AddDbType(type, JsonB);
+            }
             return null;
         }
 
@@ -367,7 +385,9 @@ namespace QueryLite.Databases {
                 { typeof(int?), TypeMapper.Integer },
                 { typeof(long), TypeMapper.Long },
                 { typeof(long?), TypeMapper.Long },
-                { typeof(string), TypeMapper.String }
+                { typeof(string), TypeMapper.String },
+                { typeof(Json), TypeMapper.Json },
+                { typeof(Jsonb), TypeMapper.JsonB }
             };
             return lookup;
         }
@@ -434,6 +454,12 @@ namespace QueryLite.Databases {
         protected abstract PARAMETER CreateParameter(string name, IValue<DateOnly>? value);
         protected abstract PARAMETER CreateParameter(string name, IValue<TimeOnly>? value);
 
+        protected abstract PARAMETER CreateParameter(string name, Json? value);
+        protected abstract PARAMETER CreateParameter(string name, Jsonb? value);
+
+        protected abstract PARAMETER CreateParameter(string name, IValue<Json>? value);
+        protected abstract PARAMETER CreateParameter(string name, IValue<Jsonb>? value);
+
         /// <summary>
         /// Returns default type / create parameter delegate mappings.
         /// </summary>
@@ -456,7 +482,7 @@ namespace QueryLite.Databases {
                 { typeof(decimal), (name, value) => CreateParameter(name: name, value: (decimal?)value) },
                 { typeof(decimal?), (name, value) => CreateParameter(name: name, value: (decimal?)value) },
                 { typeof(float), (name, value) => CreateParameter(name: name, value: (float?)value) },
-                { typeof(float?),  (name, value) => CreateParameter(name: name, value: (float?)value) },
+                { typeof(float?), (name, value) => CreateParameter(name: name, value: (float?)value) },
                 { typeof(double), (name, value) => CreateParameter(name: name, value: (double?)value) },
                 { typeof(double?), (name, value) => CreateParameter(name: name, value: (double?)value) },
                 { typeof(byte[]), (name, value) => CreateParameter(name: name, value: (byte[]?) value) },
@@ -467,7 +493,11 @@ namespace QueryLite.Databases {
                 { typeof(DateOnly), (name, value) => CreateParameter(name: name, value: (DateOnly?)value) },
                 { typeof(DateOnly?), (name, value) => CreateParameter(name: name, value: (DateOnly?)value) },
                 { typeof(TimeOnly), (name, value) => CreateParameter(name: name, value: (TimeOnly?)value) },
-                { typeof(TimeOnly?), (name, value) => CreateParameter(name: name, value: (TimeOnly?)value) }
+                { typeof(TimeOnly?), (name, value) => CreateParameter(name: name, value: (TimeOnly?)value) },
+                { typeof(Json), (name, value) => CreateParameter(name: name, value: (Json?)value) },
+                { typeof(Json?), (name, value) => CreateParameter(name: name, value: (Json?)value) },
+                { typeof(Jsonb), (name, value) => CreateParameter(name: name, value: (Jsonb?)value) },
+                { typeof(Jsonb?), (name, value) => CreateParameter(name: name, value: (Jsonb?)value) }
             };
             return lookup;
         }
@@ -611,6 +641,13 @@ namespace QueryLite.Databases {
             if(type.IsAssignableTo(typeof(IValue<Bit>))) {
                 return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<Bit>?)value));
             }
+            if(type.IsAssignableTo(typeof(IValue<Json>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<Json>?)value));
+            }
+            if(type.IsAssignableTo(typeof(IValue<Jsonb>))) {
+                return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<Jsonb>?)value));
+            }
+
             return null;
         }
     }

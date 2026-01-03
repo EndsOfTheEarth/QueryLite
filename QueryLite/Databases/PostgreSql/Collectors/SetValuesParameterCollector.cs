@@ -461,6 +461,36 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Boolean, value?.Value);
         }
+
+        public ISetValuesCollector Set(Column<Json> column, Json value) {
+            return AddParameter(column, NpgsqlDbType.Json, value.Value);
+        }
+        public ISetValuesCollector Set(NullableColumn<Json> column, Json? value) {
+            return AddParameter(column, NpgsqlDbType.Json, value?.Value);
+        }
+
+        public ISetValuesCollector Set(Column<Jsonb> column, Jsonb value) {
+            return AddParameter(column, NpgsqlDbType.Jsonb, value.Value);
+        }
+        public ISetValuesCollector Set(NullableColumn<Jsonb> column, Jsonb? value) {
+            return AddParameter(column, NpgsqlDbType.Jsonb, value?.Value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return AddParameter(column, NpgsqlDbType.Json, value.Value.Value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return AddParameter(column, NpgsqlDbType.Json, value?.Value.Value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return AddParameter(column, NpgsqlDbType.Jsonb, value.Value.Value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return AddParameter(column, NpgsqlDbType.Jsonb, value?.Value.Value);
+        }
     }
 
     internal class PostgreSqlSetValuesCollector : ISetValuesCollector {
@@ -944,6 +974,52 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         }
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector Set(Column<Json> column, Json value) {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
+        }
+
+        public ISetValuesCollector Set(NullableColumn<Json> column, Json? value) {
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector Set(Column<Jsonb> column, Jsonb value) {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
+        }
+
+        public ISetValuesCollector Set(NullableColumn<Jsonb> column, Jsonb? value) {
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+
+            if(value != null) {
+                return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
+            }
+            return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
