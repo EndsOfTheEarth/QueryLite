@@ -12,6 +12,9 @@ namespace QueryLiteTest.Tests {
         [TestInitialize]
         public void ClearTable() {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             JsonTable table = JsonTable.Instance;
 
             using Transaction transaction = new(TestDatabase.Database);
@@ -23,12 +26,21 @@ namespace QueryLiteTest.Tests {
 
         [TestMethod]
         public void InsertJson_Parameters_Test() {
+            
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = true;
             InsertJsonTest();
         }
 
         [TestMethod]
         public void InsertJson_NoParameters_Test() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
+
             Settings.UseParameters = false;
             InsertJsonTest();
         }
@@ -40,6 +52,10 @@ namespace QueryLiteTest.Tests {
         }
 
         private static void InsertJsonTest() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
 
             JsonTable table = JsonTable.Instance;
 
@@ -87,6 +103,10 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void RepositoryTest() {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
+
             Guid id = Guid.NewGuid();
 
             Product product = new() { ProductId = "#23452", Name = "Monitor" };
@@ -113,6 +133,10 @@ namespace QueryLiteTest.Tests {
 
         private static void ValidateRecord(Guid id, Product product) {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
+
             JsonTable table = JsonTable.Instance;
 
             QueryResult<Jsonb> result = Query
@@ -136,6 +160,10 @@ namespace QueryLiteTest.Tests {
         }
 
         private static void TestExpressions(Guid id, Product product) {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
 
             JsonTable table = JsonTable.Instance;
 
@@ -164,16 +192,27 @@ namespace QueryLiteTest.Tests {
 
         [TestMethod]
         public void Expression_01_Parameters_Test() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = true;
             Expression_01_Test();
         }
         [TestMethod]
         public void Expression_01_No_Parameters_Test() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = false;
             Expression_01_Test();
         }
         private static void Expression_01_Test() {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Expression<bool> expression = new(SqlText.QuotedAsJson(new { A = 1, B = 2 }), "::jsonb @>", SqlText.QuotedAsJson(new { B = 2 }), "::jsonb");
 
             QueryResult<bool> result = Query.Select(
@@ -188,16 +227,27 @@ namespace QueryLiteTest.Tests {
 
         [TestMethod]
         public void Expression_02_Parameters_Test() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = true;
             Expression_02_Test();
         }
         [TestMethod]
         public void Expression_02_No_Parameters_Test() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = false;
             Expression_02_Test();
         }        
         private static void Expression_02_Test() {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = true;
 
             Expression<bool> expression = new(SqlText.QuotedAsJson(new { a = 1, b = 2 }), "::jsonb ?", SqlText.Quoted("b"));
@@ -219,16 +269,27 @@ namespace QueryLiteTest.Tests {
 
         [TestMethod]
         public void Expression_03_Parameters_Test() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = true;
             Expression_03_Test();
         }
         [TestMethod]
         public void Expression_03_No_Parameters_Test() {
+
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = false;
             Expression_03_Test();
         }
         private static void Expression_03_Test() {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             Settings.UseParameters = true;
 
             AB json1 = new AB { A = 1, B = 2 };
@@ -254,6 +315,9 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void ConditionTest() {
 
+            if(TestDatabase.Database.DatabaseType != DatabaseType.PostgreSql) {
+                return;
+            }
             JsonTable table = JsonTable.Instance;
 
             Product product = new() { ProductId = "#150323", Name = "Keyboard" };

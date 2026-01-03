@@ -219,7 +219,7 @@ namespace QueryLiteTest.Tests {
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
-                Assert.AreEqual(7, result.Items.Count);
+                Assert.AreEqual(8, result.Items.Count);
             }
             else {
                 Assert.AreEqual(6, result.Items.Count);

@@ -174,14 +174,14 @@ namespace QueryLiteTest.Tests {
                 ValidateMissingCodeTables = true
             };
 
-            List<ITable> tables = new List<ITable>() {
+            List<ITable> tables = [
                 AllTypesTable.Instance,
                 ParentTable.Instance,
                 ChildTable.Instance,
                 EnumTestTableTable.Instance,
                 CustomTypesTable.Instance,
                 JsonTable.Instance
-            };
+            ];
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
                 tables.Add(GeoTestTable.Instance);
@@ -202,7 +202,7 @@ namespace QueryLiteTest.Tests {
             string text = messages.ToString();
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
-                Assert.AreEqual(7, result.Items.Count);
+                Assert.AreEqual(8, result.Items.Count);
             }
             else {
                 Assert.AreEqual(6, result.Items.Count);

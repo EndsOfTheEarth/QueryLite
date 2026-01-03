@@ -96,3 +96,11 @@ CREATE TABLE CustomTypes (
 	ctNFloat REAL NULL,
 	ctNDouble FLOAT NULL
 );
+
+CREATE TABLE JsonTable (
+
+	id UNIQUEIDENTIFIER NOT NULL,
+	detail NVARCHAR(MAX) NOT NULL,
+
+	CONSTRAINT pk_JsonTable PRIMARY KEY(id)
+);

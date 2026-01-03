@@ -112,11 +112,16 @@ namespace QueryLite.DbSchema {
             if(string.Equals("bytea", columnRow.Data_type, StringComparison.OrdinalIgnoreCase)) {
                 length = new ColumnLength(LengthType.Max);
             }
-
             else if(string.Equals("text", columnRow.Data_type, StringComparison.OrdinalIgnoreCase) && columnRow.Character_octet_length == 1073741824) {
                 length = new ColumnLength(LengthType.Max);
             }
             else if(string.Equals("character varying", columnRow.Data_type, StringComparison.OrdinalIgnoreCase) && columnRow.Character_octet_length == 1073741824) {
+                length = new ColumnLength(LengthType.Max);
+            }
+            else if(string.Equals("json", columnRow.Data_type, StringComparison.OrdinalIgnoreCase)) {
+                length = new ColumnLength(LengthType.Max);
+            }
+            else if(string.Equals("jsonb", columnRow.Data_type, StringComparison.OrdinalIgnoreCase)) {
                 length = new ColumnLength(LengthType.Max);
             }
             else {
