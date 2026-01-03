@@ -41,6 +41,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.3" />
     <PackageReference Include="Npgsql" Version="10.0.1" />
-    <PackageReference Include="QueryLite.Utility" Version="0.1.8" />
+    <PackageReference Include="QueryLite.Utility" Version="0.1.8.1" />
   </ItemGroup>
 </Project>
