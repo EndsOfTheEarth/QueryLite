@@ -139,6 +139,7 @@ namespace QueryLite {
 
         public static Json Empty { get; } = new("");
         public static Json ValueOf(string value) => new(value);
+        public static Jsonb AsJson(object value) => new(JsonSerializer.Serialize(value));
 
         private readonly string _value;
 
