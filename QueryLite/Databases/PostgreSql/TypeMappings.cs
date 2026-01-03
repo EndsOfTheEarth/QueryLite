@@ -67,6 +67,10 @@ namespace QueryLite.Databases.PostgreSql {
 
         public override string ToSqlString(string value) => value.Length > 0 ? $"'{Helpers.EscapeForSql(value)}'" : "''";
 
+        public override string ToSqlString(Json value) => $"'{Helpers.EscapeForSql(value.Value)}'";
+
+        public override string ToSqlString(Jsonb value) => $"'{Helpers.EscapeForSql(value.Value)}'";
+
         public override string? GetCSharpCodeSet(Type dotNetType) {
 
             if(dotNetType == typeof(string)) {
@@ -98,5 +102,7 @@ namespace QueryLite.Databases.PostgreSql {
         public override NpgsqlDbType Integer => NpgsqlDbType.Integer;
         public override NpgsqlDbType Long => NpgsqlDbType.Bigint;
         public override NpgsqlDbType Bit => NpgsqlDbType.Boolean;
+        public override NpgsqlDbType Json => NpgsqlDbType.Json;
+        public override NpgsqlDbType JsonB => NpgsqlDbType.Jsonb;
     }
 }

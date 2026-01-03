@@ -81,3 +81,11 @@ CREATE TABLE CustomTypes (
 	ctNFloat REAL NULL,
 	ctNDouble DOUBLE PRECISION NULL
 );
+
+CREATE TABLE JsonTable (
+
+	id UUID NOT NULL,
+	detail JSONB NOT NULL,
+
+	CONSTRAINT pk_JsonTable PRIMARY KEY(id)
+);

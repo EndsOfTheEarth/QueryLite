@@ -550,6 +550,8 @@ namespace QueryLite.DbSchema {
             _Lookup.Add("double precision", typeof(double));
             _Lookup.Add("character varying", typeof(string));
             _Lookup.Add("xml", typeof(string));
+            _Lookup.Add("json", typeof(Json));
+            _Lookup.Add("jsonb", typeof(Jsonb));
 
             //_Lookup.Add("pg_lsn", typeof(long));
         }

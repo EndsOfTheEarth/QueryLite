@@ -21,6 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using System.Text.Json;
+
 namespace QueryLite {
 
     /// <summary>
@@ -131,5 +133,34 @@ namespace QueryLite {
         }
         public string Name { get; }
         public ICondition? Condition { get; }
+    }
+
+    public readonly struct Json {
+
+        public static Json Empty { get; } = new("");
+        public static Json ValueOf(string value) => new(value);
+
+        private readonly string _value;
+
+        public string Value => _value ?? "";
+
+        public Json(string value) {
+            _value = value;
+        }
+    }
+
+    public readonly struct Jsonb {
+
+        public static Jsonb Empty { get; } = new("");
+        public static Jsonb ValueOf(string value) => new(value);
+        public static Jsonb AsJson(object value) => new(JsonSerializer.Serialize(value));
+
+        private readonly string _value;
+
+        public string Value => _value ?? "";
+
+        public Jsonb(string value) {
+            _value = value;
+        }
     }
 }

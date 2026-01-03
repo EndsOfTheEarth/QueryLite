@@ -212,5 +212,21 @@ namespace QueryLite.Databases.SqlServer {
         protected override SqlParameter CreateParameter(string name, IValue<TimeOnly>? value) {
             return CreateParameter(name, value?.Value);
         }
+
+        protected override SqlParameter CreateParameter(string name, Json? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, Jsonb? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IValue<Json>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override SqlParameter CreateParameter(string name, IValue<Jsonb>? value) {
+            return CreateParameter(name, value?.Value);
+        }
     }
 }

@@ -332,6 +332,9 @@ namespace QueryLite {
             else if(value is IFunction rightFunction) {
                 sql.Append(rightFunction.GetSql(database, useAlias: useAlias, parameters));
             }
+            else if(value is SqlText text) {
+                sql.Append(text.AsEscapedText());
+            }
             else {
 
                 if(parameters == null) {

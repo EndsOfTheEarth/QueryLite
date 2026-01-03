@@ -224,8 +224,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
             return columnInfo;
         }
 
-        private readonly static Dictionary<Type, TypeDefaults> TypeDefaultLookup = new Dictionary<Type, TypeDefaults> {
-
+        private readonly static Dictionary<Type, TypeDefaults> TypeDefaultLookup = new() {
             { typeof(string), new TypeDefaults(columnType: "string", typePrefix: "", typePostfix: "") },
             { typeof(Guid), new TypeDefaults(columnType: "Guid", typePrefix: "", typePostfix: "Guid") },
             { typeof(short), new TypeDefaults(columnType: "short", typePrefix: "", typePostfix: "Id") },
@@ -243,6 +242,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
             { typeof(DateTimeOffset), new TypeDefaults(columnType: "DateTimeOffset", typePrefix: "", typePostfix: "") },
             { typeof(DateOnly), new TypeDefaults(columnType: "DateOnly", typePrefix: "", typePostfix: "") },
             { typeof(TimeOnly), new TypeDefaults(columnType: "TimeOnly", typePrefix: "", typePostfix: "") },
+            { typeof(Json), new TypeDefaults(columnType: "Json", typePrefix: "", typePostfix: "") },
+            { typeof(Jsonb), new TypeDefaults(columnType: "Jsonb", typePrefix: "", typePostfix: "") },
             { typeof(IUnknownType), new TypeDefaults(columnType: "__UnknownType__", typePrefix: "", typePostfix: "") }
         };
 

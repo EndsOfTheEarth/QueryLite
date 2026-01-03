@@ -154,6 +154,20 @@ namespace QueryLite.Databases.SqlServer {
             };
         }
 
+        protected override NpgsqlParameter CreateParameter(string name, Json? value) {
+
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(Json))) {
+                Value = value != null ? value.Value.Value : DBNull.Value
+            };
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, Jsonb? value) {
+
+            return new NpgsqlParameter(parameterName: name, parameterType: TypeMap.GetDbType(typeof(Jsonb))) {
+                Value = value != null ? value.Value.Value : DBNull.Value
+            };
+        }
+
         protected override NpgsqlParameter CreateParameter(string name, IValue<Guid>? value) {
             return CreateParameter(name, value?.Value);
         }
@@ -211,6 +225,14 @@ namespace QueryLite.Databases.SqlServer {
         }
 
         protected override NpgsqlParameter CreateParameter(string name, IValue<TimeOnly>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, IValue<Json>? value) {
+            return CreateParameter(name, value?.Value);
+        }
+
+        protected override NpgsqlParameter CreateParameter(string name, IValue<Jsonb>? value) {
             return CreateParameter(name, value?.Value);
         }
     }

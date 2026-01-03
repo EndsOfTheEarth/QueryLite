@@ -131,6 +131,18 @@ namespace QueryLite {
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
+        public Json Get(Column<Json> column);
+        public Json? Get(NullableColumn<Json> column);
+
+        /// <summary>
+        /// Returns the selected value if it exists otherwise the default value for the type.
+        /// </summary>
+        public Jsonb Get(Column<Jsonb> column);
+        public Jsonb? Get(NullableColumn<Jsonb> column);
+
+        /// <summary>
+        /// Returns the selected value if it exists otherwise the default value for the type.
+        /// </summary>
         public ENUM Get<ENUM>(Column<ENUM> column) where ENUM : struct, Enum;
         public ENUM? Get<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum;
 
@@ -227,6 +239,18 @@ namespace QueryLite {
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
+        public Json Get(Function<Json> function);
+        public Json? Get(NullableFunction<Json> function);
+
+        /// <summary>
+        /// Returns the selected value if it exists otherwise the default value for the type.
+        /// </summary>
+        public Jsonb Get(Function<Jsonb> function);
+        public Jsonb? Get(NullableFunction<Jsonb> function);
+
+        /// <summary>
+        /// Returns the selected value if it exists otherwise the default value for the type.
+        /// </summary>
         public ENUM Get<ENUM>(Function<ENUM> column) where ENUM : struct, Enum;
         public ENUM? Get<ENUM>(NullableFunction<ENUM> column) where ENUM : struct, Enum;
 
@@ -274,6 +298,12 @@ namespace QueryLite {
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
+
+        public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
+
+        public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
 
         /// <summary>
         /// Read value directly from DbDataReader.

@@ -179,7 +179,8 @@ namespace QueryLiteTest.Tests {
                 ParentTable.Instance,
                 ChildTable.Instance,
                 EnumTestTableTable.Instance,
-                CustomTypesTable.Instance
+                CustomTypesTable.Instance,
+                JsonTable.Instance
             };
 
             if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
@@ -204,7 +205,7 @@ namespace QueryLiteTest.Tests {
                 Assert.AreEqual(7, result.Items.Count);
             }
             else {
-                Assert.AreEqual(5, result.Items.Count);
+                Assert.AreEqual(6, result.Items.Count);
             }
 
             foreach(ValidationItem val in result.Items) {

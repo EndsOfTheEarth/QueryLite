@@ -1116,5 +1116,125 @@ namespace QueryLite.Databases.SqlServer {
             }
             return readValue(_reader, _ordinal);
         }
+
+        public Json Get(Function<Json> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return Json.Empty;
+            }
+            return Json.ValueOf(_reader.GetString(_ordinal));
+        }
+
+        public Json? Get(NullableFunction<Json> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Json.ValueOf(_reader.GetString(_ordinal));
+        }
+
+        public Jsonb Get(Function<Jsonb> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return Jsonb.Empty;
+            }
+            return Jsonb.ValueOf(_reader.GetString(_ordinal));
+        }
+
+        public Jsonb? Get(NullableFunction<Jsonb> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Jsonb.ValueOf(_reader.GetString(_ordinal));
+        }
+
+        public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return CUSTOM_TYPE.ValueOf(Json.ValueOf(_reader.GetString(_ordinal)));
+        }
+
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(Json.ValueOf(_reader.GetString(_ordinal)));
+        }
+
+        public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return CUSTOM_TYPE.ValueOf(Jsonb.ValueOf(_reader.GetString(_ordinal)));
+        }
+
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(Jsonb.ValueOf(_reader.GetString(_ordinal)));
+        }
+
+        public Json Get(Column<Json> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return Json.Empty;
+            }
+            return Json.ValueOf(_reader.GetString(_ordinal));
+        }
+
+        public Json? Get(NullableColumn<Json> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Json.ValueOf(_reader.GetString(_ordinal));
+        }
+
+        public Jsonb Get(Column<Jsonb> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return Jsonb.Empty;
+            }
+            return Jsonb.ValueOf(_reader.GetString(_ordinal));
+        }
+
+        public Jsonb? Get(NullableColumn<Jsonb> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Jsonb.ValueOf(_reader.GetString(_ordinal));
+        }
     }
 }
