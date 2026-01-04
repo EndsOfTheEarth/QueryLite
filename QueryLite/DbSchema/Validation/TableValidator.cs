@@ -580,7 +580,7 @@ namespace QueryLite {
             if(useStrictTypeValidation) {
 
                 if(dbNetType == typeof(SqliteInteger)) {
-                    allowedType = codeAdoType == typeof(short) || codeAdoType == typeof(int) || codeAdoType == typeof(long);
+                    allowedType = codeAdoType == typeof(short) || codeAdoType == typeof(int) || codeAdoType == typeof(long) || codeAdoType == typeof(byte);
                 }
                 else if(dbNetType == typeof(SqliteText)) {
                     allowedType = codeAdoType == typeof(string);
@@ -598,7 +598,8 @@ namespace QueryLite {
                 if(dbNetType == typeof(SqliteInteger)) {
 
                     allowedType = codeAdoType == typeof(short) || codeAdoType == typeof(int) ||
-                                  codeAdoType == typeof(long) || codeAdoType == typeof(bool);
+                                  codeAdoType == typeof(long) || codeAdoType == typeof(byte) ||
+                                  codeAdoType == typeof(bool) || codeAdoType == typeof(Bit);
                 }
                 else if(dbNetType == typeof(SqliteText)) {
 

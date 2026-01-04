@@ -35,9 +35,9 @@ namespace QueryLite.Databases.Sqlite {
 
     public sealed class SqliteToStringFunctions : AToSqlStringFunctions {
 
-        public override string ToSqlString(bool value) => value ? "true" : "false";
+        public override string ToSqlString(bool value) => value ? "1" : "0";
 
-        public override string ToSqlString(Bit value) => value.Value ? "true" : "false";
+        public override string ToSqlString(Bit value) => value.Value ? "1" : "0";
 
         public override string ToSqlString(byte[] value) => $"x'{Convert.ToHexString(value)}'";
 
@@ -57,7 +57,6 @@ namespace QueryLite.Databases.Sqlite {
 
         public override string ToSqlString(float value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
 
-        //public override string ToSqlString(Guid value) => $"'{Helpers.EscapeForSql(value.ToString())}'";
         public override string ToSqlString(Guid value) => $"x'{Convert.ToHexString(value.ToByteArray())}'";
 
         public override string ToSqlString(short value) => value != 0 ? value.ToString() : "0";
@@ -102,7 +101,7 @@ namespace QueryLite.Databases.Sqlite {
         public override SqliteType Short => SqliteType.Integer;
         public override SqliteType Integer => SqliteType.Integer;
         public override SqliteType Long => SqliteType.Integer;
-        public override SqliteType Bit => SqliteType.Blob;
+        public override SqliteType Bit => SqliteType.Integer;
         public override SqliteType Json => SqliteType.Text;
         public override SqliteType JsonB => SqliteType.Text;
     }
