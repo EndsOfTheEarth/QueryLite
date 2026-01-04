@@ -22,6 +22,7 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases.PostgreSql.Collectors;
+using QueryLite.Databases.Sqlite.Collectors;
 using QueryLite.Databases.SqlServer;
 using System.Data.Common;
 
@@ -34,6 +35,9 @@ namespace QueryLite.Databases {
 
         [ThreadStatic]
         private static PostgreSqlResultRowCollector? PostgreSqlInstance;
+
+        [ThreadStatic]
+        private static SqliteResultRowCollector? SqliteInstance;
 
         public static IResultRow Acquire(DatabaseType databaseType, DbDataReader reader) {
 
@@ -65,6 +69,20 @@ namespace QueryLite.Databases {
                 }
                 return new PostgreSqlResultRowCollector(reader);
             }
+            else if(databaseType == DatabaseType.Sqlite) {
+
+                if(Settings.EnableCollectorCaching) {
+
+                    SqliteResultRowCollector? resultRow = SqliteInstance;
+
+                    if(resultRow != null) {
+                        SqliteInstance = null;
+                        resultRow.Reset(reader);
+                        return resultRow;
+                    }
+                }
+                return new SqliteResultRowCollector(reader);
+            }
             else {
                 throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{databaseType}'");
             }
@@ -79,6 +97,10 @@ namespace QueryLite.Databases {
             else if(databaseType == DatabaseType.PostgreSql) {
                 PostgreSqlInstance = (PostgreSqlResultRowCollector)resultRow;
                 PostgreSqlInstance.ReleaseReader();
+            }
+            else if(databaseType == DatabaseType.Sqlite) {
+                SqliteInstance = (SqliteResultRowCollector)resultRow;
+                SqliteInstance.ReleaseReader();
             }
             else {
                 throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{databaseType}'");

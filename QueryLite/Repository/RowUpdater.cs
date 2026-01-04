@@ -23,6 +23,7 @@
  **/
 using QueryLite.Databases;
 using QueryLite.Databases.PostgreSql.Collectors;
+using QueryLite.Databases.Sqlite.Collectors;
 using QueryLite.Databases.SqlServer;
 using System.Data;
 using System.Data.Common;
@@ -39,6 +40,7 @@ namespace QueryLite {
         //manage a collection and implement locking etc.
         private RowUpdater<TABLE, ROW>? _sqlServerUpdater;
         private RowUpdater<TABLE, ROW>? _postgreSqlUpdater;
+        private RowUpdater<TABLE, ROW>? _sqliteSqlUpdater;
 
         public RowUpdater<TABLE, ROW>? GetUpdater(DatabaseType databaseType) {
 
@@ -48,6 +50,9 @@ namespace QueryLite {
             else if(databaseType == DatabaseType.PostgreSql) {
                 return _postgreSqlUpdater;
             }
+            else if(databaseType == DatabaseType.Sqlite) {
+                return _sqliteSqlUpdater;
+            }            
             throw new Exception($"Unsupported database type '{databaseType}'");
         }
 
@@ -58,6 +63,9 @@ namespace QueryLite {
             }
             else if(databaseType == DatabaseType.PostgreSql) {
                 _postgreSqlUpdater = rowUpdaters;
+            }
+            else if(databaseType == DatabaseType.Sqlite) {
+                _sqliteSqlUpdater = rowUpdaters;
             }
             else {
                 throw new Exception($"Unsupported database type '{databaseType}'");
@@ -184,6 +192,9 @@ namespace QueryLite {
                             else if(transaction.Database.DatabaseType == DatabaseType.PostgreSql) {
                                 resultRow = new PostgreSqlResultRowCollector(reader);
                             }
+                            else if(transaction.Database.DatabaseType == DatabaseType.Sqlite) {
+                                resultRow = new SqliteResultRowCollector(reader);
+                            }
                             else {
                                 throw new Exception($"Unknown database type == {transaction.Database.DatabaseType}");
                             }
@@ -302,6 +313,9 @@ namespace QueryLite {
                             }
                             else if(transaction.Database.DatabaseType == DatabaseType.PostgreSql) {
                                 resultRow = new PostgreSqlResultRowCollector(reader);
+                            }
+                            else if(transaction.Database.DatabaseType == DatabaseType.Sqlite) {
+                                resultRow = new SqliteResultRowCollector(reader);
                             }
                             else {
                                 throw new Exception($"Unknown database type == {transaction.Database.DatabaseType}");
@@ -796,7 +810,11 @@ namespace QueryLite {
             }
             sql.Append(')');
 
-            if(returningColumns.Length > 0 && database.DatabaseType == DatabaseType.PostgreSql) {
+            bool outputReturning = returningColumns.Length > 0 &&
+                                   (database.DatabaseType == DatabaseType.PostgreSql ||
+                                    database.DatabaseType == DatabaseType.Sqlite);
+
+            if(outputReturning) {
 
                 sql.Append(" RETURNING ");
 

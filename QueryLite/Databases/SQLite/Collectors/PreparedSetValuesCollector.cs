@@ -1,0 +1,412 @@
+﻿/*
+ * MIT License
+ *
+ * Copyright (c) 2025 EndsOfTheEarth
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ **/
+using QueryLite.Utility;
+using System.Text;
+
+namespace QueryLite.Databases.Sqlite.Collectors {
+
+    internal sealed class SqlitePreparedSetValuesCollector<PARAMETERS> : IPreparedSetValuesCollector<PARAMETERS> {
+
+        public PreparedParameterList<PARAMETERS> Parameters { get; } = new PreparedParameterList<PARAMETERS>();
+
+        private readonly StringBuilder _sql;
+        private readonly StringBuilder? _paramSql;
+
+        private readonly IDatabase _database;
+        private readonly CollectorMode _collectorMode;
+
+        private int _counter = 0;
+
+        public SqlitePreparedSetValuesCollector(StringBuilder sql, StringBuilder? paramSql, IDatabase database, CollectorMode mode) {
+            _sql = sql;
+            _paramSql = paramSql;
+            _database = database;
+            _collectorMode = mode;
+        }
+
+        private SqlitePreparedSetValuesCollector<PARAMETERS> AddParameter<TYPE>(IColumn column, Func<PARAMETERS, TYPE> func, CreateParameterDelegate setParameterFunc) {
+
+            string paramName = Parameters.GetNextParameterName();
+
+            Parameters.Add(new PreparedParameter<PARAMETERS, TYPE>(name: paramName, func, setParameterFunc));
+
+            if(_collectorMode == CollectorMode.Insert) {
+
+                if(_counter > 0) {
+                    _sql.Append(',');
+                    _paramSql!.Append(',');
+                }
+
+                SqlHelper.AppendEncloseColumnName(_sql, column);
+
+                _paramSql!.Append(paramName);
+
+            }
+            else if(_collectorMode == CollectorMode.Update) {
+
+                if(_counter > 0) {
+                    _sql.Append(',');
+                }
+
+                SqlHelper.AppendEncloseColumnName(_sql, column);
+
+                _sql.Append('=').Append(paramName);
+
+            }
+            else {
+                throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");
+            }
+            _counter++;
+            return this;
+        }
+
+        private SqlitePreparedSetValuesCollector<PARAMETERS> AddFunction(IColumn column, IFunction function) {
+
+            if(_collectorMode == CollectorMode.Insert) {
+
+                if(_counter > 0) {
+                    _sql.Append(',');
+                    _paramSql!.Append(',');
+                }
+
+                SqlHelper.AppendEncloseColumnName(_sql, column);
+
+                _paramSql!.Append(function.GetSql(_database, useAlias: false, parameters: null));
+
+            }
+            else if(_collectorMode == CollectorMode.Update) {
+
+                if(_counter > 0) {
+                    _sql.Append(',');
+                }
+
+                SqlHelper.AppendEncloseColumnName(_sql, column);
+
+                _sql.Append('=').Append(function.GetSql(_database, useAlias: false, parameters: null));
+            }
+            else {
+                throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");
+            }
+            return this;
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<string> column, Func<PARAMETERS, string> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(string)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<string> column, Func<PARAMETERS, string?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(string)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<Guid> column, Func<PARAMETERS, Guid> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(Guid)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<Guid> column, Func<PARAMETERS, Guid?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(Guid?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<bool> column, Func<PARAMETERS, bool> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(bool)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<bool> column, Func<PARAMETERS, bool?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(bool?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<Bit> column, Func<PARAMETERS, Bit> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(Bit)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<Bit> column, Func<PARAMETERS, Bit?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(Bit?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<decimal> column, Func<PARAMETERS, decimal> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(decimal)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<decimal> column, Func<PARAMETERS, decimal?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(decimal?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<short> column, Func<PARAMETERS, short> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(short)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<short> column, Func<PARAMETERS, short?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(short?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<int> column, Func<PARAMETERS, int> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(int)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<int> column, Func<PARAMETERS, int?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(int?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<long> column, Func<PARAMETERS, long> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(long)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<long> column, Func<PARAMETERS, long?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(long?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<float> column, Func<PARAMETERS, float> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(float)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<float> column, Func<PARAMETERS, float?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(float?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<double> column, Func<PARAMETERS, double> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(double)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<double> column, Func<PARAMETERS, double?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(double?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<TimeOnly> column, Func<PARAMETERS, TimeOnly> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(TimeOnly)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<TimeOnly> column, Func<PARAMETERS, TimeOnly?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(TimeOnly?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateTime> column, Func<PARAMETERS, DateTime> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(DateTime)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<DateTime> column, Func<PARAMETERS, DateTime?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(DateTime?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateOnly> column, Func<PARAMETERS, DateOnly> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(DateOnly)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<DateOnly> column, Func<PARAMETERS, DateOnly?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(DateOnly?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateTimeOffset> column, Func<PARAMETERS, DateTimeOffset> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(DateTimeOffset)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<DateTimeOffset> column, Func<PARAMETERS, DateTimeOffset?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(DateTimeOffset?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<byte> column, Func<PARAMETERS, byte> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(byte)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<byte> column, Func<PARAMETERS, byte?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(byte?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<byte[]> column, Func<PARAMETERS, byte[]> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(byte[])));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(NullableColumn<byte[]> column, Func<PARAMETERS, byte[]?> value) {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(byte[])));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(Column<ENUM> column, Func<PARAMETERS, ENUM> value) where ENUM : struct, Enum {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(ENUM)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(NullableColumn<ENUM> column, Func<PARAMETERS, ENUM?> value) where ENUM : struct, Enum {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(ENUM?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<string> column, AFunction<string> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<Guid> column, AFunction<Guid> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<bool> column, AFunction<bool> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<Bit> column, AFunction<Bit> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<decimal> column, AFunction<decimal> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<short> column, AFunction<short> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<int> column, AFunction<int> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<long> column, AFunction<long> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<float> column, AFunction<float> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<double> column, AFunction<double> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<TimeOnly> column, AFunction<TimeOnly> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateTime> column, AFunction<DateTime> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateOnly> column, AFunction<DateOnly> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<byte> column, AFunction<byte> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<byte[]> column, AFunction<byte[]> value) {
+            return AddFunction(column, value);
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Guid> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, short> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, int> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, long> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, string> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, bool> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, decimal> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTime> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTimeOffset> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateOnly> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, TimeOnly> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, float> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, double> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE)));
+        }
+        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+            return AddParameter(column, value, _database.ParameterMapper.GetCreateParameterDelegate(typeof(CUSTOM_TYPE?)));
+        }
+    }
+}

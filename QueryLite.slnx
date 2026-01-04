@@ -8,6 +8,7 @@
     <File Path="NugetReadme.md" />
     <File Path="PreparedQueries.md" />
     <File Path="README.md" />
+    <File Path="Sqlite.md" />
   </Folder>
   <Project Path="Benchmarks/Benchmarks.csproj" />
   <Project Path="CodeGeneratorUI/CodeGenerator.csproj" />
