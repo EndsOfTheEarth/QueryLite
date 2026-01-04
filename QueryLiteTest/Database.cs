@@ -1,5 +1,6 @@
 ﻿using QueryLite;
 using QueryLite.Databases.PostgreSql;
+using QueryLite.Databases.Sqlite;
 using QueryLite.Databases.SqlServer;
 using System;
 using System.IO;
@@ -38,6 +39,9 @@ namespace QueryLiteTest {
             else if(string.Equals(dbType, "PostgreSql", StringComparison.OrdinalIgnoreCase)) {
                 databaseType = DatabaseType.PostgreSql;
             }
+            else if(string.Equals(dbType, "SqlLite", StringComparison.OrdinalIgnoreCase)) {
+                databaseType = DatabaseType.Sqlite;
+            }
             else {
                 throw new Exception($"Unknown {nameof(dbType)} setting. Value = '{dbType}'");
             }
@@ -48,10 +52,44 @@ namespace QueryLiteTest {
             else if(databaseType == DatabaseType.PostgreSql) {
                 Database = new PostgreSqlDatabase(name: "QueryLiteTest", connectionString: settings!.PostgreSqlConnectionString, schemaMap: schema => schema == "dbo" ? "public" : schema);
             }
+            else if(databaseType == DatabaseType.Sqlite) {
+
+                string path = settings!.SqliteConnectionString.Replace("Data Source=", "");
+
+                if(File.Exists(path) && !string.IsNullOrWhiteSpace(path)) {
+                    File.Delete(path);
+                }
+                Database = new SqliteDatabase(name: "QueryLiteTest", connectionString: settings!.SqliteConnectionString, schemaMap: schema => "");
+                Query.ExecuteNonQuery(sql: SqliteSchema.Sql, database: Database);
+            }
             else {
                 throw new Exception($"Unknown {nameof(databaseType)}. Value = '{databaseType}'");
             }
         }
+    }
+
+    public static class SqliteSchema {
+
+        public static string Sql =>
+@"CREATE TABLE AllTypes (	
+	taId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    taGuid BLOB NOT NULL,
+    taString TEXT NOT NULL,
+    taSmallInt INTEGER NOT NULL,
+    taInt INTEGER NOT NULL,
+    taBigInt INTEGER NOT NULL,
+    taDecimal NUMERIC NOT NULL,
+    taFloat REAL NOT NULL,
+    taDouble REAL NOT NULL,
+    taBoolean INTEGER NOT NULL,
+    taBytes BLOB NOT NULL,
+    taDateTime TEXT NOT NULL,
+    taDateTimeOffset TEXT NOT NULL,
+    taEnum INTEGER NOT NULL,
+    taDateOnly TEXT NOT NULL,
+    taTimeOnly TEXT NOT NULL
+);
+";
     }
 
     public class TestSettings {
@@ -59,5 +97,6 @@ namespace QueryLiteTest {
         public string DatabaseType { get; set; } = "";
         public string SqlServerConnectionString { get; set; } = "";
         public string PostgreSqlConnectionString { get; set; } = "";
+        public string SqliteConnectionString { get; set; } = "";
     }
 }

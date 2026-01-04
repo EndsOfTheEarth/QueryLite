@@ -57,7 +57,8 @@ namespace QueryLite {
 
     public enum DatabaseType {
         SqlServer = 0,  //Note: These integer values are used by the prepared query functionality
-        PostgreSql = 1
+        PostgreSql = 1,
+        Sqlite = 2
     }
 
     public enum UtfType{

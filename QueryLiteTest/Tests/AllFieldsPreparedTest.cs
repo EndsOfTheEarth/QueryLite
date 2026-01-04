@@ -667,7 +667,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<AllTypesInfo> result = _insertQuery1
+                 QueryResult<AllTypesInfo> result = _insertQuery1
                     .Execute(
                         parameters: allTypes,
                         transaction,
