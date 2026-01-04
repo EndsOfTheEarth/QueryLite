@@ -72,7 +72,7 @@ namespace QueryLiteTest {
 
         public static string Sql =>
 @"CREATE TABLE AllTypes (	
-	taId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	taId INTEGER CONSTRAINT pk_TableA PRIMARY KEY AUTOINCREMENT NOT NULL,
     taGuid BLOB NOT NULL,
     taString TEXT NOT NULL,
     taSmallInt INTEGER NOT NULL,
@@ -93,7 +93,7 @@ namespace QueryLiteTest {
 CREATE TABLE CustomTypes (
 
     ctGuid BLOB NOT NULL,
-    ctIdentifier INTEGER PRIMARY KEY AUTOINCREMENT,
+    ctIdentifier INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     ctShort INTEGER NOT NULL,
     ctInt INTEGER NOT NULL,
     ctLong INTEGER NOT NULL,
@@ -148,6 +148,14 @@ CREATE TABLE EnumTestTable (
 	etShortNullEnum INTEGER NULL,	
 	etIntNullEnum INTEGER NULL,	
 	etLongNullEnum INTEGER NULL
+) STRICT;
+
+CREATE TABLE JsonTable (
+
+	id BLOB NOT NULL,
+	detail TEXT NOT NULL,
+
+	CONSTRAINT pk_JsonTable PRIMARY KEY(id)
 ) STRICT;
 ";
     }

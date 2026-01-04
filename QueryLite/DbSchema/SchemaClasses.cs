@@ -50,7 +50,6 @@ namespace QueryLite.DbSchema {
             TableName = tableName;
             IsView = isView;
         }
-
         public override string ToString() {
             return $"{Schema}.{TableName}";
         }
@@ -75,12 +74,9 @@ namespace QueryLite.DbSchema {
         public string Definition { get; }
     }
 
-    public sealed class DatabasePrimaryKey {
+    public sealed class DatabasePrimaryKey(string constraintName) {
 
-        public DatabasePrimaryKey(string constraintName) {
-            ConstraintName = constraintName;
-        }
-        public string ConstraintName { get; }
+        public string ConstraintName { get; } = constraintName;
         public List<string> ColumnNames { get; } = [];
     }
 

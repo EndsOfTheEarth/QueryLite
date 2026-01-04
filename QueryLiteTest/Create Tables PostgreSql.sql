@@ -79,7 +79,9 @@ CREATE TABLE CustomTypes (
 	ctNDateOnly DATE NULL,
 	ctNTimeOnly TIME WITHOUT TIME ZONE NULL,
 	ctNFloat REAL NULL,
-	ctNDouble DOUBLE PRECISION NULL
+	ctNDouble DOUBLE PRECISION NULL,
+
+	CONSTRAINT pk_CustomTypes PRIMARY KEY(ctIdentifier)
 );
 
 CREATE TABLE JsonTable (

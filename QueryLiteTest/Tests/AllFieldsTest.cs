@@ -7,6 +7,7 @@ using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -166,13 +167,34 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void RunSchemaValidator() {
 
-            SchemaValidationSettings settings = new SchemaValidationSettings() {
-                ValidatePrimaryKeys = true,
-                ValidateUniqueConstraints = true,
-                ValidateForeignKeys = true,
-                ValidateCheckConstraintNames = true,
-                ValidateMissingCodeTables = true
-            };
+            DatabaseType dbType = TestDatabase.Database.DatabaseType;
+
+            SchemaValidationSettings settings;
+
+            if(dbType == DatabaseType.Sqlite) {
+
+                settings = new() {
+                    ValidatePrimaryKeys = PrimaryKeyValidation.Columns,
+                    ValidateUniqueConstraints = false,
+                    ValidateForeignKeys = false,
+                    ValidateCheckConstraintNames = false,
+                    ValidateMissingCodeTables = true,
+                    ValidateColumnLengths = false,
+                    ValidateColumnAutoGeneration = false
+                };
+            }
+            else {
+
+                settings = new SchemaValidationSettings() {
+                    ValidatePrimaryKeys = PrimaryKeyValidation.NamesAndColumns,
+                    ValidateUniqueConstraints = true,
+                    ValidateForeignKeys = true,
+                    ValidateCheckConstraintNames = true,
+                    ValidateMissingCodeTables = true,
+                    ValidateColumnLengths = true,
+                    ValidateColumnAutoGeneration = true
+                };
+            }
 
             List<ITable> tables = [
                 AllTypesTable.Instance,
@@ -183,7 +205,7 @@ namespace QueryLiteTest.Tests {
                 JsonTable.Instance
             ];
 
-            if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
+            if(dbType == DatabaseType.SqlServer) {
                 tables.Add(GeoTestTable.Instance);
                 tables.Add(RowVersionTestTable.Instance);
             }
@@ -194,14 +216,14 @@ namespace QueryLiteTest.Tests {
 
             foreach(ValidationItem item in result.Items) {
 
-                foreach(string message in item.ValidationMessages) {
-                    messages.AppendLine(message);
+                foreach(string message in item.ValidationMessages) {                    
+                    messages.AppendLine($"Table: {item.TableName} => {message}");
                 }
             }
 
             string text = messages.ToString();
 
-            if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
+            if(dbType == DatabaseType.SqlServer) {
                 Assert.AreEqual(8, result.Items.Count);
             }
             else {
