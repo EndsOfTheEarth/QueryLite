@@ -139,7 +139,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return 0;
             }
-            return _reader.GetDecimal(_ordinal);
+            return decimal.Parse(_reader.GetString(_ordinal));
         }
         public decimal? Get(NullableColumn<decimal> column) {
 
@@ -148,7 +148,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return null;
             }
-            return _reader.GetDecimal(_ordinal);
+            return decimal.Parse(_reader.GetString(_ordinal));
         }
 
         public short Get(Column<short> column) {
@@ -876,7 +876,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return CUSTOM_TYPE.ValueOf(0);
             }
-            return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
+            return CUSTOM_TYPE.ValueOf(decimal.Parse(_reader.GetString(_ordinal)));
         }
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, decimal> column) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
 
@@ -885,7 +885,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return null;
             }
-            return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
+            return CUSTOM_TYPE.ValueOf(decimal.Parse(_reader.GetString(_ordinal)));
         }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {

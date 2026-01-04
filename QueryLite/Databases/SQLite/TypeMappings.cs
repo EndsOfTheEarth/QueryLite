@@ -51,13 +51,14 @@ namespace QueryLite.Databases.Sqlite {
 
         public override string ToSqlString(DateOnly value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd"))}'";
 
-        public override string ToSqlString(decimal value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
+        public override string ToSqlString(decimal value) => value != 0 ? $"'{Helpers.EscapeForSql(value.ToString())}'" : "0";
 
         public override string ToSqlString(double value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
 
         public override string ToSqlString(float value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
 
-        public override string ToSqlString(Guid value) => $"'{Helpers.EscapeForSql(value.ToString())}'";
+        //public override string ToSqlString(Guid value) => $"'{Helpers.EscapeForSql(value.ToString())}'";
+        public override string ToSqlString(Guid value) => $"x'{Convert.ToHexString(value.ToByteArray())}'";
 
         public override string ToSqlString(short value) => value != 0 ? value.ToString() : "0";
 
@@ -95,7 +96,7 @@ namespace QueryLite.Databases.Sqlite {
         public override SqliteType DateTime => SqliteType.Text;
         public override SqliteType TimeOnly => SqliteType.Text;
         public override SqliteType DateOnly => SqliteType.Text;
-        public override SqliteType Decimal => SqliteType.Real;
+        public override SqliteType Decimal => SqliteType.Text;
         public override SqliteType Double => SqliteType.Real;
         public override SqliteType Float => SqliteType.Real;
         public override SqliteType Short => SqliteType.Integer;

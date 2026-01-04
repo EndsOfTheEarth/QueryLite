@@ -88,7 +88,7 @@ namespace QueryLite.Databases.Sqlite {
 
             if(outputFunc != null) {
 
-                SqliteReturningFieldCollector collector = SqliteReturningCollectorCache.Acquire(sql, useAlias: useAlias);
+                SqliteReturningFieldCollector collector = SqliteReturningCollectorCache.Acquire(sql, useAlias: false);
 
                 sql.Append(" RETURNING ");
 
