@@ -59,7 +59,7 @@ namespace QueryLiteTest {
                 if(File.Exists(path) && !string.IsNullOrWhiteSpace(path)) {
                     File.Delete(path);
                 }
-                Database = new SqliteDatabase(name: "QueryLiteTest", connectionString: settings!.SqliteConnectionString, schemaMap: schema => "");
+                Database = new SqliteDatabase(name: "QueryLiteTest", connectionString: settings!.SqliteConnectionString);
                 Query.ExecuteNonQuery(sql: SqliteSchema.Sql, database: Database);
             }
             else {

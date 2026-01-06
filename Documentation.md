@@ -98,11 +98,12 @@ foreach(var row in result.Rows) {
 
 ## Defining A Database
 
-In order to query a database object must be created. Both Sql Server and PostgreSQL are supported. This must be passed as a parameter into every query.
+In order to query a database object must be created. Sql Server, PostgreSQL and sqlite are supported. This must be passed as a parameter into every query.
 
 ```C#
 using QueryLite.Databases.PostgreSql;
 using QueryLite.Databases.SqlServer;
+using QueryLite.Databases.Sqlite;
 
 //Sql Server
 IDatabase northwind = new SqlServerDatabase(
@@ -115,11 +116,18 @@ IDatabase northwind = new PostgreSqlDatabase(
       name: "Northwind",
       connectionString: "Server=127.0.0.1;Port=5432;Database=Northwind;User Id=postgres;Password=my_password;"
 );
+
+//Sqlite
+IDatabase northwind = new SqliteDatabase(
+      name: "Northwind",
+      connectionString: "Data Source=C:\\temp\\Northwind.db"
+);
 ```
 
 ## Database Support
 
-Query Lite works with Sql Server and PostgreSql databases. A reference to the nuget package System.Data.SqlClient and Npgsql is required for each.
+Query Lite works with Sql Server, PostgreSql and Sqlite databases. A reference to the nuget packages `System.Data.SqlClient`,
+`Npgsql` and `Microsoft.Data.Sqlite` is required for each.
 
 Note: There are some differences in behaviour between the two databases behaviour in Query Lite. 
 
