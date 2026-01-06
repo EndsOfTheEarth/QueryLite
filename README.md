@@ -1,6 +1,9 @@
 # Query Lite
 
-Query Lite is a typesafe .net sql query library for Sql Server and PostgreSql. In essence it is a `typesafe` `string less` `sql query builder`. Sql queries like `select`, `update`, `delete` and `truncate` are supported.
+Query Lite is a typesafe SQL query library for .net. It has support for Sql Server, PostgreSql and Sqlite.
+
+The library supports common queries like `select`, `update`, `delete` and `truncate`. And more complex syntax like left joins,
+unions, nested queries, query hints and row locking. It also has a row repository feature which is similar in concept to EF Core's context CRUD pattern.
  
 ## Example Select Query (Dynamic)
 ``` C#
@@ -68,6 +71,8 @@ Query Lite is part of a set of personal projects exploring the optimal design fo
 
 [Additional - Prepared Query Documentation is found here](PreparedQueries.md)
 
+[Additional - Notes on Sqlite Support](Sqlite.md)
+
 ## Nuget Package
 
 [QueryLite.net Nuget Package](https://www.nuget.org/packages/QueryLite.net/)
@@ -77,18 +82,22 @@ Query Lite is part of a set of personal projects exploring the optimal design fo
 ## Core features
 
 * Typesafe queries in code.
-  - Designed to work with nullable reference types and .net 8.0.
+  - Designed to work with nullable reference types and .net 10.0.
 * Sql Select, insert, update, delete and truncate queries.
 * Supports sql syntax e.g. Join, Left Join, Where, Order By, Group By, Union and Nested Queries.
-* Does not do any client side filtering like linq to sql.
+* Does not do any client side filtering.
 * Query syntax clear and easy to read.
+* Dynamic queries have performance similar to Dapper.
+* Prepared queries have performance similar to raw Ado.net sql.
+* Efficient memory allocation.
+* No slow context start up times.
 * Debugging features that show sql queries being executed.
   - Events Like - QueryExecuting, QueryPerformed.
   - Query results contain the executed sql.
   - Breakpoint on query.
 * Code generation tool for table definitions.
 * Table definition validator.
-* Supports both Sql Server and PostgreSql.
+* Supports both Sql Server, PostgreSql and Sqlite.
 * Schema description attributes to allow documentation generation.
 
 ## Dynamic And Prepared Queries
