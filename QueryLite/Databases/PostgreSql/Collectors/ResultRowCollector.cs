@@ -55,12 +55,8 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
             _ordinal++;
 
-            //In the case of Left Joins a non null column can return as null
-            //We leave it up to the caller to check for a null column or row in that case
             if(_reader.IsDBNull(_ordinal)) {
-#pragma warning disable CS8603 // Possible null reference return.
-                return null;
-#pragma warning restore CS8603 // Possible null reference return.
+                return string.Empty;
             }
             return _reader.GetString(_ordinal);
         }
@@ -352,9 +348,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
-#pragma warning disable CS8603 // Possible null reference return.
-                return null;
-#pragma warning restore CS8603 // Possible null reference return.
+                return [];
             }
             return (byte[])_reader.GetValue(_ordinal);
         }
@@ -421,9 +415,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
-#pragma warning disable CS8603 // Possible null reference return.
-                return null;
-#pragma warning restore CS8603 // Possible null reference return.
+                return string.Empty;
             }
             return _reader.GetString(_ordinal);
         }
@@ -696,9 +688,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
-#pragma warning disable CS8603 // Possible null reference return.
-                return null;
-#pragma warning restore CS8603 // Possible null reference return.
+                return [];
             }
             return (byte[])_reader.GetValue(_ordinal);
         }

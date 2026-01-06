@@ -261,9 +261,16 @@ var result = Query
 
 ## Left Joins
 
-When a table is used in a left join its result can be empty / null. In this case the selected columns of the left join table will default in different ways depending on their .net type. Reference types (e.g. string, byte[] and key types) will return null (Even when non-nullable reference types is turned on), value types will default to their default value e.g. short / int / long will default to 0. Nullable value types will default to null.
+When a table is used in a left join, the query result can return a null value internally. 
+In this case all types will return as their `default` C# value except for non-null reference 
+types. Non-null `string` will return as an empty string and non-null `byte[]` will 
+return as an empty array.
 
-To detect if a left join result is null, it is recommended to select the primary key column of the table and check that the column is not set to its default value in C#. This will only work if the column never contains its default C# value. For example an integer primary key should never contain the value of 0. Note: That nullable columns are not suitable for this type of check as they can return null regardless of the join used.
+To detect if a left join result returned a null row, it is recommended to select the primary key column of 
+the table and check that the column is set to its default value in C#. This will only work 
+if the column never contains its default C# value. For example an integer primary key should 
+never contain the value of 0. Note: That nullable columns are not suitable for this type of 
+check as they can return null regardless of the join used.
 
 For example:
 
