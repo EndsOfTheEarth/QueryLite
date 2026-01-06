@@ -194,13 +194,34 @@ namespace QueryLiteTest.Tests {
         [TestMethod]
         public void RunSchemaValidator() {
 
-            SchemaValidationSettings settings = new() {
-                ValidatePrimaryKeys = true,
-                ValidateUniqueConstraints = true,
-                ValidateForeignKeys = true,
-                ValidateCheckConstraintNames = true,
-                ValidateMissingCodeTables = true
-            };
+            DatabaseType dbType = TestDatabase.Database.DatabaseType;
+
+            SchemaValidationSettings settings;
+
+            if(dbType == DatabaseType.Sqlite) {
+
+                settings = new() {
+                    ValidatePrimaryKeys = PrimaryKeyValidation.Columns,
+                    ValidateUniqueConstraints = false,
+                    ValidateForeignKeys = false,
+                    ValidateCheckConstraintNames = false,
+                    ValidateMissingCodeTables = true,
+                    ValidateColumnLengths = false,
+                    ValidateColumnAutoGeneration = false
+                };
+            }
+            else {
+
+                settings = new SchemaValidationSettings() {
+                    ValidatePrimaryKeys = PrimaryKeyValidation.NamesAndColumns,
+                    ValidateUniqueConstraints = true,
+                    ValidateForeignKeys = true,
+                    ValidateCheckConstraintNames = true,
+                    ValidateMissingCodeTables = true,
+                    ValidateColumnLengths = true,
+                    ValidateColumnAutoGeneration = true
+                };
+            }
 
             List<ITable> tables = [
                 AllTypesTable.Instance,
@@ -211,14 +232,14 @@ namespace QueryLiteTest.Tests {
                 JsonTable.Instance
             ];
 
-            if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
+            if(dbType == DatabaseType.SqlServer) {
                 tables.Add(GeoTestTable.Instance);
                 tables.Add(RowVersionTestTable.Instance);
             }
 
             ValidationResult result = SchemaValidator.ValidateTables(TestDatabase.Database, tables, settings);
 
-            if(TestDatabase.Database.DatabaseType == DatabaseType.SqlServer) {
+            if(dbType == DatabaseType.SqlServer) {
                 Assert.AreEqual(8, result.Items.Count);
             }
             else {
@@ -667,7 +688,7 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                QueryResult<AllTypesInfo> result = _insertQuery1
+                 QueryResult<AllTypesInfo> result = _insertQuery1
                     .Execute(
                         parameters: allTypes,
                         transaction,

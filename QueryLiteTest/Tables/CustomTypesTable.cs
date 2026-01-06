@@ -36,6 +36,8 @@ namespace QueryLiteTest.Tables {
         public NullableColumn<CustomFloat, float> NFloat { get; }
         public NullableColumn<CustomDouble, double> NDouble { get; }
 
+        public override PrimaryKey? PrimaryKey => new(this, name: "pk_CustomTypes", Identifier);
+
         private CustomTypesTable() : base(tableName: "CustomTypes", schemaName: "dbo") {
 
             Guid = new Column<CustomGuid, Guid>(this, columnName: "ctGuid");

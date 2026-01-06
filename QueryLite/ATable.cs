@@ -113,11 +113,10 @@ namespace QueryLite {
         protected ATable(string tableName, string schemaName, bool enclose = false, bool isView = false, string description = "") {
 
             ArgumentException.ThrowIfNullOrEmpty(tableName);
-            ArgumentException.ThrowIfNullOrEmpty(schemaName);
 
-            SchemaName = schemaName;
+            SchemaName = schemaName ?? "";
             TableName = tableName;
-            TableDescription = description;
+            TableDescription = description ?? "";
             Enclose = enclose;
             Alias = "_" + AliasGenerator.GetAlias();
             IsView = isView;
