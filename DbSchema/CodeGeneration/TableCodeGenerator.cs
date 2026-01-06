@@ -132,7 +132,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 string columnLengthParameter = "";
 
                 if(column.Length?.LengthType == LengthType.Max || columnInfo.DotNetType == typeof(byte[])) {
-                    columnLengthParameter = $", length: {nameof(ColumnLength)}.{ColumnLength.MAX}";
+                    columnLengthParameter = $", length: {nameof(ColumnLength)}.MAX";
                 }
                 else if(column.Length != null) {
                     columnLengthParameter = $", length: new({column.Length?.Length})";
