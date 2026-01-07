@@ -32,20 +32,6 @@ namespace QueryLite {
         }
         public List<IField> Fields { get; } = [];
 
-        public List<IColumn> GetFieldsAsColumns() {
-
-            List<IColumn> columns = [];
-
-            foreach(IField field in Fields) {
-
-                if(field is not IColumn) {
-                    throw new Exception($"Field is expected to be of type {typeof(IColumn)}. Other types like functions are not allowed.");
-                }
-                columns.Add((IColumn)field);
-            }
-            return columns;
-        }
-
         public string Get(Column<string> column) {
             Fields.Add(column);
             return "";

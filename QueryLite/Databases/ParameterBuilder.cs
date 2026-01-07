@@ -33,24 +33,4 @@ namespace QueryLite.Databases {
     /// Creates a query parameter using name and type.
     /// </summary>
     public delegate DbParameter CreateParameterDelegate(string name, object? value);
-
-    public sealed class ParameterBuilder : IParametersBuilder {
-
-        public IList<DbParameter> ParameterList { get; }
-
-        public ParameterBuilder(int initParams) {
-            ParameterList = new List<DbParameter>(initParams);
-        }
-
-        public void AddParameter(IDatabase database, Type type, object? value, out string paramName) {
-
-            if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
-                paramName = ParamNameCache.ParamNames[ParameterList.Count];
-            }
-            else {
-                paramName = $"@{ParameterList.Count}";
-            }
-            ParameterList.Add(database.ParameterMapper.GetCreateParameterDelegate(type)(paramName, value));
-        }
-    }
 }
