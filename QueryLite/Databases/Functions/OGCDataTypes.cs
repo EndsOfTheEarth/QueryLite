@@ -87,7 +87,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STArea : NullableFunction<double> {
+    public sealed class STArea : NFunction<double> {
 
         private AColumn<IGeography>? Column { get; }
         private IGeographySqlType? OCGType { get; }
@@ -110,7 +110,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STEquals : NullableFunction<int> {
+    public sealed class STEquals : NFunction<int> {
 
         private AColumn<IGeography> ColumnA { get; }
         private AColumn<IGeography>? ColumnB { get; }
@@ -153,7 +153,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STAsBinary : NullableFunction<byte[]> {
+    public sealed class STAsBinary : NFunction<byte[]> {
 
         private AColumn<IGeography>? Column { get; }
         private IGeographySqlType? OCGType { get; }
@@ -176,7 +176,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STAsText : NullableFunction<string> {
+    public sealed class STAsText : NFunction<string> {
 
         private AColumn<IGeography>? Column { get; }
         private IGeographySqlType? OCGType { get; }
@@ -199,7 +199,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STContains : NullableFunction<Bit> {
+    public sealed class STContains : NFunction<Bit> {
 
         private AColumn<IGeography> ColumnA { get; }
         private AColumn<IGeography>? ColumnB { get; }
@@ -246,7 +246,7 @@ namespace QueryLite.Databases.Functions {
     /// Geography function for measuring the shortest distance between two geographies
     /// e.g. select columnA.STDistance(columnB) from table
     /// </summary>
-    public sealed class STDistance : NullableFunction<double> {
+    public sealed class STDistance : NFunction<double> {
 
         private AColumn<IGeography> FromColumn { get; }
         private AColumn<IGeography>? ToColumn { get; }

@@ -213,7 +213,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public string? Get(NullableFunction<string> column) {
+        public string? Get(NFunction<string> column) {
             return Add(column);
         }
 
@@ -221,7 +221,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public Guid? Get(NullableFunction<Guid> column) {
+        public Guid? Get(NFunction<Guid> column) {
             return Add(column);
         }
 
@@ -229,7 +229,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public bool? Get(NullableFunction<bool> column) {
+        public bool? Get(NFunction<bool> column) {
             return Add(column);
         }
 
@@ -237,7 +237,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public Bit? Get(NullableFunction<Bit> column) {
+        public Bit? Get(NFunction<Bit> column) {
             return Add(column);
         }
 
@@ -245,7 +245,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public short? Get(NullableFunction<short> column) {
+        public short? Get(NFunction<short> column) {
             return Add(column);
         }
 
@@ -253,7 +253,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public int? Get(NullableFunction<int> column) {
+        public int? Get(NFunction<int> column) {
             return Add(column);
         }
 
@@ -261,7 +261,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public long? Get(NullableFunction<long> column) {
+        public long? Get(NFunction<long> column) {
             return Add(column);
         }
 
@@ -269,7 +269,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public float? Get(NullableFunction<float> column) {
+        public float? Get(NFunction<float> column) {
             return Add(column);
         }
 
@@ -277,7 +277,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public double? Get(NullableFunction<double> column) {
+        public double? Get(NFunction<double> column) {
             return Add(column);
         }
 
@@ -285,7 +285,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public DateTime? Get(NullableFunction<DateTime> column) {
+        public DateTime? Get(NFunction<DateTime> column) {
             return Add(column);
         }
 
@@ -293,7 +293,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public DateTimeOffset? Get(NullableFunction<DateTimeOffset> column) {
+        public DateTimeOffset? Get(NFunction<DateTimeOffset> column) {
             return Add(column);
         }
 
@@ -301,7 +301,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public DateOnly? Get(NullableFunction<DateOnly> column) {
+        public DateOnly? Get(NFunction<DateOnly> column) {
             return Add(column);
         }
 
@@ -309,7 +309,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public TimeOnly? Get(NullableFunction<TimeOnly> column) {
+        public TimeOnly? Get(NFunction<TimeOnly> column) {
             return Add(column);
         }
 
@@ -317,7 +317,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public byte? Get(NullableFunction<byte> column) {
+        public byte? Get(NFunction<byte> column) {
             return Add(column);
         }
 
@@ -325,7 +325,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public byte[]? Get(NullableFunction<byte[]> column) {
+        public byte[]? Get(NFunction<byte[]> column) {
             return Add(column);
         }
 
@@ -341,7 +341,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(column);
         }
 
-        public ENUM? Get<ENUM>(NullableFunction<ENUM> column) where ENUM : struct, Enum {
+        public ENUM? Get<ENUM>(NFunction<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
 
@@ -476,7 +476,7 @@ namespace QueryLite.Databases.SqlServer {
             return @default;
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
             Add(function);
             return default;
         }
@@ -486,7 +486,7 @@ namespace QueryLite.Databases.SqlServer {
             return @default;
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
             Add(function);
             return default;
         }
@@ -495,7 +495,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(function);
         }
 
-        public Json? Get(NullableFunction<Json> function) {
+        public Json? Get(NFunction<Json> function) {
             return Add(function);
         }
 
@@ -503,7 +503,7 @@ namespace QueryLite.Databases.SqlServer {
             return Add(function);
         }
 
-        public Jsonb? Get(NullableFunction<Jsonb> function) {
+        public Jsonb? Get(NFunction<Jsonb> function) {
             return Add(function);
         }
 

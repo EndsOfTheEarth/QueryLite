@@ -28,7 +28,7 @@ namespace QueryLite.Databases.Functions {
         internal string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters);
     }
 
-    public sealed class STGeomFromText : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STGeomFromText : NFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -51,7 +51,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STPointFromText : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STPointFromText : NFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -74,7 +74,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STLineFromText : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STLineFromText : NFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -97,7 +97,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STPolyFromText : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STPolyFromText : NFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -120,7 +120,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STMPointFromText : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STMPointFromText : NFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -143,7 +143,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STMLineFromText : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STMLineFromText : NFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -166,7 +166,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STMPolyFromText : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STMPolyFromText : NFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -189,7 +189,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STGeomCollFromText : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STGeomCollFromText : NFunction<IGeography>, IGeographySqlType {
 
         private string KwText { get; }
         public int SRID { get; }
@@ -212,7 +212,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STGeomCollFromWKB : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STGeomCollFromWKB : NFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -235,7 +235,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STGeomFromWKB : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STGeomFromWKB : NFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -258,7 +258,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STPointFromWKB : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STPointFromWKB : NFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -281,7 +281,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STLineFromWKB : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STLineFromWKB : NFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -304,7 +304,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STPolyFromWKB : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STPolyFromWKB : NFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -327,7 +327,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STMPointFromWKB : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STMPointFromWKB : NFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -350,7 +350,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STMLineFromWKB : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STMLineFromWKB : NFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }
@@ -373,7 +373,7 @@ namespace QueryLite.Databases.Functions {
         }
     }
 
-    public sealed class STMPolyFromWKB : NullableFunction<IGeography>, IGeographySqlType {
+    public sealed class STMPolyFromWKB : NFunction<IGeography>, IGeographySqlType {
 
         private string KwBinary { get; }
         public int SRID { get; }

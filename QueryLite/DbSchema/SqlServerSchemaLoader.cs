@@ -31,7 +31,7 @@ namespace QueryLite.DbSchema {
 
     public sealed class SqlServerSchemaLoader {
 
-        public sealed class COLUMNPROPERTY : NullableFunction<int> {
+        public sealed class COLUMNPROPERTY : NFunction<int> {
 
             private ColumnsTable Table { get; }
 

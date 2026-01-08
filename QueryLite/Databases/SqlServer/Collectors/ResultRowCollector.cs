@@ -418,7 +418,7 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetString(_ordinal);
         }
 
-        public string? Get(NullableFunction<string> function) {
+        public string? Get(NFunction<string> function) {
 
             _ordinal++;
 
@@ -437,7 +437,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetGuid(_ordinal);
         }
-        public Guid? Get(NullableFunction<Guid> function) {
+        public Guid? Get(NFunction<Guid> function) {
 
             _ordinal++;
 
@@ -456,7 +456,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetByte(_ordinal) == 1;
         }
-        public bool? Get(NullableFunction<bool> function) {
+        public bool? Get(NFunction<bool> function) {
 
             _ordinal++;
 
@@ -476,7 +476,7 @@ namespace QueryLite.Databases.SqlServer {
             return Bit.ValueOf(_reader.GetBoolean(_ordinal));
         }
 
-        public Bit? Get(NullableFunction<Bit> column) {
+        public Bit? Get(NFunction<Bit> column) {
 
             _ordinal++;
 
@@ -495,7 +495,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetInt16(_ordinal);
         }
-        public short? Get(NullableFunction<short> function) {
+        public short? Get(NFunction<short> function) {
 
             _ordinal++;
 
@@ -514,7 +514,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetInt32(_ordinal);
         }
-        public int? Get(NullableFunction<int> function) {
+        public int? Get(NFunction<int> function) {
 
             _ordinal++;
 
@@ -533,7 +533,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetInt64(_ordinal);
         }
-        public long? Get(NullableFunction<long> function) {
+        public long? Get(NFunction<long> function) {
 
             _ordinal++;
 
@@ -552,7 +552,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetFloat(_ordinal);
         }
-        public float? Get(NullableFunction<float> function) {
+        public float? Get(NFunction<float> function) {
 
             _ordinal++;
 
@@ -571,7 +571,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDouble(_ordinal);
         }
-        public double? Get(NullableFunction<double> function) {
+        public double? Get(NFunction<double> function) {
 
             _ordinal++;
 
@@ -590,7 +590,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDateTime(_ordinal);
         }
-        public DateTime? Get(NullableFunction<DateTime> function) {
+        public DateTime? Get(NFunction<DateTime> function) {
 
             _ordinal++;
 
@@ -609,7 +609,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDateTimeOffset(_ordinal);
         }
-        public DateTimeOffset? Get(NullableFunction<DateTimeOffset> function) {
+        public DateTimeOffset? Get(NFunction<DateTimeOffset> function) {
 
             _ordinal++;
 
@@ -629,7 +629,7 @@ namespace QueryLite.Databases.SqlServer {
             DateTime value = _reader.GetDateTime(_ordinal);
             return DateOnly.FromDateTime(value);
         }
-        public DateOnly? Get(NullableFunction<DateOnly> column) {
+        public DateOnly? Get(NFunction<DateOnly> column) {
 
             _ordinal++;
 
@@ -650,7 +650,7 @@ namespace QueryLite.Databases.SqlServer {
             TimeSpan value = _reader.GetTimeSpan(_ordinal);
             return TimeOnly.FromTimeSpan(value);
         }
-        public TimeOnly? Get(NullableFunction<TimeOnly> column) {
+        public TimeOnly? Get(NFunction<TimeOnly> column) {
 
             _ordinal++;
 
@@ -670,7 +670,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetByte(_ordinal);
         }
-        public byte? Get(NullableFunction<byte> function) {
+        public byte? Get(NFunction<byte> function) {
 
             _ordinal++;
 
@@ -689,7 +689,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return (byte[])_reader.GetValue(_ordinal);
         }
-        public byte[]? Get(NullableFunction<byte[]> function) {
+        public byte[]? Get(NFunction<byte[]> function) {
 
             _ordinal++;
 
@@ -723,7 +723,7 @@ namespace QueryLite.Databases.SqlServer {
             return IntegerToEnum<int, ENUM>.Convert(value);
         }
 
-        public ENUM? Get<ENUM>(NullableFunction<ENUM> function) where ENUM : struct, Enum {
+        public ENUM? Get<ENUM>(NFunction<ENUM> function) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -1077,7 +1077,7 @@ namespace QueryLite.Databases.SqlServer {
             return readValue(_reader, _ordinal);
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
@@ -1097,7 +1097,7 @@ namespace QueryLite.Databases.SqlServer {
             return readValue(_reader, _ordinal);
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
@@ -1117,7 +1117,7 @@ namespace QueryLite.Databases.SqlServer {
             return Json.ValueOf(_reader.GetString(_ordinal));
         }
 
-        public Json? Get(NullableFunction<Json> function) {
+        public Json? Get(NFunction<Json> function) {
 
             _ordinal++;
 
@@ -1137,7 +1137,7 @@ namespace QueryLite.Databases.SqlServer {
             return Jsonb.ValueOf(_reader.GetString(_ordinal));
         }
 
-        public Jsonb? Get(NullableFunction<Jsonb> column) {
+        public Jsonb? Get(NFunction<Jsonb> column) {
 
             _ordinal++;
 

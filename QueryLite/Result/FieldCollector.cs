@@ -197,7 +197,7 @@ namespace QueryLite {
             return "";
         }
 
-        public string? Get(NullableFunction<string> column) {
+        public string? Get(NFunction<string> column) {
             Fields.Add(column);
             return default;
         }
@@ -207,7 +207,7 @@ namespace QueryLite {
             return default;
         }
 
-        public Guid? Get(NullableFunction<Guid> column) {
+        public Guid? Get(NFunction<Guid> column) {
             Fields.Add(column);
             return default;
         }
@@ -217,7 +217,7 @@ namespace QueryLite {
             return default;
         }
 
-        public bool? Get(NullableFunction<bool> column) {
+        public bool? Get(NFunction<bool> column) {
             Fields.Add(column);
             return default;
         }
@@ -227,7 +227,7 @@ namespace QueryLite {
             return default;
         }
 
-        public Bit? Get(NullableFunction<Bit> column) {
+        public Bit? Get(NFunction<Bit> column) {
             Fields.Add(column);
             return default;
         }
@@ -237,7 +237,7 @@ namespace QueryLite {
             return default;
         }
 
-        public short? Get(NullableFunction<short> column) {
+        public short? Get(NFunction<short> column) {
             Fields.Add(column);
             return default;
         }
@@ -247,7 +247,7 @@ namespace QueryLite {
             return default;
         }
 
-        public int? Get(NullableFunction<int> column) {
+        public int? Get(NFunction<int> column) {
             Fields.Add(column);
             return default;
         }
@@ -257,7 +257,7 @@ namespace QueryLite {
             return default;
         }
 
-        public long? Get(NullableFunction<long> column) {
+        public long? Get(NFunction<long> column) {
             Fields.Add(column);
             return default;
         }
@@ -267,7 +267,7 @@ namespace QueryLite {
             return default;
         }
 
-        public float? Get(NullableFunction<float> column) {
+        public float? Get(NFunction<float> column) {
             Fields.Add(column);
             return default;
         }
@@ -277,7 +277,7 @@ namespace QueryLite {
             return default;
         }
 
-        public double? Get(NullableFunction<double> column) {
+        public double? Get(NFunction<double> column) {
             Fields.Add(column);
             return default;
         }
@@ -287,7 +287,7 @@ namespace QueryLite {
             return default;
         }
 
-        public DateTime? Get(NullableFunction<DateTime> column) {
+        public DateTime? Get(NFunction<DateTime> column) {
             Fields.Add(column);
             return default;
         }
@@ -297,7 +297,7 @@ namespace QueryLite {
             return default;
         }
 
-        public DateTimeOffset? Get(NullableFunction<DateTimeOffset> column) {
+        public DateTimeOffset? Get(NFunction<DateTimeOffset> column) {
             Fields.Add(column);
             return default;
         }
@@ -307,7 +307,7 @@ namespace QueryLite {
             return default;
         }
 
-        public DateOnly? Get(NullableFunction<DateOnly> column) {
+        public DateOnly? Get(NFunction<DateOnly> column) {
             Fields.Add(column);
             return default;
         }
@@ -317,7 +317,7 @@ namespace QueryLite {
             return default;
         }
 
-        public TimeOnly? Get(NullableFunction<TimeOnly> column) {
+        public TimeOnly? Get(NFunction<TimeOnly> column) {
             Fields.Add(column);
             return default;
         }
@@ -327,7 +327,7 @@ namespace QueryLite {
             return default;
         }
 
-        public byte? Get(NullableFunction<byte> column) {
+        public byte? Get(NFunction<byte> column) {
             Fields.Add(column);
             return default;
         }
@@ -337,7 +337,7 @@ namespace QueryLite {
             return [];
         }
 
-        public byte[]? Get(NullableFunction<byte[]> column) {
+        public byte[]? Get(NFunction<byte[]> column) {
             Fields.Add(column);
             return default;
         }
@@ -357,7 +357,7 @@ namespace QueryLite {
             return default!;
         }
 
-        public ENUM? Get<ENUM>(NullableFunction<ENUM> column) where ENUM : struct, Enum {
+        public ENUM? Get<ENUM>(NFunction<ENUM> column) where ENUM : struct, Enum {
             Fields.Add(column);
             return default;
         }
@@ -523,7 +523,7 @@ namespace QueryLite {
             return @default;
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
             Fields.Add(function);
             return default;
         }
@@ -533,7 +533,7 @@ namespace QueryLite {
             return @default;
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
             Fields.Add(function);
             return default;
         }
@@ -543,7 +543,7 @@ namespace QueryLite {
             return Json.Empty;
         }
 
-        public Json? Get(NullableFunction<Json> function) {
+        public Json? Get(NFunction<Json> function) {
             Fields.Add(function);
             return null;
         }
@@ -553,7 +553,7 @@ namespace QueryLite {
             return Jsonb.Empty;
         }
 
-        public Jsonb? Get(NullableFunction<Jsonb> column) {
+        public Jsonb? Get(NFunction<Jsonb> column) {
             Fields.Add(column);
             return null;
         }

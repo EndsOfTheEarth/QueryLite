@@ -35,6 +35,7 @@
 - [String Like Condition](#string-like-condition)
 - [Functions](#functions)
 - [Custom Functions](#custom-functions)
+- [Raw SQL Functions](#raw-sql-functions)
 - [Supported Data Types](#supported-data-types)
    - [Custom Types](#custom-types)
    - [Geography Types](#geography-types)
@@ -981,6 +982,8 @@ SELECT COUNT(*) FROM dbo.Shipper
 
 ## Custom Functions
 
+Custom functions can be creating a class that inherits from Function<> of NFunction (For nullable return type).
+
 Here is an example of how to create and use a custom sql function.
 
 Define a custom string length function in C#:
@@ -1025,6 +1028,26 @@ foreach(var row in result.Rows) {
     string companyName = row.CompanyName;
     int stringLength = row.StringLength;
 }
+```
+## Raw SQL Functions
+
+Another way to create functions is to  create a raws function.
+There are two raw function classes `RawSqlFunction` and `NRawSqlFunction`. Note: `NRawSqlFunction` is used to return a nullable value.
+
+Example:
+```C#
+RawSqlFunction<string> concat = new(sql: "CONCAT('abc', 'efg')");
+NRawSqlFunction<string> nullIf = new(sql: "NULLIF(123, 123)");  //Note: This uses `NRawSqlFunction` because it can return a null value
+
+QueryResult<string> result = Query
+    .Select(
+        row => new {
+            Concat = row.Get(concat),
+            NullIf = row.Get(nullIf)
+        }
+    )
+    .NoFromClause()
+    .Execute(TestDatabase.Database);
 ```
 
 ## Sql Server Table And Query Hints

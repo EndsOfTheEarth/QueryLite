@@ -137,9 +137,13 @@ namespace QueryLite {
 
         }
     }
-    public abstract class NullableFunction<TYPE> : AFunction<TYPE> where TYPE : notnull {
+    /// <summary>
+    /// Nullable function. A function that can return a null value
+    /// </summary>
+    /// <typeparam name="TYPE"></typeparam>
+    public abstract class NFunction<TYPE> : AFunction<TYPE> where TYPE : notnull {
 
-        protected NullableFunction(string name) : base(name) {
+        protected NFunction(string name) : base(name) {
 
         }
     }
@@ -156,11 +160,15 @@ namespace QueryLite {
         }
     }
 
-    public sealed class NullableRawSqlFunction<TYPE> : NullableFunction<TYPE> where TYPE : notnull {
+    /// <summary>
+    /// Raw Sql Nullable function. A function that can return a null value.
+    /// </summary>
+    /// <typeparam name="TYPE"></typeparam>
+    public sealed class NRawSqlFunction<TYPE> : NFunction<TYPE> where TYPE : notnull {
 
         private string Sql { get; }
 
-        public NullableRawSqlFunction(string sql) : base(sql) {
+        public NRawSqlFunction(string sql) : base(sql) {
             Sql = sql;
         }
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {

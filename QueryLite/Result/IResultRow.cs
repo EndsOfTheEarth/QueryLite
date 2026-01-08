@@ -150,109 +150,109 @@ namespace QueryLite {
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public string Get(Function<string> column);
-        public string? Get(NullableFunction<string> column);
+        public string? Get(NFunction<string> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Guid Get(Function<Guid> column);
-        public Guid? Get(NullableFunction<Guid> column);
+        public Guid? Get(NFunction<Guid> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public bool Get(Function<bool> column);
-        public bool? Get(NullableFunction<bool> column);
+        public bool? Get(NFunction<bool> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Bit Get(Function<Bit> column);
-        public Bit? Get(NullableFunction<Bit> column);
+        public Bit? Get(NFunction<Bit> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public short Get(Function<short> column);
-        public short? Get(NullableFunction<short> column);
+        public short? Get(NFunction<short> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public int Get(Function<int> column);
-        public int? Get(NullableFunction<int> column);
+        public int? Get(NFunction<int> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public long Get(Function<long> column);
-        public long? Get(NullableFunction<long> column);
+        public long? Get(NFunction<long> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public float Get(Function<float> column);
-        public float? Get(NullableFunction<float> column);
+        public float? Get(NFunction<float> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public double Get(Function<double> column);
-        public double? Get(NullableFunction<double> column);
+        public double? Get(NFunction<double> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public DateTime Get(Function<DateTime> column);
-        public DateTime? Get(NullableFunction<DateTime> column);
+        public DateTime? Get(NFunction<DateTime> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public DateTimeOffset Get(Function<DateTimeOffset> column);
-        public DateTimeOffset? Get(NullableFunction<DateTimeOffset> column);
+        public DateTimeOffset? Get(NFunction<DateTimeOffset> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public DateOnly Get(Function<DateOnly> column);
-        public DateOnly? Get(NullableFunction<DateOnly> column);
+        public DateOnly? Get(NFunction<DateOnly> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public TimeOnly Get(Function<TimeOnly> column);
-        public TimeOnly? Get(NullableFunction<TimeOnly> column);
+        public TimeOnly? Get(NFunction<TimeOnly> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public byte Get(Function<byte> column);
-        public byte? Get(NullableFunction<byte> column);
+        public byte? Get(NFunction<byte> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public byte[] Get(Function<byte[]> column);
-        public byte[]? Get(NullableFunction<byte[]> column);
+        public byte[]? Get(NFunction<byte[]> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Json Get(Function<Json> function);
-        public Json? Get(NullableFunction<Json> function);
+        public Json? Get(NFunction<Json> function);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Jsonb Get(Function<Jsonb> function);
-        public Jsonb? Get(NullableFunction<Jsonb> function);
+        public Jsonb? Get(NFunction<Jsonb> function);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public ENUM Get<ENUM>(Function<ENUM> column) where ENUM : struct, Enum;
-        public ENUM? Get<ENUM>(NullableFunction<ENUM> column) where ENUM : struct, Enum;
+        public ENUM? Get<ENUM>(NFunction<ENUM> column) where ENUM : struct, Enum;
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
@@ -333,7 +333,7 @@ namespace QueryLite {
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE? LoadFromReader<TYPE>(NullableFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull;
+        public TYPE? LoadFromReader<TYPE>(NFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull;
 
         /// <summary>
         /// Read value directly from DbDataReader.
@@ -343,6 +343,6 @@ namespace QueryLite {
         /// <summary>
         /// Read value directly from DbDataReader.
         /// </summary>
-        public TYPE? LoadFromReader<TYPE>(NullableRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull;
+        public TYPE? LoadFromReader<TYPE>(NRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull;
     }
 }

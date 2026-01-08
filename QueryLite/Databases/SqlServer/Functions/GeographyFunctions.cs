@@ -25,7 +25,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
 
     //.ShortestLineTo ( geography_other ) 
 
-    public sealed class Longitude : NullableFunction<double> {
+    public sealed class Longitude : NFunction<double> {
 
         public AColumn<IGeography> Column { get; }
 
@@ -37,7 +37,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
         }
     }
 
-    public sealed class Latitude : NullableFunction<double> {
+    public sealed class Latitude : NFunction<double> {
 
         public AColumn<IGeography> Column { get; }
 
@@ -49,7 +49,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
         }
     }
 
-    public sealed class GeographyParse : NullableFunction<IGeography> {
+    public sealed class GeographyParse : NFunction<IGeography> {
 
         public string KwText { get; }
 
