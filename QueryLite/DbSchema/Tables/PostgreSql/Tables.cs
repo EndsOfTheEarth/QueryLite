@@ -42,18 +42,18 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public TablesTable() : base(tableName: "tables", schemaName: "information_schema") {
 
-            TableCatalog = new Column<string>(table: this, columnName: "table_catalog");
-            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
-            TableType = new Column<string>(table: this, columnName: "table_type");
-            SelfReferencingColumnName = new Column<string>(table: this, columnName: "self_referencing_column_name");
-            ReferenceGeneration = new Column<string>(table: this, columnName: "reference_generation");
-            UserDefinedTypeCatalog = new Column<string>(table: this, columnName: "user_defined_type_catalog");
-            UserDefinedTypeSchema = new Column<string>(table: this, columnName: "user_defined_type_schema");
-            UserDefinedTypeName = new Column<string>(table: this, columnName: "user_defined_type_name");
-            IsInsertableInto = new Column<string>(table: this, columnName: "is_insertable_into");
-            IsTyped = new Column<string>(table: this, columnName: "is_typed");
-            CommitAction = new Column<string>(table: this, columnName: "commit_action");
+            TableCatalog = new Column<string>(table: this, name: "table_catalog");
+            TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, name: "table_name");
+            TableType = new Column<string>(table: this, name: "table_type");
+            SelfReferencingColumnName = new Column<string>(table: this, name: "self_referencing_column_name");
+            ReferenceGeneration = new Column<string>(table: this, name: "reference_generation");
+            UserDefinedTypeCatalog = new Column<string>(table: this, name: "user_defined_type_catalog");
+            UserDefinedTypeSchema = new Column<string>(table: this, name: "user_defined_type_schema");
+            UserDefinedTypeName = new Column<string>(table: this, name: "user_defined_type_name");
+            IsInsertableInto = new Column<string>(table: this, name: "is_insertable_into");
+            IsTyped = new Column<string>(table: this, name: "is_typed");
+            CommitAction = new Column<string>(table: this, name: "commit_action");
         }
     }
 }

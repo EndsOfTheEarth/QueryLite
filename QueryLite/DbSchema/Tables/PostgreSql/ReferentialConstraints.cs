@@ -39,15 +39,15 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public ReferentialConstraintsTable() : base(tableName: "REFERENTIAL_CONSTRAINTS", schemaName: "information_schema") {
 
-            CONSTRAINT_CATALOG = new NullableColumn<string>(this, columnName: "CONSTRAINT_CATALOG", length: new(128));
-            CONSTRAINT_SCHEMA = new NullableColumn<SchemaName, string>(this, columnName: "CONSTRAINT_SCHEMA", length: new(128));
-            CONSTRAINT_NAME = new Column<string>(this, columnName: "CONSTRAINT_NAME", length: new(128));
-            UNIQUE_CONSTRAINT_CATALOG = new NullableColumn<string>(this, columnName: "UNIQUE_CONSTRAINT_CATALOG", length: new(128));
-            UNIQUE_CONSTRAINT_SCHEMA = new NullableColumn<SchemaName, string>(this, columnName: "UNIQUE_CONSTRAINT_SCHEMA", length: new(128));
-            UNIQUE_CONSTRAINT_NAME = new NullableColumn<string>(this, columnName: "UNIQUE_CONSTRAINT_NAME", length: new(128));
-            MATCH_OPTION = new NullableColumn<string>(this, columnName: "MATCH_OPTION", length: new(7));
-            UPDATE_RULE = new NullableColumn<string>(this, columnName: "UPDATE_RULE", length: new(11));
-            DELETE_RULE = new NullableColumn<string>(this, columnName: "DELETE_RULE", length: new(11));
+            CONSTRAINT_CATALOG = new NullableColumn<string>(this, name: "CONSTRAINT_CATALOG", length: new(128));
+            CONSTRAINT_SCHEMA = new NullableColumn<SchemaName, string>(this, name: "CONSTRAINT_SCHEMA", length: new(128));
+            CONSTRAINT_NAME = new Column<string>(this, name: "CONSTRAINT_NAME", length: new(128));
+            UNIQUE_CONSTRAINT_CATALOG = new NullableColumn<string>(this, name: "UNIQUE_CONSTRAINT_CATALOG", length: new(128));
+            UNIQUE_CONSTRAINT_SCHEMA = new NullableColumn<SchemaName, string>(this, name: "UNIQUE_CONSTRAINT_SCHEMA", length: new(128));
+            UNIQUE_CONSTRAINT_NAME = new NullableColumn<string>(this, name: "UNIQUE_CONSTRAINT_NAME", length: new(128));
+            MATCH_OPTION = new NullableColumn<string>(this, name: "MATCH_OPTION", length: new(7));
+            UPDATE_RULE = new NullableColumn<string>(this, name: "UPDATE_RULE", length: new(11));
+            DELETE_RULE = new NullableColumn<string>(this, name: "DELETE_RULE", length: new(11));
         }
     }
 }

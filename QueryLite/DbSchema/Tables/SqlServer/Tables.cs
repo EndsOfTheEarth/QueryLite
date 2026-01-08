@@ -34,10 +34,10 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public TablesTable() : base(tableName: "tables", schemaName: "information_schema") {
 
-            TABLE_CATALOG = new Column<string>(table: this, columnName: "table_catalog");
-            TABLE_SCHEMA = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            TABLE_NAME = new Column<TableName, string>(table: this, columnName: "table_name");
-            TABLE_TYPE = new Column<string>(table: this, columnName: "table_type");
+            TABLE_CATALOG = new Column<string>(table: this, name: "table_catalog");
+            TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");
+            TABLE_NAME = new Column<TableName, string>(table: this, name: "table_name");
+            TABLE_TYPE = new Column<string>(table: this, name: "table_type");
         }
     }
 }

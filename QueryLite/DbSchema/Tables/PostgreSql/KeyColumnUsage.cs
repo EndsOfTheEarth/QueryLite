@@ -40,15 +40,15 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public KeyColumnUsageTable() : base(tableName: "key_column_usage", schemaName: "information_schema") {
 
-            ConstraintCatalog = new Column<string>(table: this, columnName: "constraint_catalog");
-            ConstraintSchema = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
-            ConstraintName = new Column<string>(table: this, columnName: "constraint_name");
-            TableCatalog = new Column<string>(table: this, columnName: "table_catalog");
-            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
-            ColumnName = new Column<ColumnName, string>(table: this, columnName: "column_name");
-            OrdinalPosition = new NullableColumn<int>(this, columnName: "ordinal_position");
-            PositionInUniqueConstraint = new NullableColumn<int>(this, columnName: "position_in_unique_constraint");
+            ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
+            ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
+            ConstraintName = new Column<string>(table: this, name: "constraint_name");
+            TableCatalog = new Column<string>(table: this, name: "table_catalog");
+            TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, name: "table_name");
+            ColumnName = new Column<ColumnName, string>(table: this, name: "column_name");
+            OrdinalPosition = new NullableColumn<int>(this, name: "ordinal_position");
+            PositionInUniqueConstraint = new NullableColumn<int>(this, name: "position_in_unique_constraint");
         }
     }
 }

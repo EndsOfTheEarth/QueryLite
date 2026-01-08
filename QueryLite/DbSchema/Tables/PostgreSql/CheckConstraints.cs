@@ -33,10 +33,10 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public Column<string> CheckCaluse { get; }
 
         public CheckConstraintsTable() : base(tableName: "check_constraints", schemaName: "information_schema") {
-            ConstraintCatalog = new Column<string>(table: this, columnName: "constraint_catalog");
-            ConstraintSchema = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
-            ConstraintName = new Column<string>(table: this, columnName: "constraint_name");
-            CheckCaluse = new Column<string>(table: this, columnName: "check_clause");
+            ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
+            ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
+            ConstraintName = new Column<string>(table: this, name: "constraint_name");
+            CheckCaluse = new Column<string>(table: this, name: "check_clause");
         }
     }
 }

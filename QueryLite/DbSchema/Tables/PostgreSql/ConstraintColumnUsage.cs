@@ -37,13 +37,13 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public ConstraintColumnUsageTable() : base(tableName: "constraint_column_usage", schemaName: "information_schema") {
 
-            TableCatalog = new Column<string>(table: this, columnName: "table_catalog");
-            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
-            ColumnName = new Column<ColumnName, string>(table: this, columnName: "column_name");
-            ConstraintCatalog = new Column<string>(table: this, columnName: "constraint_catalog");
-            ConstraintSchema = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
-            ConstraintName = new Column<string>(table: this, columnName: "constraint_name");
+            TableCatalog = new Column<string>(table: this, name: "table_catalog");
+            TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, name: "table_name");
+            ColumnName = new Column<ColumnName, string>(table: this, name: "column_name");
+            ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
+            ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
+            ConstraintName = new Column<string>(table: this, name: "constraint_name");
         }
     }
 }

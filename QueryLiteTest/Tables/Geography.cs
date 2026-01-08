@@ -14,8 +14,8 @@ namespace QueryLiteTest.Tables {
 
         private GeoTestTable() : base(tableName: "GeoTest", schemaName: "dbo") {
 
-            Guid = new Column<GeoTestId, Guid>(this, columnName: "gtGuid");
-            Geography = new Column<IGeography>(this, columnName: "gtGeography", length: ColumnLength.MAX);
+            Guid = new Column<GeoTestId, Guid>(this, name: "gtGuid");
+            Geography = new Column<IGeography>(this, name: "gtGeography", length: ColumnLength.MAX);
         }
     }
 }

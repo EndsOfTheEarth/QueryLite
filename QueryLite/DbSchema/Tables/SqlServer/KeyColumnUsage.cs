@@ -39,14 +39,14 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public KeyColumnUsageTable() : base(tableName: "key_column_usage", schemaName: "information_schema") {
 
-            CONSTRAINT_CATALOG = new Column<string>(table: this, columnName: "constraint_catalog");
-            CONSTRAINT_SCHEMA = new Column<SchemaName, string>(table: this, columnName: "constraint_schema");
-            CONSTRAINT_NAME = new Column<string>(table: this, columnName: "constraint_name");
-            TABLE_CATALOG = new Column<string>(table: this, columnName: "table_catalog");
-            TABLE_SCHEMA = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            TABLE_NAME = new Column<TableName, string>(table: this, columnName: "table_name");
-            COLUMN_NAME = new Column<ColumnName, string>(table: this, columnName: "column_name");
-            ORDINAL_POSITION = new NullableColumn<int>(this, columnName: "ordinal_position");
+            CONSTRAINT_CATALOG = new Column<string>(table: this, name: "constraint_catalog");
+            CONSTRAINT_SCHEMA = new Column<SchemaName, string>(table: this, name: "constraint_schema");
+            CONSTRAINT_NAME = new Column<string>(table: this, name: "constraint_name");
+            TABLE_CATALOG = new Column<string>(table: this, name: "table_catalog");
+            TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");
+            TABLE_NAME = new Column<TableName, string>(table: this, name: "table_name");
+            COLUMN_NAME = new Column<ColumnName, string>(table: this, name: "column_name");
+            ORDINAL_POSITION = new NullableColumn<int>(this, name: "ordinal_position");
         }
     }
 }

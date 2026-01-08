@@ -21,8 +21,8 @@ namespace QueryLiteTest.Tables {
         ];
 
         private ChildTable() : base(tableName: "Child", schemaName: "dbo") {
-            Id = new Column<ChildId, Guid>(this, columnName: "Id");
-            ParentId = new Column<ParentId, Guid>(this, columnName: "ParentId");
+            Id = new Column<ChildId, Guid>(this, name: "Id");
+            ParentId = new Column<ParentId, Guid>(this, name: "ParentId");
         }
     }
 }

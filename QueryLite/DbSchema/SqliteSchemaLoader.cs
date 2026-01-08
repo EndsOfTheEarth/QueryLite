@@ -89,7 +89,7 @@ namespace QueryLite.DbSchema {
                 table.Columns.Add(
                     new DatabaseColumn(
                         table: table,
-                        columnName: ColumnName.ValueOf(name),
+                        name: ColumnName.ValueOf(name),
                         dataType: dataType,
                         sqlDataTypeName: type,
                         length: null,

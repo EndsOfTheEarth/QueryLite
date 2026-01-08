@@ -13,11 +13,11 @@ namespace QueryLite.DbSchema.Tables.Sqlite {
 
         public SchemaTable() : base(tableName: "sqlite_schema", schemaName: "") {
 
-            Type = new Column<string>(table: this, columnName: "type");
-            Name = new Column<string>(table: this, columnName: "name");
-            TblName = new Column<string>(table: this, columnName: "tbl_name");
-            RootPage = new Column<int>(table: this, columnName: "rootpage");
-            Sql = new Column<string>(table: this, columnName: "sql");
+            Type = new Column<string>(table: this, name: "type");
+            Name = new Column<string>(table: this, name: "name");
+            TblName = new Column<string>(table: this, name: "tbl_name");
+            RootPage = new Column<int>(table: this, name: "rootpage");
+            Sql = new Column<string>(table: this, name: "sql");
         }
     }
 }

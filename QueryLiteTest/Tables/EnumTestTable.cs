@@ -17,14 +17,14 @@ namespace QueryLiteTest.Tables {
 
         private EnumTestTableTable() : base(tableName: "EnumTestTable", schemaName: "dbo") {
 
-            ByteEnum = new Column<ByteTestEnum>(this, columnName: "etByteEnum");
-            ShortEnum = new Column<ShortTestEnum>(this, columnName: "etShortEnum");
-            IntEnum = new Column<IntegerTestEnum>(this, columnName: "etIntEnum");
-            LongEnum = new Column<LongTestEnum>(this, columnName: "etLongEnum");
-            ByteNullEnum = new NullableColumn<ByteTestEnum>(this, columnName: "etByteNullEnum");
-            ShortNullEnum = new NullableColumn<ShortTestEnum>(this, columnName: "etShortNullEnum");
-            IntNullEnum = new NullableColumn<IntegerTestEnum>(this, columnName: "etIntNullEnum");
-            LongNullEnum = new NullableColumn<LongTestEnum>(this, columnName: "etLongNullEnum");
+            ByteEnum = new Column<ByteTestEnum>(this, name: "etByteEnum");
+            ShortEnum = new Column<ShortTestEnum>(this, name: "etShortEnum");
+            IntEnum = new Column<IntegerTestEnum>(this, name: "etIntEnum");
+            LongEnum = new Column<LongTestEnum>(this, name: "etLongEnum");
+            ByteNullEnum = new NullableColumn<ByteTestEnum>(this, name: "etByteNullEnum");
+            ShortNullEnum = new NullableColumn<ShortTestEnum>(this, name: "etShortNullEnum");
+            IntNullEnum = new NullableColumn<IntegerTestEnum>(this, name: "etIntNullEnum");
+            LongNullEnum = new NullableColumn<LongTestEnum>(this, name: "etLongNullEnum");
         }
     }
 

@@ -52,28 +52,28 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public ColumnsTable() : base(tableName: "columns", schemaName: "information_schema") {
 
-            TableSchema = new Column<SchemaName, string>(table: this, columnName: "table_schema");
-            TableName_ = new Column<TableName, string>(table: this, columnName: "table_name");
-            ColumnName = new Column<ColumnName, string>(table: this, columnName: "column_name");
-            OrdinalPosition = new NullableColumn<int>(table: this, columnName: "ordinal_position");
-            Columndefault = new Column<string>(table: this, columnName: "column_default");
-            IsNullable = new Column<string>(table: this, columnName: "is_nullable");
-            DataType = new Column<string>(table: this, columnName: "data_type");
-            CharacterMaximumLength = new NullableColumn<int>(table: this, columnName: "character_maximum_length");
-            CharacterOctetLength = new NullableColumn<int>(table: this, columnName: "character_octet_length");
-            NumericPrecision = new NullableColumn<byte>(table: this, columnName: "numeric_precision");
-            NumericPrecisionRadix = new NullableColumn<short>(table: this, columnName: "numeric_precision_radix");
-            NumericScale = new NullableColumn<int>(table: this, columnName: "numeric_scale");
-            DatetimePrecision = new NullableColumn<short>(table: this, columnName: "datetime_precision");
-            CharacterSetCatalog = new Column<string>(table: this, columnName: "character_set_catalog");
-            CharacterSetSchema = new Column<string>(table: this, columnName: "character_set_schema");
-            CharacterSetName = new Column<string>(table: this, columnName: "character_set_name");
-            CollationCatalog = new Column<string>(table: this, columnName: "collation_catalog");
-            CollationSchema = new Column<string>(table: this, columnName: "collation_schema");
-            CollationName = new Column<string>(table: this, columnName: "collation_name");
-            DomainCatalog = new Column<string>(table: this, columnName: "domain_catalog");
-            DomainSchema = new Column<string>(table: this, columnName: "domain_schema");
-            DomainName = new Column<string>(table: this, columnName: "domain_name");
+            TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
+            TableName_ = new Column<TableName, string>(table: this, name: "table_name");
+            ColumnName = new Column<ColumnName, string>(table: this, name: "column_name");
+            OrdinalPosition = new NullableColumn<int>(table: this, name: "ordinal_position");
+            Columndefault = new Column<string>(table: this, name: "column_default");
+            IsNullable = new Column<string>(table: this, name: "is_nullable");
+            DataType = new Column<string>(table: this, name: "data_type");
+            CharacterMaximumLength = new NullableColumn<int>(table: this, name: "character_maximum_length");
+            CharacterOctetLength = new NullableColumn<int>(table: this, name: "character_octet_length");
+            NumericPrecision = new NullableColumn<byte>(table: this, name: "numeric_precision");
+            NumericPrecisionRadix = new NullableColumn<short>(table: this, name: "numeric_precision_radix");
+            NumericScale = new NullableColumn<int>(table: this, name: "numeric_scale");
+            DatetimePrecision = new NullableColumn<short>(table: this, name: "datetime_precision");
+            CharacterSetCatalog = new Column<string>(table: this, name: "character_set_catalog");
+            CharacterSetSchema = new Column<string>(table: this, name: "character_set_schema");
+            CharacterSetName = new Column<string>(table: this, name: "character_set_name");
+            CollationCatalog = new Column<string>(table: this, name: "collation_catalog");
+            CollationSchema = new Column<string>(table: this, name: "collation_schema");
+            CollationName = new Column<string>(table: this, name: "collation_name");
+            DomainCatalog = new Column<string>(table: this, name: "domain_catalog");
+            DomainSchema = new Column<string>(table: this, name: "domain_schema");
+            DomainName = new Column<string>(table: this, name: "domain_name");
         }
     }
 

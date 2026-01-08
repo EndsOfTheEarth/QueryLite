@@ -85,7 +85,7 @@ namespace QueryLite.DbSchema {
 
                 DatabaseColumn databaseColumn = new DatabaseColumn(
                     table: databaseTable,
-                    columnName: columnRow.Column_name,
+                    name: columnRow.Column_name,
                     dataType: dataType,
                     sqlDataTypeName: columnRow.Data_type,
                     length: GetColumnLength(columnRow),

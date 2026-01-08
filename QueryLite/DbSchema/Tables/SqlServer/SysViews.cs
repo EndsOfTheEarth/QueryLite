@@ -36,12 +36,12 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public ExtendedPropertiesView() : base(tableName: "extended_properties", schemaName: "sys") {
 
-            Class = new Column<short>(this, columnName: "class");
-            ClassDesc = new NullableColumn<string>(this, columnName: "class_desc", length: new(60));
-            MajorId = new Column<int>(this, columnName: "major_id");
-            MinorId = new Column<int>(this, columnName: "minor_id");
-            Name = new Column<string>(this, columnName: "name", length: new(128));
-            Value = new NullableColumn<string>(this, columnName: "value");
+            Class = new Column<short>(this, name: "class");
+            ClassDesc = new NullableColumn<string>(this, name: "class_desc", length: new(60));
+            MajorId = new Column<int>(this, name: "major_id");
+            MinorId = new Column<int>(this, name: "minor_id");
+            Name = new Column<string>(this, name: "name", length: new(128));
+            Value = new NullableColumn<string>(this, name: "value");
         }
     }
 
@@ -55,9 +55,9 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public TablesView() : base(tableName: "tables", schemaName: "sys") {
 
-            Object_Id = new Column<int>(this, columnName: "object_id");
-            Schema_Id = new Column<int>(this, columnName: "schema_id");
-            Table_Name = new Column<TableName, string>(this, columnName: "name", length: new(128));
+            Object_Id = new Column<int>(this, name: "object_id");
+            Schema_Id = new Column<int>(this, name: "schema_id");
+            Table_Name = new Column<TableName, string>(this, name: "name", length: new(128));
         }
     }
 
@@ -71,9 +71,9 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public ColumnsView() : base(tableName: "columns", schemaName: "sys") {
 
-            Object_Id = new Column<int>(this, columnName: "object_id");
-            Column_Id = new Column<int>(this, columnName: "column_id");
-            Column_Name = new Column<ColumnName, string>(this, columnName: "name", length: new(128));
+            Object_Id = new Column<int>(this, name: "object_id");
+            Column_Id = new Column<int>(this, name: "column_id");
+            Column_Name = new Column<ColumnName, string>(this, name: "name", length: new(128));
         }
     }
 
@@ -86,8 +86,8 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
 
         public SchemasView() : base(tableName: "schemas", schemaName: "sys") {
 
-            Schema_Id = new Column<int>(this, columnName: "schema_id");
-            Schema_Name = new Column<SchemaName, string>(this, columnName: "name", length: new(128));
+            Schema_Id = new Column<int>(this, name: "schema_id");
+            Schema_Name = new Column<SchemaName, string>(this, name: "name", length: new(128));
         }
     }
 }
