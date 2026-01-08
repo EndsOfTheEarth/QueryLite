@@ -1660,11 +1660,11 @@ public sealed class TerritoryTable : ATable {
     public Column<string> TerritoryDescription { get; }
     public Column<RegionId, int> RegionId { get; }
 
-    private TerritoryTable() : base(name:"Territory", schemaName: "dbo", description: "Stores information about territories") {
+    private TerritoryTable() : base(name:"Territory", schemaName: "dbo", desc: "Stores information about territories") {
 
-        TerritoryId = new Column<TerritoryId, string>(this, name: "TerritoryId", length: new(20), description: "Territory identifier");
-        TerritoryDescription = new Column<string>(this, name: "TerritoryDescription", length: new(50), description: "Territory description");
-        RegionId = new Column<RegionId, int>(this, name: "RegionId", description: "Region that territory belongs to");
+        TerritoryId = new Column<TerritoryId, string>(this, name: "TerritoryId", length: new(20), desc: "Territory identifier");
+        TerritoryDescription = new Column<string>(this, name: "TerritoryDescription", length: new(50), desc: "Territory description");
+        RegionId = new Column<RegionId, int>(this, name: "RegionId", desc: "Region that territory belongs to");
     }
 }
 ```
