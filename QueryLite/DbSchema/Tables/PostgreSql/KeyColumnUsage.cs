@@ -35,8 +35,8 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public Column<SchemaName, string> TableSchema { get; }
         public Column<TableName, string> TableName_ { get; }
         public Column<ColumnName, string> ColumnName { get; }
-        public NullableColumn<int> OrdinalPosition { get; }
-        public NullableColumn<int> PositionInUniqueConstraint { get; }
+        public NColumn<int> OrdinalPosition { get; }
+        public NColumn<int> PositionInUniqueConstraint { get; }
 
         public KeyColumnUsageTable() : base(tableName: "key_column_usage", schemaName: "information_schema") {
 
@@ -47,8 +47,8 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
             TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
             TableName_ = new Column<TableName, string>(table: this, name: "table_name");
             ColumnName = new Column<ColumnName, string>(table: this, name: "column_name");
-            OrdinalPosition = new NullableColumn<int>(this, name: "ordinal_position");
-            PositionInUniqueConstraint = new NullableColumn<int>(this, name: "position_in_unique_constraint");
+            OrdinalPosition = new NColumn<int>(this, name: "ordinal_position");
+            PositionInUniqueConstraint = new NColumn<int>(this, name: "position_in_unique_constraint");
         }
     }
 }

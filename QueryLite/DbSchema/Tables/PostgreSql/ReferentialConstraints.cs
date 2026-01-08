@@ -27,27 +27,27 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
 
         public static readonly ReferentialConstraintsTable Instance = new();
 
-        public NullableColumn<string> CONSTRAINT_CATALOG { get; }
-        public NullableColumn<SchemaName, string> CONSTRAINT_SCHEMA { get; }
+        public NColumn<string> CONSTRAINT_CATALOG { get; }
+        public NColumn<SchemaName, string> CONSTRAINT_SCHEMA { get; }
         public Column<string> CONSTRAINT_NAME { get; }
-        public NullableColumn<string> UNIQUE_CONSTRAINT_CATALOG { get; }
-        public NullableColumn<SchemaName, string> UNIQUE_CONSTRAINT_SCHEMA { get; }
-        public NullableColumn<string> UNIQUE_CONSTRAINT_NAME { get; }
-        public NullableColumn<string> MATCH_OPTION { get; }
-        public NullableColumn<string> UPDATE_RULE { get; }
-        public NullableColumn<string> DELETE_RULE { get; }
+        public NColumn<string> UNIQUE_CONSTRAINT_CATALOG { get; }
+        public NColumn<SchemaName, string> UNIQUE_CONSTRAINT_SCHEMA { get; }
+        public NColumn<string> UNIQUE_CONSTRAINT_NAME { get; }
+        public NColumn<string> MATCH_OPTION { get; }
+        public NColumn<string> UPDATE_RULE { get; }
+        public NColumn<string> DELETE_RULE { get; }
 
         public ReferentialConstraintsTable() : base(tableName: "REFERENTIAL_CONSTRAINTS", schemaName: "information_schema") {
 
-            CONSTRAINT_CATALOG = new NullableColumn<string>(this, name: "CONSTRAINT_CATALOG", length: new(128));
-            CONSTRAINT_SCHEMA = new NullableColumn<SchemaName, string>(this, name: "CONSTRAINT_SCHEMA", length: new(128));
+            CONSTRAINT_CATALOG = new NColumn<string>(this, name: "CONSTRAINT_CATALOG", length: new(128));
+            CONSTRAINT_SCHEMA = new NColumn<SchemaName, string>(this, name: "CONSTRAINT_SCHEMA", length: new(128));
             CONSTRAINT_NAME = new Column<string>(this, name: "CONSTRAINT_NAME", length: new(128));
-            UNIQUE_CONSTRAINT_CATALOG = new NullableColumn<string>(this, name: "UNIQUE_CONSTRAINT_CATALOG", length: new(128));
-            UNIQUE_CONSTRAINT_SCHEMA = new NullableColumn<SchemaName, string>(this, name: "UNIQUE_CONSTRAINT_SCHEMA", length: new(128));
-            UNIQUE_CONSTRAINT_NAME = new NullableColumn<string>(this, name: "UNIQUE_CONSTRAINT_NAME", length: new(128));
-            MATCH_OPTION = new NullableColumn<string>(this, name: "MATCH_OPTION", length: new(7));
-            UPDATE_RULE = new NullableColumn<string>(this, name: "UPDATE_RULE", length: new(11));
-            DELETE_RULE = new NullableColumn<string>(this, name: "DELETE_RULE", length: new(11));
+            UNIQUE_CONSTRAINT_CATALOG = new NColumn<string>(this, name: "UNIQUE_CONSTRAINT_CATALOG", length: new(128));
+            UNIQUE_CONSTRAINT_SCHEMA = new NColumn<SchemaName, string>(this, name: "UNIQUE_CONSTRAINT_SCHEMA", length: new(128));
+            UNIQUE_CONSTRAINT_NAME = new NColumn<string>(this, name: "UNIQUE_CONSTRAINT_NAME", length: new(128));
+            MATCH_OPTION = new NColumn<string>(this, name: "MATCH_OPTION", length: new(7));
+            UPDATE_RULE = new NColumn<string>(this, name: "UPDATE_RULE", length: new(11));
+            DELETE_RULE = new NColumn<string>(this, name: "DELETE_RULE", length: new(11));
         }
     }
 }

@@ -10,10 +10,10 @@ namespace QueryLiteTest.Tables {
         public Column<ShortTestEnum> ShortEnum { get; }
         public Column<IntegerTestEnum> IntEnum { get; }
         public Column<LongTestEnum> LongEnum { get; }
-        public NullableColumn<ByteTestEnum> ByteNullEnum { get; }
-        public NullableColumn<ShortTestEnum> ShortNullEnum { get; }
-        public NullableColumn<IntegerTestEnum> IntNullEnum { get; }
-        public NullableColumn<LongTestEnum> LongNullEnum { get; }
+        public NColumn<ByteTestEnum> ByteNullEnum { get; }
+        public NColumn<ShortTestEnum> ShortNullEnum { get; }
+        public NColumn<IntegerTestEnum> IntNullEnum { get; }
+        public NColumn<LongTestEnum> LongNullEnum { get; }
 
         private EnumTestTableTable() : base(tableName: "EnumTestTable", schemaName: "dbo") {
 
@@ -21,10 +21,10 @@ namespace QueryLiteTest.Tables {
             ShortEnum = new Column<ShortTestEnum>(this, name: "etShortEnum");
             IntEnum = new Column<IntegerTestEnum>(this, name: "etIntEnum");
             LongEnum = new Column<LongTestEnum>(this, name: "etLongEnum");
-            ByteNullEnum = new NullableColumn<ByteTestEnum>(this, name: "etByteNullEnum");
-            ShortNullEnum = new NullableColumn<ShortTestEnum>(this, name: "etShortNullEnum");
-            IntNullEnum = new NullableColumn<IntegerTestEnum>(this, name: "etIntNullEnum");
-            LongNullEnum = new NullableColumn<LongTestEnum>(this, name: "etLongNullEnum");
+            ByteNullEnum = new NColumn<ByteTestEnum>(this, name: "etByteNullEnum");
+            ShortNullEnum = new NColumn<ShortTestEnum>(this, name: "etShortNullEnum");
+            IntNullEnum = new NColumn<IntegerTestEnum>(this, name: "etIntNullEnum");
+            LongNullEnum = new NColumn<LongTestEnum>(this, name: "etLongNullEnum");
         }
     }
 

@@ -31,16 +31,16 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public Column<SchemaName, string> TableSchema { get; }
         public Column<TableName, string> TableName_ { get; }
         public Column<ColumnName, string> ColumnName { get; }
-        public NullableColumn<int> OrdinalPosition { get; }
+        public NColumn<int> OrdinalPosition { get; }
         public Column<string> ColumnDefault { get; }
         public Column<string> IsNullable { get; }
         public Column<string> DataType { get; }
-        public NullableColumn<int> CharacterMaximumLength { get; }
-        public NullableColumn<int> CharacterOctetLength { get; }
-        public NullableColumn<int> NumericPrecision { get; }
-        public NullableColumn<int> NumericPrecisionRadix { get; }
-        public NullableColumn<int> NumericScale { get; }
-        public NullableColumn<int> DatetimePrecision { get; }
+        public NColumn<int> CharacterMaximumLength { get; }
+        public NColumn<int> CharacterOctetLength { get; }
+        public NColumn<int> NumericPrecision { get; }
+        public NColumn<int> NumericPrecisionRadix { get; }
+        public NColumn<int> NumericScale { get; }
+        public NColumn<int> DatetimePrecision { get; }
         public Column<string> IntervalType { get; }
         public Column<string> IntervalPrecision { get; }
         public Column<string> CharacterSetCatalog { get; }
@@ -58,7 +58,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public Column<string> ScopeCatalog { get; }
         public Column<string> ScopeSchema { get; }
         public Column<string> Scope_name { get; }
-        public NullableColumn<int> MaximumCardinality { get; }
+        public NColumn<int> MaximumCardinality { get; }
         public Column<string> DtdIdentifier { get; }
         public Column<string> IsSelfReferencing { get; }
         public Column<string> IsIdentity { get; }
@@ -78,16 +78,16 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
             TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
             TableName_ = new Column<TableName, string>(table: this, name: "table_name");
             ColumnName = new Column<ColumnName, string>(table: this, name: "column_name");
-            OrdinalPosition = new NullableColumn<int>(table: this, name: "ordinal_position");
+            OrdinalPosition = new NColumn<int>(table: this, name: "ordinal_position");
             ColumnDefault = new Column<string>(table: this, name: "column_default");
             IsNullable = new Column<string>(table: this, name: "is_nullable");
             DataType = new Column<string>(table: this, name: "data_type");
-            CharacterMaximumLength = new NullableColumn<int>(table: this, name: "character_maximum_length");
-            CharacterOctetLength = new NullableColumn<int>(table: this, name: "character_octet_length");
-            NumericPrecision = new NullableColumn<int>(table: this, name: "numeric_precision");
-            NumericPrecisionRadix = new NullableColumn<int>(table: this, name: "numeric_precision_radix");
-            NumericScale = new NullableColumn<int>(table: this, name: "numeric_scale");
-            DatetimePrecision = new NullableColumn<int>(table: this, name: "datetime_precision");
+            CharacterMaximumLength = new NColumn<int>(table: this, name: "character_maximum_length");
+            CharacterOctetLength = new NColumn<int>(table: this, name: "character_octet_length");
+            NumericPrecision = new NColumn<int>(table: this, name: "numeric_precision");
+            NumericPrecisionRadix = new NColumn<int>(table: this, name: "numeric_precision_radix");
+            NumericScale = new NColumn<int>(table: this, name: "numeric_scale");
+            DatetimePrecision = new NColumn<int>(table: this, name: "datetime_precision");
             IntervalType = new Column<string>(table: this, name: "interval_type");
             IntervalPrecision = new Column<string>(table: this, name: "interval_precision");
             CharacterSetCatalog = new Column<string>(table: this, name: "character_set_catalog");
@@ -105,7 +105,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
             ScopeCatalog = new Column<string>(table: this, name: "scope_catalog");
             ScopeSchema = new Column<string>(table: this, name: "scope_schema");
             Scope_name = new Column<string>(table: this, name: "scope_name");
-            MaximumCardinality = new NullableColumn<int>(table: this, name: "maximum_cardinality");
+            MaximumCardinality = new NColumn<int>(table: this, name: "maximum_cardinality");
             DtdIdentifier = new Column<string>(table: this, name: "dtd_identifier");
             IsSelfReferencing = new Column<string>(table: this, name: "is_self_referencing");
             IsIdentity = new Column<string>(table: this, name: "is_identity");

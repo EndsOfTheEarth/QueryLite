@@ -30,16 +30,16 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<SchemaName, string> TableSchema { get; }
         public Column<TableName, string> TableName_ { get; }
         public Column<ColumnName, string> ColumnName { get; }
-        public NullableColumn<int> OrdinalPosition { get; }
+        public NColumn<int> OrdinalPosition { get; }
         public Column<string> Columndefault { get; }
         public Column<string> IsNullable { get; }
         public Column<string> DataType { get; }
-        public NullableColumn<int> CharacterMaximumLength { get; }
-        public NullableColumn<int> CharacterOctetLength { get; }
-        public NullableColumn<byte> NumericPrecision { get; }
-        public NullableColumn<short> NumericPrecisionRadix { get; }
-        public NullableColumn<int> NumericScale { get; }
-        public NullableColumn<short> DatetimePrecision { get; }
+        public NColumn<int> CharacterMaximumLength { get; }
+        public NColumn<int> CharacterOctetLength { get; }
+        public NColumn<byte> NumericPrecision { get; }
+        public NColumn<short> NumericPrecisionRadix { get; }
+        public NColumn<int> NumericScale { get; }
+        public NColumn<short> DatetimePrecision { get; }
         public Column<string> CharacterSetCatalog { get; }
         public Column<string> CharacterSetSchema { get; }
         public Column<string> CharacterSetName { get; }
@@ -55,16 +55,16 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
             TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
             TableName_ = new Column<TableName, string>(table: this, name: "table_name");
             ColumnName = new Column<ColumnName, string>(table: this, name: "column_name");
-            OrdinalPosition = new NullableColumn<int>(table: this, name: "ordinal_position");
+            OrdinalPosition = new NColumn<int>(table: this, name: "ordinal_position");
             Columndefault = new Column<string>(table: this, name: "column_default");
             IsNullable = new Column<string>(table: this, name: "is_nullable");
             DataType = new Column<string>(table: this, name: "data_type");
-            CharacterMaximumLength = new NullableColumn<int>(table: this, name: "character_maximum_length");
-            CharacterOctetLength = new NullableColumn<int>(table: this, name: "character_octet_length");
-            NumericPrecision = new NullableColumn<byte>(table: this, name: "numeric_precision");
-            NumericPrecisionRadix = new NullableColumn<short>(table: this, name: "numeric_precision_radix");
-            NumericScale = new NullableColumn<int>(table: this, name: "numeric_scale");
-            DatetimePrecision = new NullableColumn<short>(table: this, name: "datetime_precision");
+            CharacterMaximumLength = new NColumn<int>(table: this, name: "character_maximum_length");
+            CharacterOctetLength = new NColumn<int>(table: this, name: "character_octet_length");
+            NumericPrecision = new NColumn<byte>(table: this, name: "numeric_precision");
+            NumericPrecisionRadix = new NColumn<short>(table: this, name: "numeric_precision_radix");
+            NumericScale = new NColumn<int>(table: this, name: "numeric_scale");
+            DatetimePrecision = new NColumn<short>(table: this, name: "datetime_precision");
             CharacterSetCatalog = new Column<string>(table: this, name: "character_set_catalog");
             CharacterSetSchema = new Column<string>(table: this, name: "character_set_schema");
             CharacterSetName = new Column<string>(table: this, name: "character_set_name");

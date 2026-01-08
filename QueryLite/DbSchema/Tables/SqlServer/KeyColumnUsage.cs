@@ -35,7 +35,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<SchemaName, string> TABLE_SCHEMA { get; }
         public Column<TableName, string> TABLE_NAME { get; }
         public Column<ColumnName, string> COLUMN_NAME { get; }
-        public NullableColumn<int> ORDINAL_POSITION { get; }
+        public NColumn<int> ORDINAL_POSITION { get; }
 
         public KeyColumnUsageTable() : base(tableName: "key_column_usage", schemaName: "information_schema") {
 
@@ -46,7 +46,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
             TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");
             TABLE_NAME = new Column<TableName, string>(table: this, name: "table_name");
             COLUMN_NAME = new Column<ColumnName, string>(table: this, name: "column_name");
-            ORDINAL_POSITION = new NullableColumn<int>(this, name: "ordinal_position");
+            ORDINAL_POSITION = new NColumn<int>(this, name: "ordinal_position");
         }
     }
 }

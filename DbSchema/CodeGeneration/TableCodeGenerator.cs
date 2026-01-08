@@ -104,7 +104,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
-                string columnClass = !column.IsNullable ? "Column" : "NullableColumn";
+                string columnClass = !column.IsNullable ? "Column" : "NColumn";
 
                 string columnName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 

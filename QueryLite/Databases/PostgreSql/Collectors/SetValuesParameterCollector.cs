@@ -157,7 +157,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum {
             return AddParameter(column, GetEnumDbType<ENUM>(), EnumHelper.GetEnumAsNumber(value));
         }
-        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
+        public ISetValuesCollector Set<ENUM>(NColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
             return AddParameter(column, GetEnumDbType<ENUM>(), value != null ? EnumHelper.GetEnumAsNumber(value.Value) : null);
         }
 
@@ -165,7 +165,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Varchar, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<string> column, string? value) {
+        public ISetValuesCollector Set(NColumn<string> column, string? value) {
             return AddParameter(column, NpgsqlDbType.Varchar, value);
         }
 
@@ -173,7 +173,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Uuid, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<Guid> column, Guid? value) {
+        public ISetValuesCollector Set(NColumn<Guid> column, Guid? value) {
             return AddParameter(column, NpgsqlDbType.Uuid, value);
         }
 
@@ -181,7 +181,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Boolean, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<bool> column, bool? value) {
+        public ISetValuesCollector Set(NColumn<bool> column, bool? value) {
             return AddParameter(column, NpgsqlDbType.Boolean, value);
         }
 
@@ -189,7 +189,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Boolean, value.Value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<Bit> column, Bit? value) {
+        public ISetValuesCollector Set(NColumn<Bit> column, Bit? value) {
             return AddParameter(column, NpgsqlDbType.Boolean, value?.Value);
         }
 
@@ -197,7 +197,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Numeric, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<decimal> column, decimal? value) {
+        public ISetValuesCollector Set(NColumn<decimal> column, decimal? value) {
             return AddParameter(column, NpgsqlDbType.Numeric, value);
         }
 
@@ -205,7 +205,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Smallint, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<short> column, short? value) {
+        public ISetValuesCollector Set(NColumn<short> column, short? value) {
             return AddParameter(column, NpgsqlDbType.Smallint, value);
         }
 
@@ -213,7 +213,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Integer, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<int> column, int? value) {
+        public ISetValuesCollector Set(NColumn<int> column, int? value) {
             return AddParameter(column, NpgsqlDbType.Integer, value);
         }
 
@@ -221,7 +221,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Bigint, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<long> column, long? value) {
+        public ISetValuesCollector Set(NColumn<long> column, long? value) {
             return AddParameter(column, NpgsqlDbType.Bigint, value);
         }
 
@@ -229,7 +229,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Real, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<float> column, float? value) {
+        public ISetValuesCollector Set(NColumn<float> column, float? value) {
             return AddParameter(column, NpgsqlDbType.Real, value);
         }
 
@@ -237,7 +237,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Double, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<double> column, double? value) {
+        public ISetValuesCollector Set(NColumn<double> column, double? value) {
             return AddParameter(column, NpgsqlDbType.Double, value);
         }
 
@@ -245,7 +245,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Time, value.ToTimeSpan());
         }
 
-        public ISetValuesCollector Set(NullableColumn<TimeOnly> column, TimeOnly? value) {
+        public ISetValuesCollector Set(NColumn<TimeOnly> column, TimeOnly? value) {
             return AddParameter(column, NpgsqlDbType.Time, value?.ToTimeSpan());
         }
 
@@ -253,7 +253,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Timestamp, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<DateTime> column, DateTime? value) {
+        public ISetValuesCollector Set(NColumn<DateTime> column, DateTime? value) {
             return AddParameter(column, NpgsqlDbType.Timestamp, value);
         }
 
@@ -261,7 +261,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Date, value.ToDateTime(TimeOnly.MinValue));
         }
 
-        public ISetValuesCollector Set(NullableColumn<DateOnly> column, DateOnly? value) {
+        public ISetValuesCollector Set(NColumn<DateOnly> column, DateOnly? value) {
             return AddParameter(column, NpgsqlDbType.Date, value?.ToDateTime(TimeOnly.MinValue));
         }
 
@@ -269,7 +269,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.TimestampTz, new DateTimeOffset(value.UtcDateTime));
         }
 
-        public ISetValuesCollector Set(NullableColumn<DateTimeOffset> column, DateTimeOffset? value) {
+        public ISetValuesCollector Set(NColumn<DateTimeOffset> column, DateTimeOffset? value) {
             return AddParameter(column, NpgsqlDbType.TimestampTz, value != null ? new DateTimeOffset(value.Value.UtcDateTime) : null);
         }
 
@@ -277,7 +277,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Smallint, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<byte> column, byte? value) {
+        public ISetValuesCollector Set(NColumn<byte> column, byte? value) {
             return AddParameter(column, NpgsqlDbType.Smallint, value);
         }
 
@@ -285,7 +285,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Bytea, value);
         }
 
-        public ISetValuesCollector Set(NullableColumn<byte[]> column, byte[]? value) {
+        public ISetValuesCollector Set(NColumn<byte[]> column, byte[]? value) {
             return AddParameter(column, NpgsqlDbType.Bytea, value);
         }
 
@@ -360,49 +360,49 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Uuid, value.Value);
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Uuid, value?.Value);
         }
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Smallint, value.Value);
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, short> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Smallint, value?.Value);
         }
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Integer, value.Value);
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, int> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Integer, value?.Value);
         }
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Bigint, value.Value);
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, long> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Bigint, value?.Value);
         }
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Varchar, value.Value);
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, string> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Varchar, value?.Value);
         }
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Boolean, value.Value);
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, bool> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Boolean, value?.Value);
         }
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Numeric, value.Value);
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Numeric, value?.Value);
         }
 
@@ -410,7 +410,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Timestamp, value.Value);
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Timestamp, value?.Value);
         }
 
@@ -418,7 +418,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.TimestampTz, new DateTimeOffset(value.Value.UtcDateTime));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.TimestampTz, value != null ? new DateTimeOffset(value.Value.Value.UtcDateTime) : null);
         }
 
@@ -426,7 +426,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Date, value.Value.ToDateTime(TimeOnly.MinValue));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Date, value?.Value.ToDateTime(TimeOnly.MinValue));
         }
 
@@ -434,7 +434,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Time, value.Value.ToTimeSpan());
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Time, value?.Value.ToTimeSpan());
         }
 
@@ -442,7 +442,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Real, value.Value);
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, float> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Real, value?.Value);
         }
 
@@ -450,7 +450,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Double, value.Value);
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, double> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Double, value?.Value);
         }
 
@@ -458,21 +458,21 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Boolean, value.Value);
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Boolean, value?.Value);
         }
 
         public ISetValuesCollector Set(Column<Json> column, Json value) {
             return AddParameter(column, NpgsqlDbType.Json, value.Value);
         }
-        public ISetValuesCollector Set(NullableColumn<Json> column, Json? value) {
+        public ISetValuesCollector Set(NColumn<Json> column, Json? value) {
             return AddParameter(column, NpgsqlDbType.Json, value?.Value);
         }
 
         public ISetValuesCollector Set(Column<Jsonb> column, Jsonb value) {
             return AddParameter(column, NpgsqlDbType.Jsonb, value.Value);
         }
-        public ISetValuesCollector Set(NullableColumn<Jsonb> column, Jsonb? value) {
+        public ISetValuesCollector Set(NColumn<Jsonb> column, Jsonb? value) {
             return AddParameter(column, NpgsqlDbType.Jsonb, value?.Value);
         }
 
@@ -480,7 +480,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Json, value.Value.Value);
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Json, value?.Value.Value);
         }
 
@@ -488,7 +488,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return AddParameter(column, NpgsqlDbType.Jsonb, value.Value.Value);
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
             return AddParameter(column, NpgsqlDbType.Jsonb, value?.Value.Value);
         }
     }
@@ -552,7 +552,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<string> column, string? value) {
+        public ISetValuesCollector Set(NColumn<string> column, string? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
@@ -564,7 +564,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<Guid> column, Guid? value) {
+        public ISetValuesCollector Set(NColumn<Guid> column, Guid? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -576,7 +576,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<bool> column, bool? value) {
+        public ISetValuesCollector Set(NColumn<bool> column, bool? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -588,7 +588,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<Bit> column, Bit? value) {
+        public ISetValuesCollector Set(NColumn<Bit> column, Bit? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -600,7 +600,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<decimal> column, decimal? value) {
+        public ISetValuesCollector Set(NColumn<decimal> column, decimal? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -612,7 +612,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<short> column, short? value) {
+        public ISetValuesCollector Set(NColumn<short> column, short? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -624,7 +624,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<int> column, int? value) {
+        public ISetValuesCollector Set(NColumn<int> column, int? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -636,7 +636,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<long> column, long? value) {
+        public ISetValuesCollector Set(NColumn<long> column, long? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -648,7 +648,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<float> column, float? value) {
+        public ISetValuesCollector Set(NColumn<float> column, float? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -660,7 +660,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<double> column, double? value) {
+        public ISetValuesCollector Set(NColumn<double> column, double? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -672,7 +672,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<TimeOnly> column, TimeOnly? value) {
+        public ISetValuesCollector Set(NColumn<TimeOnly> column, TimeOnly? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -684,7 +684,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<DateTime> column, DateTime? value) {
+        public ISetValuesCollector Set(NColumn<DateTime> column, DateTime? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -696,7 +696,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<DateOnly> column, DateOnly? value) {
+        public ISetValuesCollector Set(NColumn<DateOnly> column, DateOnly? value) {
             
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -708,7 +708,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<DateTimeOffset> column, DateTimeOffset? value) {
+        public ISetValuesCollector Set(NColumn<DateTimeOffset> column, DateTimeOffset? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -720,7 +720,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<byte> column, byte? value) {
+        public ISetValuesCollector Set(NColumn<byte> column, byte? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
@@ -732,7 +732,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<byte[]> column, byte[]? value) {
+        public ISetValuesCollector Set(NColumn<byte[]> column, byte[]? value) {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
@@ -744,7 +744,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, EnumHelper.GetEnumNumberAsString(value));
         }
 
-        public ISetValuesCollector Set<ENUM>(NullableColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
+        public ISetValuesCollector Set<ENUM>(NColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum {
 
             if(value != null) {
                 return SetValue(column, EnumHelper.GetEnumNumberAsString(value.Value));
@@ -823,7 +823,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -834,7 +834,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, short> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -845,7 +845,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, int> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -856,7 +856,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, long> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -867,7 +867,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, string> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -878,7 +878,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, bool> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -889,7 +889,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
         public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -901,7 +901,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -913,7 +913,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -925,7 +925,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -937,7 +937,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -949,7 +949,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, float> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -961,7 +961,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, double> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -973,7 +973,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -985,7 +985,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<Json> column, Json? value) {
+        public ISetValuesCollector Set(NColumn<Json> column, Json? value) {
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
@@ -996,7 +996,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value));
         }
 
-        public ISetValuesCollector Set(NullableColumn<Jsonb> column, Jsonb? value) {
+        public ISetValuesCollector Set(NColumn<Jsonb> column, Jsonb? value) {
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
             }
@@ -1007,7 +1007,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
@@ -1019,7 +1019,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value));
         }
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
 
             if(value != null) {
                 return SetValue(column, PostgreSqlTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));

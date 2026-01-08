@@ -22,19 +22,19 @@ namespace QueryLiteTest.Tables {
         public Column<CustomFloat, float> Float { get; }
         public Column<CustomDouble, double> Double { get; }
 
-        public NullableColumn<CustomGuid, Guid> NGuid { get; }
-        public NullableColumn<CustomShort, short> NShort { get; }
-        public NullableColumn<CustomInt, int> NInt { get; }
-        public NullableColumn<CustomLong, long> NLong { get; }
-        public NullableColumn<CustomString, string> NString { get; }
-        public NullableColumn<CustomBool, bool> NBool { get; }
-        public NullableColumn<CustomDecimal, decimal> NDecimal { get; }
-        public NullableColumn<CustomDateTime, DateTime> NDateTime { get; }
-        public NullableColumn<CustomDateTimeOffset, DateTimeOffset> NDateTimeOffset { get; }
-        public NullableColumn<CustomDateOnly, DateOnly> NDateOnly { get; }
-        public NullableColumn<CustomTimeOnly, TimeOnly> NTimeOnly { get; }
-        public NullableColumn<CustomFloat, float> NFloat { get; }
-        public NullableColumn<CustomDouble, double> NDouble { get; }
+        public NColumn<CustomGuid, Guid> NGuid { get; }
+        public NColumn<CustomShort, short> NShort { get; }
+        public NColumn<CustomInt, int> NInt { get; }
+        public NColumn<CustomLong, long> NLong { get; }
+        public NColumn<CustomString, string> NString { get; }
+        public NColumn<CustomBool, bool> NBool { get; }
+        public NColumn<CustomDecimal, decimal> NDecimal { get; }
+        public NColumn<CustomDateTime, DateTime> NDateTime { get; }
+        public NColumn<CustomDateTimeOffset, DateTimeOffset> NDateTimeOffset { get; }
+        public NColumn<CustomDateOnly, DateOnly> NDateOnly { get; }
+        public NColumn<CustomTimeOnly, TimeOnly> NTimeOnly { get; }
+        public NColumn<CustomFloat, float> NFloat { get; }
+        public NColumn<CustomDouble, double> NDouble { get; }
 
         public override PrimaryKey? PrimaryKey => new(this, name: "pk_CustomTypes", Identifier);
 
@@ -55,19 +55,19 @@ namespace QueryLiteTest.Tables {
             Float = new Column<CustomFloat, float>(this, name: "ctFloat");
             Double = new Column<CustomDouble, double>(this, name: "ctDouble");
 
-            NGuid = new NullableColumn<CustomGuid, Guid>(this, name: "ctNGuid");
-            NShort = new NullableColumn<CustomShort, short>(this, name: "ctNShort");
-            NInt = new NullableColumn<CustomInt, int>(this, name: "ctNInt");
-            NLong = new NullableColumn<CustomLong, long>(this, name: "ctNLong");
-            NString = new NullableColumn<CustomString, string>(this, name: "ctNString", length: new(100));
-            NBool = new NullableColumn<CustomBool, bool>(this, name: "ctNBool");
-            NDecimal = new NullableColumn<CustomDecimal, decimal>(this, name: "ctNDecimal");
-            NDateTime = new NullableColumn<CustomDateTime, DateTime>(this, name: "ctNDateTime");
-            NDateTimeOffset = new NullableColumn<CustomDateTimeOffset, DateTimeOffset>(this, name: "ctNDateTimeOffset");
-            NDateOnly = new NullableColumn<CustomDateOnly, DateOnly>(this, name: "ctNDateOnly");
-            NTimeOnly = new NullableColumn<CustomTimeOnly, TimeOnly>(this, name: "ctNTimeOnly");
-            NFloat = new NullableColumn<CustomFloat, float>(this, name: "ctNFloat");
-            NDouble = new NullableColumn<CustomDouble, double>(this, name: "ctNDouble");
+            NGuid = new NColumn<CustomGuid, Guid>(this, name: "ctNGuid");
+            NShort = new NColumn<CustomShort, short>(this, name: "ctNShort");
+            NInt = new NColumn<CustomInt, int>(this, name: "ctNInt");
+            NLong = new NColumn<CustomLong, long>(this, name: "ctNLong");
+            NString = new NColumn<CustomString, string>(this, name: "ctNString", length: new(100));
+            NBool = new NColumn<CustomBool, bool>(this, name: "ctNBool");
+            NDecimal = new NColumn<CustomDecimal, decimal>(this, name: "ctNDecimal");
+            NDateTime = new NColumn<CustomDateTime, DateTime>(this, name: "ctNDateTime");
+            NDateTimeOffset = new NColumn<CustomDateTimeOffset, DateTimeOffset>(this, name: "ctNDateTimeOffset");
+            NDateOnly = new NColumn<CustomDateOnly, DateOnly>(this, name: "ctNDateOnly");
+            NTimeOnly = new NColumn<CustomTimeOnly, TimeOnly>(this, name: "ctNTimeOnly");
+            NFloat = new NColumn<CustomFloat, float>(this, name: "ctNFloat");
+            NDouble = new NColumn<CustomDouble, double>(this, name: "ctNDouble");
         }
     }
 

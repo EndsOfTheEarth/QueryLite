@@ -61,7 +61,7 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetString(_ordinal);
         }
 
-        public string? Get(NullableColumn<string> column) {
+        public string? Get(NColumn<string> column) {
 
             _ordinal++;
 
@@ -80,7 +80,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetGuid(_ordinal);
         }
-        public Guid? Get(NullableColumn<Guid> column) {
+        public Guid? Get(NColumn<Guid> column) {
 
             _ordinal++;
 
@@ -99,7 +99,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetByte(_ordinal) == 1;
         }
-        public bool? Get(NullableColumn<bool> column) {
+        public bool? Get(NColumn<bool> column) {
 
             _ordinal++;
 
@@ -118,7 +118,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
         }
-        public Bit? Get(NullableColumn<Bit> column) {
+        public Bit? Get(NColumn<Bit> column) {
 
             _ordinal++;
 
@@ -137,7 +137,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDecimal(_ordinal);
         }
-        public decimal? Get(NullableColumn<decimal> column) {
+        public decimal? Get(NColumn<decimal> column) {
 
             _ordinal++;
 
@@ -156,7 +156,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetInt16(_ordinal);
         }
-        public short? Get(NullableColumn<short> column) {
+        public short? Get(NColumn<short> column) {
 
             _ordinal++;
 
@@ -175,7 +175,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetInt32(_ordinal);
         }
-        public int? Get(NullableColumn<int> column) {
+        public int? Get(NColumn<int> column) {
 
             _ordinal++;
 
@@ -194,7 +194,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetInt64(_ordinal);
         }
-        public long? Get(NullableColumn<long> column) {
+        public long? Get(NColumn<long> column) {
 
             _ordinal++;
 
@@ -213,7 +213,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetFloat(_ordinal);
         }
-        public float? Get(NullableColumn<float> column) {
+        public float? Get(NColumn<float> column) {
 
             _ordinal++;
 
@@ -232,7 +232,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDouble(_ordinal);
         }
-        public double? Get(NullableColumn<double> column) {
+        public double? Get(NColumn<double> column) {
 
             _ordinal++;
 
@@ -251,7 +251,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDateTime(_ordinal);
         }
-        public DateTime? Get(NullableColumn<DateTime> column) {
+        public DateTime? Get(NColumn<DateTime> column) {
 
             _ordinal++;
 
@@ -271,7 +271,7 @@ namespace QueryLite.Databases.SqlServer {
             TimeSpan value = _reader.GetTimeSpan(_ordinal);
             return TimeOnly.FromTimeSpan(value);
         }
-        public TimeOnly? Get(NullableColumn<TimeOnly> column) {
+        public TimeOnly? Get(NColumn<TimeOnly> column) {
 
             _ordinal++;
 
@@ -292,7 +292,7 @@ namespace QueryLite.Databases.SqlServer {
             DateTime value = _reader.GetDateTime(_ordinal);
             return DateOnly.FromDateTime(value);
         }
-        public DateOnly? Get(NullableColumn<DateOnly> column) {
+        public DateOnly? Get(NColumn<DateOnly> column) {
 
             _ordinal++;
 
@@ -312,7 +312,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDateTimeOffset(_ordinal);
         }
-        public DateTimeOffset? Get(NullableColumn<DateTimeOffset> column) {
+        public DateTimeOffset? Get(NColumn<DateTimeOffset> column) {
 
             _ordinal++;
 
@@ -331,7 +331,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetByte(_ordinal);
         }
-        public byte? Get(NullableColumn<byte> column) {
+        public byte? Get(NColumn<byte> column) {
 
             _ordinal++;
 
@@ -350,7 +350,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return (byte[])_reader.GetValue(_ordinal);
         }
-        public byte[]? Get(NullableColumn<byte[]> column) {
+        public byte[]? Get(NColumn<byte[]> column) {
 
             _ordinal++;
 
@@ -384,7 +384,7 @@ namespace QueryLite.Databases.SqlServer {
             }
         }
 
-        public ENUM? Get<ENUM>(NullableColumn<ENUM> column) where ENUM : struct, Enum {
+        public ENUM? Get<ENUM>(NColumn<ENUM> column) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -757,7 +757,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(_reader.GetGuid(_ordinal));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -776,7 +776,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetInt16(_ordinal));
         }
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -795,7 +795,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetInt32(_ordinal));
         }
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -814,7 +814,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetInt64(_ordinal));
         }
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -833,7 +833,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetString(_ordinal));
         }
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -852,7 +852,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetByte(_ordinal) == 1);
         }
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, bool> column) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -871,7 +871,7 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
         }
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, decimal> column) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -891,7 +891,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(_reader.GetDateTime(_ordinal));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -911,7 +911,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(_reader.GetDateTimeOffset(_ordinal));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateTimeOffset> column) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -932,7 +932,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(DateOnly.FromDateTime(value));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, DateOnly> column) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -954,7 +954,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(TimeOnly.FromTimeSpan(value));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, TimeOnly> column) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -975,7 +975,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(_reader.GetFloat(_ordinal));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, float> column) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -995,7 +995,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(_reader.GetDouble(_ordinal));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, double> column) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1015,7 +1015,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(_reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE);
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1035,7 +1035,7 @@ namespace QueryLite.Databases.SqlServer {
             return readValue(_reader, _ordinal);
         }
 
-        public TYPE? LoadFromReader<TYPE>(NullableColumn<TYPE> column, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+        public TYPE? LoadFromReader<TYPE>(NColumn<TYPE> column, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
@@ -1056,7 +1056,7 @@ namespace QueryLite.Databases.SqlServer {
             return readValue(_reader, _ordinal);
         }
 
-        public CUSTOM_TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NullableColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue)
+        public CUSTOM_TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue)
                                                        where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
                                                        where TYPE : notnull {
             _ordinal++;
@@ -1157,7 +1157,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(Json.ValueOf(_reader.GetString(_ordinal)));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1177,7 +1177,7 @@ namespace QueryLite.Databases.SqlServer {
             return CUSTOM_TYPE.ValueOf(Jsonb.ValueOf(_reader.GetString(_ordinal)));
         }
 
-        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NullableColumn<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+        public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1197,7 +1197,7 @@ namespace QueryLite.Databases.SqlServer {
             return Json.ValueOf(_reader.GetString(_ordinal));
         }
 
-        public Json? Get(NullableColumn<Json> column) {
+        public Json? Get(NColumn<Json> column) {
 
             _ordinal++;
 
@@ -1217,7 +1217,7 @@ namespace QueryLite.Databases.SqlServer {
             return Jsonb.ValueOf(_reader.GetString(_ordinal));
         }
 
-        public Jsonb? Get(NullableColumn<Jsonb> column) {
+        public Jsonb? Get(NColumn<Jsonb> column) {
 
             _ordinal++;
 

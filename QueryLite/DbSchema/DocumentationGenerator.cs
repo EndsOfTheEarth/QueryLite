@@ -345,7 +345,7 @@ a, a:visited {
 
                 Type underlyingPropertyType = property.PropertyType.IsGenericType ? property.PropertyType.GetGenericTypeDefinition() : property.PropertyType;
 
-                if(underlyingPropertyType == typeof(Column<>) || underlyingPropertyType == typeof(Column<,>) || underlyingPropertyType == typeof(NullableColumn<>) || underlyingPropertyType == typeof(NullableColumn<,>)) {
+                if(underlyingPropertyType == typeof(Column<>) || underlyingPropertyType == typeof(Column<,>) || underlyingPropertyType == typeof(NColumn<>) || underlyingPropertyType == typeof(NColumn<,>)) {
 
                     IColumn? column = (IColumn?)property.GetValue(table);
 
