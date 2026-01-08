@@ -33,7 +33,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<string> ConstraintName { get; }
         public Column<string> CheckCaluse { get; }
 
-        public CheckConstraintsTable() : base(tableName: "check_constraints", schemaName: "information_schema") {
+        public CheckConstraintsTable() : base(name: "check_constraints", schemaName: "information_schema") {
             ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
             ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
             ConstraintName = new Column<string>(table: this, name: "constraint_name");

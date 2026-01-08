@@ -34,7 +34,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<string> Name { get; }
         public NColumn<string> Value { get; }
 
-        public ExtendedPropertiesView() : base(tableName: "extended_properties", schemaName: "sys") {
+        public ExtendedPropertiesView() : base(name: "extended_properties", schemaName: "sys") {
 
             Class = new Column<short>(this, name: "class");
             ClassDesc = new NColumn<string>(this, name: "class_desc", length: new(60));
@@ -53,7 +53,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<int> Schema_Id { get; }
         public Column<TableName, string> Table_Name { get; }
 
-        public TablesView() : base(tableName: "tables", schemaName: "sys") {
+        public TablesView() : base(name: "tables", schemaName: "sys") {
 
             Object_Id = new Column<int>(this, name: "object_id");
             Schema_Id = new Column<int>(this, name: "schema_id");
@@ -69,7 +69,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<int> Column_Id { get; }
         public Column<ColumnName, string> Column_Name { get; }
 
-        public ColumnsView() : base(tableName: "columns", schemaName: "sys") {
+        public ColumnsView() : base(name: "columns", schemaName: "sys") {
 
             Object_Id = new Column<int>(this, name: "object_id");
             Column_Id = new Column<int>(this, name: "column_id");
@@ -84,7 +84,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<int> Schema_Id { get; }
         public Column<SchemaName, string> Schema_Name { get; }
 
-        public SchemasView() : base(tableName: "schemas", schemaName: "sys") {
+        public SchemasView() : base(name: "schemas", schemaName: "sys") {
 
             Schema_Id = new Column<int>(this, name: "schema_id");
             Schema_Name = new Column<SchemaName, string>(this, name: "name", length: new(128));

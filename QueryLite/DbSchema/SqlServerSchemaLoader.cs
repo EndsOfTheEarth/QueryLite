@@ -83,7 +83,7 @@ namespace QueryLite.DbSchema {
                 TableKey tableKey = new TableKey(row.TABLE_SCHEMA, row.TABLE_NAME);
 
                 if(!tableLookup.TryGetValue(tableKey, out DatabaseTable? databaseTable)) {
-                    databaseTable = new DatabaseTable(schema: row.TABLE_SCHEMA, tableName: row.TABLE_NAME, isView: row.TABLE_TYPE == "VIEW");
+                    databaseTable = new DatabaseTable(schema: row.TABLE_SCHEMA, name: row.TABLE_NAME, isView: row.TABLE_TYPE == "VIEW");
                     tableList.Add(databaseTable);
                     tableLookup.Add(tableKey, databaseTable);
                 }

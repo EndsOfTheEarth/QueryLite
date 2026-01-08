@@ -14,7 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="QueryLite.SourceGenerator" Version="0.0.1-alpha-d" />
+    <PackageReference Include="QueryLite.SourceGenerator" Version="0.0.1-alpha-m" />
   </ItemGroup>
 
   <ItemGroup>

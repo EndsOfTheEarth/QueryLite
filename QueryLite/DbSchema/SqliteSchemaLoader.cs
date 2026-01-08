@@ -55,7 +55,7 @@ namespace QueryLite.DbSchema {
                 }
                 DatabaseTable table = new DatabaseTable(
                     schema: SchemaName.Empty,
-                    tableName: TableName.ValueOf(row.TblName),
+                    name: TableName.ValueOf(row.TblName),
                     isView: false
                 );
                 LoadTable(table, database);

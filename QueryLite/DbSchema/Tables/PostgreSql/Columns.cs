@@ -72,7 +72,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public Column<string> GenerationExpression { get; }
         public Column<string> IsUpdatable { get; }
 
-        public ColumnsTable() : base(tableName: "columns", schemaName: "information_schema") {
+        public ColumnsTable() : base(name: "columns", schemaName: "information_schema") {
 
             TableCatalog = new Column<string>(table: this, name: "table_catalog");
             TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");

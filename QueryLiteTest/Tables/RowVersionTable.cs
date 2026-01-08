@@ -14,7 +14,7 @@ namespace QueryLiteTest.Tables {
 
         public override PrimaryKey? PrimaryKey => new(table: this, name: "pk_RowVersionTest", Id);
 
-        private RowVersionTestTable() : base(tableName: "RowVersionTest", schemaName: "dbo") {
+        private RowVersionTestTable() : base(name: "RowVersionTest", schemaName: "dbo") {
 
             Id = new Column<RowVersionId, int>(this, name: "Id");
             TextValue = new Column<string>(this, name: "TextValue", length: new(10));

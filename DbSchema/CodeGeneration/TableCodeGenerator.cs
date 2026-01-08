@@ -247,7 +247,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string tableDescription = settings.IncludeDescriptions ? $", description: \"{CodeHelper.EscapeCSharpString(table.Description)}\"" : "";
 
-            code.Indent(2).Append($"private {tableClassName}() : base(tableName: \"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}{isViewCode}{tableDescription}) {{").EndLine().EndLine();
+            code.Indent(2).Append($"private {tableClassName}() : base(name: \"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}{isViewCode}{tableDescription}) {{").EndLine().EndLine();
 
             foreach(string line in lines) {
                 code.Indent(3).Append(line).EndLine();

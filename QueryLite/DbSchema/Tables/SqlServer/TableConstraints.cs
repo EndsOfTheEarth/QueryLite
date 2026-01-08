@@ -37,7 +37,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<string> IsDeferrable { get; }
         public Column<string> InitiallyDeferred { get; }
 
-        public TableConstraintsTable() : base(tableName: "table_constraints", schemaName: "information_schema") {
+        public TableConstraintsTable() : base(name: "table_constraints", schemaName: "information_schema") {
 
             ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
             ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");

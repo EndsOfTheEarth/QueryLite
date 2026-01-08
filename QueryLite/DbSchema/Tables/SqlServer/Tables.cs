@@ -32,7 +32,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<TableName, string> TABLE_NAME { get; }
         public Column<string> TABLE_TYPE { get; }
 
-        public TablesTable() : base(tableName: "tables", schemaName: "information_schema") {
+        public TablesTable() : base(name: "tables", schemaName: "information_schema") {
 
             TABLE_CATALOG = new Column<string>(table: this, name: "table_catalog");
             TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");

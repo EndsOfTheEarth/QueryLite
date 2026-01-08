@@ -36,7 +36,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<string> CONSTRAINT_NAME { get; }
 
 
-        public ConstraintColumnUsageTable() : base(tableName: "constraint_column_usage", schemaName: "information_schema") {
+        public ConstraintColumnUsageTable() : base(name: "constraint_column_usage", schemaName: "information_schema") {
 
             TABLE_CATALOG = new Column<string>(table: this, name: "table_catalog");
             TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");

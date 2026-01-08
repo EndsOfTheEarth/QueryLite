@@ -50,7 +50,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer {
         public Column<string> DomainSchema { get; }
         public Column<string> DomainName { get; }
 
-        public ColumnsTable() : base(tableName: "columns", schemaName: "information_schema") {
+        public ColumnsTable() : base(name: "columns", schemaName: "information_schema") {
 
             TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
             TableName_ = new Column<TableName, string>(table: this, name: "table_name");

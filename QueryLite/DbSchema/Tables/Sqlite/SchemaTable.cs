@@ -11,7 +11,7 @@ namespace QueryLite.DbSchema.Tables.Sqlite {
         public Column<int> RootPage { get; }
         public Column<string> Sql { get; }
 
-        public SchemaTable() : base(tableName: "sqlite_schema", schemaName: "") {
+        public SchemaTable() : base(name: "sqlite_schema", schemaName: "") {
 
             Type = new Column<string>(table: this, name: "type");
             Name = new Column<string>(table: this, name: "name");

@@ -40,7 +40,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql {
         public Column<string> IsTyped { get; }
         public Column<string> CommitAction { get; }
 
-        public TablesTable() : base(tableName: "tables", schemaName: "information_schema") {
+        public TablesTable() : base(name: "tables", schemaName: "information_schema") {
 
             TableCatalog = new Column<string>(table: this, name: "table_catalog");
             TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");

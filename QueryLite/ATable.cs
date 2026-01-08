@@ -106,16 +106,16 @@ namespace QueryLite {
         /// <summary>
         /// Abstract table
         /// </summary>
-        /// <param name="tableName">Name of table in database</param>
+        /// <param name="name">Name of table in database</param>
         /// <param name="schemaName">Schema table belongs to</param>
         /// <param name="enclose">Set to true if the table name is a sql keyword. This will stop the key word from causing invalid sql from being created</param>
         /// <exception cref="ArgumentException"></exception>
-        protected ATable(string tableName, string schemaName, bool enclose = false, bool isView = false, string description = "") {
+        protected ATable(string name, string schemaName, bool enclose = false, bool isView = false, string description = "") {
 
-            ArgumentException.ThrowIfNullOrEmpty(tableName);
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             SchemaName = schemaName ?? "";
-            TableName = tableName;
+            TableName = name;
             TableDescription = description ?? "";
             Enclose = enclose;
             Alias = "_" + AliasGenerator.GetAlias();

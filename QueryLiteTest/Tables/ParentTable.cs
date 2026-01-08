@@ -16,7 +16,7 @@ namespace QueryLiteTest.Tables {
             new UniqueConstraint(this, name: "unq_parent", Id2)
         ];
 
-        private ParentTable() : base(tableName: "Parent", schemaName: "dbo") {
+        private ParentTable() : base(name: "Parent", schemaName: "dbo") {
             Id = new Column<ParentId, Guid>(this, name: "Id");
             Id2 = new Column<ParentId, Guid>(this, name: "Id2");
         }

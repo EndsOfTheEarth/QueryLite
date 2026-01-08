@@ -20,7 +20,7 @@ namespace QueryLiteTest.Tables {
             new ForeignKey(this, name: "fk_Child_Parent_Id2").References(ParentId, ParentTable.Instance.Id2)
         ];
 
-        private ChildTable() : base(tableName: "Child", schemaName: "dbo") {
+        private ChildTable() : base(name: "Child", schemaName: "dbo") {
             Id = new Column<ChildId, Guid>(this, name: "Id");
             ParentId = new Column<ParentId, Guid>(this, name: "ParentId");
         }

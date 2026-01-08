@@ -12,7 +12,7 @@ namespace QueryLiteTest.Tables {
 
         public override PrimaryKey? PrimaryKey => new(table: this, name: "pk_GeoTest", Guid);
 
-        private GeoTestTable() : base(tableName: "GeoTest", schemaName: "dbo") {
+        private GeoTestTable() : base(name: "GeoTest", schemaName: "dbo") {
 
             Guid = new Column<GeoTestId, Guid>(this, name: "gtGuid");
             Geography = new Column<IGeography>(this, name: "gtGeography", length: ColumnLength.MAX);

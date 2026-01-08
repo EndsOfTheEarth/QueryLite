@@ -15,7 +15,7 @@ namespace QueryLiteTest.Tables {
         public NColumn<IntegerTestEnum> IntNullEnum { get; }
         public NColumn<LongTestEnum> LongNullEnum { get; }
 
-        private EnumTestTableTable() : base(tableName: "EnumTestTable", schemaName: "dbo") {
+        private EnumTestTableTable() : base(name: "EnumTestTable", schemaName: "dbo") {
 
             ByteEnum = new Column<ByteTestEnum>(this, name: "etByteEnum");
             ShortEnum = new Column<ShortTestEnum>(this, name: "etShortEnum");

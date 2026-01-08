@@ -45,9 +45,9 @@ namespace QueryLite.DbSchema {
         public List<DatabaseCheckConstraint> CheckConstraints { get; } = [];
         public List<DatabaseForeignKey> ForeignKeys { get; } = [];
 
-        public DatabaseTable(SchemaName schema, TableName tableName, bool isView) {
+        public DatabaseTable(SchemaName schema, TableName name, bool isView) {
             Schema = schema;
-            TableName = tableName;
+            TableName = name;
             IsView = isView;
         }
         public override string ToString() {
