@@ -223,6 +223,13 @@ namespace QueryLite {
             return new GenericCondition(columnA, Operator.NOT_EQUALS, columnB);
         }
 
+        public static ICondition operator ==(AColumn<TYPE> columnA, TYPE value) {
+            return new GenericCondition(columnA, Operator.EQUALS, value);
+        }
+        public static ICondition operator !=(AColumn<TYPE> columnA, TYPE value) {
+            return new GenericCondition(columnA, Operator.NOT_EQUALS, value);
+        }
+
         /// <summary>
         /// Returns an equals condition for two columns that have different types in code.
         /// </summary>
@@ -235,13 +242,6 @@ namespace QueryLite {
         /// </summary>
         public ICondition SqlNotEquals_NonTypeSafe<TYPEB>(TYPEB columnB) where TYPEB : notnull {
             return new GenericCondition(this, Operator.NOT_EQUALS, columnB);
-        }
-
-        public static ICondition operator ==(AColumn<TYPE> columnA, TYPE value) {
-            return new GenericCondition(columnA, Operator.EQUALS, value);
-        }
-        public static ICondition operator !=(AColumn<TYPE> columnA, TYPE value) {
-            return new GenericCondition(columnA, Operator.NOT_EQUALS, value);
         }
 
         public ICondition In(Sequence<TYPE> sequence) {
@@ -324,6 +324,246 @@ namespace QueryLite {
         public static ICondition operator >=(AColumn<TYPE> condition, TYPE value) {
             return new GenericCondition(condition.Field, Operator.GREATER_THAN_OR_EQUAL, value);
         }
+
+        public static ICondition operator ==(AColumn<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, "=", value);
+        }
+        public static ICondition operator !=(AColumn<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, "!=", value);
+        }
+        public static ICondition operator <(AColumn<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, "<", value);
+        }
+        public static ICondition operator <=(AColumn<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, "<=", value);
+        }
+        public static ICondition operator >(AColumn<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, ">", value);
+        }
+        public static ICondition operator >=(AColumn<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, ">=", value);
+        }
+
+        #region Plus
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, NumericExpression value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, ISelectable<short> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, ISelectable<int> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, ISelectable<long> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, ISelectable<decimal> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, ISelectable<float> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, ISelectable<double> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, short value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, int value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, long value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, decimal value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, float value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AColumn<TYPE> expr, double value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+        #endregion
+
+        #region Minus
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, NumericExpression value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, ISelectable<short> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, ISelectable<int> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, ISelectable<long> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, ISelectable<decimal> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, ISelectable<float> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, ISelectable<double> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, short value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, int value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, long value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, decimal value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, float value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AColumn<TYPE> expr, double value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+        #endregion
+
+        #region Multiply
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, NumericExpression value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, ISelectable<short> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, ISelectable<int> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, ISelectable<long> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, ISelectable<decimal> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, ISelectable<float> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, ISelectable<double> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, short value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, int value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, long value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, decimal value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, float value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AColumn<TYPE> expr, double value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+        #endregion
+
+        #region Divide
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, NumericExpression value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, ISelectable<short> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, ISelectable<int> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, ISelectable<long> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, ISelectable<decimal> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, ISelectable<float> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, ISelectable<double> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, short value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, int value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, long value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, decimal value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, float value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AColumn<TYPE> expr, double value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+        #endregion
+
 
         /// <summary>
         /// Case sensitive LIKE (Only where supported by database)

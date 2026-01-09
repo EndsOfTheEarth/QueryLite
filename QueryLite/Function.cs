@@ -77,7 +77,7 @@ namespace QueryLite {
         public static ICondition operator !=(AFunction<TYPE> function, TYPE value) {
             return new GenericCondition(function, Operator.NOT_EQUALS, value);
         }
-
+        
         public static ICondition operator <(AFunction<TYPE> function, TYPE value) {
             return new GenericCondition(function, Operator.LESS_THAN, value);
         }
