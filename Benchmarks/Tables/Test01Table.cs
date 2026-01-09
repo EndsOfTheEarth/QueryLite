@@ -58,10 +58,10 @@
 
         public static List<GetSetMap<Test01Row>> GetColumnMap(Test01Table table) =>
         [
-            new GetSetMap<Test01Row>(table.Id, row => row.Id, (row, resultRow) => row.Id = resultRow.Get(table.Id)),
-            new GetSetMap<Test01Row>(table.Row_guid, row => row.Row_guid, (row, resultRow) => row.Row_guid = resultRow.Get(table.Row_guid)),
-            new GetSetMap<Test01Row>(table.Message, row => row.Message, (row, resultRow) => row.Message = resultRow.Get(table.Message)),
-            new GetSetMap<Test01Row>(table.Date, row => row.Date, (row, resultRow) => row.Date = resultRow.Get(table.Date))
+            new GetSetMap<Test01Row>(table.Id, row => row.Id, (row, resultRow) => row.Id = resultRow.Get(table.Id), (Test01Row rowA, Test01Row rowB) => rowA.Id == rowB.Id),
+            new GetSetMap<Test01Row>(table.Row_guid, row => row.Row_guid, (row, resultRow) => row.Row_guid = resultRow.Get(table.Row_guid), (Test01Row rowA, Test01Row rowB) => rowA.Row_guid == rowB.Row_guid),
+            new GetSetMap<Test01Row>(table.Message, row => row.Message, (row, resultRow) => row.Message = resultRow.Get(table.Message), (Test01Row rowA, Test01Row rowB) => rowA.Message == rowB.Message),
+            new GetSetMap<Test01Row>(table.Date, row => row.Date, (row, resultRow) => row.Date = resultRow.Get(table.Date), (Test01Row rowA, Test01Row rowB) => rowA.Date == rowB.Date)
         ];
 
         public static Test01Row LoadRow(Test01Table table, IResultRow resultRow) {

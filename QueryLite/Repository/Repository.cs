@@ -37,14 +37,20 @@ namespace QueryLite {
 
     public sealed class GetSetMap<ROW> {
 
-        public GetSetMap(IColumn column, Func<ROW, object?> get, Action<ROW, IResultRow> set) {
+        public GetSetMap(IColumn column, Func<ROW, object?> get, Action<ROW, IResultRow> set,
+                         Func<ROW, ROW, bool> valuesEqual) {
             Column = column;
             Get = get;
             Set = set;
+            ValuesEqual = valuesEqual;
         }
         public IColumn Column { get; }
         public Func<ROW, object?> Get { get; }
         public Action<ROW, IResultRow> Set { get; }
+        /// <summary>
+        /// Returns true if the column in row A has the same value in row B.
+        /// </summary>
+        public Func<ROW, ROW, bool> ValuesEqual { get; }
     }
 
     public abstract partial class ARepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
@@ -187,7 +193,7 @@ namespace QueryLite {
         }
 
         protected static List<ColumnAndSetter<ROW>> CreateColumnsAndSettersMap(TABLE table) {
-            return [.. ROW.GetColumnMap(table).Select(cm => new ColumnAndSetter<ROW>(cm.Column, cm.Get, cm.Set))];
+            return [.. ROW.GetColumnMap(table).Select(cm => new ColumnAndSetter<ROW>(cm.Column, cm.Get, cm.Set, cm.ValuesEqual))];
         }
 
         private static List<ColumnAndSetter<ROW>> GetInsertAndUpdateColumnsAndSettersMap(TABLE table) {
@@ -904,15 +910,22 @@ namespace QueryLite {
 
     public sealed class ColumnAndSetter<ROW> {
 
-        public ColumnAndSetter(IColumn column, Func<ROW, object?> getter, Action<ROW, IResultRow> setter) {
+        public ColumnAndSetter(IColumn column, Func<ROW, object?> getter, Action<ROW, IResultRow> setter,
+                               Func<ROW, ROW, bool> valuesEqual) {
             Column = column;
             Getter = getter;
             Setter = setter;
+            ValuesEqual = valuesEqual;
         }
         public string? ParameterName { get; internal set; }
         public IColumn Column { get; }
         public Func<ROW, object?> Getter { get; }
         public Action<ROW, IResultRow> Setter { get; }
+
+        /// <summary>
+        /// Returns true if the column in row A has the same value in row B.
+        /// </summary>
+        public Func<ROW, ROW, bool> ValuesEqual { get; }
     }
 
     /// <summary>
