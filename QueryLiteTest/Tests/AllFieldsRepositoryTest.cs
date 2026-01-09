@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
-using QueryLite.Databases.SqlServer.Functions;
-using QueryLite.Utility;
+using QueryLite.Functions;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
@@ -30,7 +29,7 @@ namespace QueryLiteTest.Tests {
                 }
                 repository.PersistDeletesOnly(transaction);
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<int> result = Query
                     .Select(
@@ -358,7 +357,7 @@ namespace QueryLiteTest.Tests {
                 transaction.Commit();
             }
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             var result = Query
                 .Select(row => new { Count = row.Get(count) })
@@ -383,7 +382,7 @@ namespace QueryLiteTest.Tests {
                 transaction.Commit();
             }
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             var result = await Query
                 .Select(row => new { Count = row.Get(count) })
@@ -602,7 +601,7 @@ namespace QueryLiteTest.Tests {
 
                 AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 var result = Query
                     .Select(
@@ -654,7 +653,7 @@ namespace QueryLiteTest.Tests {
 
                 AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 var result = await Query
                     .Select(
@@ -681,7 +680,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             var result = Query
                 .Select(
@@ -705,7 +704,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             var result = await Query
                 .Select(

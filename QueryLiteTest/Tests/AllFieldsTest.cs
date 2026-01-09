@@ -1,17 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
-using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.DbSchema;
-using QueryLite.Utility;
+using QueryLite.Functions;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace QueryLiteTest.Tests {
@@ -30,7 +27,7 @@ namespace QueryLiteTest.Tests {
                     .NoWhereCondition()
                     .Execute(transaction);
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<int> result = Query
                     .Select(
@@ -216,7 +213,7 @@ namespace QueryLiteTest.Tests {
 
             foreach(ValidationItem item in result.Items) {
 
-                foreach(string message in item.ValidationMessages) {                    
+                foreach(string message in item.ValidationMessages) {
                     messages.AppendLine($"Table: {item.TableName} => {message}");
                 }
             }
@@ -509,7 +506,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<int> result = await Query
                     .Select(result => result.Get(count))
@@ -546,7 +543,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<int> result = await Query
                     .Select(result => result.Get(count))
@@ -599,7 +596,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<int> result = await Query
                     .Select(result => result.Get(count))
@@ -636,7 +633,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<int> result = await Query
                     .Select(result => result.Get(count))
@@ -714,7 +711,7 @@ namespace QueryLiteTest.Tests {
                 transaction.Commit();
             }
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             var result = Query
                 .Select(row => new { Count = row.Get(count) })
@@ -739,7 +736,7 @@ namespace QueryLiteTest.Tests {
                 transaction.Commit();
             }
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             var result = await Query
                 .Select(row => new { Count = row.Get(count) })
@@ -947,7 +944,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 var result = Query
                     .Select(
@@ -999,7 +996,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 var result = Query
                     .Select(
@@ -1043,7 +1040,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 var result = await Query
                     .Select(
@@ -1094,7 +1091,7 @@ namespace QueryLiteTest.Tests {
             }
 
             {
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 var result = await Query
                     .Select(
@@ -1121,7 +1118,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             var result = Query
                 .Select(
@@ -1145,7 +1142,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             var result = await Query
                 .Select(

@@ -1,11 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
-using QueryLite.Databases.SqlServer.Functions;
-using QueryLite.Utility;
+using QueryLite.Functions;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueryLiteTest.Tests.ConditionTests {
@@ -24,7 +22,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
                     .NoWhereCondition()
                     .Execute(transaction);
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<int> result = Query
                     .Select(
@@ -478,7 +476,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(

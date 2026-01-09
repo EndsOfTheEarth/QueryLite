@@ -561,6 +561,8 @@ Nested queries are supported (Only from within a `WHERE` clause).
 ShipperTable shipperTable = ShipperTable.Instance;
 ShipperTable shipperTable2 = ShipperTable.Instance2;    //Get a second instance of the shipper table so the table in the nested query sql uses a different alias
 
+Count count = new();
+
 var result = Query
     .Select(row => new { CompanyName = row.Get(shipperTable.CompanyName), Phone = row.Get(shipperTable.Phone) })
     .From(shipperTable)
@@ -569,7 +571,7 @@ var result = Query
             Query.NestedSelect(shipperTable2.CompanyName)
                 .From(shipperTable2)
                 .GroupBy(shipperTable2.CompanyName)
-                .Having(COUNT_ALL.Instance > 1)
+                .Having(count > 1)
         )
     )
     .Execute(DB.Northwind);
@@ -958,14 +960,14 @@ var result = Query
 
 ## Functions
 
-Currently only a small set of sql functions are supported. For Sql Server these are `COUNT_ALL`, `GETDATE`, `NEWID` and `SYSDATETIMEOFFSET`. Please note that creating custom sql functions is documented below this section.
+Currently only a small set of sql functions are supported. For example: MIN, MAX, AVG, SUM, COUNT(*). And for Sql Server there are functions like `GETDATE`, `NEWID` and `SYSDATETIMEOFFSET`. Please note that creating custom sql functions is documented below this section.
 
-Note: Function classes that are immutable may implement a singleton pattern to reduce memory allocations. For example: `COUNT_ALL.Instance`, `GETDATE.Instance`, `NEWID.Instance` and `SYSDATETIMEOFFSET.Instance`.
+Note: Function classes that are immutable may implement a singleton pattern to reduce memory allocations. For example: `GETDATE.Instance`, `NEWID.Instance` and `SYSDATETIMEOFFSET.Instance`.
 
 ```C#
 ShipperTable shipperTable = ShipperTable.Instance;
 
-COUNT_ALL count = COUNT_ALL.Instance;
+Count count = new();
 
 QueryResult<int> result = Query
     .Select(

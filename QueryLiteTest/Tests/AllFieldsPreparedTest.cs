@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
-using QueryLite.Databases.SqlServer.Functions;
 using QueryLite.DbSchema;
+using QueryLite.Functions;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
@@ -55,7 +55,7 @@ namespace QueryLiteTest.Tests {
 
             AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            COUNT_ALL count = COUNT_ALL.Instance;
+            Count count = new();
 
             {
 
@@ -688,12 +688,12 @@ namespace QueryLiteTest.Tests {
 
             using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                 QueryResult<AllTypesInfo> result = _insertQuery1
-                    .Execute(
-                        parameters: allTypes,
-                        transaction,
-                        TimeoutLevel.ShortInsert
-                    );
+                QueryResult<AllTypesInfo> result = _insertQuery1
+                   .Execute(
+                       parameters: allTypes,
+                       transaction,
+                       TimeoutLevel.ShortInsert
+                   );
 
                 transaction.Commit();
 

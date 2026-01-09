@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
-using QueryLite.Databases.SqlServer.Functions;
-using QueryLite.Utility;
+using QueryLite.Functions;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
@@ -27,7 +26,7 @@ namespace QueryLiteTest.Tests {
 
                 deleteQuery.Execute(parameters: true, transaction, TimeoutLevel.ShortDelete);
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 var selectQuery = Query
                     .Prepare<bool>()

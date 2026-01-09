@@ -24,20 +24,6 @@
 namespace QueryLite.Databases.SqlServer.Functions {
 
     /// <summary>
-    /// Sql Count(*) function
-    /// </summary>
-    public sealed class COUNT_ALL : Function<int> {
-
-        public static COUNT_ALL Instance { get; } = new COUNT_ALL();
-
-        private COUNT_ALL() : base("COUNT(*)") { }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return "COUNT(*)";
-        }
-    }
-
-    /// <summary>
     /// Sql GETDATE() function
     /// </summary>
     public sealed class GETDATE : Function<DateTime> {

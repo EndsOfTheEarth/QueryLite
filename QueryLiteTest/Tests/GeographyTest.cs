@@ -2,6 +2,7 @@
 using QueryLite;
 using QueryLite.Databases.Functions;
 using QueryLite.Databases.SqlServer.Functions;
+using QueryLite.Functions;
 using QueryLite.Utility;
 using QueryLiteTest.Tables;
 using System;
@@ -26,7 +27,7 @@ namespace QueryLiteTest.Tests {
                     .NoWhereCondition()
                     .Execute(transaction, TimeoutLevel.ShortDelete);
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 QueryResult<int> result = Query
                     .Select(

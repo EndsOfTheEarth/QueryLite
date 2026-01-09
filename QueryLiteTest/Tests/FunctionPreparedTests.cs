@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Databases.SqlServer.Functions;
-using QueryLite.Utility;
+using QueryLite.Functions;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
@@ -23,7 +23,7 @@ namespace QueryLiteTest.Tests {
                     .NoWhereCondition()
                     .Execute(transaction, TimeoutLevel.ShortDelete);
 
-                COUNT_ALL count = COUNT_ALL.Instance;
+                Count count = new();
 
                 IPreparedQueryExecute<bool, int> query = Query
                     .Prepare<bool>()
