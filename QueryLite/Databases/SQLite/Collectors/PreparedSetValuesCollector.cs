@@ -58,7 +58,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                     _paramSql!.Append(',');
                 }
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
 
                 _paramSql!.Append(paramName);
 
@@ -69,7 +69,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                     _sql.Append(',');
                 }
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
 
                 _sql.Append('=').Append(paramName);
 
@@ -90,7 +90,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                     _paramSql!.Append(',');
                 }
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
 
                 _paramSql!.Append(function.GetSql(_database, useAlias: false, parameters: null));
 
@@ -101,7 +101,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                     _sql.Append(',');
                 }
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
 
                 _sql.Append('=').Append(function.GetSql(_database, useAlias: false, parameters: null));
             }

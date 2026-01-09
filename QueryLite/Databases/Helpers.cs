@@ -27,74 +27,124 @@ using System.Text;
 
 namespace QueryLite.Databases {
 
+    public enum EncloseWith {
+        SquareBracket,
+        DoubleQuote
+    }
     public static class SqlHelper {
 
-        public static void AppendEncloseTableName(StringBuilder sql, ITable table) {
+        public static void AppendEncloseTableName(StringBuilder sql, ITable table, EncloseWith encloseWith) {
 
             string value = table.TableName;
 
             if(table.Enclose || value.Contains(' ')) {
-                sql.Append('[').Append(value).Append(']');
+
+                if(encloseWith == EncloseWith.SquareBracket) {
+                    sql.Append('[').Append(value).Append(']');
+                }
+                else {
+                    sql.Append('"').Append(value).Append('"');
+                }
             }
             else {
                 sql.Append(value);
             }
         }
 
-        public static void AppendEncloseColumnName(StringBuilder sql, IColumn column) {
+        public static void AppendEncloseColumnName(StringBuilder sql, IColumn column, EncloseWith encloseWith) {
 
             string value = column.ColumnName;
 
             if(column.Enclose || value.Contains(' ')) {
-                sql.Append('[').Append(value).Append(']');
+
+                if(encloseWith == EncloseWith.SquareBracket) {
+                    sql.Append('[').Append(value).Append(']');
+                }
+                else {
+                    sql.Append('"').Append(value).Append('"');
+                }
             }
             else {
                 sql.Append(value);
             }
         }
 
-        public static void AppendEncloseSchemaName(StringBuilder sql, string value) {
+        public static void AppendEncloseSchemaName(StringBuilder sql, string value, EncloseWith encloseWith) {
 
             if(value.Contains(' ')) {
-                sql.Append('[').Append(value).Append(']');
+
+                if(encloseWith == EncloseWith.SquareBracket) {
+                    sql.Append('[').Append(value).Append(']');
+                }
+                else {
+                    sql.Append('"').Append(value).Append('"');
+                }
             }
             else {
                 sql.Append(value);
             }
         }
 
-        public static void AppendEncloseAlias(StringBuilder sql, string value) {
+        public static void AppendEncloseAlias(StringBuilder sql, string value, EncloseWith encloseWith) {
 
             if(value.Contains(' ')) {
-                sql.Append('[').Append(value).Append(']');
+
+                if(encloseWith == EncloseWith.SquareBracket) {
+                    sql.Append('[').Append(value).Append(']');
+                }
+                else {
+                    sql.Append('"').Append(value).Append('"');
+                }
             }
             else {
                 sql.Append(value);
             }
         }
 
-        public static string EncloseTableName(ITable table) {
+        public static string EncloseTableName(ITable table, EncloseWith encloseWith) {
 
             string value = table.TableName;
 
             if(table.Enclose || value.Contains(' ')) {
-                value = $"[{value}]";
+
+                if(encloseWith == EncloseWith.SquareBracket) {
+                    value = $"[{value}]";
+                }
+                else {
+                    value = $"\"[{value}]\"";
+                }
             }
             return value;
         }
 
-        public static string EncloseColumnName(IColumn column) {
+        public static string EncloseColumnName(IColumn column, EncloseWith encloseWith) {
 
             string value = column.ColumnName;
 
             if(column.Enclose || value.Contains(' ')) {
-                value = $"[{value}]";
+
+                if(encloseWith == EncloseWith.SquareBracket) {
+                    value = $"[{value}]";
+                }
+                else {
+                    value = $"\"[{value}]\"";
+                }
             }
             return value;
         }
 
-        public static string EncloseSchemaName(string value) {
-            return value.Contains(' ') ? $"[{value}]" : value;
+        public static string EncloseSchemaName(string value, EncloseWith encloseWith) {
+
+            if(value.Contains(' ')) {
+
+                if(encloseWith == EncloseWith.SquareBracket) {
+                    value = $"[{value}]";
+                }
+                else {
+                    value = $"\"[{value}]\"";
+                }
+            }
+            return value;
         }
     }
 

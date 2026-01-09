@@ -765,10 +765,13 @@ namespace QueryLite {
             string schemaName = database.SchemaMap(table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, database.EncloseWith);
                 sql.Append('.');
             }
-            SqlHelper.AppendEncloseTableName(sql, table);
+
+            EncloseWith encloseWith = database.DatabaseType == DatabaseType.PostgreSql ? EncloseWith.DoubleQuote : EncloseWith.SquareBracket;
+
+            SqlHelper.AppendEncloseTableName(sql, table, encloseWith);
 
             sql.Append('(');
 
@@ -778,7 +781,7 @@ namespace QueryLite {
                     sql.Append(',');
                 }
                 ColumnAndSetter<ROW> cs = insertColumns[index];
-                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column, database.EncloseWith);
             }
 
             sql.Append(')');
@@ -794,7 +797,7 @@ namespace QueryLite {
                     }
                     ColumnAndSetter<ROW> cs = returningColumns[index];
                     sql.Append("INSERTED.");
-                    SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                    SqlHelper.AppendEncloseColumnName(sql, cs.Column, database.EncloseWith);
                 }
             }
 
@@ -824,7 +827,7 @@ namespace QueryLite {
                         sql.Append(',');
                     }
                     ColumnAndSetter<ROW> cs = returningColumns[index];
-                    SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                    SqlHelper.AppendEncloseColumnName(sql, cs.Column, database.EncloseWith);
                 }
             }
 
@@ -843,11 +846,13 @@ namespace QueryLite {
             string schemaName = database.SchemaMap(table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, database.EncloseWith);
                 sql.Append('.');
             }
 
-            SqlHelper.AppendEncloseTableName(sql, table);
+            EncloseWith encloseWith = database.DatabaseType == DatabaseType.PostgreSql ? EncloseWith.DoubleQuote : EncloseWith.SquareBracket;
+
+            SqlHelper.AppendEncloseTableName(sql, table, encloseWith);
 
             sql.Append(" SET ");
 
@@ -861,10 +866,10 @@ namespace QueryLite {
                     sql.Append(',');
                 }
                 columnCount++;
-                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column, database.EncloseWith);
                 sql.Append('=').Append(cs.ParameterName);
             }
-            GenerateWhereClause(whereClauseColumns, sql);
+            GenerateWhereClause(database, whereClauseColumns, sql);
 
             string updateSql = sql.ToString();
 
@@ -872,7 +877,7 @@ namespace QueryLite {
             return updateSql;
         }
 
-        private static void GenerateWhereClause(List<ColumnAndSetter<ROW>> whereClauseColumns, StringBuilder sql) {
+        private static void GenerateWhereClause(IDatabase database, List<ColumnAndSetter<ROW>> whereClauseColumns, StringBuilder sql) {
 
             sql.Append(" WHERE ");
 
@@ -882,11 +887,11 @@ namespace QueryLite {
                     sql.Append(" AND ");
                 }
                 ColumnAndSetter<ROW> cs = whereClauseColumns[index];
-                GenerateWhereClauseCondition(sql, cs);
+                GenerateWhereClauseCondition(database, sql, cs);
             }
         }
 
-        private static void GenerateWhereClauseCondition(StringBuilder sql, ColumnAndSetter<ROW> cs) {
+        private static void GenerateWhereClauseCondition(IDatabase database, StringBuilder sql, ColumnAndSetter<ROW> cs) {
 
             bool isFloatingPoint =
                 cs.Column.UnderlyingType == typeof(float) ||
@@ -896,18 +901,18 @@ namespace QueryLite {
 
             if(cs.Column.IsNullable) {
                 sql.Append("((");
-                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column, database.EncloseWith);
                 sql.Append(" IS NULL AND ").Append(cs.ParameterName).Append(" IS NULL) OR (");
             }
 
             // Floating point comparison is not reliable so we need to take that into consideration
             if(isFloatingPoint) {
                 sql.Append("ABS(");
-                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column, database.EncloseWith);
                 sql.Append('-').Append(cs.ParameterName).Append(") < 0.0000001");   //TODO: Check this value - Maybe different for float and double
             }
             else {
-                SqlHelper.AppendEncloseColumnName(sql, cs.Column);
+                SqlHelper.AppendEncloseColumnName(sql, cs.Column, database.EncloseWith);
                 sql.Append('=').Append(cs.ParameterName);
             }
 
@@ -925,13 +930,15 @@ namespace QueryLite {
             string schemaName = database.SchemaMap(table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, database.EncloseWith);
                 sql.Append('.');
             }
 
-            SqlHelper.AppendEncloseTableName(sql, table);
+            EncloseWith encloseWith = database.DatabaseType == DatabaseType.PostgreSql ? EncloseWith.DoubleQuote : EncloseWith.SquareBracket;
 
-            GenerateWhereClause(whereClauseColumns, sql);
+            SqlHelper.AppendEncloseTableName(sql, table, encloseWith);
+
+            GenerateWhereClause(database, whereClauseColumns, sql);
 
             string deleteSql = sql.ToString();
 

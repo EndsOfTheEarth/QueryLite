@@ -37,11 +37,11 @@ namespace QueryLite.Databases.PostgreSql {
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
                 sql.Append('.');
             }
 
-            SqlHelper.AppendEncloseTableName(sql, template.Table);
+            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
             sql.Append(" AS ").Append(template.Table.Alias);
 
             bool useAliases = template.FromTables != null;
@@ -60,15 +60,15 @@ namespace QueryLite.Databases.PostgreSql {
                     string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
 
                     if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName);
+                        SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName, EncloseWith.DoubleQuote);
                         sql.Append('.');
                     }
 
-                    SqlHelper.AppendEncloseTableName(sql, usingTable);
+                    SqlHelper.AppendEncloseTableName(sql, usingTable, EncloseWith.DoubleQuote);
 
                     sql.Append(' ');
 
-                    SqlHelper.AppendEncloseAlias(sql, usingTable.Alias);
+                    SqlHelper.AppendEncloseAlias(sql, usingTable.Alias, EncloseWith.DoubleQuote);
                 }
             }
 

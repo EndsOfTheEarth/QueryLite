@@ -61,7 +61,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                     _paramSql!.Append(',');
                 }
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
 
                 _paramSql!.Append(paramName);
 
@@ -73,10 +73,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                 }
 
                 if(_useAlias) {
-                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias, EncloseWith.SquareBracket);
                     _sql.Append('.');
                 }
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
                 _sql.Append('=').Append(paramName);
             }
             else {
@@ -95,7 +95,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                     _paramSql!.Append(',');
                 }
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
 
                 _paramSql!.Append(function.GetSql(_database, useAlias: _useAlias, parameters: null));
 
@@ -107,10 +107,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                     _sql.Append(',');
                 }
                 if(_useAlias) {
-                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias, EncloseWith.SquareBracket);
                     _sql.Append('.');
                 }
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
                 _sql.Append('=').Append(function.GetSql(_database, useAlias: _useAlias, parameters: null));
             }
             else {

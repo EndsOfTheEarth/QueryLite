@@ -51,6 +51,8 @@ namespace QueryLite.Databases.Sqlite {
 
         public DatabaseType DatabaseType => DatabaseType.Sqlite;
 
+        public EncloseWith EncloseWith => EncloseWith.SquareBracket;
+
         public UtfType DefaultUtfType { get; } = UtfType.UTF8;
 
         public SqliteDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {

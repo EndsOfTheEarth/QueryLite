@@ -37,13 +37,13 @@ namespace QueryLite.Databases.Sqlite {
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
                 sql.Append('.');
             }
 
             bool useAlias = template.FromTables != null;
 
-            SqlHelper.AppendEncloseTableName(sql, template.Table);
+            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
 
             if(useAlias) {
                 sql.Append(" AS ").Append(template.Table.Alias);
@@ -73,10 +73,10 @@ namespace QueryLite.Databases.Sqlite {
                     string fromSchemaName = database.SchemaMap(fromTable.SchemaName);
 
                     if(!string.IsNullOrWhiteSpace(fromSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName);
+                        SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName, EncloseWith.SquareBracket);
                         sql.Append('.');
                     }
-                    SqlHelper.AppendEncloseTableName(sql, fromTable);
+                    SqlHelper.AppendEncloseTableName(sql, fromTable, EncloseWith.SquareBracket);
                     sql.Append(" as ").Append(fromTable.Alias);
                 }
             }

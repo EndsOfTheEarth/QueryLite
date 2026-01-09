@@ -46,6 +46,8 @@ namespace QueryLite {
         /// </summary>
         Func<string, string> SchemaMap { get; }
 
+        EncloseWith EncloseWith { get; }
+
         public UtfType DefaultUtfType { get; }
 
         /// <summary>

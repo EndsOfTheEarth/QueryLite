@@ -69,7 +69,7 @@ namespace QueryLite.Databases.SqlServer {
                 _sql!.Append("INSERTED.");  //Note: for sql server 'INSERTED' is used for both insert and update queries
             }
 
-            SqlHelper.AppendEncloseColumnName(_sql!, column);
+            SqlHelper.AppendEncloseColumnName(_sql!, column, EncloseWith.SquareBracket);
 
 #pragma warning disable CS8603 // Possible null reference return.
             return default;

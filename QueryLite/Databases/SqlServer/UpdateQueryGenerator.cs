@@ -41,10 +41,10 @@ namespace QueryLite.Databases.SqlServer {
             if(!useAlias) {                
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
                     sql.Append('.');
                 }
-                SqlHelper.AppendEncloseTableName(sql, template.Table);
+                SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
             }
             else {
                 sql.Append(template.Table.Alias);
@@ -85,10 +85,10 @@ namespace QueryLite.Databases.SqlServer {
                 sql.Append(" FROM ");
 
                 if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                    SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
                     sql.Append('.');
                 }
-                SqlHelper.AppendEncloseTableName(sql, template.Table);
+                SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
                 sql.Append(" as ").Append(template.Table.Alias);
 
                 for(int index = 0; index < template.FromTables.Count; index++) {
@@ -104,10 +104,10 @@ namespace QueryLite.Databases.SqlServer {
                     string fromSchemaName = database.SchemaMap(fromTable.SchemaName);
 
                     if(!string.IsNullOrWhiteSpace(fromSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName);
+                        SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName, EncloseWith.SquareBracket);
                         sql.Append('.');
                     }
-                    SqlHelper.AppendEncloseTableName(sql, fromTable);
+                    SqlHelper.AppendEncloseTableName(sql, fromTable, EncloseWith.SquareBracket);
                     sql.Append(" as ").Append(fromTable.Alias);
                 }
             }

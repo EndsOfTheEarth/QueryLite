@@ -70,7 +70,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.DoubleQuote);
 
                 _paramSql!.Append(paramName);
 
@@ -87,7 +87,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.DoubleQuote);
                 _sql.Append('=').Append(paramName);
 
                 if(value == null) {
@@ -112,7 +112,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.DoubleQuote);
                 _paramSql!.Append(function.GetSql(_database, useAlias: _useAlias, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
@@ -123,7 +123,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.DoubleQuote);
                 _sql.Append('=').Append(function.GetSql(_database, useAlias: _useAlias, parameters: Parameters));
             }
             else {
@@ -525,7 +525,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 else {
                     _first = false;
                 }
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.DoubleQuote);
 
                 ParamsSql!.Append(value);
             }
@@ -537,7 +537,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 else {
                     _first = false;
                 }
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.DoubleQuote);
                 _sql.Append('=').Append(value);
             }
             else {

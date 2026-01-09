@@ -37,11 +37,11 @@ namespace QueryLite.Databases.PostgreSql {
             string schemaName = database.SchemaMap(template.Table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName);
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
                 sql.Append('.');
             }
 
-            SqlHelper.AppendEncloseTableName(sql, template.Table);
+            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
 
             StringBuilder paramSql = StringBuilderCache.Acquire();
 

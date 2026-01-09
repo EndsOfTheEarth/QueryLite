@@ -203,10 +203,10 @@ namespace QueryLite.PreparedQuery {
         internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
 
             if(useAlias) {
-                SqlHelper.AppendEncloseAlias(sql, _column.Table.Alias);
+                SqlHelper.AppendEncloseAlias(sql, _column.Table.Alias, database.EncloseWith);
                 sql.Append('.');
             }
-            SqlHelper.AppendEncloseColumnName(sql, _column);
+            SqlHelper.AppendEncloseColumnName(sql, _column, database.EncloseWith);
 
             sql.Append(_operator switch {
                 Operator.EQUALS => "=",

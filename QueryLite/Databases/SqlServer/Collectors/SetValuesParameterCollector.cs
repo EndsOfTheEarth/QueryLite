@@ -69,7 +69,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
 
                 _paramSql!.Append(paramName);
 
@@ -87,10 +87,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                 _counter++;
 
                 if(_useAlias) {
-                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias, EncloseWith.SquareBracket);
                     _sql.Append('.');
                 }
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
                 _sql.Append('=').Append(paramName);
 
                 if(value == null) {
@@ -115,7 +115,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
 
                 _counter++;
 
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
                 _paramSql!.Append(function.GetSql(_database, useAlias: _useAlias, parameters: Parameters));
             }
             else if(_collectorMode == CollectorMode.Update) {
@@ -127,10 +127,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                 _counter++;
 
                 if(_useAlias) {
-                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias, EncloseWith.SquareBracket);
                     _sql.Append('.');
                 }
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
                 _sql.Append('=').Append(function.GetSql(_database, useAlias: _useAlias, parameters: Parameters));
             }
             else {
@@ -535,7 +535,7 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                 else {
                     _first = false;
                 }
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
                 ParamsSql!.Append(value);
             }
             else if(_collectorMode == CollectorMode.Update) {
@@ -547,10 +547,10 @@ namespace QueryLite.Databases.SqlServer.Collectors {
                     _first = false;
                 }
                 if(_useAlias) {
-                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias);
+                    SqlHelper.AppendEncloseAlias(_sql, column.Table.Alias, EncloseWith.SquareBracket);
                     _sql.Append('.');
                 }
-                SqlHelper.AppendEncloseColumnName(_sql, column);
+                SqlHelper.AppendEncloseColumnName(_sql, column, EncloseWith.SquareBracket);
                 _sql.Append('=').Append(value);
             }
             else {

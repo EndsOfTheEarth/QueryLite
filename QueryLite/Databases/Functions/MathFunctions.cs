@@ -43,7 +43,7 @@ namespace QueryLite.Databases.Functions {
             Value = value;
         }
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return useAlias ? $"({Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column)} + {Value})" : $"({SqlHelper.EncloseColumnName(Column)} + {Value})";
+            return useAlias ? $"({Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)} + {Value})" : $"({SqlHelper.EncloseColumnName(Column, database.EncloseWith)} + {Value})";
         }
     }
 
@@ -57,7 +57,7 @@ namespace QueryLite.Databases.Functions {
             Value = value;
         }
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return useAlias ? $"({Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column)} - {Value})" : $"({SqlHelper.EncloseColumnName(Column)} - {Value})";
+            return useAlias ? $"({Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)} - {Value})" : $"({SqlHelper.EncloseColumnName(Column, database.EncloseWith)} - {Value})";
         }
     }
 }

@@ -49,6 +49,8 @@ namespace QueryLite.Databases.SqlServer {
 
         public DatabaseType DatabaseType => DatabaseType.SqlServer;
 
+        public EncloseWith EncloseWith => EncloseWith.SquareBracket;
+
         public UtfType DefaultUtfType { get; } = UtfType.UTF16;
 
         public SqlServerDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
