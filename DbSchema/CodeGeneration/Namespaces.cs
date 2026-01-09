@@ -50,11 +50,11 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             schemaName = FirstLetterUpperCase(schemaName);
 
-            if(!IsDefaultSchema(schema)) {
+            if(!IsDefaultSchema(schema) && !string.IsNullOrWhiteSpace(schema.Value)) {
                 return $"{TableNamespace}.{schemaName}.Tables";
             }
             else {
-                return TableNamespace;
+                return $"{TableNamespace}.Tables";
             }
         }
 

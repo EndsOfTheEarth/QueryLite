@@ -53,7 +53,7 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
 
         public SchemaNode(SchemaName schemaName) {
             SchemaName = schemaName;
-            Text = SchemaName.Value;
+            Text = !string.IsNullOrWhiteSpace(SchemaName.Value) ? SchemaName.Value : "[Unknown]";
         }
     }
     internal class TableNode : TreeNodeViewModel {
