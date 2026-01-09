@@ -197,7 +197,7 @@ namespace QueryLite.Databases.Sqlite {
                             sql.Append(',');
                         }
                         else {
-                            isFirst = true;
+                            isFirst = false;
                         }
                         if(useAliases) {
                             sql.Append(column.Table.Alias).Append('.');
@@ -296,6 +296,7 @@ namespace QueryLite.Databases.Sqlite {
                     sql.Append(" OF ");
 
                     bool isFirst = true;
+
                     foreach(ITable table in template.OfTables) {
 
                         if(!isFirst) {
