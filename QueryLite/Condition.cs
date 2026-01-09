@@ -257,7 +257,7 @@ namespace QueryLite {
     }
 
     internal sealed class BetweenCondition<TYPE> : ICondition where TYPE : notnull {
-        
+
         public bool Not { get; }
         public IField Left { get; private set; }
         public object ValueA { get; private set; }

@@ -91,6 +91,267 @@ namespace QueryLite {
             return new GenericCondition(function, Operator.GREATER_THAN_OR_EQUAL, value);
         }
 
+        public static ICondition operator ==(AFunction<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, "=", value);
+        }
+        public static ICondition operator !=(AFunction<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, "!=", value);
+        }
+        public static ICondition operator <(AFunction<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, "<", value);
+        }
+        public static ICondition operator <=(AFunction<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, "<=", value);
+        }
+        public static ICondition operator >(AFunction<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, ">", value);
+        }
+        public static ICondition operator >=(AFunction<TYPE> function, NumericExpression value) {
+            return new NumericExpression(left: function, ">=", value);
+        }
+
+        public static ICondition operator ==(AFunction<TYPE> function, ISelectable value) {
+            return new NumericExpression(left: function, "=", value);
+        }
+        public static ICondition operator !=(AFunction<TYPE> function, ISelectable value) {
+            return new NumericExpression(left: function, "!=", value);
+        }
+        public static ICondition operator <(AFunction<TYPE> function, ISelectable value) {
+            return new NumericExpression(left: function, "<", value);
+        }
+        public static ICondition operator <=(AFunction<TYPE> function, ISelectable value) {
+            return new NumericExpression(left: function, "<=", value);
+        }
+        public static ICondition operator >(AFunction<TYPE> function, ISelectable value) {
+            return new NumericExpression(left: function, ">", value);
+        }
+        public static ICondition operator >=(AFunction<TYPE> function, ISelectable value) {
+            return new NumericExpression(left: function, ">=", value);
+        }
+
+        #region Plus
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, NumericExpression value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, ISelectable<short> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, ISelectable<int> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, ISelectable<long> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, ISelectable<decimal> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, ISelectable<float> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, ISelectable<double> value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, short value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, int value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, long value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, decimal value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, float value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+
+        public static NumericExpression operator +(AFunction<TYPE> expr, double value) {
+            return new NumericExpression(left: expr, "+", value);
+        }
+        #endregion
+
+        #region Minus
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, NumericExpression value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, ISelectable<short> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, ISelectable<int> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, ISelectable<long> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, ISelectable<decimal> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, ISelectable<float> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, ISelectable<double> value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, short value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, int value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, long value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, decimal value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, float value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+
+        public static NumericExpression operator -(AFunction<TYPE> expr, double value) {
+            return new NumericExpression(left: expr, "-", value);
+        }
+        #endregion
+
+        #region Multiply
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, NumericExpression value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, ISelectable<short> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, ISelectable<int> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, ISelectable<long> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, ISelectable<decimal> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, ISelectable<float> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, ISelectable<double> value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, short value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, int value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, long value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, decimal value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, float value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+
+        public static NumericExpression operator *(AFunction<TYPE> expr, double value) {
+            return new NumericExpression(left: expr, "*", value);
+        }
+        #endregion
+
+        #region Divide
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, NumericExpression value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, ISelectable<short> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, ISelectable<int> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, ISelectable<long> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, ISelectable<decimal> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, ISelectable<float> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, ISelectable<double> value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, short value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, int value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, long value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, decimal value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, float value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+
+        public static NumericExpression operator /(AFunction<TYPE> expr, double value) {
+            return new NumericExpression(left: expr, "/", value);
+        }
+        #endregion
+
+
+
+
         //
         //  Between conditions
         //

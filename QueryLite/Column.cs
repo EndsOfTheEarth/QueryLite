@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using QueryLite.Databases.Functions;
 using System.Diagnostics;
 
 namespace QueryLite {
