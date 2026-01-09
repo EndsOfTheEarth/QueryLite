@@ -114,10 +114,10 @@ namespace QueryLite.DbSchema {
 
             static SqliteTypes() {
 
-                _Lookup.Add("INTEGER", typeof(SqliteInteger));
-                _Lookup.Add("REAL", typeof(SqliteReal));
-                _Lookup.Add("TEXT", typeof(SqliteText));
-                _Lookup.Add("BLOB", typeof(SqliteBlob));
+                _Lookup.Add("INTEGER", typeof(int));
+                _Lookup.Add("REAL", typeof(double));
+                _Lookup.Add("TEXT", typeof(string));
+                _Lookup.Add("BLOB", typeof(byte[]));
 
             }
             public static Type? GetDotNetType(string typeName) {
@@ -129,8 +129,4 @@ namespace QueryLite.DbSchema {
             }
         }
     }
-    public sealed class SqliteInteger;
-    public sealed class SqliteReal;
-    public sealed class SqliteText;
-    public sealed class SqliteBlob;
 }

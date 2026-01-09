@@ -29,6 +29,7 @@ using DbSchema.CodeGeneration;
 using Npgsql;
 using QueryLite.CodeGeneratorUI.ViewModels;
 using QueryLite.Databases.PostgreSql;
+using QueryLite.Databases.Sqlite;
 using QueryLite.Databases.SqlServer;
 using QueryLite.DbSchema;
 using QueryLite.DbSchema.CodeGeneration;
@@ -43,6 +44,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
         private readonly static string SQL_SERVER = "Sql Server";
         private readonly static string POSTGRESQL = "PostgreSql";
+        private readonly static string SQLITE = "Sqlite";
 
         private IDatabase? _database = null;
 
@@ -69,6 +71,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
             cboDatabaseType.Items.Add(SQL_SERVER);
             cboDatabaseType.Items.Add(POSTGRESQL);
+            cboDatabaseType.Items.Add(SQLITE);
 
             cboDatabaseType.SelectedIndex = 1;
 
@@ -155,6 +158,13 @@ namespace QueryLite.CodeGeneratorUI.Views {
                     connectionString: txtConnectionString.Text
                 );
             }
+            else if(string.Equals(item, SQLITE, StringComparison.OrdinalIgnoreCase)) {
+
+                _database = new SqliteDatabase(
+                    name: "Sqlite",
+                    connectionString: txtConnectionString.Text
+                );
+            }
             else {
                 throw new Exception($"Unknown database type. Value = '{item}'");
             }
@@ -189,6 +199,9 @@ namespace QueryLite.CodeGeneratorUI.Views {
             }
             else if(_database.DatabaseType == DatabaseType.SqlServer) {
                 Tables = SqlServerSchemaLoader.LoadTables(_database);
+            }
+            else if(_database.DatabaseType == DatabaseType.Sqlite) {
+                Tables = SqliteSchemaLoader.LoadTables(_database);
             }
             else {
                 throw new Exception($"Unknown database type. Value = '{_database.DatabaseType}'");
@@ -260,8 +273,11 @@ namespace QueryLite.CodeGeneratorUI.Views {
             if(string.Equals(item, SQL_SERVER, StringComparison.OrdinalIgnoreCase)) {
                 txtConnectionStringExample.Text = "Server=localhost;Database=Northwind;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;";
             }
-            else {
+            else if(string.Equals(item, POSTGRESQL, StringComparison.OrdinalIgnoreCase)) {
                 txtConnectionStringExample.Text = "Server=127.0.0.1;Port=5432;Database=Northwind;User Id=postgres;Password=password;";
+            }
+            else if(string.Equals(item, SQLITE, StringComparison.OrdinalIgnoreCase)) {
+                txtConnectionStringExample.Text = "Data Source=C:\\temp\\Northwind.db";
             }
         }
 

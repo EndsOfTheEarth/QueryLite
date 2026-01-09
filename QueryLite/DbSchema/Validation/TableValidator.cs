@@ -569,7 +569,7 @@ namespace QueryLite {
                 if(codeAdoType != typeof(short) && codeAdoType != typeof(int) && codeAdoType != typeof(byte) && codeAdoType != typeof(long)) {
                     throw new Exception("An enum type must be mapped as a short, integer or long. This might be a bug");
                 }
-                if(dbNetType != typeof(SqliteInteger)) {
+                if(dbNetType != typeof(int)) {
                     tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
                 }
                 return;
@@ -579,29 +579,29 @@ namespace QueryLite {
 
             if(useStrictTypeValidation) {
 
-                if(dbNetType == typeof(SqliteInteger)) {
+                if(dbNetType == typeof(int)) {
                     allowedType = codeAdoType == typeof(short) || codeAdoType == typeof(int) || codeAdoType == typeof(long) || codeAdoType == typeof(byte);
                 }
-                else if(dbNetType == typeof(SqliteText)) {
+                else if(dbNetType == typeof(string)) {
                     allowedType = codeAdoType == typeof(string);
                 }
-                else if(dbNetType == typeof(SqliteReal)) {
+                else if(dbNetType == typeof(double)) {
                     allowedType = codeAdoType == typeof(float) || codeAdoType == typeof(double);
                 }
-                else if(dbNetType == typeof(SqliteBlob)) {
+                else if(dbNetType == typeof(byte[])) {
                     allowedType = codeAdoType == typeof(byte[]);
                 }
             }
 
             if(!useStrictTypeValidation) {
 
-                if(dbNetType == typeof(SqliteInteger)) {
+                if(dbNetType == typeof(int)) {
 
                     allowedType = codeAdoType == typeof(short) || codeAdoType == typeof(int) ||
                                   codeAdoType == typeof(long) || codeAdoType == typeof(byte) ||
                                   codeAdoType == typeof(bool) || codeAdoType == typeof(Bit);
                 }
-                else if(dbNetType == typeof(SqliteText)) {
+                else if(dbNetType == typeof(string)) {
 
                     allowedType = codeAdoType == typeof(string) ||
                                   codeAdoType == typeof(decimal) ||
@@ -612,10 +612,10 @@ namespace QueryLite {
                                   codeAdoType == typeof(DateOnly) ||
                                   codeAdoType == typeof(TimeOnly);
                 }
-                else if(dbNetType == typeof(SqliteReal)) {
+                else if(dbNetType == typeof(double)) {
                     allowedType = codeAdoType == typeof(float) || codeAdoType == typeof(double);
                 }
-                else if(dbNetType == typeof(SqliteBlob)) {
+                else if(dbNetType == typeof(byte[])) {
                     allowedType = codeAdoType == typeof(byte[]) || codeAdoType == typeof(Guid);
                 }
             }
