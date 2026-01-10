@@ -25,6 +25,7 @@ using QueryLite.Repository;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace QueryLite {
 
@@ -56,6 +57,8 @@ namespace QueryLite {
     public abstract partial class ARepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
 
         public TABLE Table { get; }
+
+        public bool UpdateChangesOnly { get; } = true;
 
         private MatchOn MatchOn { get; }
 
@@ -456,10 +459,18 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-        private static int PerformUpdate(Transaction transaction, QueryTimeout? timeout,
+        private int PerformUpdate(Transaction transaction, QueryTimeout? timeout,
                                          List<RowState> newState, RowUpdater<TABLE, ROW> updater, RowState row, string debugName) {
 
-            int rowsEffected = updater.Update(oldRow: row.OldRow!, newRow: row.NewRow, transaction, timeout, debugName: debugName);
+            int rowsEffected = updater.Update(
+                oldRow: row.OldRow!,
+                newRow: row.NewRow,
+                changesOnly: UpdateChangesOnly,
+                table: Table,
+                transaction: transaction,
+                timeout: timeout,
+                debugName: debugName
+            );
 
             if(rowsEffected == 0) {
                 throw new Exception("Concurrency violation. Maybe row was changed in the database?");
@@ -471,11 +482,20 @@ namespace QueryLite {
             return rowsEffected;
         }
 
-        private static async Task<int> PerformUpdateAsync(Transaction transaction, QueryTimeout? timeout,
+        private async Task<int> PerformUpdateAsync(Transaction transaction, QueryTimeout? timeout,
                                                   List<RowState> newState, RowUpdater<TABLE, ROW> updater,
                                                   RowState row, string debugName, CancellationToken ct) {
 
-            int rowsEffected = await updater.UpdateAsync(oldRow: row.OldRow!, newRow: row.NewRow, transaction, timeout, debugName: debugName, ct);
+            int rowsEffected = await updater.UpdateAsync(
+                oldRow: row.OldRow!,
+                newRow: row.NewRow,
+                changesOnly: UpdateChangesOnly,
+                table: Table,
+                transaction: transaction,
+                timeout: timeout,
+                debugName: debugName,
+                ct: ct
+            );
 
             if(rowsEffected == 0) {
                 throw new Exception("Concurrency violation. Maybe row was changed in the database?");
@@ -827,7 +847,15 @@ namespace QueryLite {
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
 
-            int rowsEffected = updater.Update(row, row, transaction, timeout: null, debugName: "");
+            int rowsEffected = updater.Update(
+                oldRow: row,
+                newRow: row,
+                changesOnly: false,
+                table: table,
+                transaction: transaction,
+                timeout: null,
+                debugName: ""
+            );
 
             if(rowsEffected != 1) {
                 throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
@@ -838,7 +866,15 @@ namespace QueryLite {
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
 
-            int rowsEffected = updater.Update(row, row, transaction, timeout, debugName: "");
+            int rowsEffected = updater.Update(
+                oldRow: row,
+                newRow: row,
+                changesOnly: false,
+                table: table,
+                transaction: transaction,
+                timeout: timeout,
+                debugName: ""
+            );
 
             if(rowsEffected != 1) {
                 throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
@@ -849,7 +885,15 @@ namespace QueryLite {
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
 
-            int rowsEffected = updater.Update(row, row, transaction, timeout, debugName);
+            int rowsEffected = updater.Update(
+                oldRow: row,
+                newRow: row,
+                changesOnly: false,
+                table: table,
+                transaction: transaction,
+                timeout: timeout,
+                debugName: debugName
+            );
 
             if(rowsEffected != 1) {
                 throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
@@ -860,7 +904,16 @@ namespace QueryLite {
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
 
-            int rowsEffected = await updater.UpdateAsync(row, row, transaction, timeout: null, debugName: "", ct);
+            int rowsEffected = await updater.UpdateAsync(
+                oldRow: row,
+                newRow: row,
+                changesOnly: false,
+                table: table,
+                transaction: transaction,
+                timeout: null,
+                debugName: "",
+                ct: ct
+            );
 
             if(rowsEffected != 1) {
                 throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
@@ -871,7 +924,16 @@ namespace QueryLite {
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
 
-            int rowsEffected = await updater.UpdateAsync(row, row, transaction, timeout, debugName: "", ct);
+            int rowsEffected = await updater.UpdateAsync(
+                oldRow: row,
+                newRow: row,
+                changesOnly: false,
+                table: table,
+                transaction: transaction,
+                timeout: timeout,
+                debugName: "",
+                ct: ct
+            );
 
             if(rowsEffected != 1) {
                 throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
@@ -881,7 +943,16 @@ namespace QueryLite {
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
 
-            int rowsEffected = await updater.UpdateAsync(row, row, transaction, timeout, debugName, ct);
+            int rowsEffected = await updater.UpdateAsync(
+                oldRow: row,
+                newRow: row,
+                changesOnly: false,
+                table: table,
+                transaction: transaction,
+                timeout: timeout,
+                debugName: debugName,
+                ct: ct
+            );
 
             if(rowsEffected != 1) {
                 throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
