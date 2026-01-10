@@ -39,7 +39,7 @@ namespace QueryLiteTest {
             else if(string.Equals(dbType, "PostgreSql", StringComparison.OrdinalIgnoreCase)) {
                 databaseType = DatabaseType.PostgreSql;
             }
-            else if(string.Equals(dbType, "SqlLite", StringComparison.OrdinalIgnoreCase)) {
+            else if(string.Equals(dbType, "Sqlite", StringComparison.OrdinalIgnoreCase)) {
                 databaseType = DatabaseType.Sqlite;
             }
             else {
@@ -59,7 +59,7 @@ namespace QueryLiteTest {
                 if(File.Exists(path) && !string.IsNullOrWhiteSpace(path)) {
                     File.Delete(path);
                 }
-                Database = new SqliteDatabase(name: "QueryLiteTest", connectionString: settings!.SqliteConnectionString);
+                Database = new SqliteDatabase(name: "QueryLiteTest", connectionString: settings!.SqliteConnectionString, schemaMap: schema => "");
                 Query.ExecuteNonQuery(sql: SqliteSchema.Sql, database: Database);
             }
             else {

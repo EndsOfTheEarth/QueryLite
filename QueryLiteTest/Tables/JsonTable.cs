@@ -12,9 +12,9 @@ namespace QueryLiteTest.Tables {
 
         public override PrimaryKey? PrimaryKey => new(this, name: "pk_JsonTable", Id);
 
-        private JsonTable() : base(name: "jsontable", schemaName: "dbo") {
-            Id = new Column<Guid>(this, name: "id");
-            Detail = new Column<Jsonb>(this, name: "detail", length: ColumnLength.MAX);
+        private JsonTable() : base(name: "jsontable", schemaName: "dbo", enclose: true) {
+            Id = new Column<Guid>(this, name: "id", enclose: true);
+            Detail = new Column<Jsonb>(this, name: "detail", length: ColumnLength.MAX, enclose: true);
         }
     }
 
