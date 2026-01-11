@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QueryLite;
 using QueryLite.Functions;
+using QueryLite.Repository;
 using QueryLiteTest.Tables;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,48 @@ namespace QueryLiteTest.Tests {
                 Assert.AreEqual(0, countValue);
 
                 transaction.Commit();
+            }
+            Repositories.AddInterceptor(new Interceptor());
+        }
+
+        public class Interceptor : RepositorySavingChangesInterceptor {
+
+            public override void SavingChanges(Change change, object? oldRow, object? newRow) {
+
+                Assert.IsTrue(change == Change.Insert || change == Change.Update || change == Change.Delete);
+
+                if(change == Change.Insert) {
+                    Assert.IsNull(oldRow);
+                    Assert.IsNotNull(newRow);
+                }
+                if(change == Change.Update) {
+                    Assert.IsNotNull(oldRow);
+                    Assert.IsNotNull(newRow);
+                    Assert.IsTrue(oldRow.GetType() == newRow.GetType());
+                }
+                if(change == Change.Delete) {
+                    Assert.IsNotNull(oldRow);
+                    Assert.IsNull(newRow);
+                }
+            }
+            public override Task SavingChangesAsync(Change change, object? oldRow, object? newRow) {
+
+                Assert.IsTrue(change == Change.Insert || change == Change.Update || change == Change.Delete);
+
+                if(change == Change.Insert) {
+                    Assert.IsNull(oldRow);
+                    Assert.IsNotNull(newRow);
+                }
+                if(change == Change.Update) {
+                    Assert.IsNotNull(oldRow);
+                    Assert.IsNotNull(newRow);
+                    Assert.IsTrue(oldRow.GetType() == newRow.GetType());
+                }
+                if(change == Change.Delete) {
+                    Assert.IsNotNull(oldRow);
+                    Assert.IsNull(newRow);
+                }
+                return Task.CompletedTask;
             }
         }
 

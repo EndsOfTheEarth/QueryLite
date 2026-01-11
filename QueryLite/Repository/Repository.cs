@@ -25,7 +25,6 @@ using QueryLite.Repository;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace QueryLite {
 
@@ -52,6 +51,30 @@ namespace QueryLite {
         /// Returns true if the column in row A has the same value in row B.
         /// </summary>
         public Func<ROW, ROW, bool> ValuesEqual { get; }
+    }
+
+    public static class Repositories {
+
+        internal static volatile List<RepositorySavingChangesInterceptor> SaveInterceptors = [];
+
+        public static void ClearInterceptors() {
+            SaveInterceptors = [];
+        }
+        public static void AddInterceptor(RepositorySavingChangesInterceptor interceptor) {
+            
+            List<RepositorySavingChangesInterceptor> intceptors = [.. SaveInterceptors];  //Work on a copy
+            
+            if(!intceptors.Contains(interceptor)) {
+                intceptors.Add(interceptor);
+            }
+            SaveInterceptors = intceptors;
+        }
+        public static void RemoveInterceptor(RepositorySavingChangesInterceptor interceptor) {
+
+            List<RepositorySavingChangesInterceptor> intceptors = [.. SaveInterceptors];  //Work on a copy
+            intceptors.Remove(interceptor);
+            SaveInterceptors = intceptors;
+        }
     }
 
     public abstract partial class ARepository<TABLE, ROW> where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
@@ -331,6 +354,10 @@ namespace QueryLite {
             foreach(RowState row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
+
+                    foreach(RepositorySavingChangesInterceptor interceptor in Repositories.SaveInterceptors) {
+                        interceptor.SavingChanges(Change.Insert, oldRow: null, newRow: row.NewRow);
+                    }
                     totalRowsEffected += PerformInsert(transaction, timeout, newState, updater, row, debugName: debugName);
                 }
                 else if(row.State == RowUpdateState.Existing) {
@@ -342,6 +369,10 @@ namespace QueryLite {
                     bool rowHasChanged = !row.OldRow.Equals(row.NewRow);
 
                     if(rowHasChanged) {
+
+                        foreach(RepositorySavingChangesInterceptor interceptor in Repositories.SaveInterceptors) {
+                            interceptor.SavingChanges(Change.Update, oldRow: row.OldRow, newRow: row.NewRow);
+                        }
                         totalRowsEffected += PerformUpdate(transaction, timeout, newState, updater, row, debugName: debugName);
                     }
                     else {
@@ -352,6 +383,9 @@ namespace QueryLite {
 
                     if(row.OldRow == null) {
                         throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
+                    }
+                    foreach(RepositorySavingChangesInterceptor interceptor in Repositories.SaveInterceptors) {
+                        interceptor.SavingChanges(Change.Delete, oldRow: row.OldRow, newRow: null);
                     }
                     totalRowsEffected += PerformDelete(transaction, timeout, updater, row, debugName: debugName);
                 }
@@ -402,6 +436,10 @@ namespace QueryLite {
             foreach(RowState row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
+
+                    foreach(RepositorySavingChangesInterceptor interceptor in Repositories.SaveInterceptors) {
+                        await interceptor.SavingChangesAsync(Change.Insert, oldRow: null, newRow: row.NewRow);
+                    }
                     totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, debugName: debugName, ct);
                 }
                 else if(row.State == RowUpdateState.Existing) {
@@ -413,6 +451,10 @@ namespace QueryLite {
                     bool rowHasChanged = !row.OldRow.Equals(row.NewRow);
 
                     if(rowHasChanged) {
+
+                        foreach(RepositorySavingChangesInterceptor interceptor in Repositories.SaveInterceptors) {
+                            await interceptor.SavingChangesAsync(Change.Update, oldRow: row.OldRow, newRow: row.NewRow);
+                        }
                         totalRowsEffected += await PerformUpdateAsync(transaction, timeout, newState, updater, row, debugName: debugName, ct);
                     }
                     else {
@@ -423,6 +465,9 @@ namespace QueryLite {
 
                     if(row.OldRow == null) {
                         throw new Exception($"{nameof(row.OldRow)} should not be null when row has a {nameof(row.State)} == {row.State}. This is a bug.");
+                    }
+                    foreach(RepositorySavingChangesInterceptor interceptor in Repositories.SaveInterceptors) {
+                        await interceptor.SavingChangesAsync(Change.Delete, oldRow: row.OldRow, newRow: null);
                     }
                     totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, debugName: debugName, ct);
                 }
