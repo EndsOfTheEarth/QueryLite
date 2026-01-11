@@ -581,19 +581,26 @@ INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)
 UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 ```
 
-| Method                                        | Mean     | Error   | StdDev  | Gen0      | Allocated |
-|---------------------------------------------- |---------:|--------:|--------:|----------:|----------:|
-| Ado_Single_Row_Update                         | 396.5 ms | 5.51 ms | 5.15 ms |         - |   3.36 MB |
-| Dapper_Single_Row_Update                      | 395.8 ms | 5.17 ms | 4.84 ms |         - |   3.57 MB |
-| QueryLite_Single_Row_Prepared_Update          | 401.4 ms | 4.43 ms | 4.14 ms |         - |    3.6 MB |
-| QueryLite_Single_Row_Dynamic_Update           | 400.9 ms | 4.54 ms | 4.24 ms |         - |   4.74 MB |
+| Method                                 | Mean     | Error   | StdDev  | Gen0      | Gen1      | Allocated |
+|----------------------------------------|---------:|--------:|--------:|----------:|----------:|----------:|
+| Ado_Single_Row_Update                  | 385.7 ms | 4.43 ms | 4.14 ms |         - |         - |   3.36 MB |
+| Dapper_Single_Row_Update               | 392.9 ms | 5.60 ms | 5.24 ms |         - |         - |   3.56 MB |
+| QueryLite_Single_Row_Prepared_Update   | 396.2 ms | 4.42 ms | 3.92 ms |         - |         - |   3.57 MB |
+| QueryLite_Single_Row_Dynamic_Update    | 396.6 ms | 2.44 ms | 2.16 ms |         - |         - |   4.71 MB |
 
-### Update Single Row (Select with change tracking) (2000 Sequential Iterations)
 
-| Method                                             | Mean     | Error   | StdDev  | Gen0      | Gen1      | Allocated |
-|--------------------------------------------------- |---------:|--------:|--------:|----------:|----------:|----------:|
-| QueryLite_Single_Row_Repository_Select_Then_Update | 620.3 ms | 3.22 ms | 2.69 ms |         - |         - |   9.09 MB |
-| EF_Core_Single_Row_Select_Then_Update              | 712.3 ms | 3.98 ms | 3.72 ms | 7000.0000 | 1000.0000 | 126.29 MB |
+### Update Single Row (With change tracking) (2000 Sequential Iterations)
+
+Load row using select query and then update it.
+
+```SQL
+UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
+```
+
+| Method                                 | Mean     | Error   | StdDev  | Gen0      | Gen1      | Allocated |
+|----------------------------------------|---------:|--------:|--------:|----------:|----------:|----------:|
+| QueryLite_Single_Row_Repository_Update | 615.4 ms | 4.29 ms | 4.01 ms |         - |         - |   9.08 MB |
+| EF_Core_Single_Row_Update              | 712.5 ms | 3.38 ms | 3.17 ms | 7000.0000 | 1000.0000 | 126.49 MB |
 
 ### Delete Single Row (2000 Sequential Iterations)
 
