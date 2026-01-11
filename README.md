@@ -587,11 +587,13 @@ UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 | Dapper_Single_Row_Update                      | 395.8 ms | 5.17 ms | 4.84 ms |         - |   3.57 MB |
 | QueryLite_Single_Row_Prepared_Update          | 401.4 ms | 4.43 ms | 4.14 ms |         - |    3.6 MB |
 | QueryLite_Single_Row_Dynamic_Update           | 400.9 ms | 4.54 ms | 4.24 ms |         - |   4.74 MB |
-| QueryLite_Single_Row_Repository_Update        | 622.0 ms | 5.09 ms | 4.51 ms |         - |  10.03 MB |
-| QueryLite_Single_Row_Repository_Static_Update | 411.2 ms | 5.53 ms | 5.17 ms |         - |   4.27 MB |
-| EF_Core_Single_Row_Update                     | 673.5 ms | 5.02 ms | 4.69 ms | 7000.0000 |  114.9 MB |
 
-(Note: This benchmark creates a new EF Core context for each update to simulate unrelated requests).
+### Update Single Row (Select with change tracking) (2000 Sequential Iterations)
+
+| Method                                             | Mean     | Error   | StdDev  | Gen0      | Gen1      | Allocated |
+|--------------------------------------------------- |---------:|--------:|--------:|----------:|----------:|----------:|
+| QueryLite_Single_Row_Repository_Select_Then_Update | 620.3 ms | 3.22 ms | 2.69 ms |         - |         - |   9.09 MB |
+| EF_Core_Single_Row_Select_Then_Update              | 712.3 ms | 3.98 ms | 3.72 ms | 7000.0000 | 1000.0000 | 126.29 MB |
 
 ### Delete Single Row (2000 Sequential Iterations)
 
