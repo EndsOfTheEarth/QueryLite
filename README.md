@@ -530,6 +530,20 @@ SELECT id,row_guid,message,date FROM Test01
 | QueryLite_Ten_Row_Repository_Select | 184.0 ms | 1.51 ms | 1.34 ms | 183.6 ms |   8.42 MB |
 | EF_Core_Ten_Row_Select              | 149.9 ms | 1.54 ms | 1.44 ms | 149.8 ms |   9.84 MB |
 
+### Select Ten Rows To List With WHERE clause (2000 Sequential Iterations)
+
+```SQL
+SELECT id,row_guid,message,date FROM Test01 WHERE date < '9999-12-31'
+```
+| Method                              | Mean     | Error   | StdDev  | Allocated |
+|------------------------------------ |---------:|--------:|--------:|----------:|
+| Ado_Ten_Row_Select                  | 217.9 ms | 4.28 ms | 7.16 ms |   4.43 MB |
+| Dapper_Ten_Row_Select               | 209.4 ms | 1.49 ms | 1.32 ms |   6.76 MB |
+| QueryLite_Ten_Row_Prepared_Select   | 221.2 ms | 4.41 ms | 8.18 ms |   5.71 MB |
+| QueryLite_Ten_Row_Dynamic_Select    | 165.6 ms | 2.69 ms | 5.31 ms |   6.65 MB |
+| QueryLite_Ten_Row_Repository_Select | 203.8 ms | 1.90 ms | 1.78 ms |   9.95 MB |
+| EF_Core_Ten_Row_Select              | 190.5 ms | 1.86 ms | 1.65 ms |  15.03 MB |
+
 ### Select One Hundred Rows To List (2000 Sequential Iterations)
 
 ```SQL
