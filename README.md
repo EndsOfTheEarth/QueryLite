@@ -516,6 +516,9 @@ SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 | QueryLite_Single_Row_Repository_Select | 188.7 ms | 2.17 ms | 1.81 ms |   5.19 MB |
 | EF_Core_Single_Row_Select              | 189.8 ms | 1.54 ms | 1.44 ms |  14.49 MB |
 
+ - Repository has higher memory allocation because of change tracking.
+ - For EF Core it appears the WHERE caluse evaluation increases memory allocation significantly.
+
 ### Select Ten Rows To List (2000 Sequential Iterations)
 
 ```SQL
@@ -529,6 +532,8 @@ SELECT id,row_guid,message,date FROM Test01
 | QueryLite_Ten_Row_Dynamic_Select    | 142.4 ms | 1.46 ms | 1.29 ms | 142.0 ms |   5.16 MB |
 | QueryLite_Ten_Row_Repository_Select | 184.0 ms | 1.51 ms | 1.34 ms | 183.6 ms |   8.42 MB |
 | EF_Core_Ten_Row_Select              | 149.9 ms | 1.54 ms | 1.44 ms | 149.8 ms |   9.84 MB |
+
+- Without a WHERE clause, EF Core has similar memory allocation to the Repository.
 
 ### Select Ten Rows To List With WHERE clause (2000 Sequential Iterations)
 
@@ -544,6 +549,7 @@ SELECT id,row_guid,message,date FROM Test01 WHERE date < '9999-12-31'
 | QueryLite_Ten_Row_Repository_Select | 203.8 ms | 1.90 ms | 1.78 ms |   9.95 MB |
 | EF_Core_Ten_Row_Select              | 190.5 ms | 1.86 ms | 1.65 ms |  15.03 MB |
 
+- With a WHERE clause, EF Core increases memory allocation significantly.
 ### Select One Hundred Rows To List (2000 Sequential Iterations)
 
 ```SQL
@@ -557,6 +563,9 @@ SELECT id,row_guid,message,date FROM Test01
 | QueryLite_One_Hundred_Row_Dynamic_Select    | 245.5 ms | 4.85 ms |  4.54 ms | 1000.0000 |  30.69 MB |
 | QueryLite_One_Hundred_Row_Repository_Select | 318.5 ms | 6.32 ms | 16.88 ms | 3000.0000 |  56.99 MB |
 | EF_Core_One_Hundred_Row_Select              | 262.9 ms | 2.28 ms |  2.02 ms | 3000.0000 |  56.02 MB |
+
+- Dapper memory allocation increases well above QueryLite dynamic as the number of rows returns increases. Could this be an issue with Dapper auto boxing values from the result?
+- EF Core 
 
 ### Select One Thousand Rows To List (2000 Sequential Iterations)
 

@@ -12,8 +12,8 @@ namespace Benchmarks {
 
             //BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
             //BenchmarkRunner.Run<SelectTenRowBenchmarks>();
-            BenchmarkRunner.Run<SelectTenRowWithWhereClauseBenchmarks>();
-            //BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
+            //BenchmarkRunner.Run<SelectTenRowWithWhereClauseBenchmarks>();
+            BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
             //BenchmarkRunner.Run<SelectOneThousandRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectSingleRowAsyncBenchmarks>();

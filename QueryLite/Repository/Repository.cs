@@ -904,7 +904,7 @@ namespace QueryLite {
         }
     }
 
-    public enum RowUpdateState {
+    public enum RowUpdateState : byte {
         PendingAdd,
         PendingDelete,
         Existing,
