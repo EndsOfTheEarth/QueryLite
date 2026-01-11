@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using System;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -184,7 +185,7 @@ namespace QueryLite.Databases {
         static ParamNameCache() {
 
             for(int index = 0; index < ParamNames.Length; index++) {
-                ParamNames[index] = $"@{index}";
+                ParamNames[index] = $"@{ParamaterGenerator.GetAsText(index)}";
             }
         }
         public static string GetName(int count) {
@@ -192,7 +193,27 @@ namespace QueryLite.Databases {
             if(count >= 0 && count < ParamNames.Length) {
                 return ParamNames[count];
             }
-            return $"@{count}";
+            return $"@{ParamaterGenerator.GetAsText(count)}";
+        }
+    }
+
+    internal static class ParamaterGenerator {
+
+        private static readonly string _characters = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+        public static string GetAsText(int value) {
+
+            StringBuilder text = StringBuilderCache.Acquire();
+
+            int baseValue = _characters.Length;
+
+            int number = value;
+
+            while(number > 0) {
+                text.Insert(0, _characters[number % baseValue]);
+                number /= baseValue;
+            }
+            return StringBuilderCache.ToStringAndRelease(text);
         }
     }
 
