@@ -614,6 +614,11 @@ DELETE FROM Test01 WHERE row_guid=@0
 | Dapper_Single_Row_Delete               | 292.4 ms | 1.96 ms |  1.83 ms |         - |   2.64 MB |
 | QueryLite_Single_Row_Prepared_Delete   | 297.6 ms | 1.99 ms |  1.86 ms |         - |   2.64 MB |
 | QueryLite_Single_Row_Dynamic_Delete    | 298.3 ms | 2.44 ms |  2.28 ms |         - |   3.28 MB |
+
+With change tracking - Select query and then delete:
+
+| Method                                 | Mean     | Error   | StdDev   | Gen0      | Allocated |
+|--------------------------------------- |---------:|--------:|---------:|----------:|----------:|
 | QueryLite_Single_Row_Repository_Delete | 523.7 ms | 3.21 ms |  3.00 ms |         - |   6.56 MB |
 | EF_Core_Single_Row_Delete              | 841.0 ms | 4.21 ms |  3.94 ms | 7000.0000 | 115.46 MB |
 
