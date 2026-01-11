@@ -29,17 +29,12 @@ namespace QueryLite {
         /// <summary>
         /// Select rows from database.
         /// </summary>
-        IRepositoryWith<TABLE, ROW> SelectRows { get; }
+        IRepositoryWith SelectRows { get; }
 
         /// <summary>
         /// Populate repository with rows that already exist in the database and are unchanged.
         /// </summary>
         void PopulateWithExistingRows(IEnumerable<ROW> rows);
-
-        /// <summary>
-        /// Populate repository with rows that already exist in the database and are unchanged.
-        /// </summary>
-        void PopulateWithExistingRows(IList<ROW> rows);
 
         /// <summary>
         /// Adds row to repository to be inserted when UpdateAsync(...) or PersistInsertsOnlyAsync(...) is called.

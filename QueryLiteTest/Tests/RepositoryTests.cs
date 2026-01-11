@@ -84,30 +84,30 @@ namespace QueryLiteTest.Tests {
             }
         }
 
-        [TestMethod]
-        public void TestRefCompare() {
+        //[TestMethod]
+        //public void TestRefCompare() {
 
-            /*
-             * Test record equality is by instance rather that value when using RefCompare.
-             */
-            CustomTypesRow rowA = GetCustomTypesA();
+        //    /*
+        //     * Test record equality is by instance rather that value when using RefCompare.
+        //     */
+        //    CustomTypesRow rowA = GetCustomTypesA();
 
-            RefCompare<CustomTypesRow> refA = new RefCompare<CustomTypesRow>(rowA);
-            int hashA = refA.GetHashCode();
+        //    RefCompare<CustomTypesRow> refA = new RefCompare<CustomTypesRow>(rowA);
+        //    int hashA = refA.GetHashCode();
 
-            Dictionary<RefCompare<CustomTypesRow>, CustomTypesRow> lookup = [];
+        //    Dictionary<RefCompare<CustomTypesRow>, CustomTypesRow> lookup = [];
 
-            lookup.Add(refA, rowA);
+        //    lookup.Add(refA, rowA);
 
-            // Change property on record - This will change the Record.Equals(...) return value
-            rowA.Guid = CustomGuid.ValueOf(Guid.NewGuid());
+        //    // Change property on record - This will change the Record.Equals(...) return value
+        //    rowA.Guid = CustomGuid.ValueOf(Guid.NewGuid());
 
-            RefCompare<CustomTypesRow> refAA = new RefCompare<CustomTypesRow>(rowA);
-            int hashAA = refAA.GetHashCode();
+        //    RefCompare<CustomTypesRow> refAA = new RefCompare<CustomTypesRow>(rowA);
+        //    int hashAA = refAA.GetHashCode();
 
-            Assert.AreEqual(hashA, hashAA);
-            Assert.AreEqual(refA, refAA);
-        }
+        //    Assert.AreEqual(hashA, hashAA);
+        //    Assert.AreEqual(refA, refAA);
+        //}
 
         [TestMethod]
         public void TestAddUpdateAndDelete() {

@@ -24,63 +24,63 @@
 
 namespace QueryLite.Repository {
 
-    public interface IRepositoryWith<TABLE, ROW> : IRepositoryWhere<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRepositoryWith : IRepositoryWhere {
         /// <summary>
         /// The 'With' option only works on sql server. For other databases the query will ignore these table hints and execute without them.
         /// </summary>
         /// <param name="hints"></param>
         /// <returns></returns>
-        public IRepositoryJoin<TABLE, ROW> With(params SqlServerTableHint[] hints);
+        public IRepositoryJoin With(params SqlServerTableHint[] hints);
     }
 
-    public interface IRepositoryJoin<TABLE, ROW> : IRepositoryWhere<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRepositoryJoin : IRepositoryWhere {
 
         /// <summary>
         /// Join table clause
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        IRepositoryJoinOn<TABLE, ROW> Join(ITable table);
+        IRepositoryJoinOn Join(ITable table);
 
         /// <summary>
         /// Left join table clause
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        IRepositoryJoinOn<TABLE, ROW> LeftJoin(ITable table);
+        IRepositoryJoinOn LeftJoin(ITable table);
     }
 
-    public interface IRepositoryJoinOn<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRepositoryJoinOn {
 
         /// <summary>
         /// Join condition
         /// </summary>
         /// <param name="on"></param>
         /// <returns></returns>
-        IRepositoryJoin<TABLE, ROW> On(ICondition on);
+        IRepositoryJoin On(ICondition on);
     }
 
-    public interface IRepositoryWhere<TABLE, ROW> : IRepositoryOrderBy<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRepositoryWhere : IRepositoryOrderBy {
 
         /// <summary>
         /// Where condition clause
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
-        IRepositoryOrderBy<TABLE, ROW> Where(ICondition? condition);
+        IRepositoryOrderBy Where(ICondition? condition);
     }
 
-    public interface IRepositoryOrderBy<TABLE, ROW> : IRepositoryFor<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRepositoryOrderBy : IRepositoryFor {
 
         /// <summary>
         /// Order by clause
         /// </summary>
         /// <param name="columns"></param>
         /// <returns></returns>
-        IRepositoryFor<TABLE, ROW> OrderBy(params IOrderByColumn[] columns);
+        IRepositoryFor OrderBy(params IOrderByColumn[] columns);
     }
 
-    public interface IRepositoryFor<TABLE, ROW> : IRepositoryExecute<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRepositoryFor : IRepositoryExecute {
 
         /// <summary>
         /// FOR clause. PostgreSql only
@@ -89,10 +89,10 @@ namespace QueryLite.Repository {
         /// <param name="ofTables"></param>
         /// <param name="waitType"></param>
         /// <returns></returns>
-        IRepositoryExecute<TABLE, ROW> FOR(ForType forType, ITable[] ofTables, WaitType waitType);
+        IRepositoryExecute FOR(ForType forType, ITable[] ofTables, WaitType waitType);
     }
 
-    public interface IRepositoryExecute<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+    public interface IRepositoryExecute {
 
         void Execute(IDatabase database);
         void Execute(IDatabase database, QueryTimeout timeout);

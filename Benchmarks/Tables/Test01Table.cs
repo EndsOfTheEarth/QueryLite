@@ -3,6 +3,7 @@
     using QueryLite;
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -32,6 +33,9 @@
     }
 
     public partial record class Test01Row : IRow<Test01Table, Test01Row> {
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int InternalIndex { get; set; } = int.MaxValue;
 
         public int Id { get; set; }
         public Guid Row_guid { get; set; }

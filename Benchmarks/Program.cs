@@ -26,9 +26,9 @@ namespace Benchmarks {
             //await new SelectOneThousandRowAsyncBenchmarks().Ado_One_Thousand_Row_SelectAsync();
             //await new SelectOneThousandRowAsyncBenchmarks().QueryLite_One_Thousand_Row_Prepared_SelectAsync();
 
-            //SelectOneHundredRowBenchmarks benchmark = new SelectOneHundredRowBenchmarks();
+            //SelectOneThousandRowBenchmarks benchmark = new SelectOneThousandRowBenchmarks();
             //benchmark.Setup();
-            //benchmark.Ado_One_Hundred_Row_Select();
+            //benchmark.QueryLite_One_Thousand_Row_Repository_Select();
 
             //await benchmark.Ado_One_Hundred_Row_SelectAsync();
             Console.Read();

@@ -24,48 +24,59 @@
 
 namespace QueryLite.Repository {
 
-    internal class RepositoryQueryTemplate<TABLE, ROW> : IRepositoryWith<TABLE, ROW>,
-                                                IRepositoryJoin<TABLE, ROW>, IRepositoryWhere<TABLE, ROW>,
-                                                IRepositoryOrderBy<TABLE, ROW>,
-                                                IRepositoryFor<TABLE, ROW>, IRepositoryExecute<TABLE, ROW>
+    internal class RepositoryQueryTemplate<TABLE, ROW> : IRepositoryWith,
+                                                IRepositoryJoin, IRepositoryWhere,
+                                                IRepositoryOrderBy,
+                                                IRepositoryFor, IRepositoryExecute
                                                 where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
 
         private ARepository<TABLE, ROW> Repository { get; }
         private TABLE Table { get; }
 
-        private SelectQueryTemplate<ROW> QueryTemplate { get; }
+        private SelectQueryTemplate<RowState<ROW>> QueryTemplate { get; }
 
         public RepositoryQueryTemplate(ARepository<TABLE, ROW> repository, TABLE table) {
             Repository = repository;
             Table = table;
-            QueryTemplate = new SelectQueryTemplate<ROW>(row => ROW.LoadRow(Table, row));
+            QueryTemplate = new SelectQueryTemplate<RowState<ROW>>(
+                row => {
+
+                    ROW r = ROW.LoadRow(Table, row);
+
+                    return new RowState<ROW>(
+                        state: RowUpdateState.Existing,
+                        oldRow: ROW.CloneRow(r),
+                        newRow: r
+                    );
+                }
+            );
             QueryTemplate.Distinct.From(table);
         }
 
-        public IRepositoryJoin<TABLE, ROW> With(params SqlServerTableHint[] hints) {
+        public IRepositoryJoin With(params SqlServerTableHint[] hints) {
             QueryTemplate.With(hints);
             return this;
         }
 
-        public IRepositoryJoinOn<TABLE, ROW> Join(ITable table) {
-            return new RepositoryQueryJoinOn<TABLE, ROW>(this, QueryTemplate.Join(table));
+        public IRepositoryJoinOn Join(ITable table) {
+            return new RepositoryQueryJoinOn<RowState<ROW>>(this, QueryTemplate.Join(table));
         }
 
-        public IRepositoryJoinOn<TABLE, ROW> LeftJoin(ITable table) {
-            return new RepositoryQueryJoinOn<TABLE, ROW>(this, QueryTemplate.LeftJoin(table));
+        public IRepositoryJoinOn LeftJoin(ITable table) {
+            return new RepositoryQueryJoinOn<RowState<ROW>>(this, QueryTemplate.LeftJoin(table));
         }
 
-        public IRepositoryExecute<TABLE, ROW> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
+        public IRepositoryExecute FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
             QueryTemplate.FOR(forType, ofTables, waitType);
             return this;
         }
 
-        public IRepositoryOrderBy<TABLE, ROW> Where(ICondition? condition) {
+        public IRepositoryOrderBy Where(ICondition? condition) {
             QueryTemplate.Where(condition);
             return this;
         }
 
-        public IRepositoryFor<TABLE, ROW> OrderBy(params IOrderByColumn[] columns) {
+        public IRepositoryFor OrderBy(params IOrderByColumn[] columns) {
             QueryTemplate.OrderBy(columns);
             return this;
         }
@@ -84,7 +95,7 @@ namespace QueryLite.Repository {
 
             Repository.ClearRows();
 
-            QueryResult<ROW> result = QueryTemplate.Execute(database, timeout, debugName: debugName);
+            QueryResult<RowState<ROW>> result = QueryTemplate.Execute(database, timeout, debugName: debugName);
 
             Repository.PopulateWithExistingRows(result.Rows);
         }
@@ -103,7 +114,7 @@ namespace QueryLite.Repository {
 
             Repository.ClearRows();
 
-            QueryResult<ROW> result = QueryTemplate.Execute(transaction, timeout, debugName: debugName);
+            QueryResult<RowState<ROW>> result = QueryTemplate.Execute(transaction, timeout, debugName: debugName);
 
             Repository.PopulateWithExistingRows(result.Rows);
         }
@@ -122,7 +133,7 @@ namespace QueryLite.Repository {
 
             Repository.ClearRows();
 
-            QueryResult<ROW> result = await QueryTemplate.ExecuteAsync(database, ct, timeout, debugName: debugName);
+            QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(database, ct, timeout, debugName: debugName);
 
             Repository.PopulateWithExistingRows(result.Rows);
         }
@@ -141,23 +152,22 @@ namespace QueryLite.Repository {
 
             Repository.ClearRows();
 
-            QueryResult<ROW> result = await QueryTemplate.ExecuteAsync(transaction, ct, timeout, debugName: debugName);
+            QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(transaction, ct, timeout, debugName: debugName);
 
             Repository.PopulateWithExistingRows(result.Rows);
         }
     }
 
-    internal class RepositoryQueryJoinOn<TABLE, ROW> : IRepositoryJoinOn<TABLE, ROW>
-                                        where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
+    internal class RepositoryQueryJoinOn<RESULT> : IRepositoryJoinOn {
 
-        private IRepositoryJoin<TABLE, ROW> Template { get; }
-        private IJoinOn<ROW> JoinOn { get; }
+        private IRepositoryJoin Template { get; }
+        private IJoinOn<RESULT> JoinOn { get; }
 
-        public RepositoryQueryJoinOn(IRepositoryJoin<TABLE, ROW> template, IJoinOn<ROW> joinOn) {
+        public RepositoryQueryJoinOn(IRepositoryJoin template, IJoinOn<RESULT> joinOn) {
             Template = template;
             JoinOn = joinOn;
         }
-        public IRepositoryJoin<TABLE, ROW> On(ICondition on) {
+        public IRepositoryJoin On(ICondition on) {
             JoinOn.On(on);
             return Template;
         }

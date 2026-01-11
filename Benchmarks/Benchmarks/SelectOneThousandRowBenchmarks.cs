@@ -58,74 +58,74 @@ namespace Benchmarks {
 
         private readonly int _iterations = 2000;
 
-        [Benchmark]
-        public void Ado_One_Thousand_Row_Select() {
+        //[Benchmark]
+        //public void Ado_One_Thousand_Row_Select() {
 
-            for(int index = 0; index < _iterations; index++) {
+        //    for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new(Databases.ConnectionString);
+        //        using NpgsqlConnection connection = new(Databases.ConnectionString);
 
-                connection.Open();
+        //        connection.Open();
 
-                using NpgsqlCommand command = connection.CreateCommand();
+        //        using NpgsqlCommand command = connection.CreateCommand();
 
-                command.CommandText = "SELECT id,row_guid,message,date FROM Test01";
+        //        command.CommandText = "SELECT id,row_guid,message,date FROM Test01";
 
-                using NpgsqlDataReader reader = command.ExecuteReader();
+        //        using NpgsqlDataReader reader = command.ExecuteReader();
 
-                List<Test01> list = [];
+        //        List<Test01> list = [];
 
-                while(reader.Read()) {
+        //        while(reader.Read()) {
 
-                    list.Add(
-                        new Test01(
-                            id: reader.GetInt32(0),
-                            row_guid: reader.GetGuid(1),
-                            message: reader.GetString(2),
-                            date: reader.GetDateTime(3)
-                        )
-                    );
-                }
-            }
-        }
+        //            list.Add(
+        //                new Test01(
+        //                    id: reader.GetInt32(0),
+        //                    row_guid: reader.GetGuid(1),
+        //                    message: reader.GetString(2),
+        //                    date: reader.GetDateTime(3)
+        //                )
+        //            );
+        //        }
+        //    }
+        //}
 
-        [Benchmark]
-        public void Dapper_One_Thousand_Row_Select() {
+        //[Benchmark]
+        //public void Dapper_One_Thousand_Row_Select() {
 
-            for(int index = 0; index < _iterations; index++) {
+        //    for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new(Databases.ConnectionString);
+        //        using NpgsqlConnection connection = new(Databases.ConnectionString);
 
-                connection.Open();
+        //        connection.Open();
 
-                IEnumerable<Test01> result = connection.Query<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01");
-            }
-        }
+        //        IEnumerable<Test01> result = connection.Query<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01");
+        //    }
+        //}
 
-        [Benchmark]
-        public void QueryLite_One_Thousand_Row_Prepared_Select() {
+        //[Benchmark]
+        //public void QueryLite_One_Thousand_Row_Prepared_Select() {
 
-            for(int index = 0; index < _iterations; index++) {
+        //    for(int index = 0; index < _iterations; index++) {
 
-                QueryResult<Test01> result = _preparedSelectQuery.Execute(parameters: this, Databases.TestDatabase);
-            }
-        }
+        //        QueryResult<Test01> result = _preparedSelectQuery.Execute(parameters: this, Databases.TestDatabase);
+        //    }
+        //}
 
-        [Benchmark]
-        public void QueryLite_One_Thousand_Row_Dynamic_Select() {
+        //[Benchmark]
+        //public void QueryLite_One_Thousand_Row_Dynamic_Select() {
 
-            for(int index = 0; index < _iterations; index++) {
+        //    for(int index = 0; index < _iterations; index++) {
 
-                Test01Table table = Test01Table.Instance;
+        //        Test01Table table = Test01Table.Instance;
 
-                QueryResult<Test01> result = Query
-                    .Select(
-                        row => new Test01(table, row)
-                    )
-                    .From(table)
-                    .Execute(Databases.TestDatabase);
-            }
-        }
+        //        QueryResult<Test01> result = Query
+        //            .Select(
+        //                row => new Test01(table, row)
+        //            )
+        //            .From(table)
+        //            .Execute(Databases.TestDatabase);
+        //    }
+        //}
 
         [Benchmark]
         public void QueryLite_One_Thousand_Row_Repository_Select() {

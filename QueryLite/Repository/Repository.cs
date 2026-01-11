@@ -22,13 +22,16 @@
  * SOFTWARE.
  **/
 using QueryLite.Repository;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace QueryLite {
 
     public interface IRow<TABLE, ROW> where TABLE : ATable where ROW : class, IEquatable<ROW> {
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        int InternalIndex { get; set; }
 
         abstract static ROW CloneRow(ROW row);
         abstract static List<GetSetMap<ROW>> GetColumnMap(TABLE table);
@@ -61,9 +64,9 @@ namespace QueryLite {
             SaveInterceptors = [];
         }
         public static void AddInterceptor(RepositorySavingChangesInterceptor interceptor) {
-            
+
             List<RepositorySavingChangesInterceptor> intceptors = [.. SaveInterceptors];  //Work on a copy
-            
+
             if(!intceptors.Contains(interceptor)) {
                 intceptors.Add(interceptor);
             }
@@ -88,8 +91,8 @@ namespace QueryLite {
          *  Otherwise, if a property value on a ROW instance changes, the ROW cannot be found
          *  in the Dictionary. 
          */
-        private Dictionary<RefCompare<ROW>, RowState> StateLookup { get; set; } = [];
-        private List<RowState> Rows { get; set; } = [];
+        //private Dictionary<RefCompare<ROW>, RowState> StateLookup { get; set; } = [];
+        private IList<RowState<ROW>> Rows { get; set; } = [];
 
         /// <summary>
         /// ARepository constructor.
@@ -180,11 +183,7 @@ namespace QueryLite {
         public ROW this[int index] => Rows[index].NewRow;
 
         public RowUpdateState GetRowState(ROW row) {
-
-            if(!StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
-                throw new Exception("Row does not exist in data table");
-            }
-            return rowState.State;
+            return Rows[row.InternalIndex].State;
         }
 
         /// <summary>
@@ -195,9 +194,8 @@ namespace QueryLite {
         /// <exception cref="Exception"></exception>
         public bool RequiresUpdate(ROW row) {
 
-            if(!StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
-                throw new Exception("Row does not exist in data table");
-            }
+            RowState<ROW> rowState = Rows[row.InternalIndex];
+
             return rowState.State switch {
                 RowUpdateState.PendingAdd or RowUpdateState.PendingDelete => true,
                 RowUpdateState.Existing => rowState.OldRow != null && !rowState.OldRow.Equals(rowState.NewRow),
@@ -209,8 +207,8 @@ namespace QueryLite {
 
             state = null;
 
-            if(StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
-                state = rowState.State;
+            if(row.InternalIndex < Rows.Count) {
+                state = Rows[row.InternalIndex].State;
                 return true;
             }
             return false;
@@ -244,7 +242,7 @@ namespace QueryLite {
             return [.. primaryKey.Columns.Select(pkColumn => lookup[pkColumn.ColumnName])];
         }
 
-        public IRepositoryWith<TABLE, ROW> SelectRows {
+        public IRepositoryWith SelectRows {
             get { return new RepositoryQueryTemplate<TABLE, ROW>(this, Table); }
         }
 
@@ -263,35 +261,29 @@ namespace QueryLite {
         }
 
         internal void ClearRows() {
-            StateLookup.Clear();
             Rows.Clear();
         }
 
         public void PopulateWithExistingRows(IEnumerable<ROW> rows) {
-
-            foreach(ROW row in rows) {
-                RowState rowState = new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row), newRow: row);
-                StateLookup.Add(new RefCompare<ROW>(row), rowState);
-                Rows.Add(rowState);
-            }
+            Rows = [.. Rows, .. rows.Select(row => new RowState<ROW>(RowUpdateState.Existing, oldRow: ROW.CloneRow(row), newRow: row))];
+            ReindexRows(Rows);
         }
 
-        public void PopulateWithExistingRows(IList<ROW> rows) {
+        internal void PopulateWithExistingRows(IList<RowState<ROW>> rows) {
 
-            StateLookup.EnsureCapacity(Rows.Count + rows.Count);
-            Rows.EnsureCapacity(Rows.Count + rows.Count);
-
-            foreach(ROW row in rows) {
-                RowState rowState = new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row), newRow: row);
-                StateLookup.Add(new RefCompare<ROW>(row), rowState);
-                Rows.Add(rowState);
+            if(Rows.Count == 0) {
+                ReindexRows(rows);
+                Rows = rows;
+            }
+            else {
+                Rows = [.. Rows, .. rows];
+                ReindexRows(Rows);
             }
         }
 
         public ROW AddNewRow(ROW row) {
-            RowState rowState = new RowState(state: RowUpdateState.PendingAdd, oldRow: null, newRow: row);
-            StateLookup.Add(new RefCompare<ROW>(row), rowState);
-            Rows.Add(rowState);
+            row.InternalIndex = Rows.Count;
+            Rows.Add(new(state: RowUpdateState.PendingAdd, oldRow: null, newRow: row));
             return row;
         }
 
@@ -300,9 +292,11 @@ namespace QueryLite {
         /// </summary>
         public void DeleteRow(ROW row) {
 
-            if(!StateLookup.TryGetValue(new RefCompare<ROW>(row), out RowState? rowState)) {
+            if(row.InternalIndex >= Rows.Count) {
                 throw new Exception("Row does not exist in data table");
             }
+
+            RowState<ROW> rowState = Rows[row.InternalIndex];
 
             if(rowState.State == RowUpdateState.Existing) {
                 rowState.State = RowUpdateState.PendingDelete;
@@ -345,13 +339,13 @@ namespace QueryLite {
         /// </summary>
         public int SaveChanges(Transaction transaction, QueryTimeout? timeout, string debugName) {
 
-            List<RowState> newState = new List<RowState>(Rows.Count);
+            List<RowState<ROW>> newState = new(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, Table, MatchOn);
 
             int totalRowsEffected = 0;
 
-            foreach(RowState row in Rows) {
+            foreach(RowState<ROW> row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
 
@@ -397,7 +391,8 @@ namespace QueryLite {
                     totalRowsEffected += PerformDelete(transaction, timeout, updater, row, debugName: debugName);
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            InvalidateRowIndexes(Rows);
+            ReindexRows(newState);
             Rows = newState;
             return totalRowsEffected;
         }
@@ -434,13 +429,13 @@ namespace QueryLite {
         /// </summary>
         public async Task<int> SaveChangesAsync(Transaction transaction, QueryTimeout? timeout, string debugName, CancellationToken ct) {
 
-            List<RowState> newState = new List<RowState>(Rows.Count);
+            List<RowState<ROW>> newState = new List<RowState<ROW>>(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, Table, MatchOn);
 
             int totalRowsEffected = 0;
 
-            foreach(RowState row in Rows) {
+            foreach(RowState<ROW> row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
 
@@ -479,38 +474,39 @@ namespace QueryLite {
                     totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, debugName: debugName, ct);
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            InvalidateRowIndexes(Rows);
+            ReindexRows(newState);
             Rows = newState;
             return totalRowsEffected;
         }
 
-        private static int PerformInsert(Transaction transaction, QueryTimeout? timeout, List<RowState> newState,
-                                                    RowUpdater<TABLE, ROW> updater, RowState rowState, string debugName) {
+        private static int PerformInsert(Transaction transaction, QueryTimeout? timeout, List<RowState<ROW>> newState,
+                                                    RowUpdater<TABLE, ROW> updater, RowState<ROW> rowState, string debugName) {
 
             int rowsEffected = updater.Insert(rowState.NewRow, transaction, timeout, debugName);
 
             if(rowsEffected != 1) {
                 throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
             }
-            newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(rowState.NewRow), newRow: rowState.NewRow));
+            newState.Add(new RowState<ROW>(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(rowState.NewRow), newRow: rowState.NewRow));
             return rowsEffected;
         }
 
-        private static async Task<int> PerformInsertAsync(Transaction transaction, QueryTimeout? timeout, List<RowState> newState,
+        private static async Task<int> PerformInsertAsync(Transaction transaction, QueryTimeout? timeout, List<RowState<ROW>> newState,
                                                     RowUpdater<TABLE, ROW> updater,
-                                                    RowState rowState, string debugName, CancellationToken ct) {
+                                                    RowState<ROW> rowState, string debugName, CancellationToken ct) {
 
             int rowsEffected = await updater.InsertAsync(rowState.NewRow, transaction, timeout, debugName, ct);
 
             if(rowsEffected != 1) {
                 throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
             }
-            newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(rowState.NewRow), newRow: rowState.NewRow));
+            newState.Add(new RowState<ROW>(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(rowState.NewRow), newRow: rowState.NewRow));
             return rowsEffected;
         }
 
         private int PerformUpdate(Transaction transaction, QueryTimeout? timeout,
-                                         List<RowState> newState, RowUpdater<TABLE, ROW> updater, RowState row, string debugName) {
+                                         List<RowState<ROW>> newState, RowUpdater<TABLE, ROW> updater, RowState<ROW> row, string debugName) {
 
             int rowsEffected = updater.Update(
                 oldRow: row.OldRow!,
@@ -527,13 +523,13 @@ namespace QueryLite {
             if(rowsEffected != 1) {
                 throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
             }
-            newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row.NewRow), newRow: row.NewRow));
+            newState.Add(new RowState<ROW>(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row.NewRow), newRow: row.NewRow));
             return rowsEffected;
         }
 
         private async Task<int> PerformUpdateAsync(Transaction transaction, QueryTimeout? timeout,
-                                                  List<RowState> newState, RowUpdater<TABLE, ROW> updater,
-                                                  RowState row, string debugName, CancellationToken ct) {
+                                                  List<RowState<ROW>> newState, RowUpdater<TABLE, ROW> updater,
+                                                  RowState<ROW> row, string debugName, CancellationToken ct) {
 
             int rowsEffected = await updater.UpdateAsync(
                 oldRow: row.OldRow!,
@@ -551,11 +547,11 @@ namespace QueryLite {
             if(rowsEffected != 1) {
                 throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
             }
-            newState.Add(new RowState(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row.NewRow), newRow: row.NewRow));
+            newState.Add(new RowState<ROW>(state: RowUpdateState.Existing, oldRow: ROW.CloneRow(row.NewRow), newRow: row.NewRow));
             return rowsEffected;
         }
 
-        private static int PerformDelete(Transaction transaction, QueryTimeout? timeout, RowUpdater<TABLE, ROW> updater, RowState row, string debugName) {
+        private static int PerformDelete(Transaction transaction, QueryTimeout? timeout, RowUpdater<TABLE, ROW> updater, RowState<ROW> row, string debugName) {
 
             int rowsEffected = updater.Delete(existingRow: row.OldRow!, transaction, timeout, debugName: debugName);
 
@@ -566,7 +562,7 @@ namespace QueryLite {
         }
 
         private static async Task<int> PerformDeleteAsync(Transaction transaction, QueryTimeout? timeout,
-                                                          RowUpdater<TABLE, ROW> updater, RowState row, string debugName,
+                                                          RowUpdater<TABLE, ROW> updater, RowState<ROW> row, string debugName,
                                                           CancellationToken ct) {
 
             int rowsEffected = await updater.DeleteAsync(existingRow: row.OldRow!, transaction, timeout, debugName: debugName, ct);
@@ -596,21 +592,46 @@ namespace QueryLite {
         /// </summary>
         public int PersistInsertsOnly(Transaction transaction, QueryTimeout timeout, string debugName) {
 
-            List<RowState> newState = new List<RowState>(Rows.Count);
+            List<RowState<ROW>> newState = new List<RowState<ROW>>(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, Table, MatchOn);
 
             int totalRowsEffected = 0;
 
-            foreach(RowState row in Rows) {
+            foreach(RowState<ROW> row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
                     totalRowsEffected += PerformInsert(transaction, timeout, newState, updater, row, debugName: debugName);
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            InvalidateRowIndexes(Rows);
+            ReindexRows(newState);
             Rows = newState;
             return totalRowsEffected;
+        }
+
+        private static void InvalidateRowIndexes(IEnumerable<RowState<ROW>> rows) {
+
+            foreach(RowState<ROW> state in rows) {
+
+                if(state.OldRow != null) {
+                    state.OldRow.InternalIndex = int.MaxValue;
+                }
+                state.NewRow.InternalIndex = int.MaxValue;
+            }
+        }
+        private static void ReindexRows(IEnumerable<RowState<ROW>> rows) {
+
+            int index = 0;
+
+            foreach(RowState<ROW> state in rows) {
+
+                if(state.OldRow != null) {
+                    state.OldRow.InternalIndex = index;
+                }
+                state.NewRow.InternalIndex = index;
+                index++;
+            }
         }
 
         /// <summary>
@@ -632,19 +653,20 @@ namespace QueryLite {
         /// </summary>
         public async Task<int> PersistInsertsOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct) {
 
-            List<RowState> newState = new List<RowState>(Rows.Count);
+            List<RowState<ROW>> newState = new List<RowState<ROW>>(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, Table, MatchOn);
 
             int totalRowsEffected = 0;
 
-            foreach(RowState row in Rows) {
+            foreach(RowState<ROW> row in Rows) {
 
                 if(row.State == RowUpdateState.PendingAdd) {
                     totalRowsEffected += await PerformInsertAsync(transaction, timeout, newState, updater, row, debugName: debugName, ct);
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            InvalidateRowIndexes(Rows);
+            ReindexRows(newState);
             Rows = newState;
             return totalRowsEffected;
         }
@@ -668,13 +690,13 @@ namespace QueryLite {
         /// </summary>
         public int PersistUpdatesOnly(Transaction transaction, QueryTimeout timeout, string debugName) {
 
-            List<RowState> newState = new List<RowState>(Rows.Count);
+            List<RowState<ROW>> newState = new List<RowState<ROW>>(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, Table, MatchOn);
 
             int totalRowsEffected = 0;
 
-            foreach(RowState row in Rows) {
+            foreach(RowState<ROW> row in Rows) {
 
                 if(row.State == RowUpdateState.Existing) {
 
@@ -692,7 +714,8 @@ namespace QueryLite {
                     }
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            InvalidateRowIndexes(Rows);
+            ReindexRows(newState);
             Rows = newState;
             return totalRowsEffected;
         }
@@ -716,13 +739,13 @@ namespace QueryLite {
         /// </summary>
         public async Task<int> PersistUpdatesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct) {
 
-            List<RowState> newState = new List<RowState>(Rows.Count);
+            List<RowState<ROW>> newState = new List<RowState<ROW>>(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, Table, MatchOn);
 
             int totalRowsEffected = 0;
 
-            foreach(RowState row in Rows) {
+            foreach(RowState<ROW> row in Rows) {
 
                 if(row.State == RowUpdateState.Existing) {
 
@@ -740,7 +763,8 @@ namespace QueryLite {
                     }
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            InvalidateRowIndexes(Rows);
+            ReindexRows(newState);
             Rows = newState;
             return totalRowsEffected;
         }
@@ -765,13 +789,13 @@ namespace QueryLite {
         /// </summary>
         public int PersistDeletesOnly(Transaction transaction, QueryTimeout timeout, string debugName) {
 
-            List<RowState> newState = new List<RowState>(Rows.Count);
+            List<RowState<ROW>> newState = new List<RowState<ROW>>(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, Table, MatchOn);
 
             int totalRowsEffected = 0;
 
-            foreach(RowState row in Rows) {
+            foreach(RowState<ROW> row in Rows) {
 
                 if(row.State == RowUpdateState.PendingDelete) {
 
@@ -781,7 +805,8 @@ namespace QueryLite {
                     totalRowsEffected += PerformDelete(transaction, timeout, updater, row, debugName: debugName);
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            InvalidateRowIndexes(Rows);
+            ReindexRows(newState);
             Rows = newState;
             return totalRowsEffected;
         }
@@ -805,13 +830,13 @@ namespace QueryLite {
         /// </summary>
         public async Task<int> PersistDeletesOnlyAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct) {
 
-            List<RowState> newState = new List<RowState>(Rows.Count);
+            List<RowState<ROW>> newState = new List<RowState<ROW>>(Rows.Count);
 
             RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, Table, MatchOn);
 
             int totalRowsEffected = 0;
 
-            foreach(RowState row in Rows) {
+            foreach(RowState<ROW> row in Rows) {
 
                 if(row.State == RowUpdateState.PendingDelete) {
 
@@ -821,7 +846,8 @@ namespace QueryLite {
                     totalRowsEffected += await PerformDeleteAsync(transaction, timeout, updater, row, debugName: debugName, ct);
                 }
             }
-            StateLookup = newState.ToDictionary(rowState => new RefCompare<ROW>(rowState.NewRow));
+            InvalidateRowIndexes(Rows);
+            ReindexRows(newState);
             Rows = newState;
             return totalRowsEffected;
         }
@@ -890,18 +916,18 @@ namespace QueryLite {
                 throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
             }
         }
+    }
 
-        private sealed class RowState {
+    public sealed class RowState<ROW> {
 
-            public RowState(RowUpdateState state, ROW? oldRow, ROW newRow) {
-                State = state;
-                OldRow = oldRow;
-                NewRow = newRow;
-            }
-            public RowUpdateState State { get; set; }
-            public ROW? OldRow { get; set; }
-            public ROW NewRow { get; set; }
+        public RowState(RowUpdateState state, ROW? oldRow, ROW newRow) {
+            State = state;
+            OldRow = oldRow;
+            NewRow = newRow;
         }
+        public RowUpdateState State { get; set; }
+        public ROW? OldRow { get; set; }
+        public ROW NewRow { get; set; }
     }
 
     public enum RowUpdateState : byte {
@@ -934,28 +960,28 @@ namespace QueryLite {
     /// <summary>
     /// RefCompare is a struct that compares records by instance rather than equality.
     /// </summary>
-    public readonly struct RefCompare<TYPE> where TYPE : class {
+    //public readonly struct RefCompare<TYPE> where TYPE : class {
 
-        private TYPE Row { get; }
+    //    private TYPE Row { get; }
 
-        public RefCompare(TYPE row) {
-            Row = row;
-        }
-        public override bool Equals([NotNullWhen(true)] object? obj) {
+    //    public RefCompare(TYPE row) {
+    //        Row = row;
+    //    }
+    //    public override bool Equals([NotNullWhen(true)] object? obj) {
 
-            if(obj is RefCompare<TYPE> refCompare) {
-                return object.ReferenceEquals(Row, refCompare.Row);
-            }
-            return false;
-        }
-        public override int GetHashCode() {
-            return RuntimeHelpers.GetHashCode(Row);
-        }
-        public static bool operator ==(RefCompare<TYPE> left, RefCompare<TYPE> right) {
-            return left.Equals(right);
-        }
-        public static bool operator !=(RefCompare<TYPE> left, RefCompare<TYPE> right) {
-            return !(left == right);
-        }
-    }
+    //        if(obj is RefCompare<TYPE> refCompare) {
+    //            return object.ReferenceEquals(Row, refCompare.Row);
+    //        }
+    //        return false;
+    //    }
+    //    public override int GetHashCode() {
+    //        return RuntimeHelpers.GetHashCode(Row);
+    //    }
+    //    public static bool operator ==(RefCompare<TYPE> left, RefCompare<TYPE> right) {
+    //        return left.Equals(right);
+    //    }
+    //    public static bool operator !=(RefCompare<TYPE> left, RefCompare<TYPE> right) {
+    //        return !(left == right);
+    //    }
+    //}
 }
