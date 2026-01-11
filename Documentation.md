@@ -910,6 +910,28 @@ using(Transaction transaction = new(TestDatabase.Database)) {
 }
 ```
 
+## Repository Interceptors
+
+A `SavingChangesInterceptor` can be used with the repository to modify the newRow before saving.
+
+Example: Defining a `SavingChangesInterceptor` interceptor
+```C#
+public class Interceptor : RepositorySavingChangesInterceptor {
+
+    public override void SavingChanges(Change change, object? oldRow, object? newRow) {
+        //Add code here
+    }
+    public override Task SavingChangesAsync(Change change, object? oldRow, object? newRow) {
+        //Add code here
+        return Task.CompletedTask;
+    }
+}
+```
+To register the interceptor (Globally):
+```C#
+Repositories.AddInterceptor(new Interceptor());
+```
+
 ## Supported Operators
 
 | Description | Operator / Method | Example | Notes

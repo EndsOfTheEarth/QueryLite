@@ -373,9 +373,16 @@ namespace QueryLite {
                         foreach(RepositorySavingChangesInterceptor interceptor in Repositories.SaveInterceptors) {
                             interceptor.SavingChanges(Change.Update, oldRow: row.OldRow, newRow: row.NewRow);
                         }
-                        totalRowsEffected += PerformUpdate(transaction, timeout, newState, updater, row, debugName: debugName);
+                        //It is possible for the interceptor(s) to modify the row so that it no longer has any changes.
+                        //So we check for changes a second time before saving
+                        rowHasChanged = !row.OldRow.Equals(row.NewRow);
+
+                        if(rowHasChanged) {
+                            totalRowsEffected += PerformUpdate(transaction, timeout, newState, updater, row, debugName: debugName);
+                        }
                     }
-                    else {
+
+                    if(!rowHasChanged) {
                         newState.Add(row);  //Add unchanged row
                     }
                 }
