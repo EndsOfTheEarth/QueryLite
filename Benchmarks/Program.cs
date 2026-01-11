@@ -7,12 +7,12 @@ namespace Benchmarks {
         static async Task Main(string[] args) {
 
             //BenchmarkRunner.Run<InsertBenchmarks>();
-            BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
+            //BenchmarkRunner.Run<UpdateSingleRowBenchmarks>();
             //BenchmarkRunner.Run<DeleteSingleRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectSingleRowBenchmarks>();
             //BenchmarkRunner.Run<SelectTenRowBenchmarks>();
-            //BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
+            BenchmarkRunner.Run<SelectOneHundredRowBenchmarks>();
             //BenchmarkRunner.Run<SelectOneThousandRowBenchmarks>();
 
             //BenchmarkRunner.Run<SelectSingleRowAsyncBenchmarks>();
@@ -25,8 +25,9 @@ namespace Benchmarks {
             //await new SelectOneThousandRowAsyncBenchmarks().Ado_One_Thousand_Row_SelectAsync();
             //await new SelectOneThousandRowAsyncBenchmarks().QueryLite_One_Thousand_Row_Prepared_SelectAsync();
 
-            //InsertBenchmarks benchmark = new InsertBenchmarks();
+            //SelectOneHundredRowBenchmarks benchmark = new SelectOneHundredRowBenchmarks();
             //benchmark.Setup();
+            //benchmark.Ado_One_Hundred_Row_Select();
 
             //await benchmark.Ado_One_Hundred_Row_SelectAsync();
             Console.Read();

@@ -203,6 +203,9 @@ namespace QueryLite.Databases {
 
         public static string GetAsText(int value) {
 
+            if(value < _characters.Length) {
+                return _characters[value].ToString();
+            }
             StringBuilder text = StringBuilderCache.Acquire();
 
             int baseValue = _characters.Length;
