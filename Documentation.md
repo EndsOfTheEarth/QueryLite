@@ -891,13 +891,11 @@ using(Transaction transaction = new(TestDatabase.Database)) {
 }
 ```
 
-## Repository Static Insert & Update
+## Repository Static Insert
 
-The repository class includes static Insert and Update methods that allocate less memory compared to using the Repository instance.
-The down side is that all updates are matched using the rows primary key and there are no checks to validate the
-row has not been changed in the database. So an update query is always sent to the database even when no values have changed.
-When inserting a row, any auto generated values will be populated on the row after an update, but they will not be reverted
-if the transaction fails.
+The repository class includes static Insert method that allocates less memory compared to using an instances of the Repository class.
+When inserting a row, any auto generated values will be populated on the row after saving, but they will not be reverted
+if the transaction is rolled back.
 
 Insert Example:
 
@@ -908,20 +906,6 @@ using(Transaction transaction = new(TestDatabase.Database)) {
         //...populate properties
     );
     OrderRepository.ExecuteInsert(row, Test01Table.Instance, transaction);
-    await transaction.CommitAsync(ct);
-}
-```
-
-Update Example:
-
-```C#
-
-using(Transaction transaction = new(TestDatabase.Database)) {
-
-    OrderRow row = new(
-        //...populate properties
-    );
-    OrderRepository.ExecuteUpdate(row, Test01Table.Instance, transaction);
     await transaction.CommitAsync(ct);
 }
 ```

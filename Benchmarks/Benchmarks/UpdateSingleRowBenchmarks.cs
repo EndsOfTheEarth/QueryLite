@@ -168,26 +168,6 @@ namespace Benchmarks {
         }
 
         [Benchmark]
-        public void QueryLite_Single_Row_Repository_Static_Update() {
-
-            for(int index = 0; index < _iterations; index++) {
-
-                using Transaction transaction = new(Databases.TestDatabase);
-
-                Test01Row row = new(
-                    id: Id,
-                    row_guid: _guid,
-                    message: "New Message",
-                    date: DateTime.Now
-                );
-
-                Test01RowRepository.ExecuteUpdate(row, Test01Table.Instance, transaction);
-
-                transaction.Commit();
-            }
-        }
-
-        [Benchmark]
         public void EF_Core_Single_Row_Update() {
 
             Test01Row_EfCore row = new(

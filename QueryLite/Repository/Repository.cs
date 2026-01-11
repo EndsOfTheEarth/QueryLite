@@ -58,8 +58,6 @@ namespace QueryLite {
 
         public TABLE Table { get; }
 
-        public bool UpdateChangesOnly { get; } = true;
-
         private MatchOn MatchOn { get; }
 
         /*
@@ -465,7 +463,6 @@ namespace QueryLite {
             int rowsEffected = updater.Update(
                 oldRow: row.OldRow!,
                 newRow: row.NewRow,
-                changesOnly: UpdateChangesOnly,
                 table: Table,
                 transaction: transaction,
                 timeout: timeout,
@@ -489,7 +486,6 @@ namespace QueryLite {
             int rowsEffected = await updater.UpdateAsync(
                 oldRow: row.OldRow!,
                 newRow: row.NewRow,
-                changesOnly: UpdateChangesOnly,
                 table: Table,
                 transaction: transaction,
                 timeout: timeout,
@@ -840,122 +836,6 @@ namespace QueryLite {
 
             if(rowsEffected != 1) {
                 throw new Exception($"Insert failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
-            }
-        }
-
-        public static void ExecuteUpdate(ROW row, TABLE table, Transaction transaction) {
-
-            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
-
-            int rowsEffected = updater.Update(
-                oldRow: row,
-                newRow: row,
-                changesOnly: false,
-                table: table,
-                transaction: transaction,
-                timeout: null,
-                debugName: ""
-            );
-
-            if(rowsEffected != 1) {
-                throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
-            }
-        }
-
-        public static void ExecuteUpdate(ROW row, TABLE table, QueryTimeout? timeout, Transaction transaction) {
-
-            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
-
-            int rowsEffected = updater.Update(
-                oldRow: row,
-                newRow: row,
-                changesOnly: false,
-                table: table,
-                transaction: transaction,
-                timeout: timeout,
-                debugName: ""
-            );
-
-            if(rowsEffected != 1) {
-                throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
-            }
-        }
-
-        public static void ExecuteUpdate(ROW row, TABLE table, QueryTimeout? timeout, string debugName, Transaction transaction) {
-
-            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
-
-            int rowsEffected = updater.Update(
-                oldRow: row,
-                newRow: row,
-                changesOnly: false,
-                table: table,
-                transaction: transaction,
-                timeout: timeout,
-                debugName: debugName
-            );
-
-            if(rowsEffected != 1) {
-                throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
-            }
-        }
-
-        public static async Task ExecuteUpdateAsync(ROW row, TABLE table, Transaction transaction, CancellationToken ct) {
-
-            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
-
-            int rowsEffected = await updater.UpdateAsync(
-                oldRow: row,
-                newRow: row,
-                changesOnly: false,
-                table: table,
-                transaction: transaction,
-                timeout: null,
-                debugName: "",
-                ct: ct
-            );
-
-            if(rowsEffected != 1) {
-                throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
-            }
-        }
-
-        public static async Task ExecuteUpdateAsync(ROW row, TABLE table, QueryTimeout? timeout, Transaction transaction, CancellationToken ct) {
-
-            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
-
-            int rowsEffected = await updater.UpdateAsync(
-                oldRow: row,
-                newRow: row,
-                changesOnly: false,
-                table: table,
-                transaction: transaction,
-                timeout: timeout,
-                debugName: "",
-                ct: ct
-            );
-
-            if(rowsEffected != 1) {
-                throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
-            }
-        }
-        public static async Task ExecuteUpdateAsync(ROW row, TABLE table, QueryTimeout? timeout, string debugName, Transaction transaction, CancellationToken ct) {
-
-            RowUpdater<TABLE, ROW> updater = GetOrBuildRowUpdater(transaction.Database, table, MatchOn.PrimaryKey);
-
-            int rowsEffected = await updater.UpdateAsync(
-                oldRow: row,
-                newRow: row,
-                changesOnly: false,
-                table: table,
-                transaction: transaction,
-                timeout: timeout,
-                debugName: debugName,
-                ct: ct
-            );
-
-            if(rowsEffected != 1) {
-                throw new Exception($"Update failed. {nameof(rowsEffected)} should have == 1. Instead == {rowsEffected}.");
             }
         }
 
