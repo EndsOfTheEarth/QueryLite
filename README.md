@@ -565,7 +565,7 @@ SELECT id,row_guid,message,date FROM Test01
 | EF_Core_One_Hundred_Row_Select              | 262.9 ms | 2.28 ms |  2.02 ms | 3000.0000 |  56.02 MB |
 
 - Dapper memory allocation increases well above QueryLite dynamic as the number of rows returns increases. Could this be an issue with Dapper auto boxing values from the result?
-- EF Core 
+- EF Core memory allocation drops below the repository pattern.
 
 ### Select One Thousand Rows To List (2000 Sequential Iterations)
 
@@ -580,6 +580,9 @@ SELECT id,row_guid,message,date FROM Test01
 | QueryLite_One_Thousand_Row_Dynamic_Select    | 528.6 ms | 3.41 ms | 3.02 ms | 17000.0000 |  9000.0000 | 277.89 MB |
 | QueryLite_One_Thousand_Row_Repository_Select | 973.2 ms | 4.72 ms | 4.42 ms | 33000.0000 | 16000.0000 | 535.86 MB |
 | EF_Core_One_Thousand_Row_Select              | 569.9 ms | 2.82 ms | 2.36 ms | 31000.0000 |  1000.0000 | 509.79 MB |
+
+- Dapper starts to allocation significantly more memory.
+- EF Core memory allocation drops further below the repository pattern.
 
 ### Insert Single Row (2000 Sequential Iterations)
 
@@ -598,6 +601,8 @@ INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)
 
 (Note: This benchmark creates a new EF Core context for each insert to simulate unrelated requests).
 
+- EF Core allocates significantly more memory.
+
 ### Update Single Row (2000 Sequential Iterations)
 
 ```SQL
@@ -611,7 +616,6 @@ UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 | QueryLite_Single_Row_Prepared_Update   | 396.2 ms | 4.42 ms | 3.92 ms |         - |         - |   3.57 MB |
 | QueryLite_Single_Row_Dynamic_Update    | 396.6 ms | 2.44 ms | 2.16 ms |         - |         - |   4.71 MB |
 
-
 ### Update Single Row (With change tracking) (2000 Sequential Iterations)
 
 Load row using select query and then update it.
@@ -624,6 +628,8 @@ UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 |----------------------------------------|---------:|--------:|--------:|----------:|----------:|----------:|
 | QueryLite_Single_Row_Repository_Update | 615.4 ms | 4.29 ms | 4.01 ms |         - |         - |   9.08 MB |
 | EF_Core_Single_Row_Update              | 712.5 ms | 3.38 ms | 3.17 ms | 7000.0000 | 1000.0000 | 126.49 MB |
+
+- EF Core allocates significantly more memory.
 
 ### Delete Single Row (2000 Sequential Iterations)
 
@@ -646,3 +652,5 @@ With change tracking - Select query and then delete:
 | EF_Core_Single_Row_Delete              | 841.0 ms | 4.21 ms |  3.94 ms | 7000.0000 | 115.46 MB |
 
 (Note: This benchmark creates a new EF Core context for each delete to simulate unrelated requests).
+
+- EF Core allocates significantly more memory.
