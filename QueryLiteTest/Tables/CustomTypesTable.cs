@@ -76,6 +76,15 @@ namespace QueryLiteTest.Tables {
 
     }
 
+    public sealed class CustomTypesRowRepository2 : ARepository<CustomTypesTable, CustomTypesRow>, IRepository<CustomTypesTable, CustomTypesRow> {
+        public CustomTypesRowRepository2() : base(CustomTypesTable.Instance, matchOn: MatchOn.PrimaryKey) { }
+    }
+
+    //[Repository<CustomTypesTable>(MatchOn.PrimaryKey, repositoryName: "CustomTypesRepository2")]
+    //public partial record CustomTypesRow2 {
+
+    //}
+
     public readonly struct CustomGuid : ICustomType<Guid, CustomGuid>, IEquatable<CustomGuid> {
 
         public Guid Value { get; }
