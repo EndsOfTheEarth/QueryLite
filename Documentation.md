@@ -806,22 +806,15 @@ class when it sees the `[Repository]` attribute.
 
 Add a marker attribute to your solution to turn on source generator.
 ```C#
-namespace QueryLite {
-
-    //
-    //  Source generator marker attribute. Only one defintion is required to turn on source generator.
-    //
-    [AttributeUsage(AttributeTargets.Class)]
-    public class RepositoryAttribute<TABLE> : Attribute where TABLE : QueryLite.ATable {
-
-        public QueryLite.MatchOn MatchOn { get; init; }
-        public string RepositoryName { get; }
-
-        public RepositoryAttribute(QueryLite.MatchOn matchOn, string repositoryName = "") {
-            MatchOn = matchOn;
-            RepositoryName = repositoryName;
-        }
-    }
+namespace QueryLite;
+//
+//  Source generator marker attribute. Only one defintion is required to turn on source generator.
+//
+[AttributeUsage(AttributeTargets.Class)]
+public class RepositoryAttribute<TABLE>(MatchOn matchOn, string repositoryName = "")
+                                            : Attribute where TABLE : QueryLite.ATable {
+    public MatchOn MatchOn { get; } = matchOn;
+    public string RepositoryName { get; } = repositoryName;
 }
 ```
 
