@@ -54,6 +54,8 @@ namespace Benchmarks {
                 }
                 transaction.Commit();
             }
+            using TestContext context = new(Databases.ConnectionString);
+            List<Test01Row_EfCore> list = [.. context.TestRows];
         }
 
         private readonly int _iterations = 2000;
@@ -143,11 +145,11 @@ namespace Benchmarks {
         [Benchmark]
         public void EF_Core_One_Hundred_Row_Select() {
 
-            using TestContext context = new(Databases.ConnectionString);
-
             for(int index = 0; index < _iterations; index++) {
 
-                List<Test01Row_EfCore> list = context.TestRows.ToList();
+                using TestContext context = new(Databases.ConnectionString);
+
+                List<Test01Row_EfCore> list = [.. context.TestRows];
             }
         }
     }
