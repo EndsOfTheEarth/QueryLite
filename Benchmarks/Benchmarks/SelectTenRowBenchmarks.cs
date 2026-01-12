@@ -55,7 +55,6 @@ namespace Benchmarks {
                 transaction.Commit();
             }
             using TestContext context = new(Databases.ConnectionString);
-
             List<Test01Row_EfCore> list = [.. context.TestRows];
         }
 

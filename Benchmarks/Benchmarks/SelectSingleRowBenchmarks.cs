@@ -55,6 +55,8 @@ namespace Benchmarks {
 
                 transaction.Commit();
             }
+            using TestContext context = new(Databases.ConnectionString);
+            Test01Row_EfCore? r = context.TestRows.Where(row => row.Row_guid == _guid).SingleOrDefault();
         }
 
         private readonly int _iterations = 2000;
@@ -143,9 +145,9 @@ namespace Benchmarks {
         [Benchmark]
         public void EF_Core_Single_Row_Select() {
 
-            using TestContext context = new(Databases.ConnectionString);
-
             for(int index = 0; index < _iterations; index++) {
+
+                using TestContext context = new(Databases.ConnectionString);    //Keep in loop so that it does not cache records across all iterations
 
                 Test01Row_EfCore? result = context.TestRows
                     .Where(row => row.Row_guid == _guid)

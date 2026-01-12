@@ -51,9 +51,11 @@ namespace Benchmarks {
 
                 transaction.Commit();
             }
+            using TestContext context = new(Databases.ConnectionString);
+            Test01Row_EfCore[] r = [.. context.TestRows];
         }
 
-        private int _iterations = 2000;
+        private readonly int _iterations = 2000;
 
         [Benchmark]
         public void Ado_Single_Row_Delete() {

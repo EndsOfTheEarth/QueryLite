@@ -58,11 +58,7 @@ namespace Benchmarks {
                 transaction.Commit();
             }
             using TestContext context = new(Databases.ConnectionString);
-
-            Test01Row_EfCore row = context
-                .TestRows
-                .Where(test => test.Row_guid == _guid)
-                .First();
+            Test01Row_EfCore row = context.TestRows.Where(test => test.Row_guid == _guid).First();
         }
 
         private readonly int _iterations = 2000;
@@ -185,7 +181,6 @@ namespace Benchmarks {
                 row.Date = DateTime.Now.ToUniversalTime();
 
                 context.Update(row);
-
                 context.SaveChanges();
             }
         }

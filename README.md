@@ -507,14 +507,14 @@ These tests measure sequential execution times (non async). Executing queries as
 ```SQL
 SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 ```
-| Method                                 | Mean     | Error   | StdDev  | Allocated |
-|--------------------------------------- |---------:|--------:|--------:|----------:|
-| Ado_Single_Row_Select                  | 153.9 ms | 0.91 ms | 0.80 ms |   2.84 MB |
-| Dapper_Single_Row_Select               | 150.3 ms | 1.38 ms | 1.30 ms |   3.19 MB |
-| QueryLite_Single_Row_Prepared_Select   | 157.6 ms | 1.63 ms | 1.44 ms |   2.93 MB |
-| QueryLite_Single_Row_Dynamic_Select    | 158.6 ms | 1.69 ms | 1.58 ms |   3.89 MB |
-| QueryLite_Single_Row_Repository_Select | 188.7 ms | 2.17 ms | 1.81 ms |   5.19 MB |
-| EF_Core_Single_Row_Select              | 189.8 ms | 1.54 ms | 1.44 ms |  14.49 MB |
+| Method                                 | Mean     | Error   | StdDev  | Gen0      | Allocated |
+|--------------------------------------- |---------:|--------:|--------:|----------:|----------:|
+| Ado_Single_Row_Select                  | 154.5 ms | 1.20 ms | 1.06 ms |         - |   2.84 MB |
+| Dapper_Single_Row_Select               | 152.2 ms | 1.42 ms | 1.33 ms |         - |   3.19 MB |
+| QueryLite_Single_Row_Prepared_Select   | 158.2 ms | 2.05 ms | 1.82 ms |         - |   2.93 MB |
+| QueryLite_Single_Row_Dynamic_Select    | 159.6 ms | 2.28 ms | 2.02 ms |         - |   3.89 MB |
+| QueryLite_Single_Row_Repository_Select | 190.8 ms | 2.10 ms | 1.86 ms |         - |   4.72 MB |
+| EF_Core_Single_Row_Select              | 318.9 ms | 2.40 ms | 2.13 ms | 6000.0000 | 108.16 MB |
 
  - Repository has higher memory allocation because of change tracking.
  - For EF Core it appears the WHERE caluse evaluation increases memory allocation significantly.
@@ -524,14 +524,14 @@ SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0
 ```SQL
 SELECT id,row_guid,message,date FROM Test01
 ```
-| Method                              | Mean     | Error   | StdDev  | Median   | Allocated |
-|------------------------------------ |---------:|--------:|--------:|---------:|----------:|
-| Ado_Ten_Row_Select                  | 140.0 ms | 1.96 ms | 1.64 ms | 139.9 ms |   4.43 MB |
-| Dapper_Ten_Row_Select               | 139.5 ms | 2.76 ms | 3.07 ms | 138.9 ms |   6.76 MB |
-| QueryLite_Ten_Row_Prepared_Select   | 146.6 ms | 2.83 ms | 6.61 ms | 144.2 ms |   4.43 MB |
-| QueryLite_Ten_Row_Dynamic_Select    | 142.4 ms | 1.46 ms | 1.29 ms | 142.0 ms |   5.16 MB |
-| QueryLite_Ten_Row_Repository_Select | 184.0 ms | 1.51 ms | 1.34 ms | 183.6 ms |   8.42 MB |
-| EF_Core_Ten_Row_Select              | 149.9 ms | 1.54 ms | 1.44 ms | 149.8 ms |   9.84 MB |
+| Method                              | Mean     | Error   | StdDev  | Gen0      | Allocated |
+|------------------------------------ |---------:|--------:|--------:|----------:|----------:|
+| Ado_Ten_Row_Select                  | 139.2 ms | 1.77 ms | 1.48 ms |         - |   4.43 MB |
+| Dapper_Ten_Row_Select               | 137.7 ms | 2.14 ms | 1.90 ms |         - |   6.76 MB |
+| QueryLite_Ten_Row_Prepared_Select   | 143.2 ms | 2.14 ms | 1.89 ms |         - |   4.43 MB |
+| QueryLite_Ten_Row_Dynamic_Select    | 143.9 ms | 1.60 ms | 1.50 ms |         - |   5.16 MB |
+| QueryLite_Ten_Row_Repository_Select | 186.2 ms | 2.33 ms | 2.18 ms |         - |   7.44 MB |
+| EF_Core_Ten_Row_Select              | 268.0 ms | 2.50 ms | 2.34 ms | 7000.0000 | 114.13 MB |
 
 - Without a WHERE clause, EF Core has similar memory allocation to the Repository.
 
@@ -540,31 +540,32 @@ SELECT id,row_guid,message,date FROM Test01
 ```SQL
 SELECT id,row_guid,message,date FROM Test01 WHERE date < '9999-12-31'
 ```
-| Method                              | Mean     | Error   | StdDev  | Allocated |
-|------------------------------------ |---------:|--------:|--------:|----------:|
-| Ado_Ten_Row_Select                  | 217.9 ms | 4.28 ms | 7.16 ms |   4.43 MB |
-| Dapper_Ten_Row_Select               | 209.4 ms | 1.49 ms | 1.32 ms |   6.76 MB |
-| QueryLite_Ten_Row_Prepared_Select   | 221.2 ms | 4.41 ms | 8.18 ms |   5.71 MB |
-| QueryLite_Ten_Row_Dynamic_Select    | 165.6 ms | 2.69 ms | 5.31 ms |   6.65 MB |
-| QueryLite_Ten_Row_Repository_Select | 203.8 ms | 1.90 ms | 1.78 ms |   9.95 MB |
-| EF_Core_Ten_Row_Select              | 190.5 ms | 1.86 ms | 1.65 ms |  15.03 MB |
+| Method                              | Mean     | Error   | StdDev  | Gen0      | Gen1      | Allocated |
+|------------------------------------ |---------:|--------:|--------:|----------:|----------:|----------:|
+| Ado_Ten_Row_Select                  | 165.3 ms | 2.98 ms | 4.46 ms |         - |         - |   4.43 MB |
+| Dapper_Ten_Row_Select               | 160.6 ms | 1.48 ms | 1.32 ms |         - |         - |   6.76 MB |
+| QueryLite_Ten_Row_Prepared_Select   | 161.6 ms | 2.11 ms | 1.87 ms |         - |         - |   5.71 MB |
+| QueryLite_Ten_Row_Dynamic_Select    | 163.9 ms | 2.76 ms | 2.95 ms |         - |         - |   6.65 MB |
+| QueryLite_Ten_Row_Repository_Select | 203.3 ms | 3.98 ms | 4.26 ms |         - |         - |   8.96 MB |
+| EF_Core_Ten_Row_Select              | 313.1 ms | 2.41 ms | 1.88 ms | 7000.0000 | 1000.0000 | 119.32 MB |
 
 - With a WHERE clause, EF Core increases memory allocation significantly.
+
 ### Select One Hundred Rows To List (2000 Sequential Iterations)
 
 ```SQL
 SELECT id,row_guid,message,date FROM Test01
 ```
-| Method                                      | Mean     | Error   | StdDev   | Gen0      | Allocated |
-|-------------------------------------------- |---------:|--------:|---------:|----------:|----------:|
-| Ado_One_Hundred_Row_Select                  | 233.1 ms | 4.56 ms |  4.04 ms | 1000.0000 |  29.95 MB |
-| Dapper_One_Hundred_Row_Select               | 231.1 ms | 2.02 ms |  1.69 ms | 2000.0000 |  46.02 MB |
-| QueryLite_One_Hundred_Row_Prepared_Select   | 249.3 ms | 4.97 ms | 10.05 ms | 1000.0000 |  29.95 MB |
-| QueryLite_One_Hundred_Row_Dynamic_Select    | 245.5 ms | 4.85 ms |  4.54 ms | 1000.0000 |  30.69 MB |
-| QueryLite_One_Hundred_Row_Repository_Select | 318.5 ms | 6.32 ms | 16.88 ms | 3000.0000 |  56.99 MB |
-| EF_Core_One_Hundred_Row_Select              | 262.9 ms | 2.28 ms |  2.02 ms | 3000.0000 |  56.02 MB |
+| Method                                      | Mean     | Error   | StdDev  | Gen0       | Gen1      | Allocated |
+|-------------------------------------------- |---------:|--------:|--------:|-----------:|----------:|----------:|
+| Ado_One_Hundred_Row_Select                  | 178.9 ms | 1.53 ms | 1.36 ms |  1000.0000 |         - |  29.95 MB |
+| Dapper_One_Hundred_Row_Select               | 179.1 ms | 1.86 ms | 1.65 ms |  2000.0000 |         - |  46.02 MB |
+| QueryLite_One_Hundred_Row_Prepared_Select   | 184.4 ms | 1.38 ms | 1.22 ms |  1000.0000 |         - |  29.95 MB |
+| QueryLite_One_Hundred_Row_Dynamic_Select    | 187.2 ms | 3.74 ms | 3.67 ms |  1000.0000 |         - |  30.69 MB |
+| QueryLite_One_Hundred_Row_Repository_Select | 261.6 ms | 2.51 ms | 2.35 ms |  3000.0000 |         - |  49.45 MB |
+| EF_Core_One_Hundred_Row_Select              | 377.5 ms | 4.33 ms | 3.61 ms | 17000.0000 | 3000.0000 | 273.67 MB |
 
-- Dapper memory allocation increases well above QueryLite dynamic as the number of rows returns increases. Could this be an issue with Dapper auto boxing values from the result?
+- Dapper memory allocation increases well above QueryLite dynamic as the number of rows returns increases.
 - EF Core memory allocation drops below the repository pattern.
 
 ### Select One Thousand Rows To List (2000 Sequential Iterations)
@@ -572,17 +573,18 @@ SELECT id,row_guid,message,date FROM Test01
 ```SQL
 SELECT id,row_guid,message,date FROM Test01
 ```
-| Method                                       | Mean     | Error   | StdDev  | Gen0       | Gen1       | Allocated |
-|--------------------------------------------- |---------:|--------:|--------:|-----------:|-----------:|----------:|
-| Ado_One_Thousand_Row_Select                  | 523.6 ms | 1.28 ms | 1.07 ms | 17000.0000 |  5000.0000 | 277.16 MB |
-| Dapper_One_Thousand_Row_Select               | 523.1 ms | 2.33 ms | 1.95 ms | 26000.0000 |  8000.0000 | 430.56 MB |
-| QueryLite_One_Thousand_Row_Prepared_Select   | 526.9 ms | 4.03 ms | 3.57 ms | 17000.0000 |  8000.0000 | 277.16 MB |
-| QueryLite_One_Thousand_Row_Dynamic_Select    | 528.6 ms | 3.41 ms | 3.02 ms | 17000.0000 |  9000.0000 | 277.89 MB |
-| QueryLite_One_Thousand_Row_Repository_Select | 973.2 ms | 4.72 ms | 4.42 ms | 33000.0000 | 16000.0000 | 535.86 MB |
-| EF_Core_One_Thousand_Row_Select              | 569.9 ms | 2.82 ms | 2.36 ms | 31000.0000 |  1000.0000 | 509.79 MB |
 
-- Dapper starts to allocation significantly more memory.
-- EF Core memory allocation drops further below the repository pattern.
+| Method                                       | Mean       | Error   | StdDev  | Gen0        | Gen1       | Allocated  |
+|--------------------------------------------- |-----------:|--------:|--------:|------------:|-----------:|-----------:|
+| Ado_One_Thousand_Row_Select                  |   526.1 ms | 1.48 ms | 1.15 ms |  17000.0000 |  5000.0000 |  277.16 MB |
+| Dapper_One_Thousand_Row_Select               |   526.1 ms | 3.76 ms | 3.33 ms |  26000.0000 |  8000.0000 |  430.56 MB |
+| QueryLite_One_Thousand_Row_Prepared_Select   |   537.8 ms | 2.27 ms | 1.90 ms |  17000.0000 |  8000.0000 |  277.16 MB |
+| QueryLite_One_Thousand_Row_Dynamic_Select    |   535.4 ms | 1.87 ms | 1.46 ms |  17000.0000 |  9000.0000 |  277.89 MB |
+| QueryLite_One_Thousand_Row_Repository_Select |   924.2 ms | 7.41 ms | 6.93 ms |  28000.0000 | 18000.0000 |  461.45 MB |
+| EF_Core_One_Thousand_Row_Select              | 1,147.1 ms | 4.63 ms | 4.33 ms | 116000.0000 | 53000.0000 | 1861.03 MB |
+
+- Dapper memory allocation increases well above QueryLite dynamic as the number of rows returns increases.
+- EF Core memory allocation increases well above the repository pattern.
 
 ### Insert Single Row (2000 Sequential Iterations)
 
@@ -591,15 +593,13 @@ INSERT INTO Test01 (row_guid,message,date) VALUES(@0, @1, @2)
 ```
 | Method                                    | Mean     | Error   | StdDev  | Gen0      | Allocated |
 |------------------------------------------ |---------:|--------:|--------:|----------:|----------:|
-| Ado_Single_Insert                         | 365.4 ms | 4.13 ms | 3.86 ms |         - |   3.37 MB |
-| Dapper_Single_Insert                      | 366.6 ms | 2.76 ms | 2.45 ms |         - |   3.49 MB |
-| QueryLite_Single_Compiled_Insert          | 368.6 ms | 2.40 ms | 2.25 ms |         - |   3.59 MB |
-| QueryLite_Single_Dynamic_Insert           | 370.9 ms | 3.45 ms | 3.23 ms |         - |   4.49 MB |
-| QueryLite_Single_Repository_Insert        | 385.8 ms | 1.96 ms | 1.83 ms |         - |   5.34 MB |
-| QueryLite_Single_Repository_Static_Insert | 384.0 ms | 1.89 ms | 1.67 ms |         - |   3.88 MB |
-| EF_Core_Single_Insert                     | 647.1 ms | 4.22 ms | 3.95 ms | 7000.0000 | 114.65 MB |
-
-(Note: This benchmark creates a new EF Core context for each insert to simulate unrelated requests).
+| Ado_Single_Insert                         | 358.0 ms | 3.76 ms | 3.51 ms |         - |   3.37 MB |
+| Dapper_Single_Insert                      | 356.3 ms | 2.57 ms | 2.40 ms |         - |   3.49 MB |
+| QueryLite_Single_Compiled_Insert          | 362.4 ms | 2.39 ms | 2.24 ms |         - |   3.59 MB |
+| QueryLite_Single_Dynamic_Insert           | 362.8 ms | 2.24 ms | 1.99 ms |         - |   4.49 MB |
+| QueryLite_Single_Repository_Insert        | 380.6 ms | 1.78 ms | 1.58 ms |         - |   4.58 MB |
+| QueryLite_Single_Repository_Static_Insert | 377.7 ms | 2.02 ms | 1.89 ms |         - |   3.88 MB |
+| EF_Core_Single_Insert                     | 649.0 ms | 3.30 ms | 2.92 ms | 7000.0000 | 114.65 MB |
 
 - EF Core allocates significantly more memory.
 
@@ -610,24 +610,13 @@ UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 ```
 
 | Method                                 | Mean     | Error   | StdDev  | Gen0      | Gen1      | Allocated |
-|----------------------------------------|---------:|--------:|--------:|----------:|----------:|----------:|
-| Ado_Single_Row_Update                  | 385.7 ms | 4.43 ms | 4.14 ms |         - |         - |   3.36 MB |
-| Dapper_Single_Row_Update               | 392.9 ms | 5.60 ms | 5.24 ms |         - |         - |   3.56 MB |
-| QueryLite_Single_Row_Prepared_Update   | 396.2 ms | 4.42 ms | 3.92 ms |         - |         - |   3.57 MB |
-| QueryLite_Single_Row_Dynamic_Update    | 396.6 ms | 2.44 ms | 2.16 ms |         - |         - |   4.71 MB |
-
-### Update Single Row (With change tracking) (2000 Sequential Iterations)
-
-Load row using select query and then update it.
-
-```SQL
-UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
-```
-
-| Method                                 | Mean     | Error   | StdDev  | Gen0      | Gen1      | Allocated |
-|----------------------------------------|---------:|--------:|--------:|----------:|----------:|----------:|
-| QueryLite_Single_Row_Repository_Update | 615.4 ms | 4.29 ms | 4.01 ms |         - |         - |   9.08 MB |
-| EF_Core_Single_Row_Update              | 712.5 ms | 3.38 ms | 3.17 ms | 7000.0000 | 1000.0000 | 126.49 MB |
+|--------------------------------------- |---------:|--------:|--------:|----------:|----------:|----------:|
+| Ado_Single_Row_Update                  | 431.1 ms | 1.45 ms | 1.21 ms |         - |         - |   3.36 MB |
+| Dapper_Single_Row_Update               | 430.6 ms | 3.08 ms | 2.88 ms |         - |         - |   3.56 MB |
+| QueryLite_Single_Row_Prepared_Update   | 436.8 ms | 3.10 ms | 2.90 ms |         - |         - |   3.57 MB |
+| QueryLite_Single_Row_Dynamic_Update    | 436.5 ms | 8.49 ms | 8.72 ms |         - |         - |   4.71 MB |
+| QueryLite_Single_Row_Repository_Update | 674.3 ms | 2.47 ms | 2.31 ms |         - |         - |   8.28 MB |
+| EF_Core_Single_Row_Update              | 781.1 ms | 4.30 ms | 3.81 ms | 7000.0000 | 1000.0000 |  126.2 MB |
 
 - EF Core allocates significantly more memory.
 
@@ -637,20 +626,13 @@ UPDATE Test01 SET message=@1,date=@2 WHERE row_guid=@0
 DELETE FROM Test01 WHERE row_guid=@0
 ```
 
-| Method                                 | Mean     | Error   | StdDev   | Gen0      | Allocated |
-|--------------------------------------- |---------:|--------:|---------:|----------:|----------:|
-| Ado_Single_Row_Delete                  | 300.0 ms | 5.96 ms | 10.12 ms |         - |   2.43 MB |
-| Dapper_Single_Row_Delete               | 292.4 ms | 1.96 ms |  1.83 ms |         - |   2.64 MB |
-| QueryLite_Single_Row_Prepared_Delete   | 297.6 ms | 1.99 ms |  1.86 ms |         - |   2.64 MB |
-| QueryLite_Single_Row_Dynamic_Delete    | 298.3 ms | 2.44 ms |  2.28 ms |         - |   3.28 MB |
-
-With change tracking - Select query and then delete:
-
-| Method                                 | Mean     | Error   | StdDev   | Gen0      | Allocated |
-|--------------------------------------- |---------:|--------:|---------:|----------:|----------:|
-| QueryLite_Single_Row_Repository_Delete | 523.7 ms | 3.21 ms |  3.00 ms |         - |   6.56 MB |
-| EF_Core_Single_Row_Delete              | 841.0 ms | 4.21 ms |  3.94 ms | 7000.0000 | 115.46 MB |
-
-(Note: This benchmark creates a new EF Core context for each delete to simulate unrelated requests).
+| Method                                 | Mean     | Error   | StdDev  | Gen0      | Allocated |
+|--------------------------------------- |---------:|--------:|--------:|----------:|----------:|
+| Ado_Single_Row_Delete                  | 221.4 ms | 3.41 ms | 2.85 ms |         - |   2.43 MB |
+| Dapper_Single_Row_Delete               | 221.1 ms | 4.28 ms | 5.56 ms |         - |   2.64 MB |
+| QueryLite_Single_Row_Prepared_Delete   | 228.0 ms | 3.22 ms | 2.86 ms |         - |   2.62 MB |
+| QueryLite_Single_Row_Dynamic_Delete    | 227.0 ms | 3.96 ms | 3.51 ms |         - |   3.27 MB |
+| QueryLite_Single_Row_Repository_Delete | 429.1 ms | 2.80 ms | 2.62 ms |         - |      6 MB |
+| EF_Core_Single_Row_Delete              | 654.1 ms | 6.28 ms | 5.88 ms | 7000.0000 | 115.46 MB |
 
 - EF Core allocates significantly more memory.
