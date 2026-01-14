@@ -40,36 +40,42 @@ namespace QueryLite {
         /// </summary>
         public string Get(Column<string> column);
         public string? Get(NColumn<string> column);
+        public string? GetAsNull(Column<string> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Guid Get(Column<Guid> column);
         public Guid? Get(NColumn<Guid> column);
+        public Guid? GetAsNull(Column<Guid> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public bool Get(Column<bool> column);
         public bool? Get(NColumn<bool> column);
+        public bool? GetAsNull(Column<bool> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Bit Get(Column<Bit> column);
         public Bit? Get(NColumn<Bit> column);
+        public Bit? GetAsNull(Column<Bit> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public decimal Get(Column<decimal> column);
         public decimal? Get(NColumn<decimal> column);
+        public decimal? GetAsNull(Column<decimal> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public short Get(Column<short> column);
         public short? Get(NColumn<short> column);
+        public short? GetAsNull(Column<short> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
@@ -82,42 +88,49 @@ namespace QueryLite {
         /// </summary>
         public long Get(Column<long> column);
         public long? Get(NColumn<long> column);
+        public long? GetAsNull(Column<long> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public float Get(Column<float> column);
         public float? Get(NColumn<float> column);
+        public float? GetAsNull(Column<float> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public double Get(Column<double> column);
         public double? Get(NColumn<double> column);
+        public double? GetAsNull(Column<double> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public TimeOnly Get(Column<TimeOnly> column);
         public TimeOnly? Get(NColumn<TimeOnly> column);
+        public TimeOnly? GetAsNull(Column<TimeOnly> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public DateTime Get(Column<DateTime> column);
         public DateTime? Get(NColumn<DateTime> column);
+        public DateTime? GetAsNull(Column<DateTime> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public DateOnly Get(Column<DateOnly> column);
         public DateOnly? Get(NColumn<DateOnly> column);
+        public DateOnly? GetAsNull(Column<DateOnly> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public DateTimeOffset Get(Column<DateTimeOffset> column);
         public DateTimeOffset? Get(NColumn<DateTimeOffset> column);
+        public DateTimeOffset? GetAsNull(Column<DateTimeOffset> column);
 
         public byte Get(Column<byte> column);
         public byte? Get(NColumn<byte> column);

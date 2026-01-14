@@ -71,6 +71,16 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return _reader.GetString(_ordinal);
         }
 
+        public string? GetAsNull(Column<string> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetString(_ordinal);
+        }
+
         public Guid Get(Column<Guid> column) {
 
             _ordinal++;
@@ -81,6 +91,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return _reader.GetGuid(_ordinal);
         }
         public Guid? Get(NColumn<Guid> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetGuid(_ordinal);
+        }
+        public Guid? GetAsNull(Column<Guid> column) {
 
             _ordinal++;
 
@@ -108,6 +127,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return _reader.GetBoolean(_ordinal);
         }
+        public bool? GetAsNull(Column<bool> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetBoolean(_ordinal);
+        }
 
         public Bit Get(Column<Bit> column) {
 
@@ -119,6 +147,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
         }
         public Bit? Get(NColumn<Bit> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
+        }
+        public Bit? GetAsNull(Column<Bit> column) {
 
             _ordinal++;
 
@@ -146,6 +183,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return _reader.GetDecimal(_ordinal);
         }
+        public decimal? GetAsNull(Column<decimal> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDecimal(_ordinal);
+        }
 
         public short Get(Column<short> column) {
 
@@ -157,6 +203,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return _reader.GetInt16(_ordinal);
         }
         public short? Get(NColumn<short> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt16(_ordinal);
+        }
+        public short? GetAsNull(Column<short> column) {
 
             _ordinal++;
 
@@ -203,6 +258,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return _reader.GetInt64(_ordinal);
         }
+        public long? GetAsNull(Column<long> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt64(_ordinal);
+        }
 
         public float Get(Column<float> column) {
 
@@ -214,6 +278,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return _reader.GetFloat(_ordinal);
         }
         public float? Get(NColumn<float> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetFloat(_ordinal);
+        }
+        public float? GetAsNull(Column<float> column) {
 
             _ordinal++;
 
@@ -241,6 +314,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return _reader.GetDouble(_ordinal);
         }
+        public double? GetAsNull(Column<double> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDouble(_ordinal);
+        }
 
         public DateTime Get(Column<DateTime> column) {
 
@@ -252,6 +334,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return _reader.GetDateTime(_ordinal);
         }
         public DateTime? Get(NColumn<DateTime> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDateTime(_ordinal);
+        }
+        public DateTime? GetAsNull(Column<DateTime> column) {
 
             _ordinal++;
 
@@ -272,6 +363,16 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return TimeOnly.FromTimeSpan(value);
         }
         public TimeOnly? Get(NColumn<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
+        }
+        public TimeOnly? GetAsNull(Column<TimeOnly> column) {
 
             _ordinal++;
 
@@ -302,6 +403,16 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             DateTime value = _reader.GetDateTime(_ordinal);
             return DateOnly.FromDateTime(value);
         }
+        public DateOnly? GetAsNull(Column<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
 
         public DateTimeOffset Get(Column<DateTimeOffset> column) {
 
@@ -321,7 +432,20 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return null;
             }
-            return (DateTimeOffset)_reader.GetValue(_ordinal);
+            //PostgreSql returns dates in UTC even though they were saved in a different time zone
+            DateTime dateInUtc = _reader.GetDateTime(_ordinal);
+            return new DateTimeOffset(dateInUtc);
+        }
+        public DateTimeOffset? GetAsNull(Column<DateTimeOffset> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            //PostgreSql returns dates in UTC even though they were saved in a different time zone
+            DateTime dateInUtc = _reader.GetDateTime(_ordinal);
+            return new DateTimeOffset(dateInUtc);
         }
 
         public byte Get(Column<byte> column) {

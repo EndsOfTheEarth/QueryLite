@@ -100,48 +100,60 @@ namespace QueryLite.Databases.SqlServer {
         public string Get(Column<string> column) {
             return Add(column);
         }
-
         public string? Get(NColumn<string> column) {
+            return Add(column);
+        }
+        public string? GetAsNull(Column<string> column) {
             return Add(column);
         }
 
         public Guid Get(Column<Guid> column) {
             return Add(column);
         }
-
         public Guid? Get(NColumn<Guid> column) {
+            return Add(column);
+        }
+        public Guid? GetAsNull(Column<Guid> column) {
             return Add(column);
         }
 
         public bool Get(Column<bool> column) {
             return Add(column);
         }
-
         public bool? Get(NColumn<bool> column) {
+            return Add(column);
+        }
+        public bool? GetAsNull(Column<bool> column) {
             return Add(column);
         }
 
         public Bit Get(Column<Bit> column) {
             return Add(column);
         }
-
         public Bit? Get(NColumn<Bit> column) {
+            return Add(column);
+        }
+        public Bit? GetAsNull(Column<Bit> column) {
             return Add(column);
         }
 
         public decimal Get(Column<decimal> column) {
             return Add(column);
         }
-
         public decimal? Get(NColumn<decimal> column) {
+            return Add(column);
+        }
+        public decimal? GetAsNull(Column<decimal> column) {
             return Add(column);
         }
 
         public short Get(Column<short> column) {
             return Add(column);
         }
-
         public short? Get(NColumn<short> column) {
+            return Add(column);
+        }
+        public short? GetAsNull(Column<short> column) {
             return Add(column);
         }
 
@@ -156,56 +168,70 @@ namespace QueryLite.Databases.SqlServer {
         public long Get(Column<long> column) {
             return Add(column);
         }
-
         public long? Get(NColumn<long> column) {
+            return Add(column);
+        }
+        public long? GetAsNull(Column<long> column) {
             return Add(column);
         }
 
         public float Get(Column<float> column) {
             return Add(column);
         }
-
         public float? Get(NColumn<float> column) {
+            return Add(column);
+        }
+        public float? GetAsNull(Column<float> column) {
             return Add(column);
         }
 
         public double Get(Column<double> column) {
             return Add(column);
         }
-
         public double? Get(NColumn<double> column) {
+            return Add(column);
+        }
+        public double? GetAsNull(Column<double> column) {
             return Add(column);
         }
 
         public TimeOnly Get(Column<TimeOnly> column) {
             return Add(column);
         }
-
         public TimeOnly? Get(NColumn<TimeOnly> column) {
+            return Add(column);
+        }
+        public TimeOnly? GetAsNull(Column<TimeOnly> column) {
             return Add(column);
         }
 
         public DateTime Get(Column<DateTime> column) {
             return Add(column);
         }
-
         public DateTime? Get(NColumn<DateTime> column) {
+            return Add(column);
+        }
+        public DateTime? GetAsNull(Column<DateTime> column) {
             return Add(column);
         }
 
         public DateOnly Get(Column<DateOnly> column) {
             return Add(column);
         }
-
         public DateOnly? Get(NColumn<DateOnly> column) {
+            return Add(column);
+        }
+        public DateOnly? GetAsNull(Column<DateOnly> column) {
             return Add(column);
         }
 
         public DateTimeOffset Get(Column<DateTimeOffset> column) {
             return Add(column);
         }
-
         public DateTimeOffset? Get(NColumn<DateTimeOffset> column) {
+            return Add(column);
+        }
+        public DateTimeOffset? GetAsNull(Column<DateTimeOffset> column) {
             return Add(column);
         }
 

@@ -64,8 +64,16 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetString(_ordinal);
         }
-
         public string? Get(NColumn<string> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetString(_ordinal);
+        }
+        public string? GetAsNull(Column<string> column) {
 
             _ordinal++;
 
@@ -93,6 +101,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetGuid(_ordinal);
         }
+        public Guid? GetAsNull(Column<Guid> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetGuid(_ordinal);
+        }
 
         public bool Get(Column<bool> column) {
 
@@ -104,6 +121,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             return _reader.GetBoolean(_ordinal);
         }
         public bool? Get(NColumn<bool> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetBoolean(_ordinal);
+        }
+        public bool? GetAsNull(Column<bool> column) {
 
             _ordinal++;
 
@@ -131,6 +157,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
         }
+        public Bit? GetAsNull(Column<Bit> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
+        }
 
         public decimal Get(Column<decimal> column) {
 
@@ -150,6 +185,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return decimal.Parse(_reader.GetString(_ordinal));
         }
+        public decimal? GetAsNull(Column<decimal> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return decimal.Parse(_reader.GetString(_ordinal));
+        }
 
         public short Get(Column<short> column) {
 
@@ -161,6 +205,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             return _reader.GetInt16(_ordinal);
         }
         public short? Get(NColumn<short> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt16(_ordinal);
+        }
+        public short? GetAsNull(Column<short> column) {
 
             _ordinal++;
 
@@ -207,6 +260,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetInt64(_ordinal);
         }
+        public long? GetAsNull(Column<long> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt64(_ordinal);
+        }
 
         public float Get(Column<float> column) {
 
@@ -218,6 +280,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             return _reader.GetFloat(_ordinal);
         }
         public float? Get(NColumn<float> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetFloat(_ordinal);
+        }
+        public float? GetAsNull(Column<float> column) {
 
             _ordinal++;
 
@@ -245,6 +316,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetDouble(_ordinal);
         }
+        public double? GetAsNull(Column<double> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDouble(_ordinal);
+        }
 
         public DateTime Get(Column<DateTime> column) {
 
@@ -264,6 +344,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetDateTime(_ordinal);
         }
+        public DateTime? GetAsNull(Column<DateTime> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDateTime(_ordinal);
+        }
 
         public TimeOnly Get(Column<TimeOnly> column) {
 
@@ -275,6 +364,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             return TimeOnly.Parse(_reader.GetString(_ordinal));
         }
         public TimeOnly? Get(NColumn<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return TimeOnly.Parse(_reader.GetString(_ordinal));
+        }
+        public TimeOnly? GetAsNull(Column<TimeOnly> column) {
 
             _ordinal++;
 
@@ -304,6 +402,16 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             DateTime value = _reader.GetDateTime(_ordinal);
             return DateOnly.FromDateTime(value);
         }
+        public DateOnly? GetAsNull(Column<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
 
         public DateTimeOffset Get(Column<DateTimeOffset> column) {
 
@@ -317,6 +425,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             return new DateTimeOffset(dateInUtc);
         }
         public DateTimeOffset? Get(NColumn<DateTimeOffset> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return (DateTimeOffset)_reader.GetValue(_ordinal);
+        }
+        public DateTimeOffset? GetAsNull(Column<DateTimeOffset> column) {
 
             _ordinal++;
 

@@ -60,8 +60,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetString(_ordinal);
         }
-
         public string? Get(NColumn<string> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetString(_ordinal);
+        }
+        public string? GetAsNull(Column<string> column) {
 
             _ordinal++;
 
@@ -89,6 +97,15 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetGuid(_ordinal);
         }
+        public Guid? GetAsNull(Column<Guid> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetGuid(_ordinal);
+        }
 
         public bool Get(Column<bool> column) {
 
@@ -100,6 +117,15 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetByte(_ordinal) == 1;
         }
         public bool? Get(NColumn<bool> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetByte(_ordinal) == 1;
+        }
+        public bool? GetAsNull(Column<bool> column) {
 
             _ordinal++;
 
@@ -127,6 +153,15 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
         }
+        public Bit? GetAsNull(Column<Bit> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE;
+        }
 
         public decimal Get(Column<decimal> column) {
 
@@ -146,6 +181,15 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDecimal(_ordinal);
         }
+        public decimal? GetAsNull(Column<decimal> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDecimal(_ordinal);
+        }
 
         public short Get(Column<short> column) {
 
@@ -157,6 +201,15 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetInt16(_ordinal);
         }
         public short? Get(NColumn<short> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt16(_ordinal);
+        }
+        public short? GetAsNull(Column<short> column) {
 
             _ordinal++;
 
@@ -203,6 +256,15 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetInt64(_ordinal);
         }
+        public long? GetAsNull(Column<long> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt64(_ordinal);
+        }
 
         public float Get(Column<float> column) {
 
@@ -214,6 +276,15 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetFloat(_ordinal);
         }
         public float? Get(NColumn<float> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetFloat(_ordinal);
+        }
+        public float? GetAsNull(Column<float> column) {
 
             _ordinal++;
 
@@ -241,6 +312,15 @@ namespace QueryLite.Databases.SqlServer {
             }
             return _reader.GetDouble(_ordinal);
         }
+        public double? GetAsNull(Column<double> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDouble(_ordinal);
+        }
 
         public DateTime Get(Column<DateTime> column) {
 
@@ -252,6 +332,15 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetDateTime(_ordinal);
         }
         public DateTime? Get(NColumn<DateTime> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDateTime(_ordinal);
+        }
+        public DateTime? GetAsNull(Column<DateTime> column) {
 
             _ordinal++;
 
@@ -272,6 +361,16 @@ namespace QueryLite.Databases.SqlServer {
             return TimeOnly.FromTimeSpan(value);
         }
         public TimeOnly? Get(NColumn<TimeOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
+        }
+        public TimeOnly? GetAsNull(Column<TimeOnly> column) {
 
             _ordinal++;
 
@@ -302,6 +401,16 @@ namespace QueryLite.Databases.SqlServer {
             DateTime value = _reader.GetDateTime(_ordinal);
             return DateOnly.FromDateTime(value);
         }
+        public DateOnly? GetAsNull(Column<DateOnly> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
 
         public DateTimeOffset Get(Column<DateTimeOffset> column) {
 
@@ -313,6 +422,15 @@ namespace QueryLite.Databases.SqlServer {
             return _reader.GetDateTimeOffset(_ordinal);
         }
         public DateTimeOffset? Get(NColumn<DateTimeOffset> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDateTimeOffset(_ordinal);
+        }
+        public DateTimeOffset? GetAsNull(Column<DateTimeOffset> column) {
 
             _ordinal++;
 

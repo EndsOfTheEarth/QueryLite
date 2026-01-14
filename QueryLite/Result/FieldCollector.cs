@@ -36,8 +36,11 @@ namespace QueryLite {
             Fields.Add(column);
             return "";
         }
-
         public string? Get(NColumn<string> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public string? GetAsNull(Column<string> column) {
             Fields.Add(column);
             return default;
         }
@@ -46,8 +49,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public Guid? Get(NColumn<Guid> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public Guid? GetAsNull(Column<Guid> column) {
             Fields.Add(column);
             return default;
         }
@@ -56,8 +62,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public bool? Get(NColumn<bool> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public bool? GetAsNull(Column<bool> column) {
             Fields.Add(column);
             return default;
         }
@@ -66,8 +75,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public Bit? Get(NColumn<Bit> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public Bit? GetAsNull(Column<Bit> column) {
             Fields.Add(column);
             return default;
         }
@@ -76,8 +88,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public decimal? Get(NColumn<decimal> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public decimal? GetAsNull(Column<decimal> column) {
             Fields.Add(column);
             return default;
         }
@@ -86,8 +101,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public short? Get(NColumn<short> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public short? GetAsNull(Column<short> column) {
             Fields.Add(column);
             return default;
         }
@@ -106,8 +124,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public long? Get(NColumn<long> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public long? GetAsNull(Column<long> column) {
             Fields.Add(column);
             return default;
         }
@@ -116,8 +137,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public float? Get(NColumn<float> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public float? GetAsNull(Column<float> column) {
             Fields.Add(column);
             return default;
         }
@@ -126,8 +150,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public double? Get(NColumn<double> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public double? GetAsNull(Column<double> column) {
             Fields.Add(column);
             return default;
         }
@@ -136,8 +163,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public DateTime? Get(NColumn<DateTime> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public DateTime? GetAsNull(Column<DateTime> column) {
             Fields.Add(column);
             return default;
         }
@@ -146,8 +176,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public TimeOnly? Get(NColumn<TimeOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public TimeOnly? GetAsNull(Column<TimeOnly> column) {
             Fields.Add(column);
             return default;
         }
@@ -156,8 +189,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public DateOnly? Get(NColumn<DateOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public DateOnly? GetAsNull(Column<DateOnly> column) {
             Fields.Add(column);
             return default;
         }
@@ -166,8 +202,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public DateTimeOffset? Get(NColumn<DateTimeOffset> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public DateTimeOffset? GetAsNull(Column<DateTimeOffset> column) {
             Fields.Add(column);
             return default;
         }
