@@ -361,8 +361,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public DateTime? Get(NFunction<DateTime> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public DateTime? GetAsNull(Function<DateTime> column) {
             Fields.Add(column);
             return default;
         }
@@ -371,8 +374,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public DateTimeOffset? Get(NFunction<DateTimeOffset> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public DateTimeOffset? GetAsNull(Function<DateTimeOffset> column) {
             Fields.Add(column);
             return default;
         }
@@ -381,8 +387,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public DateOnly? Get(NFunction<DateOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public DateOnly? GetAsNull(Function<DateOnly> column) {
             Fields.Add(column);
             return default;
         }
@@ -391,8 +400,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public TimeOnly? Get(NFunction<TimeOnly> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public TimeOnly? GetAsNull(Function<TimeOnly> column) {
             Fields.Add(column);
             return default;
         }
@@ -401,8 +413,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public byte? Get(NFunction<byte> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public byte? GetAsNull(Function<byte> column) {
             Fields.Add(column);
             return default;
         }
@@ -411,8 +426,11 @@ namespace QueryLite {
             Fields.Add(column);
             return [];
         }
-
         public byte[]? Get(NFunction<byte[]> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public byte[]? GetAsNull(Function<byte[]> column) {
             Fields.Add(column);
             return default;
         }
@@ -434,8 +452,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default!;
         }
-
         public ENUM? Get<ENUM>(NFunction<ENUM> column) where ENUM : struct, Enum {
+            Fields.Add(column);
+            return default;
+        }
+        public ENUM? GetAsNull<ENUM>(Function<ENUM> column) where ENUM : struct, Enum {
             Fields.Add(column);
             return default;
         }
@@ -448,12 +469,20 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -466,6 +495,10 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             Fields.Add(column);
@@ -475,12 +508,20 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -620,8 +661,11 @@ namespace QueryLite {
             Fields.Add(function);
             return Json.Empty;
         }
-
         public Json? Get(NFunction<Json> function) {
+            Fields.Add(function);
+            return null;
+        }
+        public Json? GetAsNull(Function<Json> function) {
             Fields.Add(function);
             return null;
         }
@@ -630,8 +674,11 @@ namespace QueryLite {
             Fields.Add(column);
             return Jsonb.Empty;
         }
-
         public Jsonb? Get(NFunction<Jsonb> column) {
+            Fields.Add(column);
+            return null;
+        }
+        public Jsonb? GetAsNull(Function<Jsonb> column) {
             Fields.Add(column);
             return null;
         }

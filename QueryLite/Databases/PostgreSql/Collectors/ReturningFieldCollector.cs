@@ -330,48 +330,60 @@ namespace QueryLite.Databases.PostgreSql {
         public DateTime Get(Function<DateTime> column) {
             return Add(column);
         }
-
         public DateTime? Get(NFunction<DateTime> column) {
+            return Add(column);
+        }
+        public DateTime? GetAsNull(Function<DateTime> column) {
             return Add(column);
         }
 
         public DateTimeOffset Get(Function<DateTimeOffset> column) {
             return Add(column);
         }
-
         public DateTimeOffset? Get(NFunction<DateTimeOffset> column) {
+            return Add(column);
+        }
+        public DateTimeOffset? GetAsNull(Function<DateTimeOffset> column) {
             return Add(column);
         }
 
         public DateOnly Get(Function<DateOnly> column) {
             return Add(column);
         }
-
         public DateOnly? Get(NFunction<DateOnly> column) {
+            return Add(column);
+        }
+        public DateOnly? GetAsNull(Function<DateOnly> column) {
             return Add(column);
         }
 
         public TimeOnly Get(Function<TimeOnly> column) {
             return Add(column);
         }
-
         public TimeOnly? Get(NFunction<TimeOnly> column) {
+            return Add(column);
+        }
+        public TimeOnly? GetAsNull(Function<TimeOnly> column) {
             return Add(column);
         }
 
         public byte Get(Function<byte> column) {
             return Add(column);
         }
-
         public byte? Get(NFunction<byte> column) {
+            return Add(column);
+        }
+        public byte? GetAsNull(Function<byte> column) {
             return Add(column);
         }
 
         public byte[] Get(Function<byte[]> column) {
             return Add(column);
         }
-
         public byte[]? Get(NFunction<byte[]> column) {
+            return Add(column);
+        }
+        public byte[]? GetAsNull(Function<byte[]> column) {
             return Add(column);
         }
 
@@ -388,8 +400,10 @@ namespace QueryLite.Databases.PostgreSql {
         public ENUM Get<ENUM>(Function<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
-
         public ENUM? Get<ENUM>(NFunction<ENUM> column) where ENUM : struct, Enum {
+            return Add(column);
+        }
+        public ENUM? GetAsNull<ENUM>(Function<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
 
@@ -399,11 +413,17 @@ namespace QueryLite.Databases.PostgreSql {
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
             return Add(column);
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+            return Add(column);
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             return Add(column);
         }
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+            return Add(column);
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
             return Add(column);
         }
 
@@ -413,6 +433,9 @@ namespace QueryLite.Databases.PostgreSql {
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
             return Add(column);
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+            return Add(column);
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             return Add(column);
@@ -420,11 +443,17 @@ namespace QueryLite.Databases.PostgreSql {
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
             return Add(column);
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+            return Add(column);
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             return Add(column);
         }
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+            return Add(column);
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
             return Add(column);
         }
 
@@ -545,11 +574,17 @@ namespace QueryLite.Databases.PostgreSql {
         public Json? Get(NFunction<Json> function) {
             return Add(function);
         }
+        public Json? GetAsNull(Function<Json> function) {
+            return Add(function);
+        }
 
         public Jsonb Get(Function<Jsonb> column) {
             return Add(column);
         }
         public Jsonb? Get(NFunction<Jsonb> column) {
+            return Add(column);
+        }
+        public Jsonb? GetAsNull(Function<Jsonb> column) {
             return Add(column);
         }
 

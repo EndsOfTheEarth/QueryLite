@@ -855,6 +855,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return _reader.GetDateTime(_ordinal);
         }
+        public DateTime? GetAsNull(Function<DateTime> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDateTime(_ordinal);
+        }
 
         public DateTimeOffset Get(Function<DateTimeOffset> function) {
 
@@ -863,7 +872,9 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return DateTimeOffset.MinValue;
             }
-            return (DateTimeOffset)_reader.GetValue(_ordinal);
+            //PostgreSql returns dates in UTC even though they were saved in a different time zone
+            DateTime dateInUtc = _reader.GetDateTime(_ordinal);
+            return new DateTimeOffset(dateInUtc);
         }
         public DateTimeOffset? Get(NFunction<DateTimeOffset> function) {
 
@@ -872,7 +883,20 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             if(_reader.IsDBNull(_ordinal)) {
                 return null;
             }
-            return (DateTimeOffset)_reader.GetValue(_ordinal);
+            //PostgreSql returns dates in UTC even though they were saved in a different time zone
+            DateTime dateInUtc = _reader.GetDateTime(_ordinal);
+            return new DateTimeOffset(dateInUtc);
+        }
+        public DateTimeOffset? GetAsNull(Function<DateTimeOffset> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            //PostgreSql returns dates in UTC even though they were saved in a different time zone
+            DateTime dateInUtc = _reader.GetDateTime(_ordinal);
+            return new DateTimeOffset(dateInUtc);
         }
 
         public DateOnly Get(Function<DateOnly> column) {
@@ -885,6 +909,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return DateOnly.FromDateTime(value);
         }
         public DateOnly? Get(NFunction<DateOnly> column) {
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return DateOnly.FromDateTime(value);
+        }
+        public DateOnly? GetAsNull(Function<DateOnly> column) {
             _ordinal++;
 
             if(_reader.IsDBNull(_ordinal)) {
@@ -914,7 +947,16 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             TimeSpan value = _reader.GetTimeSpan(_ordinal);
             return TimeOnly.FromTimeSpan(value);
         }
+        public TimeOnly? GetAsNull(Function<TimeOnly> column) {
 
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return TimeOnly.FromTimeSpan(value);
+        }
 
         public byte Get(Function<byte> function) {
 
@@ -934,6 +976,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return _reader.GetByte(_ordinal);
         }
+        public byte? GetAsNull(Function<byte> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetByte(_ordinal);
+        }
 
         public byte[] Get(Function<byte[]> function) {
 
@@ -945,6 +996,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return (byte[])_reader.GetValue(_ordinal);
         }
         public byte[]? Get(NFunction<byte[]> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return (byte[])_reader.GetValue(_ordinal);
+        }
+        public byte[]? GetAsNull(Function<byte[]> function) {
 
             _ordinal++;
 
@@ -977,8 +1037,30 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return IntegerToEnum<int, ENUM>.Convert(value);
         }
-
         public ENUM? Get<ENUM>(NFunction<ENUM> function) where ENUM : struct, Enum {
+
+            _ordinal++;
+
+            Type fieldType = _reader.GetFieldType(_ordinal);
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return (ENUM?)(object?)null;
+            }
+
+            int value;
+
+            if(fieldType == typeof(byte)) {
+                value = _reader.GetByte(_ordinal);
+            }
+            else if(fieldType == typeof(short)) {
+                value = _reader.GetInt16(_ordinal);
+            }
+            else {
+                value = _reader.GetInt32(_ordinal);
+            }
+            return IntegerToEnum<int, ENUM>.Convert(value);
+        }
+        public ENUM? GetAsNull<ENUM>(Function<ENUM> function) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -1011,8 +1093,16 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetGuid(_ordinal));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetGuid(_ordinal));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1040,6 +1130,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetInt16(_ordinal));
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt16(_ordinal));
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
 
@@ -1051,6 +1150,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return CUSTOM_TYPE.ValueOf(_reader.GetInt32(_ordinal));
         }
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt32(_ordinal));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1078,6 +1186,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetInt64(_ordinal));
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetInt64(_ordinal));
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
 
@@ -1089,6 +1206,15 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             return CUSTOM_TYPE.ValueOf(_reader.GetString(_ordinal));
         }
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetString(_ordinal));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1375,8 +1501,16 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return Json.ValueOf(_reader.GetString(_ordinal));
         }
-
         public Json? Get(NFunction<Json> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Json.ValueOf(_reader.GetString(_ordinal));
+        }
+        public Json? GetAsNull(Function<Json> function) {
 
             _ordinal++;
 
@@ -1395,8 +1529,16 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
             }
             return Jsonb.ValueOf(_reader.GetString(_ordinal));
         }
-
         public Jsonb? Get(NFunction<Jsonb> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Jsonb.ValueOf(_reader.GetString(_ordinal));
+        }
+        public Jsonb? GetAsNull(Function<Jsonb> column) {
 
             _ordinal++;
 

@@ -233,72 +233,86 @@ namespace QueryLite {
         /// </summary>
         public DateTime Get(Function<DateTime> column);
         public DateTime? Get(NFunction<DateTime> column);
+        public DateTime? GetAsNull(Function<DateTime> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public DateTimeOffset Get(Function<DateTimeOffset> column);
         public DateTimeOffset? Get(NFunction<DateTimeOffset> column);
+        public DateTimeOffset? GetAsNull(Function<DateTimeOffset> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public DateOnly Get(Function<DateOnly> column);
         public DateOnly? Get(NFunction<DateOnly> column);
+        public DateOnly? GetAsNull(Function<DateOnly> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public TimeOnly Get(Function<TimeOnly> column);
         public TimeOnly? Get(NFunction<TimeOnly> column);
+        public TimeOnly? GetAsNull(Function<TimeOnly> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public byte Get(Function<byte> column);
         public byte? Get(NFunction<byte> column);
+        public byte? GetAsNull(Function<byte> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public byte[] Get(Function<byte[]> column);
         public byte[]? Get(NFunction<byte[]> column);
+        public byte[]? GetAsNull(Function<byte[]> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Json Get(Function<Json> function);
         public Json? Get(NFunction<Json> function);
+        public Json? GetAsNull(Function<Json> function);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Jsonb Get(Function<Jsonb> function);
         public Jsonb? Get(NFunction<Jsonb> function);
+        public Jsonb? GetAsNull(Function<Jsonb> function);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public ENUM Get<ENUM>(Function<ENUM> column) where ENUM : struct, Enum;
         public ENUM? Get<ENUM>(NFunction<ENUM> column) where ENUM : struct, Enum;
+        public ENUM? GetAsNull<ENUM>(Function<ENUM> column) where ENUM : struct, Enum;
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
