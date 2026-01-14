@@ -82,6 +82,7 @@ namespace QueryLite {
         /// </summary>
         public int Get(Column<int> column);
         public int? Get(NColumn<int> column);
+        public int? GetAsNull(Column<int> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
@@ -134,84 +135,98 @@ namespace QueryLite {
 
         public byte Get(Column<byte> column);
         public byte? Get(NColumn<byte> column);
+        public byte? GetAsNull(Column<byte> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public byte[] Get(Column<byte[]> column);
         public byte[]? Get(NColumn<byte[]> column);
+        public byte[]? GetAsNull(Column<byte[]> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Json Get(Column<Json> column);
         public Json? Get(NColumn<Json> column);
+        public Json? GetAsNull(Column<Json> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Jsonb Get(Column<Jsonb> column);
         public Jsonb? Get(NColumn<Jsonb> column);
+        public Jsonb? GetAsNull(Column<Jsonb> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public ENUM Get<ENUM>(Column<ENUM> column) where ENUM : struct, Enum;
         public ENUM? Get<ENUM>(NColumn<ENUM> column) where ENUM : struct, Enum;
+        public ENUM? GetAsNull<ENUM>(Column<ENUM> column) where ENUM : struct, Enum;
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public string Get(Function<string> column);
         public string? Get(NFunction<string> column);
+        public string? GetAsNull(Function<string> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Guid Get(Function<Guid> column);
         public Guid? Get(NFunction<Guid> column);
+        public Guid? GetAsNull(Function<Guid> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public bool Get(Function<bool> column);
         public bool? Get(NFunction<bool> column);
+        public bool? GetAsNull(Function<bool> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public Bit Get(Function<Bit> column);
         public Bit? Get(NFunction<Bit> column);
+        public Bit? GetAsNull(Function<Bit> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public short Get(Function<short> column);
         public short? Get(NFunction<short> column);
+        public short? GetAsNull(Function<short> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public int Get(Function<int> column);
         public int? Get(NFunction<int> column);
+        public int? GetAsNull(Function<int> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public long Get(Function<long> column);
         public long? Get(NFunction<long> column);
+        public long? GetAsNull(Function<long> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public float Get(Function<float> column);
         public float? Get(NFunction<float> column);
+        public float? GetAsNull(Function<float> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.
         /// </summary>
         public double Get(Function<double> column);
         public double? Get(NFunction<double> column);
+        public double? GetAsNull(Function<double> column);
 
         /// <summary>
         /// Returns the selected value if it exists otherwise the default value for the type.

@@ -160,8 +160,10 @@ namespace QueryLite.Databases.SqlServer {
         public int Get(Column<int> column) {
             return Add(column);
         }
-
         public int? Get(NColumn<int> column) {
+            return Add(column);
+        }
+        public int? GetAsNull(Column<int> column) {
             return Add(column);
         }
 
@@ -238,88 +240,110 @@ namespace QueryLite.Databases.SqlServer {
         public byte Get(Column<byte> column) {
             return Add(column);
         }
-
         public byte? Get(NColumn<byte> column) {
+            return Add(column);
+        }
+        public byte? GetAsNull(Column<byte> column) {
             return Add(column);
         }
 
         public byte[] Get(Column<byte[]> column) {
             return Add(column);
         }
-
         public byte[]? Get(NColumn<byte[]> column) {
+            return Add(column);
+        }
+        public byte[]? GetAsNull(Column<byte[]> column) {
             return Add(column);
         }
 
         public string Get(Function<string> column) {
             return Add(column);
         }
-
         public string? Get(NFunction<string> column) {
+            return Add(column);
+        }
+        public string? GetAsNull(Function<string> column) {
             return Add(column);
         }
 
         public Guid Get(Function<Guid> column) {
             return Add(column);
         }
-
         public Guid? Get(NFunction<Guid> column) {
+            return Add(column);
+        }
+        public Guid? GetAsNull(Function<Guid> column) {
             return Add(column);
         }
 
         public bool Get(Function<bool> column) {
             return Add(column);
         }
-
         public bool? Get(NFunction<bool> column) {
+            return Add(column);
+        }
+        public bool? GetAsNull(Function<bool> column) {
             return Add(column);
         }
 
         public Bit Get(Function<Bit> column) {
             return Add(column);
         }
-
         public Bit? Get(NFunction<Bit> column) {
+            return Add(column);
+        }
+        public Bit? GetAsNull(Function<Bit> column) {
             return Add(column);
         }
 
         public short Get(Function<short> column) {
             return Add(column);
         }
-
         public short? Get(NFunction<short> column) {
+            return Add(column);
+        }
+        public short? GetAsNull(Function<short> column) {
             return Add(column);
         }
 
         public int Get(Function<int> column) {
             return Add(column);
         }
-
         public int? Get(NFunction<int> column) {
+            return Add(column);
+        }
+        public int? GetAsNull(Function<int> column) {
             return Add(column);
         }
 
         public long Get(Function<long> column) {
             return Add(column);
         }
-
         public long? Get(NFunction<long> column) {
+            return Add(column);
+        }
+        public long? GetAsNull(Function<long> column) {
             return Add(column);
         }
 
         public float Get(Function<float> column) {
             return Add(column);
         }
-
         public float? Get(NFunction<float> column) {
+            return Add(column);
+        }
+        public float? GetAsNull(Function<float> column) {
             return Add(column);
         }
 
         public double Get(Function<double> column) {
             return Add(column);
         }
-
         public double? Get(NFunction<double> column) {
+            return Add(column);
+        }
+        public double? GetAsNull(Function<double> column) {
             return Add(column);
         }
 
@@ -374,8 +398,10 @@ namespace QueryLite.Databases.SqlServer {
         public ENUM Get<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
-
         public ENUM? Get<ENUM>(NColumn<ENUM> column) where ENUM : struct, Enum {
+            return Add(column);
+        }
+        public ENUM? GetAsNull<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
             return Add(column);
         }
 
@@ -570,11 +596,17 @@ namespace QueryLite.Databases.SqlServer {
         public Json? Get(NColumn<Json> column) {
             return Add(column);
         }
+        public Json? GetAsNull(Column<Json> column) {
+            return Add(column);
+        }
 
         public Jsonb Get(Column<Jsonb> column) {
             return Add(column);
         }
         public Jsonb? Get(NColumn<Jsonb> column) {
+            return Add(column);
+        }
+        public Jsonb? GetAsNull(Column<Jsonb> column) {
             return Add(column);
         }
     }

@@ -241,6 +241,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetInt32(_ordinal);
         }
+        public int? GetAsNull(Column<int> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt32(_ordinal);
+        }
 
         public long Get(Column<long> column) {
 
@@ -461,6 +470,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetByte(_ordinal);
         }
+        public byte? GetAsNull(Column<byte> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetByte(_ordinal);
+        }
 
         public byte[] Get(Column<byte[]> column) {
 
@@ -474,6 +492,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             return (byte[])_reader[_ordinal];
         }
         public byte[]? Get(NColumn<byte[]> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return (byte[])_reader[_ordinal];
+        }
+        public byte[]? GetAsNull(Column<byte[]> column) {
 
             _ordinal++;
 
@@ -506,8 +533,30 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                 return IntegerToEnum<int, ENUM>.Convert(_reader.GetInt32(_ordinal));
             }
         }
-
         public ENUM? Get<ENUM>(NColumn<ENUM> column) where ENUM : struct, Enum {
+
+            _ordinal++;
+
+            Type fieldType = _reader.GetFieldType(_ordinal);
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return (ENUM?)(object?)null;
+            }
+
+            if(fieldType == typeof(byte)) {
+                return IntegerToEnum<byte, ENUM>.Convert(_reader.GetByte(_ordinal));
+            }
+            else if(fieldType == typeof(short)) {
+                return IntegerToEnum<int, ENUM>.Convert(_reader.GetInt16(_ordinal));
+            }
+            else if(fieldType == typeof(long)) {
+                return IntegerToEnum<long, ENUM>.Convert(_reader.GetInt64(_ordinal));
+            }
+            else {
+                return IntegerToEnum<int, ENUM>.Convert(_reader.GetInt32(_ordinal));
+            }
+        }
+        public ENUM? GetAsNull<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
 
             _ordinal++;
 
@@ -542,8 +591,16 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetString(_ordinal);
         }
-
         public string? Get(NFunction<string> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetString(_ordinal);
+        }
+        public string? GetAsNull(Function<string> function) {
 
             _ordinal++;
 
@@ -571,6 +628,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetGuid(_ordinal);
         }
+        public Guid? GetAsNull(Function<Guid> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetGuid(_ordinal);
+        }
 
         public bool Get(Function<bool> function) {
 
@@ -590,7 +656,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetBoolean(_ordinal);
         }
+        public bool? GetAsNull(Function<bool> function) {
 
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetBoolean(_ordinal);
+        }
 
         public Bit Get(Function<Bit> column) {
 
@@ -602,8 +676,16 @@ namespace QueryLite.Databases.Sqlite.Collectors {
 
             return Bit.ValueOf(_reader.GetBoolean(_ordinal));
         }
-
         public Bit? Get(NFunction<Bit> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Bit.ValueOf(_reader.GetBoolean(_ordinal));
+        }
+        public Bit? GetAsNull(Function<Bit> column) {
 
             _ordinal++;
 
@@ -631,6 +713,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetInt16(_ordinal);
         }
+        public short? GetAsNull(Function<short> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt16(_ordinal);
+        }
 
         public int Get(Function<int> function) {
 
@@ -642,6 +733,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             return _reader.GetInt32(_ordinal);
         }
         public int? Get(NFunction<int> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt32(_ordinal);
+        }
+        public int? GetAsNull(Function<int> function) {
 
             _ordinal++;
 
@@ -669,6 +769,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetInt64(_ordinal);
         }
+        public long? GetAsNull(Function<long> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetInt64(_ordinal);
+        }
 
         public float Get(Function<float> function) {
 
@@ -688,6 +797,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return _reader.GetFloat(_ordinal);
         }
+        public float? GetAsNull(Function<float> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetFloat(_ordinal);
+        }
 
         public double Get(Function<double> function) {
 
@@ -699,6 +817,15 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             return _reader.GetDouble(_ordinal);
         }
         public double? Get(NFunction<double> function) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return _reader.GetDouble(_ordinal);
+        }
+        public double? GetAsNull(Function<double> function) {
 
             _ordinal++;
 
@@ -1322,8 +1449,16 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return Json.ValueOf(_reader.GetString(_ordinal));
         }
-
         public Json? Get(NColumn<Json> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Json.ValueOf(_reader.GetString(_ordinal));
+        }
+        public Json? GetAsNull(Column<Json> column) {
 
             _ordinal++;
 
@@ -1342,8 +1477,16 @@ namespace QueryLite.Databases.Sqlite.Collectors {
             }
             return Jsonb.ValueOf(_reader.GetString(_ordinal));
         }
-
         public Jsonb? Get(NColumn<Jsonb> column) {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return Jsonb.ValueOf(_reader.GetString(_ordinal));
+        }
+        public Jsonb? GetAsNull(Column<Jsonb> column) {
 
             _ordinal++;
 

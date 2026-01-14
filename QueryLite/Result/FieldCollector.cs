@@ -114,8 +114,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public int? Get(NColumn<int> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public int? GetAsNull(Column<int> column) {
             Fields.Add(column);
             return default;
         }
@@ -215,8 +218,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public byte? Get(NColumn<byte> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public byte? GetAsNull(Column<byte> column) {
             Fields.Add(column);
             return default;
         }
@@ -225,8 +231,11 @@ namespace QueryLite {
             Fields.Add(column);
             return [];
         }
-
         public byte[]? Get(NColumn<byte[]> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public byte[]? GetAsNull(Column<byte[]> column) {
             Fields.Add(column);
             return default;
         }
@@ -235,8 +244,11 @@ namespace QueryLite {
             Fields.Add(column);
             return "";
         }
-
         public string? Get(NFunction<string> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public string? GetAsNull(Function<string> column) {
             Fields.Add(column);
             return default;
         }
@@ -245,8 +257,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public Guid? Get(NFunction<Guid> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public Guid? GetAsNull(Function<Guid> column) {
             Fields.Add(column);
             return default;
         }
@@ -255,8 +270,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public bool? Get(NFunction<bool> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public bool? GetAsNull(Function<bool> column) {
             Fields.Add(column);
             return default;
         }
@@ -265,8 +283,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public Bit? Get(NFunction<Bit> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public Bit? GetAsNull(Function<Bit> column) {
             Fields.Add(column);
             return default;
         }
@@ -275,8 +296,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public short? Get(NFunction<short> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public short? GetAsNull(Function<short> column) {
             Fields.Add(column);
             return default;
         }
@@ -285,8 +309,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public int? Get(NFunction<int> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public int? GetAsNull(Function<int> column) {
             Fields.Add(column);
             return default;
         }
@@ -295,8 +322,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public long? Get(NFunction<long> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public long? GetAsNull(Function<long> column) {
             Fields.Add(column);
             return default;
         }
@@ -305,8 +335,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public float? Get(NFunction<float> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public float? GetAsNull(Function<float> column) {
             Fields.Add(column);
             return default;
         }
@@ -315,8 +348,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public double? Get(NFunction<double> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public double? GetAsNull(Function<double> column) {
             Fields.Add(column);
             return default;
         }
@@ -385,8 +421,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default!;
         }
-
         public ENUM? Get<ENUM>(NColumn<ENUM> column) where ENUM : struct, Enum {
+            Fields.Add(column);
+            return default;
+        }
+        public ENUM? GetAsNull<ENUM>(Column<ENUM> column) where ENUM : struct, Enum {
             Fields.Add(column);
             return default;
         }
@@ -625,12 +664,20 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+        public Json? GetAsNull(Column<Json> column) {
+            Fields.Add(column);
+            return default;
+        }
 
         public Jsonb Get(Column<Jsonb> column) {
             Fields.Add(column);
             return default;
         }
         public Jsonb? Get(NColumn<Jsonb> column) {
+            Fields.Add(column);
+            return default;
+        }
+        public Jsonb? GetAsNull(Column<Jsonb> column) {
             Fields.Add(column);
             return default;
         }
