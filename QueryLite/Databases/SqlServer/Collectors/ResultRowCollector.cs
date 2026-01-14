@@ -1229,6 +1229,15 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetByte(_ordinal) == 1);
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetByte(_ordinal) == 1);
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
 
@@ -1248,6 +1257,15 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDecimal(_ordinal));
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
 
@@ -1258,8 +1276,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetDateTime(_ordinal));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDateTime(_ordinal));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1278,8 +1304,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetDateTimeOffset(_ordinal));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDateTimeOffset(_ordinal));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1299,8 +1333,17 @@ namespace QueryLite.Databases.SqlServer {
             DateTime value = _reader.GetDateTime(_ordinal);
             return CUSTOM_TYPE.ValueOf(DateOnly.FromDateTime(value));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            DateTime value = _reader.GetDateTime(_ordinal);
+            return CUSTOM_TYPE.ValueOf(DateOnly.FromDateTime(value));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1321,8 +1364,17 @@ namespace QueryLite.Databases.SqlServer {
             TimeSpan value = _reader.GetTimeSpan(_ordinal);
             return CUSTOM_TYPE.ValueOf(TimeOnly.FromTimeSpan(value));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            TimeSpan value = _reader.GetTimeSpan(_ordinal);
+            return CUSTOM_TYPE.ValueOf(TimeOnly.FromTimeSpan(value));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1342,8 +1394,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetFloat(_ordinal));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetFloat(_ordinal));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1362,8 +1422,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetDouble(_ordinal));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetDouble(_ordinal));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1382,8 +1450,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(_reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE);
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(_reader.GetBoolean(_ordinal) ? Bit.TRUE : Bit.FALSE);
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1402,8 +1478,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return readValue(_reader, _ordinal);
         }
-
         public TYPE? LoadFromReader<TYPE>(NColumn<TYPE> column, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return readValue(_reader, _ordinal);
+        }
+        public TYPE? LoadFromReaderAsNull<TYPE>(Column<TYPE> column, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
@@ -1423,8 +1507,17 @@ namespace QueryLite.Databases.SqlServer {
             }
             return readValue(_reader, _ordinal);
         }
-
         public CUSTOM_TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue)
+                                                       where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
+                                                       where TYPE : notnull {
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return readValue(_reader, _ordinal);
+        }
+        public CUSTOM_TYPE? LoadFromReaderAsNull<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue)
                                                        where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
                                                        where TYPE : notnull {
             _ordinal++;
@@ -1444,8 +1537,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return readValue(_reader, _ordinal);
         }
-
         public TYPE? LoadFromReader<TYPE>(NFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return readValue(_reader, _ordinal);
+        }
+        public TYPE? LoadFromReaderAsNull<TYPE>(Function<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
@@ -1464,8 +1565,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return readValue(_reader, _ordinal);
         }
-
         public TYPE? LoadFromReader<TYPE>(NRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return default;
+            }
+            return readValue(_reader, _ordinal);
+        }
+        public TYPE? LoadFromReaderAsNull<TYPE>(RawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
 
             _ordinal++;
 
@@ -1540,8 +1649,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(Json.ValueOf(_reader.GetString(_ordinal)));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(Json.ValueOf(_reader.GetString(_ordinal)));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
 
             _ordinal++;
 
@@ -1560,8 +1677,16 @@ namespace QueryLite.Databases.SqlServer {
             }
             return CUSTOM_TYPE.ValueOf(Jsonb.ValueOf(_reader.GetString(_ordinal)));
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+
+            _ordinal++;
+
+            if(_reader.IsDBNull(_ordinal)) {
+                return null;
+            }
+            return CUSTOM_TYPE.ValueOf(Jsonb.ValueOf(_reader.GetString(_ordinal)));
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
 
             _ordinal++;
 

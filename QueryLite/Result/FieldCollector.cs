@@ -534,6 +534,10 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
             Fields.Add(column);
@@ -543,13 +547,20 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
 
         public CUSTOM_TYPE Get<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -558,8 +569,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -568,8 +582,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -578,8 +595,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -588,8 +608,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -598,8 +621,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -608,8 +634,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -622,6 +651,10 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
+        public TYPE? LoadFromReaderAsNull<TYPE>(Column<TYPE> column, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+            Fields.Add(column);
+            return default;
+        }
 
         public CUSTOM_TYPE LoadFromReader<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue, CUSTOM_TYPE @default)
                                                       where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
@@ -629,8 +662,13 @@ namespace QueryLite {
             Fields.Add(column);
             return @default;
         }
-
         public CUSTOM_TYPE? LoadFromReader<CUSTOM_TYPE, TYPE>(NColumn<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue)
+                                                       where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
+                                                       where TYPE : notnull {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? LoadFromReaderAsNull<CUSTOM_TYPE, TYPE>(Column<CUSTOM_TYPE, TYPE> column, ReadValueDelegate<CUSTOM_TYPE> readValue)
                                                        where CUSTOM_TYPE : struct, ICustomType<TYPE, CUSTOM_TYPE>
                                                        where TYPE : notnull {
             Fields.Add(column);
@@ -641,8 +679,11 @@ namespace QueryLite {
             Fields.Add(function);
             return @default;
         }
-
         public TYPE? LoadFromReader<TYPE>(NFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+            Fields.Add(function);
+            return default;
+        }
+        public TYPE? LoadFromReaderAsNull<TYPE>(Function<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
             Fields.Add(function);
             return default;
         }
@@ -651,8 +692,11 @@ namespace QueryLite {
             Fields.Add(function);
             return @default;
         }
-
         public TYPE? LoadFromReader<TYPE>(NRawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
+            Fields.Add(function);
+            return default;
+        }
+        public TYPE? LoadFromReaderAsNull<TYPE>(RawSqlFunction<TYPE> function, ReadValueDelegate<TYPE> readValue) where TYPE : notnull {
             Fields.Add(function);
             return default;
         }
@@ -687,8 +731,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
@@ -697,8 +744,11 @@ namespace QueryLite {
             Fields.Add(column);
             return default;
         }
-
         public CUSTOM_TYPE? Get<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            Fields.Add(column);
+            return default;
+        }
+        public CUSTOM_TYPE? GetAsNull<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
             Fields.Add(column);
             return default;
         }
