@@ -270,18 +270,14 @@ var result = Query
 
 ## Left Joins
 
-When a table is used in a left join, the query result can return a null value internally. 
-In this case all types will return as their `default` C# value except for non-null reference 
-types. Non-null `string` will return as an empty string and non-null `byte[]` will 
-return as an empty array.
+When a table is used in a left join, the query result can return a null value internally. The best way to
+detect a left join null value on a non-nullable column is to use the row method `GetAsNull(...)`. This
+will return null in that case.
 
-To detect if a left join result returned a null row, it is recommended to select the primary key column of 
-the table and check that the column is set to its default value in C#. This will only work 
-if the column never contains its default C# value. For example an integer primary key should 
-never contain the value of 0. Note: That nullable columns are not suitable for this type of 
-check as they can return null regardless of the join used.
+If the `Get(...)` method cannot return null, the method will return as the `default` C# value except for non-null reference 
+types. Non-null `string` will return as an empty string and non-null `byte[]` will return as an empty array.
 
-For example:
+Here is an example of how to detect a left join null value:
 
 ```C#
 CustomersTable customersTable = CustomersTable.Instance;
@@ -291,7 +287,7 @@ var result = Query
     .Select(
         row => new {
             OrderId = row.Get(ordersTable.OrderID),
-            CustomerId = row.Get(customersTable.CustomerID)
+            CustomerId = row.GetAsNull(customersTable.CustomerID)   //Note: Use `GetAsNull(...)` method
         }
     )
     .From(ordersTable)
@@ -300,12 +296,12 @@ var result = Query
 
 foreach(var row in result.Rows) {
 
-    int customerId = row.CustomerId;
+    int? customerId = row.CustomerId;
 
     /*
      * Check to see if a customer exists from the left join result
      */
-    if(customerId != 0) {    //Note: The 'NULL' value from the LEFT JOIN is converted to the C# default of 0
+    if(customerId != null) {
 
     }
 }
