@@ -21,7 +21,7 @@ var result = Query
             OrderId = row.Get(orderTable.OrderId),
             CustomerId = row.Get(customerTable.CustomerId),
             CompanyName = row.Get(customerTable.CompanyName),
-            OrderStatus = row.Get(orderStatusTable.Status)
+            OrderStatus = row.GetAsNull(orderStatusTable.Status)
         }
     )
     .From(orderTable)
@@ -41,6 +41,7 @@ foreach(var row in result.Rows) {
     OrderId orderId = row.OrderId;  //Note: OrderId and CustomerId are custom types that implement ICustomType<TYPE, CUSTOM_TYPE> and can be source generated.
     CustomerId customerId = row.CustomerId;
     string companyName = row.CompanyName;
+    OrderStatus? status = row.OrderStatus;
 }
 ```
 
