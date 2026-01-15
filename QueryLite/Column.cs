@@ -88,7 +88,8 @@ namespace QueryLite {
         bool IsNullable { get; }
 
         /// <summary>
-        /// Enclose column name in sql query. For example enclose column name with [] (square brackets) in sql server queries.
+        /// Enclose column name in sql query. For example enclose column name with [] (square brackets) in
+        /// sql server queries or "" for postgresql queries.
         /// </summary>
         bool Enclose { get; }
     }
