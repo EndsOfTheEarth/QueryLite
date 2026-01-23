@@ -21,34 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-using System.Data.Common;
 using Microsoft.Data.Sqlite;
+using System.Data.Common;
 
 namespace QueryLite.Databases.Sqlite {
 
     public sealed class SqliteParameters : IParametersBuilder {
 
-        public IList<DbParameter> ParameterList { get; }
+        public IList<DbParameter> ParameterList_ { get; }
 
         public SqliteParameters(int initParams) {
-            ParameterList = new List<DbParameter>(initParams);
+            ParameterList_ = new List<DbParameter>(initParams);
+        }
+
+        public string GetNextParameterName() {
+
+            if(ParamNameCache.ParamNames.Length < ParameterList_.Count) {
+                return ParamNameCache.ParamNames[ParameterList_.Count];
+            }
+            return $"@{ParameterList_.Count}";
         }
 
         public void AddParameter(IDatabase database, Type type, object? value, out string paramName) {
 
-            if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
-                paramName = ParamNameCache.ParamNames[ParameterList.Count];
-            }
-            else {
-                paramName = $"@{ParameterList.Count}";
-            }
+            paramName = GetNextParameterName();
 
             if(value != null) {
                 CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
-                ParameterList.Add(createParameter(name: paramName, value));
+                ParameterList_.Add(createParameter(name: paramName, value));
             }
             else {
-                ParameterList.Add(
+                ParameterList_.Add(
                     new SqliteParameter(name: paramName, value: DBNull.Value) {
                         SqliteType = SqliteTypeMappings.TypeMapper.GetDbType(type)
                     }

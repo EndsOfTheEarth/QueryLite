@@ -27,11 +27,11 @@ namespace QueryLite.Databases.SqlServer {
 
     internal sealed class SqlServerSelectQueryGenerator : IQueryGenerator {
 
-        string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters) {
-            return GetSql(template, database, parameters);
+        string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, bool forceAlias, IParametersBuilder? parameters) {
+            return GetSql(template, database, forceAlias: forceAlias, parameters);
         }
 
-        internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters) {
+        internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, bool forceAlias, IParametersBuilder? parameters) {
 
             //We need to start with the first query template
             while(template.Extras != null && template.Extras.ParentUnion != null) {
@@ -48,7 +48,7 @@ namespace QueryLite.Databases.SqlServer {
                     sql.Append(" DISTINCT");
                 }
 
-                bool useAliases = template.Joins != null && template.Joins.Count > 0;
+                bool useAliases = forceAlias || (template.Joins != null && template.Joins.Count > 0);
 
                 GenerateTopClause(sql, template);
                 GenerateSelectClause(sql, template, useAliases: useAliases, database, parameters);
@@ -97,14 +97,22 @@ namespace QueryLite.Databases.SqlServer {
 
                 if(Settings.EnableCollectorCaching) {
 
+                    SqlServerSelectFieldCollector selectCollector;
+
                     if(_cachedCollectorInstance == null) {
-                        _cachedCollectorInstance = new SqlServerSelectFieldCollector(database, parameters, useAlias: useAliases, sql);
+                        selectCollector = new SqlServerSelectFieldCollector(database, parameters, useAlias: useAliases, sql);
                     }
                     else {
-                        _cachedCollectorInstance.Reset(database, parameters, useAlias: useAliases, sql);
+                        selectCollector = _cachedCollectorInstance; //Use cached collector
+
+                        //Note: We unset the cached collector as queries that contain nested queries in the select statement can
+                        //      use more than one select collector and that causes problems when sharing a single instance.
+                        _cachedCollectorInstance = null;
+                        selectCollector.Reset(database, parameters, useAlias: useAliases, sql);
                     }
-                    template.SelectFunction(_cachedCollectorInstance);
-                    _cachedCollectorInstance.Clear();
+                    template.SelectFunction(selectCollector);
+                    selectCollector.Clear();
+                    _cachedCollectorInstance = selectCollector; //Return collector to cache
                 }
                 else {
                     template.SelectFunction(new SqlServerSelectFieldCollector(database, parameters, useAlias: useAliases, sql));

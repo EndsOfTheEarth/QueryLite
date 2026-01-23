@@ -26,7 +26,7 @@ using QueryLite.Databases;
 namespace QueryLite {
 
     internal interface IQueryGenerator {
-        internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, IParametersBuilder? parameters);
+        internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, bool forceAlias, IParametersBuilder? parameters);
     }
     internal interface IInsertQueryGenerator {
         internal string GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters,
@@ -268,7 +268,13 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.QueryGenerator.GetSql(this, database, parameters);
+            return database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
+        }
+        public string GetSql(IDatabase database, bool forceAlias, IParametersBuilder? parameters = null) {
+
+            ArgumentNullException.ThrowIfNull(database);
+
+            return database.QueryGenerator.GetSql(this, database, forceAlias: forceAlias, parameters);
         }
 
         public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null,
@@ -284,7 +290,7 @@ namespace QueryLite {
             IParametersBuilder? parameters = (useParameters == Parameters.On) ||
                                              (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
-            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
+            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, forceAlias: false, parameters);
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: transaction.Database,
@@ -313,7 +319,7 @@ namespace QueryLite {
             IParametersBuilder? parameters = (useParameters == Parameters.On) ||
                                              (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
-            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
+            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, forceAlias: false, parameters);
 
             QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
                 database: transaction.Database,
@@ -343,7 +349,7 @@ namespace QueryLite {
             IParametersBuilder? parameters = (useParameters == Parameters.On) ||
                                              (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
-            string sql = database.QueryGenerator.GetSql(this, database, parameters);
+            string sql = database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
 
             QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
                 database: database,
@@ -372,7 +378,7 @@ namespace QueryLite {
             IParametersBuilder? parameters = (useParameters == Parameters.On) ||
                                              (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
-            string sql = database.QueryGenerator.GetSql(this, database, parameters);
+            string sql = database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -400,7 +406,7 @@ namespace QueryLite {
             IParametersBuilder? parameters = (useParameters == Parameters.On) ||
                                              (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
-            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
+            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, forceAlias: false, parameters);
 
             RESULT? result = QueryExecutor.SingleOrDefault(
                 database: transaction.Database,
@@ -428,7 +434,7 @@ namespace QueryLite {
             IParametersBuilder? parameters = (useParameters == Parameters.On) ||
                                              (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
-            string sql = database.QueryGenerator.GetSql(this, database, parameters);
+            string sql = database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
 
             RESULT? result = QueryExecutor.SingleOrDefault(
                 database: database,
@@ -457,7 +463,7 @@ namespace QueryLite {
             IParametersBuilder? parameters = (useParameters == Parameters.On) ||
                                              (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
 
-            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, parameters);
+            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, forceAlias: false, parameters);
 
             RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
                 database: transaction.Database,
@@ -486,7 +492,7 @@ namespace QueryLite {
             IParametersBuilder? parameters = (useParameters == Parameters.On) ||
                                              (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
 
-            string sql = database.QueryGenerator.GetSql(this, database, parameters);
+            string sql = database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
 
             RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
                 database: database,

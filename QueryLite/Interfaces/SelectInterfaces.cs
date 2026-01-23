@@ -257,7 +257,7 @@ namespace QueryLite {
         DISABLE_EXTERNALPUSHDOWN
     }
 
-    public interface IExecute<RESULT> {
+    public interface IGetSelectSql {
 
         /// <summary>
         /// Get select query sql
@@ -266,6 +266,17 @@ namespace QueryLite {
         /// <param name="parameters"></param>
         /// <returns></returns>
         public string GetSql(IDatabase database, IParametersBuilder? parameters = null);
+
+        /// <summary>
+        /// Get select query sql
+        /// </summary>
+        /// <param name="database"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public string GetSql(IDatabase database, bool forceAlias, IParametersBuilder? parameters = null);
+
+    }
+    public interface IExecute<RESULT> : IGetSelectSql {
 
         public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
         

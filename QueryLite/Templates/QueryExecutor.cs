@@ -101,8 +101,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList_.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList_[index]);
                         }
                     }
 
@@ -248,8 +248,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList_.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList_[index]);
                         }
                     }
 
@@ -382,8 +382,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList_.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList_[index]);
                         }
                     }
 
@@ -535,8 +535,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList_.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList_[index]);
                         }
                     }
 
@@ -688,8 +688,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList_.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList_[index]);
                         }
                     }
 
@@ -835,8 +835,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        for(int index = 0; index < parameters.ParameterList_.Count; index++) {
+                            command.Parameters.Add(parameters.ParameterList_[index]);
                         }
                     }
 

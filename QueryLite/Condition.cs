@@ -165,7 +165,7 @@ namespace QueryLite {
                 sql.Append(Left.Table.Alias).Append('.');
             }
             sql.Append(Left.ColumnName).Append(IsIn ? " IN(" : " NOT IN(");
-            sql.Append(NestedQuery.GetSql(database, parameters));
+            sql.Append(NestedQuery.GetSql(database, forceAlias: true, parameters));
             sql.Append(')');
         }
     }
@@ -334,6 +334,9 @@ namespace QueryLite {
             }
             else if(value is SqlText text) {
                 sql.Append(text.AsEscapedText());
+            }
+            else if(value is IGetSelectSql getSql) {
+                sql.Append(getSql.GetSql(database, forceAlias: true, parameters));
             }
             else {
 

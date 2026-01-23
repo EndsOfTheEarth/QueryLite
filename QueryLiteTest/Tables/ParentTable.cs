@@ -6,6 +6,7 @@ namespace QueryLiteTest.Tables {
     public sealed class ParentTable : ATable {
 
         public static readonly ParentTable Instance = new();
+        public static readonly ParentTable Instance2 = new();
 
         public Column<ParentId, Guid> Id { get; }
         public Column<ParentId, Guid> Id2 { get; }

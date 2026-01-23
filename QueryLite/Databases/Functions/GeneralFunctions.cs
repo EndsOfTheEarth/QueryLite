@@ -174,4 +174,53 @@ namespace QueryLite.Functions {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
     }
+
+    public sealed class Exists : Function<bool> {
+
+        private object Selectable { get; }
+
+        public Exists(ISelectable selectable) : base(name: "Exists") {
+            Selectable = selectable;
+        }
+        public Exists(IGetSelectSql nestedQuery) : base(name: "Exists") {
+            Selectable = nestedQuery;
+        }
+
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+            StringBuilder sql = StringBuilderCache.Acquire();
+
+            sql.Append($"EXISTS(");
+
+            ConditionHelper.AppendSqlValue(Selectable, sql, database, useAlias: useAlias, parameters);
+
+            sql.Append(')');
+
+            return StringBuilderCache.ToStringAndRelease(sql);
+        }
+    }
+    public sealed class NotExists : Function<bool> {
+
+        private object Selectable { get; }
+
+        public NotExists(ISelectable selectable) : base(name: "Not Exists") {
+            Selectable = selectable;
+        }
+        public NotExists(IGetSelectSql nestedQuery) : base(name: "Not Exists") {
+            Selectable = nestedQuery;
+        }
+
+        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+            StringBuilder sql = StringBuilderCache.Acquire();
+
+            sql.Append($"NOT EXISTS(");
+
+            ConditionHelper.AppendSqlValue(Selectable, sql, database, useAlias: useAlias, parameters);
+
+            sql.Append(')');
+
+            return StringBuilderCache.ToStringAndRelease(sql);
+        }
+    }
 }

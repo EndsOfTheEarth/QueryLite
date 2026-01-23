@@ -51,14 +51,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
 
         private SqliteSetValuesParameterCollector AddParameter(IColumn column, SqliteType dbType, object? value) {
 
-            string paramName;
-
-            if(_counter < ParamNameCache.ParamNames.Length) {
-                paramName = ParamNameCache.ParamNames[_counter];
-            }
-            else {
-                paramName = $"@{_counter}";
-            }
+            string paramName = Parameters.GetNextParameterName();
 
             if(_collectorMode == CollectorMode.Insert) {
 
@@ -76,7 +69,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                 if(value == null) {
                     value = DBNull.Value;
                 }
-                Parameters.ParameterList.Add(new SqliteParameter(name: paramName, value) { SqliteType = dbType });
+                Parameters.ParameterList_.Add(new SqliteParameter(name: paramName, value) { SqliteType = dbType });
             }
             else if(_collectorMode == CollectorMode.Update) {
 
@@ -92,7 +85,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                 if(value == null) {
                     value = DBNull.Value;
                 }
-                Parameters.ParameterList.Add(new SqliteParameter(name: paramName, value) { SqliteType = dbType });
+                Parameters.ParameterList_.Add(new SqliteParameter(name: paramName, value) { SqliteType = dbType });
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");
@@ -489,6 +482,134 @@ namespace QueryLite.Databases.Sqlite.Collectors {
 
         public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
             return AddParameter(column, SqliteType.Text, value?.Value.Value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return AddFunction(column, value);
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return AddFunction(column, value);
         }
     }
 
@@ -1024,6 +1145,134 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                 return SetValue(column, SqliteTypeMappings.ToSqlStringFunctions.ToSqlString(value.Value.Value));
             }
             return SetValue(column, "null");
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
+        }
+
+        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE> {
+            return SetValue(column, value.GetSql(_database, useAlias: false, parameters: null));
         }
     }
 }

@@ -30,7 +30,7 @@ namespace QueryLite {
     /// </summary>
     public interface IParametersBuilder {
 
-        public IList<DbParameter> ParameterList { get; }
+        public IList<DbParameter> ParameterList_ { get; }
         /// <summary>
         /// Add a new parameter to query
         /// </summary>
