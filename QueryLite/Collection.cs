@@ -41,11 +41,20 @@ namespace QueryLite {
         /// <summary>
         /// Create a sequense with at least one item.
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="items"></param>
-        /// <returns></returns>
         public static Sequence<ITEM> CreateFrom(ITEM item, params ITEM[] items) {
             return new Sequence<ITEM>([item, .. items]);
+        }
+
+        /// <summary>
+        /// Create a sequense with at least one item.
+        /// Returns null if there are no items.
+        /// </summary>
+        public static Sequence<ITEM>? CreateFrom(IEnumerable<ITEM> items) {
+
+            if(!items.Any()) {
+                return null;
+            }
+            return new Sequence<ITEM>([..items]);
         }
 
         /// <summary>
