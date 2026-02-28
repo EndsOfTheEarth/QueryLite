@@ -6,6 +6,8 @@ using System;
 using System.IO;
 using System.Text.Json;
 
+[assembly: Microsoft.VisualStudio.TestTools.UnitTesting.DoNotParallelize]
+
 namespace QueryLiteTest {
 
     public static class TestDatabase {
