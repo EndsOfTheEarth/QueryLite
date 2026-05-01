@@ -40,7 +40,7 @@ namespace QueryLite.CodeGeneratorUI {
 
             if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 
-                BindingPlugins.DataValidators.RemoveAt(0);
+                //BindingPlugins.DataValidators.RemoveAt(0);
 
                 desktop.MainWindow = new MainWindow {
                     DataContext = new MainWindowViewModel(),
