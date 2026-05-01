@@ -108,10 +108,14 @@ namespace QueryLite {
         /// </summary>
         /// <param name="name">Name of table in database</param>
         /// <param name="schemaName">Schema table belongs to</param>
-        /// <param name="enclose">Set to true if the table name is a sql keyword. This will stop the key word from causing invalid sql from being created</param>
+        /// <param name="alias">Set table to a specifc alias. Empty string sets no alias and null
+        /// causes a unique alias to be generated.</param>
+        /// <param name="enclose">Set to true if the table name is a sql keyword. This will stop the
+        /// key word from causing invalid sql from being created</param>
         /// <param name="desc">Table description</param>
         /// <exception cref="ArgumentException"></exception>
-        protected ATable(string name, string schemaName, bool enclose = false, bool isView = false, string desc = "") {
+        protected ATable(string name, string schemaName, string? alias = null, bool enclose = false,
+                         bool isView = false, string desc = "") {
 
             ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -119,7 +123,7 @@ namespace QueryLite {
             TableName = name;
             TableDescription = desc ?? "";
             Enclose = enclose;
-            Alias = "_" + AliasGenerator.GetAlias();
+            Alias = alias ?? "_" + AliasGenerator.GetAlias();
             IsView = isView;
         }
     }
