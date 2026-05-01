@@ -63,7 +63,7 @@ Here is an example using the three parameter values 'GivenName', 'Surname' and '
 ```C#
 var query = Query
     .Prepare<Person>()  //Define the query 'PARAMETERS' type as 'Person'
-    .Select(row => table.Id)
+    .Select(row => row.Get(table.Id))
     .From(table)
     .Where(where =>
         //Use the Person parameter in each condition
