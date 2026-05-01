@@ -126,7 +126,12 @@ namespace Benchmarks {
 
                 Task task = Task.Run(async () => {
 
-                    QueryResult<Test01> result = await _preparedSelectQuery.ExecuteAsync(parameters: this, Databases.TestDatabase, CancellationToken.None);
+                    QueryResult<Test01> result = await _preparedSelectQuery
+                        .ExecuteAsync(
+                            parameters: this,
+                            database: Databases.TestDatabase,
+                            ct: CancellationToken.None
+                        );
                 });
                 tasks.Add(task);
             }
@@ -179,13 +184,13 @@ namespace Benchmarks {
         [Benchmark]
         public async Task EF_Core_Ten_Row_Select_No_Change_TrackingAsync() {
 
-            using TestContext context = Databases.ContextFactory.CreateDbContext();
-
             List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
                 Task task = Task.Run(async () => {
+
+                    using TestContext context = Databases.ContextFactory.CreateDbContext();
 
                     List<Test01Row_EfCore> result = await context
                         .TestRows.AsNoTracking()
@@ -199,13 +204,13 @@ namespace Benchmarks {
         [Benchmark]
         public async Task EF_Core_Ten_Row_SelectAsync() {
 
-            using TestContext context = Databases.ContextFactory.CreateDbContext();
-
             List<Task> tasks = new(_iterations);
 
             for(int index = 0; index < _iterations; index++) {
 
                 Task task = Task.Run(async () => {
+
+                    using TestContext context = Databases.ContextFactory.CreateDbContext();
 
                     List<Test01Row_EfCore> result = await context.TestRows.ToListAsync(CancellationToken.None);
                 });
