@@ -181,9 +181,31 @@ namespace Benchmarks {
         }
 
         [Benchmark]
+        public async Task EF_Core_Single_Row_Select_No_Change_Tracking_Async() {
+
+            using TestContext context = Databases.ContextFactory.CreateDbContext();
+
+            List<Task> tasks = new(_iterations);
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Task task = Task.Run(async () => {
+
+                    List<Test01Row_EfCore> result = await context.TestRows
+                        .AsNoTracking()
+                        .Select(row => row)
+                        .Where(row => row.Row_guid == _guid)
+                        .ToListAsync();
+                });
+                tasks.Add(task);
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        [Benchmark]
         public async Task EF_Core_Single_Row_SelectAsync() {
 
-            using TestContext context = new(Databases.ConnectionString);
+            using TestContext context = Databases.ContextFactory.CreateDbContext();
 
             List<Task> tasks = new(_iterations);
 

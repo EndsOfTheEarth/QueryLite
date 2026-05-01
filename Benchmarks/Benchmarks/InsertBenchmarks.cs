@@ -42,7 +42,7 @@ namespace Benchmarks {
 
                 transaction.Commit();
             }
-            using TestContext context = new(Databases.ConnectionString);
+            using TestContext context = Databases.ContextFactory.CreateDbContext();
             Test01Row_EfCore[] r = [.. context.TestRows];
         }
 
@@ -184,7 +184,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using TestContext context = new(Databases.ConnectionString);
+                using TestContext context = Databases.ContextFactory.CreateDbContext();
 
                 Test01Row_EfCore row = new(
                     id: 0,

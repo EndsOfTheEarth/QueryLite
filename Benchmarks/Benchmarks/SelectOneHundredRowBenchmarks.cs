@@ -2,6 +2,7 @@
 using Benchmarks.Classes;
 using Benchmarks.Tables;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using QueryLite;
 
@@ -54,7 +55,7 @@ namespace Benchmarks {
                 }
                 transaction.Commit();
             }
-            using TestContext context = new(Databases.ConnectionString);
+            using TestContext context = Databases.ContextFactory.CreateDbContext();
             List<Test01Row_EfCore> list = [.. context.TestRows];
         }
 
@@ -143,11 +144,22 @@ namespace Benchmarks {
         }
 
         [Benchmark]
+        public void EF_Core_One_Hundred_Row_Select_No_Change_Tracking() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                using TestContext context = Databases.ContextFactory.CreateDbContext();
+
+                List<Test01Row_EfCore> list = [.. context.TestRows.AsNoTracking()];
+            }
+        }
+
+        [Benchmark]
         public void EF_Core_One_Hundred_Row_Select() {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using TestContext context = new(Databases.ConnectionString);
+                using TestContext context = Databases.ContextFactory.CreateDbContext();
 
                 List<Test01Row_EfCore> list = [.. context.TestRows];
             }

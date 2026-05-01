@@ -1,4 +1,6 @@
-﻿namespace Benchmarks.Tables {
+﻿
+namespace Benchmarks.Tables {
+
     using Microsoft.EntityFrameworkCore;
     using QueryLite;
     using System;
@@ -108,16 +110,18 @@
 
     public class TestContext : DbContext {
 
-        private string ConnectionString { get; }
+        //private string ConnectionString { get; }
 
-        public TestContext(string connectionString) {
-            ConnectionString = connectionString;
-        }
+        public TestContext(DbContextOptions options) : base(options) { }
+
+        //public TestContext(string connectionString) {
+        //    ConnectionString = connectionString;
+        //}
 
         public DbSet<Test01Row_EfCore> TestRows { get; set; } // Represents the Blogs table
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            optionsBuilder.UseNpgsql(ConnectionString);
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+        //    optionsBuilder.UseNpgsql(ConnectionString);
+        //}
     }
 }

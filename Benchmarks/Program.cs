@@ -1,4 +1,7 @@
 ﻿using BenchmarkDotNet.Running;
+using Benchmarks.Tables;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Benchmarks {
 
@@ -44,6 +47,16 @@ namespace Benchmarks {
             connectionString: ConnectionString
         );
 
+        public static PooledDbContextFactory<TestContext> ContextFactory { get; }
+
+        static Databases() {
+
+            DbContextOptions<TestContext> options = new DbContextOptionsBuilder<TestContext>()
+                .UseNpgsql(ConnectionString)
+                .Options;
+
+            ContextFactory = new PooledDbContextFactory<TestContext>(options);
+        }
         public static void ResetTable() {
 
             string sql = @"

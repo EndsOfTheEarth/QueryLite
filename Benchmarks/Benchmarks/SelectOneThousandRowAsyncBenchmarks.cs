@@ -199,6 +199,30 @@ namespace Benchmarks {
         }
 
         [Benchmark]
+        public async Task EF_Core_One_Thousand_Row_Select_No_Change_Tracking_Async() {
+
+            List<Task> tasks = new(_iterations);
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Task task = Task.Run(async () => {
+
+                    await _semaphore.WaitAsync();
+
+                    using TestContext context = Databases.ContextFactory.CreateDbContext();
+
+                    List<Test01Row_EfCore> list = await context
+                        .TestRows.AsNoTracking()
+                        .ToListAsync(CancellationToken.None);
+
+                    _semaphore.Release();
+                });
+                tasks.Add(task);
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        [Benchmark]
         public async Task EF_Core_One_Thousand_Row_SelectAsync() {
 
             List<Task> tasks = new(_iterations);
@@ -209,7 +233,7 @@ namespace Benchmarks {
 
                     await _semaphore.WaitAsync();
 
-                    using TestContext context = new(Databases.ConnectionString);
+                    using TestContext context = Databases.ContextFactory.CreateDbContext();
 
                     List<Test01Row_EfCore> list = await context.TestRows.ToListAsync(CancellationToken.None);
 

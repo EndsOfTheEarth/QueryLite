@@ -55,7 +55,7 @@ namespace Benchmarks {
 
                 transaction.Commit();
             }
-            using TestContext context = new(Databases.ConnectionString);
+            using TestContext context = Databases.ContextFactory.CreateDbContext();
             Test01Row_EfCore? r = context.TestRows.Where(row => row.Row_guid == _guid).SingleOrDefault();
         }
 
@@ -143,11 +143,25 @@ namespace Benchmarks {
         }
 
         [Benchmark]
+        public void EF_Core_Single_Row_Select_No_Change_Tracking() {
+
+            for(int index = 0; index < _iterations; index++) {
+
+                using TestContext context = Databases.ContextFactory.CreateDbContext();    //Keep in loop so that it does not cache records across all iterations
+
+                Test01Row_EfCore? result = context.TestRows
+                    .AsNoTracking()
+                    .Where(row => row.Row_guid == _guid)
+                    .SingleOrDefault();
+            }
+        }
+
+        [Benchmark]
         public void EF_Core_Single_Row_Select() {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using TestContext context = new(Databases.ConnectionString);    //Keep in loop so that it does not cache records across all iterations
+                using TestContext context = Databases.ContextFactory.CreateDbContext();    //Keep in loop so that it does not cache records across all iterations
 
                 Test01Row_EfCore? result = context.TestRows
                     .Where(row => row.Row_guid == _guid)

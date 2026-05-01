@@ -57,7 +57,7 @@ namespace Benchmarks {
                 Id = result.Rows[0];
                 transaction.Commit();
             }
-            using TestContext context = new(Databases.ConnectionString);
+            using TestContext context = Databases.ContextFactory.CreateDbContext();
             Test01Row_EfCore row = context.TestRows.Where(test => test.Row_guid == _guid).First();
         }
 
@@ -170,7 +170,7 @@ namespace Benchmarks {
 
             for(int index = 0; index < _iterations; index++) {
 
-                using TestContext context = new(Databases.ConnectionString);
+                using TestContext context = Databases.ContextFactory.CreateDbContext();
 
                 Test01Row_EfCore row = context
                     .TestRows

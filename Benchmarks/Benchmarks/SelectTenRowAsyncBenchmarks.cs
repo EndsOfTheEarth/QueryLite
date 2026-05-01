@@ -177,22 +177,41 @@ namespace Benchmarks {
         }
 
         [Benchmark]
+        public async Task EF_Core_Ten_Row_Select_No_Change_TrackingAsync() {
+
+            using TestContext context = Databases.ContextFactory.CreateDbContext();
+
+            List<Task> tasks = new(_iterations);
+
+            for(int index = 0; index < _iterations; index++) {
+
+                Task task = Task.Run(async () => {
+
+                    List<Test01Row_EfCore> result = await context
+                        .TestRows.AsNoTracking()
+                        .ToListAsync(CancellationToken.None);
+                });
+                tasks.Add(task);
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        [Benchmark]
         public async Task EF_Core_Ten_Row_SelectAsync() {
 
-            using(TestContext context = new(Databases.ConnectionString)) {
+            using TestContext context = Databases.ContextFactory.CreateDbContext();
 
-                List<Task> tasks = new(_iterations);
+            List<Task> tasks = new(_iterations);
 
-                for(int index = 0; index < _iterations; index++) {
+            for(int index = 0; index < _iterations; index++) {
 
-                    Task task = Task.Run(async () => {
+                Task task = Task.Run(async () => {
 
-                        List<Test01Row_EfCore> result = await context.TestRows.ToListAsync(CancellationToken.None);
-                    });
-                    tasks.Add(task);
-                }
-                await Task.WhenAll(tasks);
+                    List<Test01Row_EfCore> result = await context.TestRows.ToListAsync(CancellationToken.None);
+                });
+                tasks.Add(task);
             }
+            await Task.WhenAll(tasks);
         }
     }
 }
