@@ -89,7 +89,7 @@ namespace QueryLite {
 
         /// <summary>
         /// Enclose column name in sql query. For example enclose column name with [] (square brackets) in
-        /// sql server queries or "" for postgresql queries.
+        /// sql server queries or "" for PostgreSQL queries.
         /// </summary>
         bool Enclose { get; }
     }
@@ -97,8 +97,8 @@ namespace QueryLite {
     /// <summary>
     /// ColumnLength stores the length of a column. This can be either a specific value or
     /// the maximum allowed length for the column type.
-    /// Note: Column lenghts are measured differently between databases. SqlSever measures
-    /// varchar(n) length in bytes and PostgreSql measures it in characters.
+    /// Note: Column lengths are measured differently between databases. SqlSever measures
+    /// varchar(n) length in bytes and PostgreSQL measures it in characters.
     /// </summary>
     public readonly struct ColumnLength {
 
