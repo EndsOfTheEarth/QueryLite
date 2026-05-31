@@ -26,7 +26,7 @@ namespace QueryLite {
     /// <summary>
     /// Query timeout period measured in seconds
     /// </summary>
-    public readonly struct QueryTimeout { //Decided to not call it Timeout as there is a Timeout class in the System.Threading namespace
+    public readonly struct QueryTimeout { //Note: Decided to not call it Timeout as there is a Timeout class in the System.Threading namespace
 
         /// <summary>
         /// Number of seconds until query is timed out

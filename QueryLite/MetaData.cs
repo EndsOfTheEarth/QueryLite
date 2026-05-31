@@ -26,7 +26,8 @@ using System.Text.Json;
 namespace QueryLite {
 
     /// <summary>
-    /// This attribute stops an error appearing in the schema validator when this column type does not map correctly to the database.
+    /// This attribute stops an error appearing in the schema validator when this column
+    /// type does not map correctly to the database.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class SuppressColumnTypeValidationAttribute : Attribute {
@@ -34,7 +35,8 @@ namespace QueryLite {
     }
 
     /// <summary>
-    /// Interface that can be used for Columns that have an unsupported type. e.g. public Column<IUnsupportedType> ColumnName { get; }
+    /// Interface that can be used for Columns that have an unsupported type.
+    /// e.g. public Column<IUnsupportedType> ColumnName { get; }
     /// </summary>
     public interface IUnsupportedType { }
 
@@ -84,7 +86,8 @@ namespace QueryLite {
             ColumnReferences.Add(new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn));
             return this;
         }
-        public ForeignKey ReferencesNonMatching<TYPE_A, TYPE_B>(AColumn<TYPE_A> foreignKeyColumn, AColumn<TYPE_B> primaryKeyColumn) where TYPE_A : notnull where TYPE_B : notnull {
+        public ForeignKey ReferencesNonMatching<TYPE_A, TYPE_B>(AColumn<TYPE_A> foreignKeyColumn, AColumn<TYPE_B> primaryKeyColumn)
+                                                                where TYPE_A : notnull where TYPE_B : notnull {
             ColumnReferences.Add(new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn));
             return this;
         }

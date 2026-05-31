@@ -73,7 +73,8 @@ namespace QueryLite {
     }
 
     /*
-     * These additional condition classes are used to allow conditions between columns to be used in the prepared query functionality but disallow conditions that have fixed values.
+     * These additional condition classes are used to allow conditions between columns to be used
+     * in the prepared query functionality but disallow conditions that have fixed values.
      */
     internal sealed class AndOrConditionColumnCondition : ICondition {
 

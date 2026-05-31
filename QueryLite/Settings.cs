@@ -28,32 +28,38 @@ namespace QueryLite {
     public static class Settings {
 
         /// <summary>
-        /// Turns query parameters on or off. ie. False = use plain sql text instead of parameter in sql query. This is good for debugging purposes.
+        /// Turns query parameters on or off. ie. False = use plain sql text instead of parameter in sql query.
+        /// This is good for debugging purposes.
         /// </summary>
         public static bool UseParameters { get; set; } = true;
 
         /// <summary>
-        /// If true this causes code to stop on a break point when a select query is executed in debug mode. This is a debugging feature.
+        /// If true this causes code to stop on a break point when a select query is executed in debug mode.
+        /// This is a debugging feature.
         /// </summary>
         public static bool BreakOnSelectQuery { get; set; }
 
         /// <summary>
-        /// If true this causes code to stop on a break point when a insert query is executed in debug mode. This is a debugging feature.
+        /// If true this causes code to stop on a break point when a insert query is executed in debug mode.
+        /// This is a debugging feature.
         /// </summary>
         public static bool BreakOnInsertQuery { get; set; }
 
         /// <summary>
-        /// If true this causes code to stop on a break point when a update query is executed in debug mode. This is a debugging feature.
+        /// If true this causes code to stop on a break point when a update query is executed in debug mode.
+        /// This is a debugging feature.
         /// </summary>
         public static bool BreakOnUpdateQuery { get; set; }
 
         /// <summary>
-        /// If true this causes code to stop on a break point when a delete query is executed in debug mode. This is a debugging feature.
+        /// If true this causes code to stop on a break point when a delete query is executed in debug mode.
+        /// This is a debugging feature.
         /// </summary>
         public static bool BreakOnDeleteQuery { get; set; }
 
         /// <summary>
-        /// If true this causes code to stop on a break point when a truncate query is executed in debug mode. This is a debugging feature.
+        /// If true this causes code to stop on a break point when a truncate query is executed in debug mode.
+        /// This is a debugging feature.
         /// </summary>
         public static bool BreakOnTruncateQuery { get; set; }
 
@@ -180,7 +186,7 @@ namespace QueryLite {
         /// <summary>
         /// Isolation level being used
         /// </summary>
-        public System.Data.IsolationLevel IsolationLevel { get; }
+        public IsolationLevel IsolationLevel { get; }
 
         /// <summary>
         /// Transaction id
@@ -193,7 +199,8 @@ namespace QueryLite {
         public QueryTimeout Timeout { get; set; }
 
         /// <summary>
-        /// Debugging name given to query. This is useful for identifying particular queries. This name is passed as a parameter in query execute methods.
+        /// Debugging name given to query. This is useful for identifying particular queries.
+        /// This name is passed as a parameter in query execute methods.
         /// </summary>
         public string DebugName { get; }
     }
@@ -263,7 +270,8 @@ namespace QueryLite {
         public DateTimeOffset? End { get; }
 
         /// <summary>
-        /// Time taken for query to execute. Note: the elapsed time is more accurate than using start and end times to calculate the elapsed time.
+        /// Time taken for query to execute. Note: the elapsed time is more accurate than using start
+        /// and end times to calculate the elapsed time.
         /// </summary>
         public TimeSpan? ElapsedTime { get; }
 
@@ -293,7 +301,8 @@ namespace QueryLite {
         public bool IsAsync { get; set; }
 
         /// <summary>
-        /// Debugging name given to query. This is useful for identifying particular queries. This name is passed as a parameter in query execute methods.
+        /// Debugging name given to query. This is useful for identifying particular queries.
+        /// This name is passed as a parameter in query execute methods.
         /// </summary>
         public string DebugName { get; }
     }

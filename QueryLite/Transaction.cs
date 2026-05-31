@@ -80,7 +80,8 @@ namespace QueryLite {
         }
 
         /// <summary>
-        /// Creates a new ado command from the transactions connection. Please note you will need to correctly dispose of this command object.
+        /// Creates a new ado command from the transactions connection.
+        /// Please note you will need to correctly dispose of this command object.
         /// </summary>
         /// <returns></returns>
         public DbCommand CreateCommand(QueryTimeout timeout) {
