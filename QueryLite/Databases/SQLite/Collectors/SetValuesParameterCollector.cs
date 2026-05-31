@@ -69,7 +69,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                 if(value == null) {
                     value = DBNull.Value;
                 }
-                Parameters.ParameterList_.Add(new SqliteParameter(name: paramName, value) { SqliteType = dbType });
+                Parameters.ParameterList.Add(new SqliteParameter(name: paramName, value) { SqliteType = dbType });
             }
             else if(_collectorMode == CollectorMode.Update) {
 
@@ -85,7 +85,7 @@ namespace QueryLite.Databases.Sqlite.Collectors {
                 if(value == null) {
                     value = DBNull.Value;
                 }
-                Parameters.ParameterList_.Add(new SqliteParameter(name: paramName, value) { SqliteType = dbType });
+                Parameters.ParameterList.Add(new SqliteParameter(name: paramName, value) { SqliteType = dbType });
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");

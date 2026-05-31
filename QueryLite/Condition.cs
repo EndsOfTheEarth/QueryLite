@@ -139,7 +139,7 @@ namespace QueryLite {
                     sql.Append(database.ConvertToSql(item));
                 }
                 else {
-                    parameters.AddParameter(database, Left.Type, value: item, out string paramName);
+                    parameters.Add(database, Left.Type, value: item, out string paramName);
                     sql.Append(paramName);
                 }
             }
@@ -344,7 +344,7 @@ namespace QueryLite {
                     sql.Append(database.ConvertToSql(value));
                 }
                 else {
-                    parameters.AddParameter(database, value.GetType(), value: value, out string paramName);
+                    parameters.Add(database, value.GetType(), value: value, out string paramName);
                     sql.Append(paramName);
                 }
             }

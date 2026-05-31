@@ -75,9 +75,9 @@ namespace QueryLite.Databases.Functions {
 
             if(parameters != null) {
 
-                parameters.AddParameter(database, typeof(double), Latitude, out string latitudeParam);
-                parameters.AddParameter(database, typeof(double), Longitude, out string longitudeParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(double), Latitude, out string latitudeParam);
+                parameters.Add(database, typeof(double), Longitude, out string longitudeParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
 
                 return $"geography::Point({latitudeParam},{longitudeParam},{sridParam})";
             }
@@ -102,7 +102,11 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(Column is not null) {
-                return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STArea()" : $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STArea()";
+
+                if(useAlias) {
+                    return $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STArea()";
+                }
+                return $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STArea()";
             }
             else {
                 return $"{OCGType!.GetSql(database, useAlias: useAlias, parameters)}.STArea()";
@@ -168,7 +172,13 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(Column is not null) {
-                return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STAsBinary()" : $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STAsBinary()";
+
+                if(useAlias) {
+                    return $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STAsBinary()";
+                }
+                else {
+                    return $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STAsBinary()";
+                }
             }
             else {
                 return $"{OCGType!.GetSql(database, useAlias: useAlias, parameters)}.STAsBinary()";
@@ -191,7 +201,13 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(Column is not null) {
-                return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STAsText()" : $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STAsText()";
+
+                if(useAlias) {
+                    return $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STAsText()";
+                }
+                else {
+                    return $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.STAsText()";
+                }
             }
             else {
                 return $"{OCGType!.GetSql(database, useAlias: useAlias, parameters)}.STAsText()";

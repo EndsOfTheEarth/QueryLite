@@ -59,7 +59,7 @@ namespace QueryLite.Databases.SqlServer.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
                 return $"geography::Parse({kwtParam})";
             }
             else {

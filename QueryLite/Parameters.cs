@@ -30,7 +30,8 @@ namespace QueryLite {
     /// </summary>
     public interface IParametersBuilder {
 
-        public IList<DbParameter> ParameterList_ { get; }
+        public IList<DbParameter> ParameterList { get; }
+
         /// <summary>
         /// Add a new parameter to query
         /// </summary>
@@ -38,7 +39,7 @@ namespace QueryLite {
         /// <param name="type">.net type of parameter value</param>
         /// <param name="value">Value of parameter</param>
         /// <param name="paramName">Name of the newly generated parameter name for the sql query</param>
-        void AddParameter(IDatabase database, Type type, object? value, out string paramName);
+        void Add(IDatabase database, Type type, object? value, out string paramName);
     }
 
     public enum Parameters {

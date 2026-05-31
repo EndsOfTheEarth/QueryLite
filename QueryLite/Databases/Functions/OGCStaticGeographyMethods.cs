@@ -41,8 +41,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STGeomFromText({kwtParam},{sridParam})";
             }
             else {
@@ -64,8 +64,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STPointFromText({kwtParam},{sridParam})";
             }
             else {
@@ -87,8 +87,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STLineFromText({kwtParam},{sridParam})";
             }
             else {
@@ -110,8 +110,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STPolyFromText({kwtParam},{sridParam})";
             }
             else {
@@ -133,8 +133,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STMPointFromText({kwtParam},{sridParam})";
             }
             else {
@@ -156,8 +156,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STMLineFromText({kwtParam},{sridParam})";
             }
             else {
@@ -179,8 +179,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STMPolyFromText({kwtParam},{sridParam})";
             }
             else {
@@ -202,8 +202,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(string), KwText, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(string), KwText, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STGeomCollFromText({kwtParam},{sridParam})";
             }
             else {
@@ -225,8 +225,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STGeomCollFromWKB({kwtParam},{sridParam})";
             }
             else {
@@ -248,8 +248,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STGeomFromWKB({kwtParam},{sridParam})";
             }
             else {
@@ -271,8 +271,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STPointFromWKB({kwtParam},{sridParam})";
             }
             else {
@@ -294,8 +294,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STLineFromWKB({kwtParam},{sridParam})";
             }
             else {
@@ -317,8 +317,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STPolyFromWKB({kwtParam},{sridParam})";
             }
             else {
@@ -340,8 +340,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STMPointFromWKB({kwtParam},{sridParam})";
             }
             else {
@@ -363,8 +363,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STMLineFromWKB({kwtParam},{sridParam})";
             }
             else {
@@ -386,8 +386,8 @@ namespace QueryLite.Databases.Functions {
         public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
             if(parameters != null) {
-                parameters.AddParameter(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.AddParameter(database, typeof(int), SRID, out string sridParam);
+                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+                parameters.Add(database, typeof(int), SRID, out string sridParam);
                 return $"geography::STMPolyFromWKB({kwtParam},{sridParam})";
             }
             else {

@@ -42,7 +42,8 @@ namespace QueryLite {
         public DatabaseType DatabaseType { get; }
 
         /// <summary>
-        /// Function to map between schema names when using more than one type of database. For example: the Sql Server schema might be 'dbo' but it is 'public' in PostgreSql.
+        /// Function to map between schema names when using more than one type of database.
+        /// For example: the Sql Server schema might be 'dbo' but it is 'public' in PostgreSql.
         /// </summary>
         Func<string, string> SchemaMap { get; }
 

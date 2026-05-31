@@ -44,7 +44,7 @@ namespace QueryLite {
 
         /// <summary>
         /// Table description.
-        /// </summary>
+        /// </summary   >
         string TableDescription { get; }
 
         /// <summary>

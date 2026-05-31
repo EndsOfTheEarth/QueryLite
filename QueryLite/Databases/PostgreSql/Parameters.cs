@@ -28,30 +28,30 @@ namespace QueryLite.Databases.PostgreSql {
 
     public sealed class PostgreSqlParameters : IParametersBuilder {
 
-        public IList<DbParameter> ParameterList_ { get; }
+        public IList<DbParameter> ParameterList { get; }
 
         public PostgreSqlParameters(int initParams) {
-            ParameterList_ = new List<DbParameter>(initParams);
+            ParameterList = new List<DbParameter>(initParams);
         }
 
         public string GetNextParameterName() {
 
-            if(ParamNameCache.ParamNames.Length < ParameterList_.Count) {
-                return ParamNameCache.ParamNames[ParameterList_.Count];
+            if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
+                return ParamNameCache.ParamNames[ParameterList.Count];
             }
-            return $"@{ParameterList_.Count}";
+            return $"@{ParameterList.Count}";
         }
 
-        public void AddParameter(IDatabase database, Type type, object? value, out string paramName) {
+        public void Add(IDatabase database, Type type, object? value, out string paramName) {
 
             paramName = GetNextParameterName();
 
             if(value != null) {
                 CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
-                ParameterList_.Add(createParameter(name: paramName, value));
+                ParameterList.Add(createParameter(name: paramName, value));
             }
             else {
-                ParameterList_.Add(
+                ParameterList.Add(
                     new NpgsqlParameter(parameterName: paramName, value: DBNull.Value) {
                         NpgsqlDbType = PostgreSqlTypeMappings.TypeMapper.GetDbType(type)
                     }

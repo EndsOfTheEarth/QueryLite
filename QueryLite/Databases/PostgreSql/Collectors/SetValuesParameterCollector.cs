@@ -71,7 +71,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
 
                 _paramSql!.Append(paramName);
 
-                Parameters.ParameterList_.Add(new NpgsqlParameter(parameterName: paramName, value) { NpgsqlDbType = dbType });
+                Parameters.ParameterList.Add(new NpgsqlParameter(parameterName: paramName, value) { NpgsqlDbType = dbType });
             }
             else if(_collectorMode == CollectorMode.Update) {
 
@@ -87,7 +87,7 @@ namespace QueryLite.Databases.PostgreSql.Collectors {
                 if(value == null) {
                     value = DBNull.Value;
                 }
-                Parameters.ParameterList_.Add(new NpgsqlParameter(parameterName: paramName, value) { NpgsqlDbType = dbType });
+                Parameters.ParameterList.Add(new NpgsqlParameter(parameterName: paramName, value) { NpgsqlDbType = dbType });
             }
             else {
                 throw new InvalidOperationException($"Unknown {nameof(_collectorMode)}. Value = '{_collectorMode}'");

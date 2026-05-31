@@ -647,7 +647,6 @@ namespace QueryLite.Databases {
             if(type.IsAssignableTo(typeof(IValue<Jsonb>))) {
                 return AddParameterDelegate(type, (name, value) => CreateParameter(name, (IValue<Jsonb>?)value));
             }
-
             return null;
         }
     }
