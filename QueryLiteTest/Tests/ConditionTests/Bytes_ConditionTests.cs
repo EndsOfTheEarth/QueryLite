@@ -171,9 +171,15 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
-                if(!Sequence<byte[]>.TryCreateFrom([types1.Bytes, types2.Bytes], out Sequence<byte[]>? bytes)) {
+
+                Sequence<byte[]>? bytes = Sequence.From([types1.Bytes, types2.Bytes]);
+
+                if(bytes == null) {
                     throw new Exception();
                 }
+                //if(!Sequence<byte[]>.TryCreateFrom([types1.Bytes, types2.Bytes], out Sequence<byte[]>? bytes)) {
+                //    throw new Exception();
+                //}
 
                 QueryResult<AllTypesInfo> result = await Query
                     .Select(
@@ -482,8 +488,9 @@ namespace QueryLiteTest.Tests.ConditionTests {
             }
 
             {
+                Sequence<byte[]>? bytes = Sequence.From([types2.Bytes, types3.Bytes]);
 
-                if(!Sequence<byte[]>.TryCreateFrom([types2.Bytes, types3.Bytes], out Sequence<byte[]>? bytes)) {
+                if(bytes is null) {
                     throw new Exception();
                 }
 

@@ -81,7 +81,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<DateTime>.TryCreateFrom([types1.DateTime, types2.DateTime, types3.DateTime], out Sequence<DateTime>? dates)) {
+                if(!Sequence.TryFrom([types1.DateTime, types2.DateTime, types3.DateTime], out Sequence<DateTime>? dates)) {
                     throw new Exception();
                 }
 
@@ -213,7 +213,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<DateTime>.TryCreateFrom([types1.DateTime], out Sequence<DateTime>? dates)) {
+                if(!Sequence.TryFrom([types1.DateTime], out Sequence<DateTime>? dates)) {
                     throw new Exception();
                 }
 
@@ -510,7 +510,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<DateTime>.TryCreateFrom([types2.DateTime, types3.DateTime], out Sequence<DateTime>? dates)) {
+                if(!Sequence.TryFrom([types2.DateTime, types3.DateTime], out Sequence<DateTime>? dates)) {
                     throw new Exception();
                 }
 

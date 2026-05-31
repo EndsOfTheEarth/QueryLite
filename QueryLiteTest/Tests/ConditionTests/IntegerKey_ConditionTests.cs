@@ -125,7 +125,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<AllTypesId>.TryCreateFrom([types1.Id, types2.Id, types3.Id], out Sequence<AllTypesId>? allTypes)) {
+                if(!Sequence.TryFrom([types1.Id, types2.Id, types3.Id], out Sequence<AllTypesId>? allTypes)) {
                     throw new Exception();
                 }
 

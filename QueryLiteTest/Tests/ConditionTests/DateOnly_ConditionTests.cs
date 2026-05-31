@@ -81,7 +81,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<DateOnly>.TryCreateFrom([types1.DateOnly, types2.DateOnly, types3.DateOnly], out Sequence<DateOnly>? dates)) {
+                if(!Sequence.TryFrom([types1.DateOnly, types2.DateOnly, types3.DateOnly], out Sequence<DateOnly>? dates)) {
                     throw new Exception();
                 }
 
@@ -103,7 +103,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<DateOnly>.TryCreateFrom([types1.DateOnly, types2.DateOnly], out Sequence<DateOnly>? dates)) {
+                if(!Sequence.TryFrom([types1.DateOnly, types2.DateOnly], out Sequence<DateOnly>? dates)) {
                     throw new Exception();
                 }
 
@@ -139,7 +139,9 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<DateOnly>.TryCreateFrom([types1.DateOnly, types2.DateOnly, types3.DateOnly], out Sequence<DateOnly>? dates)) {
+                Sequence<DateOnly>? dates = Sequence.From([types1.DateOnly, types2.DateOnly, types3.DateOnly]);
+
+                if(dates is null) {
                     throw new Exception();
                 }
 
@@ -464,7 +466,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<DateOnly>.TryCreateFrom([types2.DateOnly, types3.DateOnly], out Sequence<DateOnly>? dates)) {
+                if(!Sequence.TryFrom([types2.DateOnly, types3.DateOnly], out Sequence<DateOnly>? dates)) {
                     throw new Exception();
                 }
 

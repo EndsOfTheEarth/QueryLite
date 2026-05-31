@@ -129,7 +129,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<decimal>.TryCreateFrom([types1.Decimal, types2.Decimal, types3.Decimal], out Sequence<decimal>? decimals)) {
+                if(!Sequence.TryFrom([types1.Decimal, types2.Decimal, types3.Decimal], out Sequence<decimal>? decimals)) {
                     throw new Exception();
                 }
 
@@ -454,7 +454,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<decimal>.TryCreateFrom([types2.Decimal, types3.Decimal], out Sequence<decimal>? decimals)) {
+                if(!Sequence.TryFrom([types2.Decimal, types3.Decimal], out Sequence<decimal>? decimals)) {
                     throw new Exception();
                 }
 

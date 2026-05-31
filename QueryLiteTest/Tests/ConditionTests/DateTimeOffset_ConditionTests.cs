@@ -80,7 +80,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
             AllTypesTable table = AllTypesTable.Instance;
 
             {
-                if(!Sequence<DateTimeOffset>.TryCreateFrom([types1.DateTimeOffset, types2.DateTimeOffset, types3.DateTimeOffset], out Sequence<DateTimeOffset>? dates)) {
+                if(!Sequence.TryFrom([types1.DateTimeOffset, types2.DateTimeOffset, types3.DateTimeOffset], out Sequence<DateTimeOffset>? dates)) {
                     throw new Exception();
                 }
 

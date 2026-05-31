@@ -81,7 +81,7 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence<double>.TryCreateFrom([types1.Double, types2.Double, types3.Double], out Sequence<double>? doubles)) {
+                if(!Sequence.TryFrom([types1.Double, types2.Double, types3.Double], out Sequence<double>? doubles)) {
                     throw new Exception();
                 }
 
