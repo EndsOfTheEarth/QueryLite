@@ -78,6 +78,12 @@ namespace QueryLite {
             sequence = null;
             return false;
         }
+
+        /// <summary>
+        /// Create a sequence with at least one item.
+        /// Returns null if there are no items.
+        /// </summary>
+        public static Sequence<ITEM>? ToSequence<ITEM>(this IEnumerable<ITEM> items) => From(items);
     }
     /// <summary>
     /// A sequence is a collection that must contain at least one item. This is used to

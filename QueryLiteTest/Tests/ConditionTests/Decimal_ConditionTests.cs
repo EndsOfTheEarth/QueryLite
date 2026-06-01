@@ -4,6 +4,7 @@ using QueryLite.Functions;
 using QueryLiteTest.Tables;
 using QueryLiteTestLogic;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QueryLiteTest.Tests.ConditionTests {
@@ -129,7 +130,11 @@ namespace QueryLiteTest.Tests.ConditionTests {
 
             {
 
-                if(!Sequence.TryFrom([types1.Decimal, types2.Decimal, types3.Decimal], out Sequence<decimal>? decimals)) {
+                List<decimal> decimalList = [types1.Decimal, types2.Decimal, types3.Decimal];
+
+                Sequence<decimal>? decimals = decimalList.ToSequence();
+
+                if(decimals is null) {
                     throw new Exception();
                 }
 
