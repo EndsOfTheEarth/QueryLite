@@ -101,6 +101,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
 
         private async void BtnLoad_Click(object? sender, RoutedEventArgs e) {
 
+            Cursor?.Dispose();
             Cursor = new Cursor(StandardCursorType.Wait);
 
             btnLoad.IsEnabled = false;
@@ -122,6 +123,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
             }
             finally {
                 btnLoad.IsEnabled = true;
+                Cursor?.Dispose();
                 Cursor = new Cursor(StandardCursorType.Arrow);
             }
         }
@@ -291,12 +293,14 @@ namespace QueryLite.CodeGeneratorUI.Views {
         }
         public void TreeNodeSelectionChanged(object sender, SelectionChangedEventArgs args) {
 
+            Cursor?.Dispose();
             Cursor = new Cursor(StandardCursorType.Wait);
 
             try {
                 UpdateCode(updatePrefix: true);
             }
             finally {
+                Cursor?.Dispose();
                 Cursor = new Cursor(StandardCursorType.Arrow);
             }
         }
@@ -482,7 +486,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
             if(folders.Count == 0) {
                 return;
             }
-
+            Cursor?.Dispose();
             Cursor = new Cursor(StandardCursorType.Wait);
 
             try {
@@ -552,6 +556,7 @@ namespace QueryLite.CodeGeneratorUI.Views {
                 );
             }
             finally {
+                Cursor?.Dispose();
                 Cursor = new Cursor(StandardCursorType.Arrow);
             }
         }

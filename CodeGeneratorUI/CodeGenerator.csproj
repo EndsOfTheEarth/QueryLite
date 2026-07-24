@@ -31,6 +31,10 @@
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="IDisposableAnalyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <ProjectReference Include="..\DbSchema\DbSchema.csproj" />
     <ProjectReference Include="..\QueryLite\QueryLite.csproj" />
