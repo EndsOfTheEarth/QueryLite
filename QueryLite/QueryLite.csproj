@@ -44,5 +44,6 @@
     <PackageReference Include="Microsoft.Data.Sqlite" />
     <PackageReference Include="Npgsql" />
     <PackageReference Include="QueryLite.Utility" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
   </ItemGroup>
 </Project>
