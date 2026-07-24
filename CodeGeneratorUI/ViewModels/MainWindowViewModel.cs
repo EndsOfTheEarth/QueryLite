@@ -43,7 +43,7 @@ namespace QueryLite.CodeGeneratorUI.ViewModels {
         public string Text { get; set; } = "";
 
         [ObservableProperty]
-        private bool isEnabled = true;
+        public partial bool IsEnabled { get; set; } = true;
 
         public ObservableCollection<TreeNodeViewModel> Nodes { get; set; } = [];
     }
