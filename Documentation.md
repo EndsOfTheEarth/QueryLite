@@ -923,21 +923,21 @@ Repositories.AddInterceptor(new Interceptor());
 
 ## Supported Operators
 
-| Description | Operator / Method | Example | Notes
-| -------- | ----------- | ------- | ---------|
-| Equals operator |`==` AND `!=`    | `.Where(orderTable.ShipPostalCode == "abc")` | 
-| Equals operator |`==` AND `!=`     | `.LeftJoin(unitMeasureTable).On(productTable.SizeUnitMeasureCode == unitMeasureTable.UnitMeasureCode)` | Join two columns
-| Non Type Safe Equals   | Methods `SqlEquals_NonTypeSafe(...)` `SqlNotEquals_NonTypeSafe(...)` | `.Where(orderTable.CustomerID.SqlEquals_NonTypeSafe(10))` | NonTypeSafe methods can be used to work around compile errors caused by the database schema being too complex to be defined correctly in C# |
-| Math operators | `<` `<=` `>` `>=` | `.Where(productTable.ListPrice <= 10.0m)` |
-| `AND` | `&` | `.Where(productTable.Name == "abc" & productTable.ListPrice > 10.0m)` | |
-| `OR`  | `\|` | `.Where(productTable.Name == "abc" \| productTable.ListPrice > 10.0m)` | Single pipe character |
-| `AND` & `OR` | `&` `\|` | `.Where((productTable.Name == "abc" \| productTable.Name == "efg") & productTable.ListPrice > 10.0m)` | Note: Always surround mixed `AND` and `OR` C# operators with brackets to get the correct sql logic.|
-| `IS NULL` | `IsNull` | `.Where(productTable.Name.IsNull)`|
-| `IS NOT NULL` | `IsNotNull` | `.Where(productTable.Name.IsNotNull)` |
-| `IN(...)` | `In(...)` | `.Where(productTable.Name.In("abc", "efg", "hijk"))` |
-| `NOT IN(...)` | `NotIn(...)` | `.Where(productTable.Name.NotIn("abc", "efg", "hijk"))` |
-| `LIKE` | `Like(ILike<TYPE> like)` | `.Where(productTable.Name.Like(new StringLike("%abc%"))` |
-| `NOT LIKE` | `NotLike(ILike<TYPE> like)` | `.Where(productTable.Name.NotLike(new StringLike("%abc%"))` |
+| Description          | Operator / Method                                                    | Example                                                                                                | Notes                                                                                                                                       |
+| -------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Equals operator      | `==` AND `!=`                                                        | `.Where(orderTable.ShipPostalCode == "abc")`                                                           |                                                                                                                                             |
+| Equals operator      | `==` AND `!=`                                                        | `.LeftJoin(unitMeasureTable).On(productTable.SizeUnitMeasureCode == unitMeasureTable.UnitMeasureCode)` | Join two columns                                                                                                                            |
+| Non Type Safe Equals | Methods `SqlEquals_NonTypeSafe(...)` `SqlNotEquals_NonTypeSafe(...)` | `.Where(orderTable.CustomerID.SqlEquals_NonTypeSafe(10))`                                              | NonTypeSafe methods can be used to work around compile errors caused by the database schema being too complex to be defined correctly in C# |
+| Math operators       | `<` `<=` `>` `>=`                                                    | `.Where(productTable.ListPrice <= 10.0m)`                                                              |                                                                                                                                             |
+| `AND`                | `&`                                                                  | `.Where(productTable.Name == "abc" & productTable.ListPrice > 10.0m)`                                  |                                                                                                                                             |
+| `OR`                 | `\|`                                                                 | `.Where(productTable.Name == "abc" \| productTable.ListPrice > 10.0m)`                                 | Single pipe character                                                                                                                       |
+| `AND` & `OR`         | `&` `\|`                                                             | `.Where((productTable.Name == "abc" \| productTable.Name == "efg") & productTable.ListPrice > 10.0m)`  | Note: Always surround mixed `AND` and `OR` C# operators with brackets to get the correct sql logic.                                         |
+| `IS NULL`            | `IsNull`                                                             | `.Where(productTable.Name.IsNull)`                                                                     |                                                                                                                                             |
+| `IS NOT NULL`        | `IsNotNull`                                                          | `.Where(productTable.Name.IsNotNull)`                                                                  |                                                                                                                                             |
+| `IN(...)`            | `In(...)`                                                            | `.Where(productTable.Name.In("abc", "efg", "hijk"))`                                                   |                                                                                                                                             |
+| `NOT IN(...)`        | `NotIn(...)`                                                         | `.Where(productTable.Name.NotIn("abc", "efg", "hijk"))`                                                |                                                                                                                                             |
+| `LIKE`               | `Like(ILike<TYPE> like)`                                             | `.Where(productTable.Name.Like(new StringLike("%abc%"))`                                               |                                                                                                                                             |
+| `NOT LIKE`           | `NotLike(ILike<TYPE> like)`                                          | `.Where(productTable.Name.NotLike(new StringLike("%abc%"))`                                            |                                                                                                                                             |
 
 
 
@@ -1101,33 +1101,33 @@ public enum SqlServerQueryOption {
 
 ## Supported Data Types
 
-| C# Type                       | Sql Server             | PostgreSql                  | Notes  |
-| ----------------------------- | ---------------------- | --------------------------- | ------ |
-| Column&lt;string>             | NVARCHAR               | VARCHAR                     |        |
-| Column&lt;StringKey&lt;TYPE>> | NVARCHAR               | VARCHAR                     |        |
-| Column&lt;Guid>               | UNIQUEIDENTIFIER       | UUID                        |        |
-| Column&lt;GuidKey&lt;TYPE>>   | UNIQUEIDENTIFIER       | UUID                        |        |
-| Columns&lt;short>             | SMALLINT, TINYINT      | SMALLINT                    |        |
-| Column&lt;ShortKey&lt;TYPE>>  | SMALLINT, TINYINT      | SMALLINT                    |        |
-| Column&lt;int>                | INTEGER                | INTEGER, SERIAL             |        |
-| Column&lt;IntKey&lt;TYPE>>    | INTEGER                | INTEGER, SERIAL             |        |
-| Column&lt;long>               | BIGINT                 | BIGINT                      |        |
-| Column&lt;LongKey&lt;TYPE>>   | BIGINT                 | BIGINT                      |        |
-| Columns&lt;bool>              | TINYINT                | BOOLEAN                     |        |
-| Columns&lt;Bit>               | BIT                    |                             | Ado returns `BIT` as a `byte` rather than a `bool`. So sharing the `bool` type with both `BIT` and `TINYINT` would add a conversion step that would reduce result loading preformance. |
-| Column&lt;decimal>            | DECIMAL                | DECIMAL                     |        |
-| Column&lt;float>              | REAL                   | REAL                        |        |
-| Column&lt;double>             | FLOAT                  | DOUBLE PRECISION            |        |
-| Column&lt;byte[]>             | VARBINARY, ROWVERSION  | BYTEA                       |        |
-| Column&lt;DateOnly>           | DATE                   | DATE                        |        |
-| Column&lt;TimeOnly>           | TIME                   | TIME WITHOUT TIME ZONE      | Precision is only up to microseconds. Nanosecond precision and timezone are not supported. |
-| Column&lt;DateTime>           | DATETIME               | TIMESTAMP WITHOUT TIME ZONE | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
-| Column&lt;DateTimeOffset>     | DATETIMEOFFSET         | TIMESTAMP WITH TIME ZONE    | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
-| Column&lt;Enum> (byte)        | TINYINT                | SMALLINT                    | With PostgreSql, byte enums are mapped to the SMALLINT data type. BYTEA data type cannot be used as an enum type. Note: Enums of type sbyte are not supported. |
-| Column&lt;Enum> (short)       | SMALLINT               | SMALLINT                    | Note: Enums of type ushort are not supported. |
-| Column&lt;Enum> (int)         | INT                    | INT                         | Note: Enums of type uint are not supported. |
-| Column&lt;Enum> (long)        | BIGINT                 | BIGINT                      | Note: Enums of type ulong are not supported. |
-| Column&lt;BoolValue&lt;TYPE>> | TINYINT                | BOOLEAN                     | |
+| C# Type                       | Sql Server            | PostgreSql                  | Notes                                                                                                                                                                                                 |
+| ----------------------------- | --------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Column&lt;string>             | NVARCHAR              | VARCHAR                     |                                                                                                                                                                                                       |
+| Column&lt;StringKey&lt;TYPE>> | NVARCHAR              | VARCHAR                     |                                                                                                                                                                                                       |
+| Column&lt;Guid>               | UNIQUEIDENTIFIER      | UUID                        |                                                                                                                                                                                                       |
+| Column&lt;GuidKey&lt;TYPE>>   | UNIQUEIDENTIFIER      | UUID                        |                                                                                                                                                                                                       |
+| Columns&lt;short>             | SMALLINT, TINYINT     | SMALLINT                    |                                                                                                                                                                                                       |
+| Column&lt;ShortKey&lt;TYPE>>  | SMALLINT, TINYINT     | SMALLINT                    |                                                                                                                                                                                                       |
+| Column&lt;int>                | INTEGER               | INTEGER, SERIAL             |                                                                                                                                                                                                       |
+| Column&lt;IntKey&lt;TYPE>>    | INTEGER               | INTEGER, SERIAL             |                                                                                                                                                                                                       |
+| Column&lt;long>               | BIGINT                | BIGINT                      |                                                                                                                                                                                                       |
+| Column&lt;LongKey&lt;TYPE>>   | BIGINT                | BIGINT                      |                                                                                                                                                                                                       |
+| Columns&lt;bool>              | TINYINT               | BOOLEAN                     |                                                                                                                                                                                                       |
+| Columns&lt;Bit>               | BIT                   |                             | Ado returns `BIT` as a `byte` rather than a `bool`. So sharing the `bool` type with both `BIT` and `TINYINT` would add a conversion step that would reduce result loading preformance.                |
+| Column&lt;decimal>            | DECIMAL               | DECIMAL                     |                                                                                                                                                                                                       |
+| Column&lt;float>              | REAL                  | REAL                        |                                                                                                                                                                                                       |
+| Column&lt;double>             | FLOAT                 | DOUBLE PRECISION            |                                                                                                                                                                                                       |
+| Column&lt;byte[]>             | VARBINARY, ROWVERSION | BYTEA                       |                                                                                                                                                                                                       |
+| Column&lt;DateOnly>           | DATE                  | DATE                        |                                                                                                                                                                                                       |
+| Column&lt;TimeOnly>           | TIME                  | TIME WITHOUT TIME ZONE      | Precision is only up to microseconds. Nanosecond precision and timezone are not supported.                                                                                                            |
+| Column&lt;DateTime>           | DATETIME              | TIMESTAMP WITHOUT TIME ZONE | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
+| Column&lt;DateTimeOffset>     | DATETIMEOFFSET        | TIMESTAMP WITH TIME ZONE    | PostgreSql and Sql Server have differences in behaviour. TIMESTAMP WITH TIME ZONE is always stored and returned as UTC time. Sql Server DATETIMEOFFSET returns in the timezone it was populated with. |
+| Column&lt;Enum> (byte)        | TINYINT               | SMALLINT                    | With PostgreSql, byte enums are mapped to the SMALLINT data type. BYTEA data type cannot be used as an enum type. Note: Enums of type sbyte are not supported.                                        |
+| Column&lt;Enum> (short)       | SMALLINT              | SMALLINT                    | Note: Enums of type ushort are not supported.                                                                                                                                                         |
+| Column&lt;Enum> (int)         | INT                   | INT                         | Note: Enums of type uint are not supported.                                                                                                                                                           |
+| Column&lt;Enum> (long)        | BIGINT                | BIGINT                      | Note: Enums of type ulong are not supported.                                                                                                                                                          |
+| Column&lt;BoolValue&lt;TYPE>> | TINYINT               | BOOLEAN                     |                                                                                                                                                                                                       |
 
 ## Custom Types
 
@@ -1136,21 +1136,21 @@ QueryLite has support for custom types. These can be created manually or by usin
 The following types are supported with custom types:
 
 | Supported Type |
-|---|
-| Guid |
-| short |
-| int |
-| long |
-| float |
-| double |
-| string |
-| bool |
-| decimal |
-| DateTime |
+| -------------- |
+| Guid           |
+| short          |
+| int            |
+| long           |
+| float          |
+| double         |
+| string         |
+| bool           |
+| decimal        |
+| DateTime       |
 | DateTimeOffset |
-| DateOnly |
-| TimeOnly |
-| Bit |
+| DateOnly       |
+| TimeOnly       |
+| Bit            |
 
 Here is an example of the `ShipperId` as a custom integer type. The main difference is that there is a second generic parameter on
 the Column<,> property which is the underlying type.
@@ -1243,34 +1243,34 @@ A custom function can be created if you require one that is not implemented by t
 
 These are the geography functions currently implemented:
 
-| Function           | Sql |
-| ------------------ | --- |
-| GeographyPoint | `geography::Point(...)` |
-| STArea | `.STArea()` |
-| STEquals | `.STEquals(...)` |
-| STAsBinary | `.STAsBinary()` |
-| STAsText | `.STAsText()` |
-| STContains | `.STContains(...)` |
-| STDistance | `.STDistance(...)` |
-| STGeomFromText | `geography::STGeomFromText(...)` |
-| STPointFromText | `geography::STPointFromText(...)` |
-| STLineFromText | `geography::STLineFromText(...)` |
-| STPolyFromText | `geography::STPolyFromText(...)` |
-| STMPointFromText | `geography::STMPointFromText(...)` |
-| STMLineFromText | `geography::STMLineFromText(...)` |
-| STMPolyFromText | `geography::STMPolyFromText(...)` |
+| Function           | Sql                                  |
+| ------------------ | ------------------------------------ |
+| GeographyPoint     | `geography::Point(...)`              |
+| STArea             | `.STArea()`                          |
+| STEquals           | `.STEquals(...)`                     |
+| STAsBinary         | `.STAsBinary()`                      |
+| STAsText           | `.STAsText()`                        |
+| STContains         | `.STContains(...)`                   |
+| STDistance         | `.STDistance(...)`                   |
+| STGeomFromText     | `geography::STGeomFromText(...)`     |
+| STPointFromText    | `geography::STPointFromText(...)`    |
+| STLineFromText     | `geography::STLineFromText(...)`     |
+| STPolyFromText     | `geography::STPolyFromText(...)`     |
+| STMPointFromText   | `geography::STMPointFromText(...)`   |
+| STMLineFromText    | `geography::STMLineFromText(...)`    |
+| STMPolyFromText    | `geography::STMPolyFromText(...)`    |
 | STGeomCollFromText | `geography::STGeomCollFromText(...)` |
-| STGeomCollFromWKB | `geography::STGeomCollFromWKB(...)` |
-| STGeomFromWKB | `geography::STGeomFromWKB(...)` |
-| STPointFromWKB | `geography::STPointFromWKB(...)` |
-| STLineFromWKB | `geography::STLineFromWKB(...)` |
-| STPolyFromWKB | `geography::STPolyFromWKB(...)` |
-| STMPointFromWKB | `geography::STMPointFromWKB(...)` |
-| STMLineFromWKB | `geography::STMLineFromWKB(...)` |
-| STMPolyFromWKB | `geography::STMPolyFromWKB(...)` |
-| Longitude | `.Long` |
-| Latitude | `.Lat` |
-| GeographyParse | `geography::Parse(...)` |
+| STGeomCollFromWKB  | `geography::STGeomCollFromWKB(...)`  |
+| STGeomFromWKB      | `geography::STGeomFromWKB(...)`      |
+| STPointFromWKB     | `geography::STPointFromWKB(...)`     |
+| STLineFromWKB      | `geography::STLineFromWKB(...)`      |
+| STPolyFromWKB      | `geography::STPolyFromWKB(...)`      |
+| STMPointFromWKB    | `geography::STMPointFromWKB(...)`    |
+| STMLineFromWKB     | `geography::STMLineFromWKB(...)`     |
+| STMPolyFromWKB     | `geography::STMPolyFromWKB(...)`     |
+| Longitude          | `.Long`                              |
+| Latitude           | `.Lat`                               |
+| GeographyParse     | `geography::Parse(...)`              |
 
 Here is a code example querying the database with a subset of the geography functions listed above:
 
