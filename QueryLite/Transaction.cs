@@ -68,15 +68,26 @@ namespace QueryLite {
             return DbTransaction;
         }
 
-        internal void SetTransaction(DbTransaction dbTransaction) {
+        internal void BeginTransaction(DbConnection connection) {
 
-            ArgumentNullException.ThrowIfNull(dbTransaction);
-            ArgumentNullException.ThrowIfNull(dbTransaction.Connection);
+            ArgumentNullException.ThrowIfNull(connection);
 
             if(DbTransaction != null) {
                 throw new Exception($"Cannot set {nameof(DbTransaction)} twice");
             }
-            DbTransaction = dbTransaction;
+            DbTransaction?.Dispose();   //Just to keep analyzer happy - Will always be null here
+            DbTransaction = connection.BeginTransaction(IsolationLevel);
+        }
+
+        internal async Task BeginTransactionAsync(DbConnection connection, CancellationToken ct) {
+
+            ArgumentNullException.ThrowIfNull(connection);
+
+            if(DbTransaction != null) {
+                throw new Exception($"Cannot set {nameof(DbTransaction)} twice");
+            }
+            DbTransaction?.Dispose();   //Just to keep analyzer happy - Will always be null here
+            DbTransaction = await connection.BeginTransactionAsync(IsolationLevel, ct);
         }
 
         /// <summary>
@@ -93,7 +104,7 @@ namespace QueryLite {
             if(dbTransaction == null) {
                 dbConnection = Database.GetNewConnection();
                 dbConnection.Open();
-                SetTransaction(dbConnection.BeginTransaction(IsolationLevel));
+                BeginTransaction(dbConnection);
                 dbTransaction = DbTransaction;
             }
             else {
@@ -114,7 +125,7 @@ namespace QueryLite {
             if(dbTransaction == null) {
                 dbConnection = Database.GetNewConnection();
                 await dbConnection.OpenAsync(ct);
-                SetTransaction(await dbConnection.BeginTransactionAsync(IsolationLevel, ct));
+                await BeginTransactionAsync(dbConnection, ct);
                 dbTransaction = DbTransaction;
             }
             else {
@@ -143,7 +154,6 @@ namespace QueryLite {
             using(DbConnection? connection = DbTransaction?.Connection) {
                 Rollback();
             }
-            GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync() {
@@ -151,7 +161,6 @@ namespace QueryLite {
             using(DbConnection? connection = DbTransaction?.Connection) {
                 await RollbackAsync().ConfigureAwait(false);
             }
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -173,6 +182,7 @@ namespace QueryLite {
                 }
             }
             finally {
+                DbTransaction?.Dispose();
                 DbTransaction = null;
             }
         }
@@ -196,6 +206,7 @@ namespace QueryLite {
                 }
             }
             finally {
+                DbTransaction.Dispose();
                 DbTransaction = null;
             }
         }
@@ -228,6 +239,7 @@ namespace QueryLite {
                 }
             }
             finally {
+                DbTransaction.Dispose();
                 DbTransaction = null;
             }
         }
@@ -260,6 +272,7 @@ namespace QueryLite {
                 }
             }
             finally {
+                DbTransaction.Dispose();
                 DbTransaction = null;
             }
         }
