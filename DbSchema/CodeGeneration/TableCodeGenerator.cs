@@ -289,36 +289,40 @@ namespace QueryLite.DbSchema.CodeGeneration {
             string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
 
             TablePrefix prefix = new(table);
-            // : ATable
+            
             ClassDeclarationSyntax classDeclaration =
                 ClassDeclaration(tableClassName)
-                .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.SealedKeyword))
-                .AddBaseListTypes(SimpleBaseType(ParseName("ATable")))
+                .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.SealedKeyword)) //public sealed Table
+                .AddBaseListTypes(SimpleBaseType(ParseName("ATable")))  //Inherit from ATable
                 .AddMembers(
+                    //Add instance properties e.g. public static readonly TableName Instance { get; } = new();
                     GenerateInstanceProperties(type: tableClassName, number: instanceNumber)
                 )
                 .AddMembers(
+                    //Add column properties
                     GenerateColumnProperties(table, tableClassName: tableClassName, prefix, settings)
                 );
 
+            //Add primary key
             if(table.PrimaryKey != null) {
                 classDeclaration = classDeclaration.AddMembers(
                     GeneratePrimaryKeyProperty(table.PrimaryKey)
-                    );
+                );
             }
 
+            //Add unique constraints
             if(table.UniqueConstraints.Count > 0 || !settings.IncludeConstraints) {
                 classDeclaration = classDeclaration.AddMembers(
                     GenerateUniqueConstraints(table.UniqueConstraints, tableClassName, prefix)
                 );
             }
 
+            //Add foreign keys
             if(table.ForeignKeys.Count > 0 || !settings.IncludeConstraints) {
                 classDeclaration = classDeclaration.AddMembers(
                     GenerateForeignKeyConstraints(table.ForeignKeys, prefix)
                 );                
             }
-
             return classDeclaration;
         }
 
@@ -343,7 +347,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
              * 
              * This generates the table instance property.
              * 
-             * e.g. public static readonly tableClassName Instance { get; } = new();
+             * e.g. public static tableClassName Instance { get; } = new();
              * 
              */
             TypeSyntax propertyType = ParseTypeName(type);
@@ -364,18 +368,17 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 PropertyDeclaration(propertyType, propertyName)
                 .AddModifiers(  //public static readonly
                     Token(SyntaxKind.PublicKeyword),
-                    Token(SyntaxKind.StaticKeyword),
-                    Token(SyntaxKind.ReadOnlyKeyword)
+                    Token(SyntaxKind.StaticKeyword)
                  )
                 .WithAccessorList(accessorList)
                 .WithInitializer(
                     EqualsValueClause(        // = new();
                         ImplicitObjectCreationExpression(
-                                Token(SyntaxKind.NewKeyword),
-                                argumentList: ArgumentList(),
-                                initializer: null
-                            )
+                            Token(SyntaxKind.NewKeyword),
+                            argumentList: ArgumentList(),
+                            initializer: null
                         )
+                    )
                 ).WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
 
             return propertyDeclaration;
@@ -396,10 +399,20 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 AttributeSyntax? suppressColumnTypeValidationAttribute = null;
 
                 if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType))) {    //Ignore unsupported types
-                    //addSuppressAttribute = true;
-                    //code.EndLine();
-                    //code.Indent(2).Append("[SuppressColumnTypeValidation] --> ***PLEASE_CHECK_UNSUPPORTED_TYPE***").EndLine();
-                    suppressColumnTypeValidationAttribute = Attribute(IdentifierName("SuppressColumnTypeValidation"));
+
+                    ErrorDirectiveTriviaSyntax errorDirective = ErrorDirectiveTrivia(
+                        hashToken: Token(SyntaxKind.HashToken),
+                        errorKeyword: Token(SyntaxKind.ErrorKeyword),
+                        endOfDirectiveToken: Token(
+                            leading: SyntaxTriviaList.Empty,
+                            kind: SyntaxKind.EndOfDirectiveToken,
+                            trailing: TriviaList(PreprocessingMessage("***PLEASE_CHECK_UNSUPPORTED_TYPE***"))
+                        ),
+                        isActive: true
+                    );
+                    
+                    suppressColumnTypeValidationAttribute = Attribute(IdentifierName("SuppressColumnTypeValidation"))
+                                                            .WithTrailingTrivia(Trivia(errorDirective));
                 }
 
                 //AttributeListSyntax attributeList = AttributeList(asd
