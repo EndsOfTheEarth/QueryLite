@@ -21,8 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace QueryLite.DbSchema.CodeGeneration {
 
@@ -85,6 +90,13 @@ namespace QueryLite.DbSchema.CodeGeneration {
             code.EndLine();
 
             string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+            ClassDeclarationSyntax classDeclaration = GenerateClass(
+                instanceNumber: settings.NumberOfInstanceProperties,
+                table, settings
+            );
+
+            string c = classDeclaration.NormalizeWhitespace().ToFullString();
 
             code.Indent(1).Append($"public sealed class {tableClassName} : ATable {{").EndLine().EndLine();
 
@@ -270,6 +282,493 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 code.Append("}");
             }
             return code;
+        }
+
+        private static ClassDeclarationSyntax GenerateClass(int instanceNumber, DatabaseTable table, CodeGeneratorSettings settings) {
+
+            string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+            TablePrefix prefix = new(table);
+            // : ATable
+            ClassDeclarationSyntax classDeclaration =
+                ClassDeclaration(tableClassName)
+                .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.SealedKeyword))
+                .AddBaseListTypes(SimpleBaseType(ParseName("ATable")))
+                .AddMembers(
+                    GenerateInstanceProperties(type: tableClassName, number: instanceNumber)
+                )
+                .AddMembers(
+                    GenerateColumnProperties(table, tableClassName: tableClassName, prefix, settings)
+                );
+
+            if(table.PrimaryKey != null) {
+                classDeclaration = classDeclaration.AddMembers(
+                    GeneratePrimaryKeyProperty(table.PrimaryKey)
+                    );
+            }
+
+            if(table.UniqueConstraints.Count > 0 || !settings.IncludeConstraints) {
+                classDeclaration = classDeclaration.AddMembers(
+                    GenerateUniqueConstraints(table.UniqueConstraints, tableClassName, prefix)
+                );
+            }
+
+            if(table.ForeignKeys.Count > 0 || !settings.IncludeConstraints) {
+                classDeclaration = classDeclaration.AddMembers(
+                    GenerateForeignKeyConstraints(table.ForeignKeys, prefix)
+                );                
+            }
+
+            return classDeclaration;
+        }
+
+        private static PropertyDeclarationSyntax[] GenerateInstanceProperties(string type, int number) {
+
+            List<PropertyDeclarationSyntax> list = [];
+
+            for(int index = 0; index < number; index++) {
+
+                string propertyName = "Instance";
+
+                if(index != 0 || number != 1) {
+                    propertyName += index;
+                }
+                list.Add(GenerateInstanceProperty(propertyName, type));
+            }
+            return [.. list];
+        }
+        private static PropertyDeclarationSyntax GenerateInstanceProperty(string propertyName, string type) {
+
+            /*
+             * 
+             * This generates the table instance property.
+             * 
+             * e.g. public static readonly tableClassName Instance { get; } = new();
+             * 
+             */
+            TypeSyntax propertyType = ParseTypeName(type);
+
+            AccessorDeclarationSyntax getAccessor =
+                AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+
+            //AccessorDeclarationSyntax setAccessor = SyntaxFactory
+            //    .AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+            //    .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+
+            AccessorListSyntax accessorList = AccessorList(
+                List([getAccessor])   //, setAccessor
+            );
+
+            PropertyDeclarationSyntax propertyDeclaration =
+                PropertyDeclaration(propertyType, propertyName)
+                .AddModifiers(  //public static readonly
+                    Token(SyntaxKind.PublicKeyword),
+                    Token(SyntaxKind.StaticKeyword),
+                    Token(SyntaxKind.ReadOnlyKeyword)
+                 )
+                .WithAccessorList(accessorList)
+                .WithInitializer(
+                    EqualsValueClause(        // = new();
+                        ImplicitObjectCreationExpression(
+                                Token(SyntaxKind.NewKeyword),
+                                argumentList: ArgumentList(),
+                                initializer: null
+                            )
+                        )
+                ).WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+
+            return propertyDeclaration;
+        }
+
+        private static PropertyDeclarationSyntax[] GenerateColumnProperties(DatabaseTable table, string tableClassName, TablePrefix prefix, CodeGeneratorSettings settings) {
+
+            List<PropertyDeclarationSyntax> list = [];
+
+            foreach(DatabaseColumn column in table.Columns) {
+
+                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
+
+                string columnClass = !column.IsNullable ? "Column" : "NColumn";
+
+                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
+
+                AttributeSyntax? suppressColumnTypeValidationAttribute = null;
+
+                if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType))) {    //Ignore unsupported types
+                    //addSuppressAttribute = true;
+                    //code.EndLine();
+                    //code.Indent(2).Append("[SuppressColumnTypeValidation] --> ***PLEASE_CHECK_UNSUPPORTED_TYPE***").EndLine();
+                    suppressColumnTypeValidationAttribute = Attribute(IdentifierName("SuppressColumnTypeValidation"));
+                }
+
+                //AttributeListSyntax attributeList = AttributeList(asd
+                //    attribute != null ? SingletonSeparatedList(attribute) : []
+                //);
+
+                TypeSyntax[] genericArgs;
+
+                if(columnInfo.IdentifierType == IdentifierType.Custom) {
+
+                    genericArgs = [ //e.g.  <PersonId, int>
+                        IdentifierName(columnInfo.ColumnTypeName),
+                        IdentifierName(columnInfo.UnderlyingTypeName)
+                    ];
+                }
+                else {
+                    genericArgs = [IdentifierName(columnInfo.ColumnTypeName)];
+                }
+
+                PropertyDeclarationSyntax property = PropertyDeclaration(
+                    // Type: Column<TYPE, UNDERLYING_TYPE>
+                    GenericName(Identifier(columnClass))
+                        .WithTypeArgumentList(
+                            TypeArgumentList(
+                                SeparatedList(genericArgs)
+                            )
+                        ),
+                    Identifier(columnName)
+                )
+
+                .WithModifiers(
+                    TokenList(Token(SyntaxKind.PublicKeyword))
+                )
+                // Accessor List: { get; }
+                .WithAccessorList(
+                    AccessorList(
+                        SingletonList(
+                            AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+                        )
+                    )
+                );
+
+                if(suppressColumnTypeValidationAttribute != null) {
+
+                    //e.g. [SuppressColumnTypeValidation] attibute on column property
+                    property = property.WithAttributeLists(
+                        SingletonList(
+                            AttributeList(
+                                SingletonSeparatedList(suppressColumnTypeValidationAttribute)
+                            )
+                        )
+                    );
+                }
+
+                property = property.WithTrailingTrivia(CarriageReturnLineFeed);
+
+                list.Add(property);
+
+                /*
+                
+                    bool addSuppressAttribute = false;
+
+                    if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType))) {    //Ignore unsupported types
+                        addSuppressAttribute = true;
+                        code.EndLine();
+                        code.Indent(2).Append("[SuppressColumnTypeValidation] --> ***PLEASE_CHECK_UNSUPPORTED_TYPE***").EndLine();
+                    }
+                    count++;
+
+                    string underlyingTypeText = "";
+
+                    if(columnInfo.IdentifierType == IdentifierType.Custom) {
+                        underlyingTypeText = $", {columnInfo.UnderlyingTypeName}";
+                    }
+
+                    code.Indent(2).Append($"public {columnClass}<{columnInfo.ColumnTypeName}{underlyingTypeText}> {columnName} {{ get; }}").EndLine();
+
+                    if(addSuppressAttribute) {
+                        code.EndLine();
+                    }
+
+                    string columnLengthParameter = "";
+
+                    if(column.Length?.LengthType == LengthType.Max || columnInfo.DotNetType == typeof(byte[])) {
+                        columnLengthParameter = $", length: {nameof(ColumnLength)}.MAX";
+                    }
+                    else if(column.Length != null) {
+                        columnLengthParameter = $", length: new({column.Length?.Length})";
+                    }
+
+                    string encloseParameter = SqlKeyWordLookup.IsKeyWord(column.ColumnName.Value) ? ", enclose: true" : "";
+
+                    string columnDescription = settings.IncludeDescriptions ? $", desc: \"{CodeHelper.EscapeCSharpString(column.Description)}\"" : "";
+
+                    lines.Add($"{columnName} = new {columnClass}<{columnInfo.ColumnTypeName}{underlyingTypeText}>(this, name: \"{column.ColumnName.Value}\"{(column.IsAutoGenerated ? ", isAutoGenerated: true" : "")}{columnLengthParameter}{encloseParameter}{columnDescription});");
+                */
+            }
+            return [.. list];
+        }
+
+        /*
+         * Generates Primary Key property.
+         * 
+         * e.g.  public override PrimaryKey? PrimaryKey => new(table: this, name: "pk_name", Id);
+         */
+        private static PropertyDeclarationSyntax GeneratePrimaryKeyProperty(DatabasePrimaryKey primaryKey) {
+
+            List<SyntaxNodeOrToken> pkArgumentList = [
+                //e.g. (table: this
+                Argument(ThisExpression()).WithNameColon(NameColon(IdentifierName("table"))),
+                //e.g. (table: this,
+                Token(SyntaxKind.CommaToken),
+                Argument(
+                    //e.g. name: "pk_name"
+                    LiteralExpression(
+                        SyntaxKind.StringLiteralExpression,
+                        Literal(primaryKey.ConstraintName)
+                    )
+                ).WithNameColon(NameColon(IdentifierName("name")))
+            ];
+
+            foreach(string columnName in primaryKey.ColumnNames) {  //Add columns to pk arguments
+                pkArgumentList.Add(Token(SyntaxKind.CommaToken));
+                pkArgumentList.Add(Argument(IdentifierName(columnName)));
+            }
+
+            PropertyDeclarationSyntax property = PropertyDeclaration(
+                    IdentifierName("PrimaryKey?"),
+                    Identifier("PrimaryKey")
+                )
+                .WithModifiers(
+                    TokenList(
+                        Token(SyntaxKind.PublicKeyword),
+                        Token(SyntaxKind.OverrideKeyword)
+                    )
+                )
+                .WithExpressionBody(
+                    ArrowExpressionClause(
+                        ImplicitObjectCreationExpression(
+                            ArgumentList(
+                                SeparatedList<ArgumentSyntax>(
+                                    pkArgumentList
+                                )
+                            ),
+                            initializer: null
+                        )
+                    )
+                )
+                .WithSemicolonToken(
+                    Token(SyntaxKind.SemicolonToken)
+                )
+                .WithTrailingTrivia(CarriageReturnLineFeed);
+
+            return property;
+        }
+
+        /*
+         *
+         *  Create unique constraints property.
+         *
+         *  e.g.
+         *  public override UniqueConstraint[] UniqueConstraints => [
+         *      new(this, name: "unq_table_name", Name),
+         *      new(this, name: "unq_table_name2", Name)
+         *  ];
+         */
+        private static PropertyDeclarationSyntax GenerateUniqueConstraints(List<DatabaseUniqueConstraint> constraints,
+                                                                           string tableClassName,
+                                                                           TablePrefix prefix) {
+
+            List<CollectionElementSyntax> arrayElements = [];
+
+            foreach(DatabaseUniqueConstraint constraint in constraints) {
+
+                arrayElements.Add(
+                    ExpressionElement(
+                        GenerateConstraintCreation(constraint, tableClassName, prefix)
+                    )
+                );
+            }
+
+            ArrayTypeSyntax returnType = ArrayType( //e.g. UniqueConstraint[]
+                IdentifierName(nameof(UniqueConstraint)))
+                .WithRankSpecifiers(
+                    SingletonList(
+                        ArrayRankSpecifier(
+                            SingletonSeparatedList<ExpressionSyntax>(
+                                OmittedArraySizeExpression()
+                            )
+                        )
+                    )
+                );
+
+            PropertyDeclarationSyntax property =
+                PropertyDeclaration(returnType, Identifier("UniqueConstraints"))
+                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.OverrideKeyword)))
+                .WithExpressionBody(
+                    ArrowExpressionClause(
+                        CollectionExpression(SeparatedList(arrayElements))
+                    )
+                )
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+
+            return property;
+        }
+
+        /*
+         * This generates a unique constraint creation syntax.
+         * 
+         * e.g. new(this, name: "constraint_name", NameA, NameB)
+         * 
+         * Which is part of:
+         * 
+         * public override UniqueConstraint[] UniqueConstraints => [
+         *     new(this, name: "constraint_name", NameA, NameB)
+         * ];
+         */
+        private static ImplicitObjectCreationExpressionSyntax GenerateConstraintCreation(
+                                                        DatabaseUniqueConstraint constraint,
+                                                        string tableClassName,
+                                                        TablePrefix prefix) {
+
+            List<ArgumentSyntax> arguments = [
+                //(this
+                Argument(ThisExpression()),
+                //(this, name: "constraint_name"
+                Argument(LiteralExpression(
+                    SyntaxKind.StringLiteralExpression,
+                    Literal(constraint.ConstraintName)
+                )).WithNameColon(NameColon(IdentifierName("name")))
+            ];
+
+            foreach(ColumnName columnName in constraint.ColumnNames) {
+                string column = prefix.GetColumnName(columnName.Value, className: tableClassName);
+                arguments.Add(Argument(IdentifierName(column)));
+            }
+
+            ImplicitObjectCreationExpressionSyntax expression = ImplicitObjectCreationExpression(
+                newKeyword: Token(SyntaxKind.NewKeyword),
+                argumentList: ArgumentList(SeparatedList(arguments)),
+                initializer: null
+            );
+            return expression;
+        }
+
+        /*
+         *
+         *  Create foreign keys constraint property.
+         *
+         *  e.g.
+         *  public override UniqueConstraint[] UniqueConstraints => [
+         *      new(this, name: "unq_table_name", Name),
+         *      new(this, name: "unq_table_name2", Name)
+         *  ];
+         */
+        private static PropertyDeclarationSyntax GenerateForeignKeyConstraints(List<DatabaseForeignKey> constraints,
+                                                                               TablePrefix prefix) {
+
+            List<CollectionElementSyntax> arrayElements = [];
+
+            foreach(DatabaseForeignKey constraint in constraints) {
+
+                arrayElements.Add(
+                    ExpressionElement(
+                        GenerateForeignKeyCreation(constraint, prefix)
+                    )
+                );
+            }
+
+            ArrayTypeSyntax returnType = ArrayType( //e.g. ForeignKey[]
+                IdentifierName(nameof(ForeignKey)))
+                .WithRankSpecifiers(
+                    SingletonList(
+                        ArrayRankSpecifier(
+                            SingletonSeparatedList<ExpressionSyntax>(
+                                OmittedArraySizeExpression()
+                            )
+                        )
+                    )
+                );
+
+            PropertyDeclarationSyntax property =
+                PropertyDeclaration(returnType, Identifier("ForeignKeys"))
+                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.OverrideKeyword)))
+                .WithExpressionBody(
+                    ArrowExpressionClause(
+                        CollectionExpression(SeparatedList(arrayElements))
+                    )
+                )
+                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+
+            return property;
+        }
+
+        /*
+         * 
+         * Create foreign key creation syntax.
+         * e.g.
+         * new ForeignKey(this, name: "fk_Milestone_Tracker").References(TrackerId, TrackerTable.Instance.Id)
+         */
+        private static ExpressionSyntax GenerateForeignKeyCreation(DatabaseForeignKey foreignKey, TablePrefix prefix) {
+
+            ExpressionSyntax expression = ObjectCreationExpression(
+                IdentifierName(nameof(ForeignKey))
+            )
+            .WithArgumentList(
+                ArgumentList(
+                    SeparatedList([
+                        Argument(ThisExpression()),
+                        Argument(
+                            LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(foreignKey.ConstraintName))
+                        ).WithNameColon(NameColon(IdentifierName("name")))
+                    ])
+                )
+            );
+
+            foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
+
+                string primaryKeyTableClassName = CodeHelper.GetTableName(
+                    table: reference.PrimaryKeyColumn.Table,
+                    includePostFix: true
+                );
+
+                TablePrefix primaryKeyTablePrefix = new TablePrefix(reference.PrimaryKeyColumn.Table);
+
+                string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(
+                    reference.PrimaryKeyColumn.ColumnName.Value,
+                    className: primaryKeyTableClassName
+                );
+
+                string foreignKeyTableClassName = CodeHelper.GetTableName(
+                    table: reference.ForeignKeyColumn.Table,
+                    includePostFix: true
+                );
+
+                string foreignKeyColumnName = prefix.GetColumnName(
+                    reference.ForeignKeyColumn.ColumnName.Value,
+                    className: foreignKeyTableClassName
+                );
+
+                expression =
+                    InvocationExpression(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            expression,
+                            IdentifierName("References")
+                        )
+                    )
+                    .WithArgumentList(
+                        ArgumentList(
+                            SeparatedList([
+                                Argument(IdentifierName(foreignKeyColumnName)),
+                                Argument(
+                                    MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            IdentifierName(primaryKeyTableClassName),
+                                            IdentifierName("Instance")
+                                        ),
+                                        IdentifierName(primaryKeyColumnName)
+                                    )
+                                )
+                            ])
+                        )
+                    );
+            }
+            return expression;
         }
     }
 }
