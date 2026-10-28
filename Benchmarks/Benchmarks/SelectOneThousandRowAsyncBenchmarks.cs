@@ -59,7 +59,9 @@ namespace Benchmarks {
 
         private const int _iterations = 2000;
 
+#pragma warning disable IDISP006 // Implement IDisposable
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(initialCount: 70);   //Limit the number of queries as PostgreSQL has a limit
+#pragma warning restore IDISP006 // Implement IDisposable
 
         [Benchmark]
         public async Task Ado_One_Thousand_Row_SelectAsync() {

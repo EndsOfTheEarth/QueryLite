@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <Nullable>Enable</Nullable>
 	<ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>0.9.7</AssemblyVersion>
@@ -49,5 +49,6 @@
     <PackageReference Include="Npgsql" />
     <PackageReference Include="QueryLite.Utility" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" />
   </ItemGroup>
 </Project>
