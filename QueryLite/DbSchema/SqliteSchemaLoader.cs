@@ -110,7 +110,7 @@ namespace QueryLite.DbSchema {
 
         public static class SqliteTypes {
 
-            private static readonly Dictionary<string, Type?> _Lookup = new Dictionary<string, Type?>(StringComparer.OrdinalIgnoreCase);
+            private static readonly Dictionary<string, Type?> _Lookup = new(StringComparer.OrdinalIgnoreCase);
 
             static SqliteTypes() {
 

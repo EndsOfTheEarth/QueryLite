@@ -28,7 +28,7 @@ namespace QueryLite.DbSchema {
     /// </summary>
     public static class SqlKeyWordLookup {
 
-        private static readonly HashSet<string> KeyWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+        private static readonly HashSet<string> KeyWords = new(StringComparer.OrdinalIgnoreCase) {
             "ADD",
             "ALL",
             "ALTER",
