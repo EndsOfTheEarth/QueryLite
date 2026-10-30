@@ -26,16 +26,27 @@ using QueryLite.PreparedQuery;
 
 namespace QueryLite {
 
-    internal sealed class PreparedQueryTemplate<PARAMETERS, RESULT> : IPreparedDistinct<PARAMETERS, RESULT>, IPreparedTop<PARAMETERS, RESULT>, IPreparedFrom<PARAMETERS, RESULT>, IPreparedHint<PARAMETERS, RESULT>,
-                                                        IPreparedJoin<PARAMETERS, RESULT>, IPreparedWhere<PARAMETERS, RESULT>, IPreparedGroupBy<PARAMETERS, RESULT>,
-                                                        IPreparedHaving<PARAMETERS, RESULT>, IPreparedOrderBy<PARAMETERS, RESULT>, IPreparedFor<PARAMETERS, RESULT>, IPreparedOption<PARAMETERS, RESULT>,
-                                                        ICompileQuery<PARAMETERS, RESULT> {
+    internal sealed class PreparedQueryTemplate<PARAMETERS, RESULT> : IPreparedDistinct<PARAMETERS, RESULT>,
+                                                                      IPreparedTop<PARAMETERS, RESULT>,
+                                                                      IPreparedFrom<PARAMETERS, RESULT>,
+                                                                      IPreparedHint<PARAMETERS, RESULT>,
+                                                                      IPreparedJoin<PARAMETERS, RESULT>,
+                                                                      IPreparedWhere<PARAMETERS, RESULT>,
+                                                                      IPreparedGroupBy<PARAMETERS, RESULT>,
+                                                                      IPreparedHaving<PARAMETERS, RESULT>,
+                                                                      IPreparedOrderBy<PARAMETERS, RESULT>,
+                                                                      IPreparedFor<PARAMETERS, RESULT>,
+                                                                      IPreparedOption<PARAMETERS, RESULT>,
+                                                                      ICompileQuery<PARAMETERS, RESULT> {
 
         public Func<IResultRow, RESULT>? SelectFunction { get; }
+        
         public IList<IField> SelectFields { get; private set; }
 
         public PreparedQueryTemplate<PARAMETERS, RESULT>? ParentUnion { get; private set; }
+
         public PreparedQueryTemplate<PARAMETERS, RESULT>? ChildUnion { get; private set; }
+
         public UnionType? ChildUnionType { get; private set; }
 
         public bool IsDistinct { get; private set; }
@@ -99,7 +110,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            PreparedJoin<PARAMETERS, RESULT> join = new PreparedJoin<PARAMETERS, RESULT>(JoinType.Join, table, this);
+            PreparedJoin<PARAMETERS, RESULT> join = new(JoinType.Join, table, this);
 
             if(Joins == null) {
                 Joins = [];
@@ -112,7 +123,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            PreparedJoin<PARAMETERS, RESULT> join = new PreparedJoin<PARAMETERS, RESULT>(JoinType.LeftJoin, table, this);
+            PreparedJoin<PARAMETERS, RESULT> join = new(JoinType.LeftJoin, table, this);
 
             if(Joins == null) {
                 Joins = [];
@@ -121,7 +132,8 @@ namespace QueryLite {
             return join;
         }
 
-        public IPreparedGroupBy<PARAMETERS, RESULT> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>>? condition) {
+        public IPreparedGroupBy<PARAMETERS, RESULT> Where(
+                Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>>? condition) {
 
             if(condition != null) {
                 WhereCondition = condition(new EmptyPreparedCondition<PARAMETERS>());
@@ -156,7 +168,9 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedOption<PARAMETERS, RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
+        public IPreparedOption<PARAMETERS, RESULT> FOR(ForType forType,
+                                                       ITable[] ofTables,
+                                                       WaitType waitType) {
 
             ArgumentNullException.ThrowIfNull(ofTables);
 
@@ -177,7 +191,8 @@ namespace QueryLite {
             return this;
         }
 
-        public ICompileQuery<PARAMETERS, RESULT> Option(string labelName, params SqlServerQueryOption[] options) {
+        public ICompileQuery<PARAMETERS, RESULT> Option(string labelName,
+                                                        params SqlServerQueryOption[] options) {
 
             ArgumentException.ThrowIfNullOrEmpty(labelName);
             ArgumentNullException.ThrowIfNull(options);
@@ -194,7 +209,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(selectFunc);
 
-            PreparedQueryTemplate<PARAMETERS, RESULT> template = new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc) {
+            PreparedQueryTemplate<PARAMETERS, RESULT> template = new(selectFunc) {
                 ParentUnion = this
             };
             ChildUnion = template;
@@ -203,9 +218,10 @@ namespace QueryLite {
         }
 
         public IPreparedDistinct<PARAMETERS, RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
+
             ArgumentNullException.ThrowIfNull(selectFunc);
 
-            PreparedQueryTemplate<PARAMETERS, RESULT> template = new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc) {
+            PreparedQueryTemplate<PARAMETERS, RESULT> template = new(selectFunc) {
                 ParentUnion = this
             };
             ChildUnion = template;
@@ -223,7 +239,7 @@ namespace QueryLite {
 
             while(true) {
 
-                FieldCollector fieldCollector = new FieldCollector();
+                FieldCollector fieldCollector = new();
 
                 template.SelectFunction!(fieldCollector);
 
@@ -242,7 +258,9 @@ namespace QueryLite {
 
         private PreparedQueryTemplate<PARAMETERS, RESULT> QueryTemplate { get; }
 
-        private readonly PreparedQueryDetail<PARAMETERS>?[] _queries;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        //Store the sql for each database type in an array that is indexed by
+        //the database type integer value (For performance)
+        private readonly PreparedQueryDetail<PARAMETERS>?[] _queries;
 
         public PreparedQuery(PreparedQueryTemplate<PARAMETERS, RESULT> template) {
 
@@ -277,7 +295,11 @@ namespace QueryLite {
 
                 PreparedParameterList<PARAMETERS> parameters = new PreparedParameterList<PARAMETERS>();
 
-                string sql = database.PreparedQueryGenerator.GetSql(QueryTemplate, database, parameters);
+                string sql = database.PreparedQueryGenerator.GetSql(
+                    template: QueryTemplate,
+                    database: database,
+                    parameters: parameters
+                );
 
                 queryDetail = new PreparedQueryDetail<PARAMETERS>(sql, parameters);
 
@@ -289,7 +311,10 @@ namespace QueryLite {
             return queryDetail;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters,
+                                           IDatabase database,
+                                           QueryTimeout? timeout = null,
+                                           string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -313,7 +338,10 @@ namespace QueryLite {
             return result;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters,
+                                           Transaction transaction,
+                                           QueryTimeout? timeout = null,
+                                           string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -339,8 +367,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, IDatabase database, CancellationToken ct,
-                                                            QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters,
+                                                            IDatabase database,
+                                                            CancellationToken ct,
+                                                            QueryTimeout? timeout = null,
+                                                            string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -365,8 +396,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken ct,
-                                                            QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters,
+                                                            Transaction transaction,
+                                                            CancellationToken ct,
+                                                            QueryTimeout? timeout = null,
+                                                            string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -393,7 +427,10 @@ namespace QueryLite {
             return result;
         }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public RESULT? SingleOrDefault(PARAMETERS parameters,
+                                       Transaction transaction,
+                                       QueryTimeout? timeout = null,
+                                       string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -419,7 +456,10 @@ namespace QueryLite {
             return result;
         }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+        public RESULT? SingleOrDefault(PARAMETERS parameters,
+                                       IDatabase database,
+                                       QueryTimeout? timeout = null,
+                                       string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 
@@ -443,8 +483,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                        QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+                                                        Transaction transaction,
+                                                        CancellationToken? ct = null,
+                                                        QueryTimeout? timeout = null,
+                                                        string debugName = "") {
 
             IDatabase database = transaction.Database;
 
@@ -471,8 +514,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
-                                                        QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+                                                        IDatabase database,
+                                                        CancellationToken? ct = null,
+                                                        QueryTimeout? timeout = null,
+                                                        string debugName = "") {
 
             PreparedQueryDetail<PARAMETERS> queryDetail = GetQueryDetail(database);
 

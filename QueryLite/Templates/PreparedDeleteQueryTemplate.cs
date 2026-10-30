@@ -26,8 +26,10 @@ using QueryLite.PreparedQuery;
 
 namespace QueryLite {
 
-    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteFrom<PARAMETERS>, IPreparedDeleteNoWhere<PARAMETERS>,
-                                                                    IPreparedDeleteWhere<PARAMETERS>, IPreparedDeleteBuild<PARAMETERS> {
+    internal sealed class PreparedDeleteQueryTemplate<PARAMETERS> : IPreparedDeleteFrom<PARAMETERS>,
+                                                                    IPreparedDeleteNoWhere<PARAMETERS>,
+                                                                    IPreparedDeleteWhere<PARAMETERS>,
+                                                                    IPreparedDeleteBuild<PARAMETERS> {
 
         public ITable Table { get; }
         public List<ITable>? FromTables { get; private set; }
@@ -50,9 +52,9 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            FromTables = new List<ITable>(tables.Length + 1);
-
-            FromTables.Add(table);
+            FromTables = new(tables.Length + 1) {
+                table
+            };
 
             if(tables.Length > 0) {
                 FromTables.AddRange(tables);
@@ -60,7 +62,8 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedDeleteBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {
+        public IPreparedDeleteBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>,
+                                                      APreparedCondition<PARAMETERS>> condition) {
 
             ArgumentNullException.ThrowIfNull(condition);
             WhereCondition = condition(new EmptyPreparedCondition<PARAMETERS>());
@@ -85,7 +88,9 @@ namespace QueryLite {
 
         private readonly PreparedDeleteQueryTemplate<PARAMETERS> _template;
 
-        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _deleteDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        //Store the sql for each database type in an array that is indexed by
+        //the database type integer value (For performance)
+        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _deleteDetails;
 
         public PreparedDeleteQuery(PreparedDeleteQueryTemplate<PARAMETERS> template) {
 
@@ -132,7 +137,10 @@ namespace QueryLite {
             return updateDetail;
         }
 
-        public NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public NonQueryResult Execute(PARAMETERS parameters,
+                                      Transaction transaction,
+                                      QueryTimeout? timeout = null,
+                                      string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
@@ -149,8 +157,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters,
+                                                       Transaction transaction,
+                                                       CancellationToken? ct = null,
+                                                       QueryTimeout? timeout = null,
+                                                       string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
@@ -172,10 +183,15 @@ namespace QueryLite {
     internal sealed class PreparedDeleteQuery<PARAMETERS, RESULT> : IPreparedDeleteQuery<PARAMETERS, RESULT> {
 
         private readonly PreparedDeleteQueryTemplate<PARAMETERS> _template;
-        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;    //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+
+        //Store the sql for each database type in an array that is indexed by
+        //the database type integer value (For performance)
+        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
+
         private readonly Func<IResultRow, RESULT> _outputFunc;
 
-        public PreparedDeleteQuery(PreparedDeleteQueryTemplate<PARAMETERS> template, Func<IResultRow, RESULT> outputFunc) {
+        public PreparedDeleteQuery(PreparedDeleteQueryTemplate<PARAMETERS> template,
+                                   Func<IResultRow, RESULT> outputFunc) {
 
             _template = template;
             _outputFunc = outputFunc;
@@ -198,6 +214,7 @@ namespace QueryLite {
         public void Initialize(IDatabase database) {
             _ = GetDeleteQuery(database);
         }
+
         private PreparedSqlAndParameters<PARAMETERS> GetDeleteQuery(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
@@ -221,7 +238,10 @@ namespace QueryLite {
             return updateDetail;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters,
+                                           Transaction transaction,
+                                           QueryTimeout? timeout = null,
+                                           string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
@@ -239,8 +259,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                            QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters,
+                                                            Transaction transaction,
+                                                            CancellationToken? ct = null,
+                                                            QueryTimeout? timeout = null,
+                                                            string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetDeleteQuery(transaction.Database);
 
@@ -259,7 +282,10 @@ namespace QueryLite {
             return result;
         }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public RESULT? SingleOrDefault(PARAMETERS parameters,
+                                       Transaction transaction,
+                                       QueryTimeout? timeout = null,
+                                       string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetDeleteQuery(transaction.Database);
 
@@ -276,7 +302,10 @@ namespace QueryLite {
             );
         }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+        public RESULT? SingleOrDefault(PARAMETERS parameters,
+                                       IDatabase database,
+                                       QueryTimeout? timeout = null,
+                                       string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetDeleteQuery(database);
 
@@ -293,8 +322,11 @@ namespace QueryLite {
             );
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                        QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+                                                        Transaction transaction,
+                                                        CancellationToken? ct = null,
+                                                        QueryTimeout? timeout = null,
+                                                        string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetDeleteQuery(transaction.Database);
 
@@ -313,8 +345,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
-                                                        QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+                                                        IDatabase database,
+                                                        CancellationToken? ct = null,
+                                                        QueryTimeout? timeout = null,
+                                                        string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetDeleteQuery(database);
 

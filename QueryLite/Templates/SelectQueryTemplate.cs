@@ -22,52 +22,81 @@
  * SOFTWARE.
  **/
 using QueryLite.Databases;
+using System.Transactions;
 
 namespace QueryLite {
 
     internal interface IQueryGenerator {
-        internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, bool forceAlias, IParametersBuilder? parameters);
+
+        internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
+                                       IDatabase database,
+                                       bool forceAlias,
+                                       IParametersBuilder? parameters);
     }
     internal interface IInsertQueryGenerator {
-        internal string GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters,
-                                       out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
+
+        internal string GetSql<RESULT>(InsertQueryTemplate template,
+                                       IDatabase database,
+                                       Parameters useParameters,
+                                       out IParametersBuilder? parameters,
+                                       Func<IResultRow, RESULT>? outputFunc);
     }
 
     internal interface IPreparedInsertQueryGenerator {
-        internal string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database,
+
+        internal string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template,
+                                                   IDatabase database,
                                                    out PreparedParameterList<PARAMETERS> parameters,
                                                    Func<IResultRow, RESULT>? outputFunc);
     }
 
     internal interface IUpdateQueryGenerator {
-        internal string GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters,
-                                       out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc);
+
+        internal string GetSql<RESULT>(UpdateQueryTemplate template,
+                                       IDatabase database,
+                                       Parameters useParameters,
+                                       out IParametersBuilder? parameters,
+                                       Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IPreparedUpdateQueryGenerator {
-        internal string GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template, IDatabase database,
+
+        internal string GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template,
+                                                   IDatabase database,
                                                    out PreparedParameterList<PARAMETERS> parameters,
                                                    Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IDeleteQueryGenerator {
-        internal string GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters,
+
+        internal string GetSql<RESULT>(DeleteQueryTemplate template,
+                                       IDatabase database,
+                                       IParametersBuilder? parameters,
                                        Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface IPreparedDeleteQueryGenerator {
-        internal string GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template, IDatabase database,
+
+        internal string GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template,
+                                                   IDatabase database,
                                                    out PreparedParameterList<PARAMETERS> parameters,
                                                    Func<IResultRow, RESULT>? outputFunc);
     }
     internal interface ITruncateQueryGenerator {
-        internal string GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters);
+
+        internal string GetSql(TruncateQueryTemplate template,
+                               IDatabase database,
+                               IParametersBuilder? parameters);
     }
 
     internal interface IPreparedQueryGenerator {
+
         internal string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template,
-                                                   IDatabase database, PreparedParameterList<PARAMETERS> parameters);
+                                                   IDatabase database,
+                                                   PreparedParameterList<PARAMETERS> parameters);
     }
 
     internal interface ILikeSqlConditionGenerator {
-        internal string GetSql<TYPE>(ILike<TYPE> like, IDatabase database);
+
+        internal string GetSql<TYPE>(ILike<TYPE> like,
+                                     IDatabase database);
     }
 
     /*
@@ -95,9 +124,17 @@ namespace QueryLite {
         public string? OptionLabelName { get; internal set; } = null;
         public SqlServerQueryOption[]? Options { get; internal set; } = null;
     }
-    internal sealed class SelectQueryTemplate<RESULT> : IDistinct<RESULT>, ITop<RESULT>, IFrom<RESULT>, IHint<RESULT>,
-                                                        IJoin<RESULT>, IWhere<RESULT>, IGroupBy<RESULT>, IHaving<RESULT>,
-                                                        IOrderBy<RESULT>, IFor<RESULT>, IExecute<RESULT> {
+    internal sealed class SelectQueryTemplate<RESULT> : IDistinct<RESULT>,
+                                                        ITop<RESULT>,
+                                                        IFrom<RESULT>,
+                                                        IHint<RESULT>,
+                                                        IJoin<RESULT>,
+                                                        IWhere<RESULT>,
+                                                        IGroupBy<RESULT>,
+                                                        IHaving<RESULT>,
+                                                        IOrderBy<RESULT>,
+                                                        IFor<RESULT>,
+                                                        IExecute<RESULT> {
 
         public Func<IResultRow, RESULT>? SelectFunction { get; }
 
@@ -164,7 +201,11 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            Join<RESULT> join = new Join<RESULT>(JoinType.Join, table, this);
+            Join<RESULT> join = new(
+                joinType: JoinType.Join,
+                table: table,
+                template: this
+            );
 
             if(Joins == null) {
                 Joins = [];
@@ -176,7 +217,11 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            Join<RESULT> join = new Join<RESULT>(JoinType.LeftJoin, table, this);
+            Join<RESULT> join = new(
+                joinType: JoinType.LeftJoin,
+                table: table,
+                template: this
+            );
 
             if(Joins == null) {
                 Joins = [];
@@ -219,7 +264,9 @@ namespace QueryLite {
             return this;
         }
 
-        public IOption<RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
+        public IOption<RESULT> FOR(ForType forType,
+                                   ITable[] ofTables,
+                                   WaitType waitType) {
 
             ArgumentNullException.ThrowIfNull(ofTables);
 
@@ -247,7 +294,8 @@ namespace QueryLite {
             return this;
         }
 
-        public IExecute<RESULT> Option(string labelName, params SqlServerQueryOption[] options) {
+        public IExecute<RESULT> Option(string labelName,
+                                       params SqlServerQueryOption[] options) {
 
             ArgumentException.ThrowIfNullOrEmpty(labelName);
             ArgumentNullException.ThrowIfNull(options);
@@ -264,21 +312,37 @@ namespace QueryLite {
             return this;
         }
 
-        public string GetSql(IDatabase database, IParametersBuilder? parameters = null) {
+        public string GetSql(IDatabase database,
+                             IParametersBuilder? parameters = null) {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
+            return database.QueryGenerator.GetSql(
+                template: this,
+                database: database,
+                forceAlias: false,
+                parameters: parameters
+            );
         }
-        public string GetSql(IDatabase database, bool forceAlias, IParametersBuilder? parameters = null) {
+
+        public string GetSql(IDatabase database,
+                             bool forceAlias,
+                             IParametersBuilder? parameters = null) {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.QueryGenerator.GetSql(this, database, forceAlias: forceAlias, parameters);
+            return database.QueryGenerator.GetSql(
+                template: this,
+                database: database,
+                forceAlias: forceAlias,
+                parameters: parameters
+            );
         }
 
-        public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null,
-                                           Parameters useParameters = Parameters.Default, string debugName = "") {
+        public QueryResult<RESULT> Execute(Transaction transaction,
+                                           QueryTimeout? timeout = null,
+                                           Parameters useParameters = Parameters.Default,
+                                           string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -287,10 +351,21 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
-                                             (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = null;
 
-            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, forceAlias: false, parameters);
+            bool createParameters = (useParameters == Parameters.On) ||
+                                    (useParameters == Parameters.Default && Settings.UseParameters);
+
+            if(createParameters) {
+                parameters = transaction.Database.CreateParameters(initParams: 1);
+            }
+
+            string sql = transaction.Database.QueryGenerator.GetSql(
+                template: this,
+                database: transaction.Database,
+                forceAlias: false,
+                parameters: parameters
+            );
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: transaction.Database,
@@ -300,14 +375,16 @@ namespace QueryLite {
                 func: SelectFunction!,
                 sql: sql,
                 queryType: QueryType.Select,
-                debugName: debugName);
-
+                debugName: debugName
+            );
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(
-            Transaction transaction, CancellationToken? ct = null, QueryTimeout? timeout = null,
-            Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction,
+                                                            CancellationToken? ct = null,
+                                                            QueryTimeout? timeout = null,
+                                                            Parameters useParameters = Parameters.Default,
+                                                            string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -316,10 +393,21 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
-                                             (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = null;
 
-            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, forceAlias: false, parameters);
+            bool createParameters = (useParameters == Parameters.On) ||
+                                    (useParameters == Parameters.Default && Settings.UseParameters);
+
+            if(createParameters) {
+                parameters = transaction.Database.CreateParameters(initParams: 1);
+            }
+
+            string sql = transaction.Database.QueryGenerator.GetSql(
+                template: this,
+                database: transaction.Database,
+                forceAlias: false,
+                parameters: parameters
+            );
 
             QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
                 database: transaction.Database,
@@ -335,9 +423,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(
-            IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
-            Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database,
+                                                            CancellationToken? ct = null,
+                                                            QueryTimeout? timeout = null,
+                                                            Parameters useParameters = Parameters.Default,
+                                                            string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(database);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -346,10 +436,21 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
-                                             (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = null;
 
-            string sql = database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
+            bool createParameters = (useParameters == Parameters.On) ||
+                                    (useParameters == Parameters.Default && Settings.UseParameters);
+
+            if(createParameters) {
+                parameters = database.CreateParameters(initParams: 1);
+            }
+
+            string sql = database.QueryGenerator.GetSql(
+                template: this,
+                database: database,
+                forceAlias: false,
+                parameters: parameters
+            );
 
             QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
                 database: database,
@@ -365,7 +466,9 @@ namespace QueryLite {
             return result;
         }
 
-        public QueryResult<RESULT> Execute(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+        public QueryResult<RESULT> Execute(IDatabase database,
+                                           QueryTimeout? timeout = null,
+                                           Parameters useParameters = Parameters.Default,
                                            string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(database);
@@ -375,10 +478,21 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
-                                             (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = null;
 
-            string sql = database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
+            bool createParameters = (useParameters == Parameters.On) ||
+                                    (useParameters == Parameters.Default && Settings.UseParameters);
+
+            if(createParameters) {
+                parameters = database.CreateParameters(initParams: 1);
+            }
+
+            string sql = database.QueryGenerator.GetSql(
+                template: this,
+                database: database,
+                forceAlias: false,
+                parameters: parameters
+            );
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -393,7 +507,9 @@ namespace QueryLite {
             return result;
         }
 
-        public RESULT? SingleOrDefault(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+        public RESULT? SingleOrDefault(Transaction transaction,
+                                       QueryTimeout? timeout = null,
+                                       Parameters useParameters = Parameters.Default,
                                        string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
@@ -403,10 +519,20 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
-                                             (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = null;
 
-            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, forceAlias: false, parameters);
+            bool createParameters = (useParameters == Parameters.On) ||
+                                    (useParameters == Parameters.Default && Settings.UseParameters);
+
+            if(createParameters) {
+                parameters = transaction.Database.CreateParameters(initParams: 1);
+            }
+            string sql = transaction.Database.QueryGenerator.GetSql(
+                template: this,
+                database: transaction.Database,
+                forceAlias: false,
+                parameters: parameters
+            );
 
             RESULT? result = QueryExecutor.SingleOrDefault(
                 database: transaction.Database,
@@ -421,7 +547,9 @@ namespace QueryLite {
             return result;
         }
 
-        public RESULT? SingleOrDefault(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+        public RESULT? SingleOrDefault(IDatabase database,
+                                       QueryTimeout? timeout = null,
+                                       Parameters useParameters = Parameters.Default,
                                        string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(database);
@@ -431,10 +559,20 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
-                                             (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = null;
 
-            string sql = database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
+            bool createParameters = (useParameters == Parameters.On) ||
+                                    (useParameters == Parameters.Default && Settings.UseParameters);
+
+            if(createParameters) {
+                parameters = database.CreateParameters(initParams: 1);
+            }
+            string sql = database.QueryGenerator.GetSql(
+                template: this,
+                database: database,
+                forceAlias: false,
+                parameters: parameters
+            );
 
             RESULT? result = QueryExecutor.SingleOrDefault(
                 database: database,
@@ -449,8 +587,10 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? ct = null,
-                                                        QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+        public async Task<RESULT?> SingleOrDefaultAsync(Transaction transaction,
+                                                        CancellationToken? ct = null,
+                                                        QueryTimeout? timeout = null,
+                                                        Parameters useParameters = Parameters.Default,
                                                         string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
@@ -460,10 +600,20 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
-                                             (useParameters == Parameters.Default && Settings.UseParameters) ? transaction.Database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = null;
 
-            string sql = transaction.Database.QueryGenerator.GetSql(this, transaction.Database, forceAlias: false, parameters);
+            bool createParameters = (useParameters == Parameters.On) ||
+                                    (useParameters == Parameters.Default && Settings.UseParameters);
+
+            if(createParameters) {
+                parameters = transaction.Database.CreateParameters(initParams: 1);
+            }
+            string sql = transaction.Database.QueryGenerator.GetSql(
+                template: this,
+                database: transaction.Database,
+                forceAlias: false,
+                parameters: parameters
+            );
 
             RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
                 database: transaction.Database,
@@ -479,8 +629,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
-                                                        Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(IDatabase database,
+                                                        CancellationToken? ct = null,
+                                                        QueryTimeout? timeout = null,
+                                                        Parameters useParameters = Parameters.Default,
+                                                        string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(database);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -489,10 +642,20 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortSelect;
             }
 
-            IParametersBuilder? parameters = (useParameters == Parameters.On) ||
-                                             (useParameters == Parameters.Default && Settings.UseParameters) ? database.CreateParameters(initParams: 1) : null;
+            IParametersBuilder? parameters = null;
 
-            string sql = database.QueryGenerator.GetSql(this, database, forceAlias: false, parameters);
+            bool createParameters = (useParameters == Parameters.On) ||
+                                    (useParameters == Parameters.Default && Settings.UseParameters);
+
+            if(createParameters) {
+                parameters = database.CreateParameters(initParams: 1);
+            }
+            string sql = database.QueryGenerator.GetSql(
+                template: this,
+                database: database,
+                forceAlias: false,
+                parameters: parameters
+            );
 
             RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
                 database: database,
@@ -512,7 +675,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(selectFunc);
 
-            SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc) {
+            SelectQueryTemplate<RESULT> template = new(selectFunc) {
                 Extras = new TemplateExtra<RESULT> {
                     ParentUnion = this
                 }
@@ -530,7 +693,7 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(selectFunc);
 
-            SelectQueryTemplate<RESULT> template = new SelectQueryTemplate<RESULT>(selectFunc) {
+            SelectQueryTemplate<RESULT> template = new(selectFunc) {
                 Extras = new TemplateExtra<RESULT> {
                     ParentUnion = this
                 }

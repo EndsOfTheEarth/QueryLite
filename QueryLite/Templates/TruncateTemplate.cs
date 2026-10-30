@@ -34,7 +34,9 @@ namespace QueryLite {
             Table = table;
         }
 
-        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public NonQueryResult Execute(Transaction transaction,
+                                      QueryTimeout? timeout = null,
+                                      string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -43,8 +45,11 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortDelete;
             }
 
-            string sql = transaction.Database.TruncateGenerator.GetSql(this, transaction.Database, parameters: null);
-
+            string sql = transaction.Database.TruncateGenerator.GetSql(
+                template: this,
+                database: transaction.Database,
+                parameters: null
+            );
             return QueryExecutor.ExecuteNonQuery(
                 database: transaction.Database,
                 transaction: transaction,
@@ -58,7 +63,8 @@ namespace QueryLite {
 
         public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
                                                        CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null, string debugName = "") {
+                                                       QueryTimeout? timeout = null,
+                                                       string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -67,7 +73,11 @@ namespace QueryLite {
                 timeout = TimeoutLevel.ShortDelete;
             }
 
-            string sql = transaction.Database.TruncateGenerator.GetSql(this, transaction.Database, parameters: null);
+            string sql = transaction.Database.TruncateGenerator.GetSql(
+                template: this,
+                database: transaction.Database,
+                parameters: null
+            );
 
             NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
                 database: transaction.Database,

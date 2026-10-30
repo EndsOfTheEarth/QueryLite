@@ -26,12 +26,17 @@ using QueryLite.PreparedQuery;
 
 namespace QueryLite {
 
-    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>, IPreparedUpdateFrom<PARAMETERS>,
-                                                               IPreparedUpdateWhere<PARAMETERS>, IPreparedUpdateBuild<PARAMETERS> {
+    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>,
+                                                               IPreparedUpdateFrom<PARAMETERS>,
+                                                               IPreparedUpdateWhere<PARAMETERS>,
+                                                               IPreparedUpdateBuild<PARAMETERS> {
 
         public ITable Table { get; }
+
         public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
+
         public List<ITable>? FromTables { get; private set; }
+
         public APreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
 
         public PreparedUpdateTemplate(ITable table) {
@@ -52,9 +57,9 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(table);
 
-            FromTables = new List<ITable>(tables.Length + 1);
-
-            FromTables.Add(table);
+            FromTables = new(tables.Length + 1) {
+                table
+            };
 
             if(tables.Length > 0) {
                 FromTables.AddRange(tables);
@@ -62,7 +67,8 @@ namespace QueryLite {
             return this;
         }
 
-        public IPreparedUpdateBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {
+        public IPreparedUpdateBuild<PARAMETERS> Where(
+                        Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {
 
             ArgumentNullException.ThrowIfNull(condition);
 
@@ -87,7 +93,8 @@ namespace QueryLite {
 
     internal sealed class PreparedSqlAndParameters<PARAMETERS> {
 
-        public PreparedSqlAndParameters(string sql, PreparedParameterList<PARAMETERS> setParameters) {
+        public PreparedSqlAndParameters(string sql,
+                                        PreparedParameterList<PARAMETERS> setParameters) {
             Sql = sql;
             SetParameters = setParameters;
         }
@@ -99,7 +106,8 @@ namespace QueryLite {
 
         private readonly PreparedUpdateTemplate<PARAMETERS> _template;
 
-        //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        //Store the sql for each database type in an array that is indexed by
+        //the database type integer value (For performance)
         private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
 
         public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template) {
@@ -124,6 +132,7 @@ namespace QueryLite {
         public void Initialize(IDatabase database) {
             _ = GetUpdateQuery(database);
         }
+
         private PreparedSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {
 
             int dbTypeIndex = (int)database.DatabaseType;
@@ -147,7 +156,10 @@ namespace QueryLite {
             return updateDetail;
         }
 
-        public NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public NonQueryResult Execute(PARAMETERS parameters,
+                                      Transaction transaction,
+                                      QueryTimeout? timeout = null,
+                                      string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -164,8 +176,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters,
+                                                       Transaction transaction,
+                                                       CancellationToken? ct = null,
+                                                       QueryTimeout? timeout = null,
+                                                       string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -188,12 +203,14 @@ namespace QueryLite {
 
         private readonly PreparedUpdateTemplate<PARAMETERS> _template;
 
-        //Store the sql for each database type in an array that is indexed by the database type integer value (For performance)
+        //Store the sql for each database type in an array that is indexed by
+        //the database type integer value (For performance)
         private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
 
         private Func<IResultRow, RESULT> _outputFunc;
 
-        public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template, Func<IResultRow, RESULT> outputFunc) {
+        public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template,
+                                   Func<IResultRow, RESULT> outputFunc) {
 
             _template = template;
             _outputFunc = outputFunc;
@@ -239,7 +256,10 @@ namespace QueryLite {
             return updateDetail;
         }
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public QueryResult<RESULT> Execute(PARAMETERS parameters,
+                                           Transaction transaction,
+                                           QueryTimeout? timeout = null,
+                                           string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -257,8 +277,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                            QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters,
+                                                            Transaction transaction,
+                                                            CancellationToken? ct = null,
+                                                            QueryTimeout? timeout = null,
+                                                            string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
@@ -277,7 +300,10 @@ namespace QueryLite {
             return result;
         }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "") {
+        public RESULT? SingleOrDefault(PARAMETERS parameters,
+                                       Transaction transaction,
+                                       QueryTimeout? timeout = null,
+                                       string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
 
@@ -294,7 +320,10 @@ namespace QueryLite {
             );
         }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "") {
+        public RESULT? SingleOrDefault(PARAMETERS parameters,
+                                       IDatabase database,
+                                       QueryTimeout? timeout = null,
+                                       string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
 
@@ -311,8 +340,11 @@ namespace QueryLite {
             );
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                        QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+                                                        Transaction transaction,
+                                                        CancellationToken? ct = null,
+                                                        QueryTimeout? timeout = null,
+                                                        string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
 
@@ -331,8 +363,11 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
-                                                        QueryTimeout? timeout = null, string debugName = "") {
+        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+                                                        IDatabase database,
+                                                        CancellationToken? ct = null,
+                                                        QueryTimeout? timeout = null,
+                                                        string debugName = "") {
 
             PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
 

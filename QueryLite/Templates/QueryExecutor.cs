@@ -39,21 +39,21 @@ namespace QueryLite {
 
     internal static class QueryExecutor {
 
-        public static QueryResult<RESULT> Execute<RESULT>(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            IParametersBuilder? parameters,
-            Func<IResultRow, RESULT> func,
-            string sql,
-            QueryType queryType,
-            string debugName) {
+        public static QueryResult<RESULT> Execute<RESULT>(IDatabase database,
+                                                          Transaction? transaction,
+                                                          QueryTimeout timeout,
+                                                          IParametersBuilder? parameters,
+                                                          Func<IResultRow, RESULT> func,
+                                                          string sql,
+                                                          QueryType queryType,
+                                                          string debugName) {
 
             DbConnection? dbConnection = null;
 
             bool oneTimeConnection = false;
 
-            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+            //Using this flag to speed up code when there are no subscribed events
+            bool hasEvents = Settings.HasEvents;
 
             DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
 
@@ -110,7 +110,10 @@ namespace QueryLite {
                     DebugHelper.HitBreakPoint(queryType);
 #endif
 
-                    if(oneTimeConnection) { //Ideally we want to open the connection as late a possible and close it immediately after use so it is freed back into the connection pool for other threads to use
+                    //Ideally we want to open the connection as late a possible and close it
+                    //immediately after use so it is freed back into the connection pool for
+                    //other threads to use
+                    if(oneTimeConnection) {
                         dbConnection.Open();
                     }
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
@@ -129,7 +132,11 @@ namespace QueryLite {
                         SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                         //Note: Reader must be closed for RecordsAffected to be populated
-                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+                        QueryResult<RESULT> result = new(
+                            rows: rowList,
+                            sql: sql,
+                            rowsEffected: reader.RecordsAffected != -1 ? reader.RecordsAffected : 0
+                        );
 
                         if(hasEvents) {
 
@@ -186,14 +193,13 @@ namespace QueryLite {
             }
         }
 
-        public static NonQueryResult ExecuteNonQuery(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            IParametersBuilder? parameters,
-            string sql,
-            QueryType queryType,
-            string debugName) {
+        public static NonQueryResult ExecuteNonQuery(IDatabase database,
+                                                     Transaction? transaction,
+                                                     QueryTimeout timeout,
+                                                     IParametersBuilder? parameters,
+                                                     string sql,
+                                                     QueryType queryType,
+                                                     string debugName) {
 
             DbConnection? dbConnection = null;
 
@@ -248,11 +254,10 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        foreach(DbParameter parameter in parameters.ParameterList) {
+                            command.Parameters.Add(parameter);
                         }
                     }
-
 #if DEBUG
                     DebugHelper.HitBreakPoint(queryType);
 #endif
@@ -321,13 +326,13 @@ namespace QueryLite {
         }
 
         public static RESULT? SingleOrDefault<RESULT>(IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            IParametersBuilder? parameters,
-            Func<IResultRow, RESULT> func,
-            string sql,
-            QueryType queryType,
-            string debugName) {
+                                                      Transaction? transaction,
+                                                      QueryTimeout timeout,
+                                                      IParametersBuilder? parameters,
+                                                      Func<IResultRow, RESULT> func,
+                                                      string sql,
+                                                      QueryType queryType,
+                                                      string debugName) {
 
             DbConnection? dbConnection = null;
 
@@ -382,11 +387,10 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        foreach(DbParameter parameter in parameters.ParameterList) {
+                            command.Parameters.Add(parameter);
                         }
                     }
-
 #if DEBUG
                     DebugHelper.HitBreakPoint(queryType);
 #endif
@@ -473,14 +477,14 @@ namespace QueryLite {
         }
 
         public static async Task<RESULT?> SingleOrDefaultAsync<RESULT>(IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            IParametersBuilder? parameters,
-            Func<IResultRow, RESULT> func,
-            string sql,
-            QueryType queryType,
-            string debugName,
-            CancellationToken ct) {
+                                                                       Transaction? transaction,
+                                                                       QueryTimeout timeout,
+                                                                       IParametersBuilder? parameters,
+                                                                       Func<IResultRow, RESULT> func,
+                                                                       string sql,
+                                                                       QueryType queryType,
+                                                                       string debugName,
+                                                                       CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -517,7 +521,9 @@ namespace QueryLite {
                     DbTransaction? dbTransaction = transaction.GetTransaction(database);
 
                     if(dbTransaction == null) {
+
                         dbConnection = database.GetNewConnection();
+
                         await dbConnection.OpenAsync(ct).ConfigureAwait(false);
                         await transaction.BeginTransactionAsync(dbConnection, ct).ConfigureAwait(false);
                     }
@@ -535,8 +541,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        foreach(DbParameter parameter in parameters.ParameterList) {
+                            command.Parameters.Add(parameter);
                         }
                     }
 
@@ -624,16 +630,15 @@ namespace QueryLite {
             }
         }
 
-        public static async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            IParametersBuilder? parameters,
-            Func<IResultRow, RESULT> func,
-            string sql,
-            QueryType queryType,
-            string debugName,
-            CancellationToken ct) {
+        public static async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(IDatabase database,
+                                                                           Transaction? transaction,
+                                                                           QueryTimeout timeout,
+                                                                           IParametersBuilder? parameters,
+                                                                           Func<IResultRow, RESULT> func,
+                                                                           string sql,
+                                                                           QueryType queryType,
+                                                                           string debugName,
+                                                                           CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -688,8 +693,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        foreach(DbParameter parameter in parameters.ParameterList) {
+                            command.Parameters.Add(parameter);
                         }
                     }
 
@@ -715,7 +720,11 @@ namespace QueryLite {
                         SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                         //Note: Reader must be closed for RecordsAffected to be populated
-                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+                        QueryResult<RESULT> result = new(
+                            rows: rowList,
+                            sql: sql,
+                            rowsEffected: reader.RecordsAffected != -1 ? reader.RecordsAffected : 0
+                        );
 
                         if(hasEvents) {
 
@@ -772,15 +781,14 @@ namespace QueryLite {
             }
         }
 
-        public static async Task<NonQueryResult> ExecuteNonQueryAsync(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            IParametersBuilder? parameters,
-            string sql,
-            QueryType queryType,
-            string debugName,
-            CancellationToken ct) {
+        public static async Task<NonQueryResult> ExecuteNonQueryAsync(IDatabase database,
+                                                                      Transaction? transaction,
+                                                                      QueryTimeout timeout,
+                                                                      IParametersBuilder? parameters,
+                                                                      string sql,
+                                                                      QueryType queryType,
+                                                                      string debugName,
+                                                                      CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -835,8 +843,8 @@ namespace QueryLite {
 
                     if(parameters != null) {
 
-                        for(int index = 0; index < parameters.ParameterList.Count; index++) {
-                            command.Parameters.Add(parameters.ParameterList[index]);
+                        foreach(DbParameter parameter in parameters.ParameterList) {
+                            command.Parameters.Add(parameter);
                         }
                     }
 
@@ -851,7 +859,7 @@ namespace QueryLite {
 
                     int rowsEffected = await command.ExecuteNonQueryAsync(ct).ConfigureAwait(false);
 
-                    NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+                    NonQueryResult result = new(sql, rowsEffected);
 
                     if(hasEvents) {
 
@@ -910,22 +918,22 @@ namespace QueryLite {
 
     internal static class PreparedQueryExecutor {
 
-        public static QueryResult<RESULT> Execute<PARAMETERS, RESULT>(
-            IDatabase database,
-            PARAMETERS paramValue,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PreparedParameterList<PARAMETERS> parameters,
-            Func<IResultRow, RESULT> func,
-            string sql,
-            QueryType queryType,
-            string debugName) {
+        public static QueryResult<RESULT> Execute<PARAMETERS, RESULT>(IDatabase database,
+                                                                      PARAMETERS paramValue,
+                                                                      Transaction? transaction,
+                                                                      QueryTimeout timeout,
+                                                                      PreparedParameterList<PARAMETERS> parameters,
+                                                                      Func<IResultRow, RESULT> func,
+                                                                      string sql,
+                                                                      QueryType queryType,
+                                                                      string debugName) {
 
             DbConnection? dbConnection = null;
 
             bool oneTimeConnection = false;
 
-            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+            //Using this flag to speed up code when there are no subscribed events
+            bool hasEvents = Settings.HasEvents;
 
             DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
 
@@ -999,7 +1007,11 @@ namespace QueryLite {
                         SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                         //Note: Reader must be closed for RecordsAffected to be populated
-                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+                        QueryResult<RESULT> result = new(
+                            rows: rowList,
+                            sql: sql,
+                            rowsEffected: reader.RecordsAffected != -1 ? reader.RecordsAffected : 0
+                        );
 
                         if(hasEvents) {
 
@@ -1056,16 +1068,15 @@ namespace QueryLite {
             }
         }
 
-        public static RESULT? SingleOrDefault<PARAMETERS, RESULT>(
-            IDatabase database,
-            PARAMETERS paramValue,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PreparedParameterList<PARAMETERS> parameters,
-            Func<IResultRow, RESULT> func,
-            string sql,
-            QueryType queryType,
-            string debugName) {
+        public static RESULT? SingleOrDefault<PARAMETERS, RESULT>(IDatabase database,
+                                                                  PARAMETERS paramValue,
+                                                                  Transaction? transaction,
+                                                                  QueryTimeout timeout,
+                                                                  PreparedParameterList<PARAMETERS> parameters,
+                                                                  Func<IResultRow, RESULT> func,
+                                                                  string sql,
+                                                                  QueryType queryType,
+                                                                  string debugName) {
 
             DbConnection? dbConnection = null;
 
@@ -1207,17 +1218,16 @@ namespace QueryLite {
             }
         }
 
-        public static async Task<RESULT?> SingleOrDefaultAsync<PARAMETERS, RESULT>(
-            IDatabase database,
-            PARAMETERS paramValue,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PreparedParameterList<PARAMETERS> parameters,
-            Func<IResultRow, RESULT> func,
-            string sql,
-            QueryType queryType,
-            string debugName,
-            CancellationToken ct) {
+        public static async Task<RESULT?> SingleOrDefaultAsync<PARAMETERS, RESULT>(IDatabase database,
+                                                                                   PARAMETERS paramValue,
+                                                                                   Transaction? transaction,
+                                                                                   QueryTimeout timeout,
+                                                                                   PreparedParameterList<PARAMETERS> parameters,
+                                                                                   Func<IResultRow, RESULT> func,
+                                                                                   string sql,
+                                                                                   QueryType queryType,
+                                                                                   string debugName,
+                                                                                   CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -1284,6 +1294,7 @@ namespace QueryLite {
                     command.Transaction = transaction?.GetTransaction(database)! ?? null;
 
                     RESULT? result = default;
+
                     bool isFirst = true;
 
                     await using(DbDataReader reader = await command.ExecuteReaderAsync(ct).ConfigureAwait(false)) {
@@ -1357,17 +1368,16 @@ namespace QueryLite {
             }
         }
 
-        public static async Task<QueryResult<RESULT>> ExecuteAsync<PARAMETERS, RESULT>(
-            IDatabase database,
-            PARAMETERS paramValue,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PreparedParameterList<PARAMETERS> parameters,
-            Func<IResultRow, RESULT> func,
-            string sql,
-            QueryType queryType,
-            string debugName,
-            CancellationToken ct) {
+        public static async Task<QueryResult<RESULT>> ExecuteAsync<PARAMETERS, RESULT>(IDatabase database,
+                                                                                       PARAMETERS paramValue,
+                                                                                       Transaction? transaction,
+                                                                                       QueryTimeout timeout,
+                                                                                       PreparedParameterList<PARAMETERS> parameters,
+                                                                                       Func<IResultRow, RESULT> func,
+                                                                                       string sql,
+                                                                                       QueryType queryType,
+                                                                                       string debugName,
+                                                                                       CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
@@ -1446,7 +1456,11 @@ namespace QueryLite {
                         SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                         //Note: Reader must be closed for RecordsAffected to be populated
-                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+                        QueryResult<RESULT> result = new(
+                            rows: rowList,
+                            sql: sql,
+                            rowsEffected: reader.RecordsAffected != -1 ? reader.RecordsAffected : 0
+                        );
 
                         if(hasEvents) {
 
@@ -1503,22 +1517,22 @@ namespace QueryLite {
             }
         }
 
-        public static QueryResult<RESULT> Execute<PARAMETERS, RESULT>(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PARAMETERS parameters,
-            PreparedParameterList<PARAMETERS> setParameters,
-            Func<IResultRow, RESULT> outputFunc,
-            string sql,
-            QueryType queryType,
-            string debugName) {
+        public static QueryResult<RESULT> Execute<PARAMETERS, RESULT>(IDatabase database,
+                                                                      Transaction? transaction,
+                                                                      QueryTimeout timeout,
+                                                                      PARAMETERS parameters,
+                                                                      PreparedParameterList<PARAMETERS> setParameters,
+                                                                      Func<IResultRow, RESULT> outputFunc,
+                                                                      string sql,
+                                                                      QueryType queryType,
+                                                                      string debugName) {
 
             DbConnection? dbConnection = null;
 
             bool oneTimeConnection = false;
 
-            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+            //Using this flag to speed up code when there are no subscribed events
+            bool hasEvents = Settings.HasEvents;
 
             DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
 
@@ -1595,7 +1609,11 @@ namespace QueryLite {
                         SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                         //Note: Reader must be closed for RecordsAffected to be populated
-                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+                        QueryResult<RESULT> result = new(
+                            rows: rowList,
+                            sql: sql,
+                            rowsEffected: reader.RecordsAffected != -1 ? reader.RecordsAffected : 0
+                        );
 
                         if(hasEvents) {
 
@@ -1652,22 +1670,22 @@ namespace QueryLite {
             }
         }
 
-        public static RESULT? SingleOrDefault<PARAMETERS, RESULT>(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PARAMETERS parameters,
-            PreparedParameterList<PARAMETERS> setParameters,
-            Func<IResultRow, RESULT> outputFunc,
-            string sql,
-            QueryType queryType,
-            string debugName) {
+        public static RESULT? SingleOrDefault<PARAMETERS, RESULT>(IDatabase database,
+                                                                  Transaction? transaction,
+                                                                  QueryTimeout timeout,
+                                                                  PARAMETERS parameters,
+                                                                  PreparedParameterList<PARAMETERS> setParameters,
+                                                                  Func<IResultRow, RESULT> outputFunc,
+                                                                  string sql,
+                                                                  QueryType queryType,
+                                                                  string debugName) {
 
             DbConnection? dbConnection = null;
 
             bool oneTimeConnection = false;
 
-            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+            //Using this flag to speed up code when there are no subscribed events
+            bool hasEvents = Settings.HasEvents;
 
             DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
 
@@ -1807,22 +1825,23 @@ namespace QueryLite {
         }
 
         public static async Task<RESULT?> SingleOrDefaultAsync<PARAMETERS, RESULT>(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PARAMETERS parameters,
-            PreparedParameterList<PARAMETERS> setParameters,
-            Func<IResultRow, RESULT> outputFunc,
-            string sql,
-            QueryType queryType,
-            string debugName,
-            CancellationToken ct) {
+                                                                    IDatabase database,
+                                                                    Transaction? transaction,
+                                                                    QueryTimeout timeout,
+                                                                    PARAMETERS parameters,
+                                                                    PreparedParameterList<PARAMETERS> setParameters,
+                                                                    Func<IResultRow, RESULT> outputFunc,
+                                                                    string sql,
+                                                                    QueryType queryType,
+                                                                    string debugName,
+                                                                    CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
             bool oneTimeConnection = false;
 
-            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+            //Using this flag to speed up code when there are no subscribed events
+            bool hasEvents = Settings.HasEvents;
 
             DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
 
@@ -1961,22 +1980,23 @@ namespace QueryLite {
         }
 
         public static async Task<QueryResult<RESULT>> ExecuteAsync<PARAMETERS, RESULT>(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PARAMETERS parameters,
-            PreparedParameterList<PARAMETERS> setParameters,
-            Func<IResultRow, RESULT> outputFunc,
-            string sql,
-            QueryType queryType,
-            string debugName,
-            CancellationToken ct) {
+                                                                IDatabase database,
+                                                                Transaction? transaction,
+                                                                QueryTimeout timeout,
+                                                                PARAMETERS parameters,
+                                                                PreparedParameterList<PARAMETERS> setParameters,
+                                                                Func<IResultRow, RESULT> outputFunc,
+                                                                string sql,
+                                                                QueryType queryType,
+                                                                string debugName,
+                                                                CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
             bool oneTimeConnection = false;
 
-            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+            //Using this flag to speed up code when there are no subscribed events
+            bool hasEvents = Settings.HasEvents;
 
             DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
 
@@ -2052,7 +2072,11 @@ namespace QueryLite {
                         SelectCollectorCache.Release(database.DatabaseType, resultRow);
 
                         //Note: Reader must be closed for RecordsAffected to be populated
-                        QueryResult<RESULT> result = new QueryResult<RESULT>(rowList, sql, rowsEffected: (reader.RecordsAffected != -1 ? reader.RecordsAffected : 0));
+                        QueryResult<RESULT> result = new(
+                            rows: rowList,
+                            sql: sql,
+                            rowsEffected: reader.RecordsAffected != -1 ? reader.RecordsAffected : 0
+                        );
 
                         if(hasEvents) {
 
@@ -2109,21 +2133,21 @@ namespace QueryLite {
             }
         }
 
-        public static NonQueryResult ExecuteNonQuery<PARAMETERS>(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PARAMETERS parameters,
-            PreparedParameterList<PARAMETERS> setParameters,
-            string sql,
-            QueryType queryType,
-            string debugName) {
+        public static NonQueryResult ExecuteNonQuery<PARAMETERS>(IDatabase database,
+                                                                 Transaction? transaction,
+                                                                 QueryTimeout timeout,
+                                                                 PARAMETERS parameters,
+                                                                 PreparedParameterList<PARAMETERS> setParameters,
+                                                                 string sql,
+                                                                 QueryType queryType,
+                                                                 string debugName) {
 
             DbConnection? dbConnection = null;
 
             bool oneTimeConnection = false;
 
-            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+            //Using this flag to speed up code when there are no subscribed events
+            bool hasEvents = Settings.HasEvents;
 
             DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
 
@@ -2188,7 +2212,7 @@ namespace QueryLite {
 
                     int rowsEffected = command.ExecuteNonQuery();
 
-                    NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+                    NonQueryResult result = new(sql, rowsEffected);
 
                     if(hasEvents) {
 
@@ -2245,21 +2269,22 @@ namespace QueryLite {
         }
 
         public static async Task<NonQueryResult> ExecuteNonQueryAsync<PARAMETERS>(
-            IDatabase database,
-            Transaction? transaction,
-            QueryTimeout timeout,
-            PARAMETERS parameters,
-            PreparedParameterList<PARAMETERS> setParameters,
-            string sql,
-            QueryType queryType,
-            string debugName,
-            CancellationToken ct) {
+                                                            IDatabase database,
+                                                            Transaction? transaction,
+                                                            QueryTimeout timeout,
+                                                            PARAMETERS parameters,
+                                                            PreparedParameterList<PARAMETERS> setParameters,
+                                                            string sql,
+                                                            QueryType queryType,
+                                                            string debugName,
+                                                            CancellationToken ct) {
 
             DbConnection? dbConnection = null;
 
             bool oneTimeConnection = false;
 
-            bool hasEvents = Settings.HasEvents;    //Using this flag to speed up code when there are no subscribed events
+            //Using this flag to speed up code when there are no subscribed events
+            bool hasEvents = Settings.HasEvents;
 
             DateTimeOffset? start = hasEvents ? DateTimeOffset.Now : null;
 
@@ -2324,7 +2349,7 @@ namespace QueryLite {
 
                     int rowsEffected = await command.ExecuteNonQueryAsync(ct).ConfigureAwait(false);
 
-                    NonQueryResult result = new NonQueryResult(sql, rowsEffected);
+                    NonQueryResult result = new(sql, rowsEffected);
 
                     if(hasEvents) {
 

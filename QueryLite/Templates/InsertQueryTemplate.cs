@@ -44,11 +44,19 @@ namespace QueryLite {
 
             ArgumentNullException.ThrowIfNull(database);
 
-            return database.InsertGenerator.GetSql<bool>(this, database, useParameters: Parameters.Off, out _, outputFunc: null);
+            return database.InsertGenerator.GetSql<bool>(
+                template: this,
+                database: database,
+                useParameters: Parameters.Off,
+                parameters: out _,
+                outputFunc: null
+            );
         }
 
-        public NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null,
-                                      Parameters useParameters = Parameters.Default, string debugName = "") {
+        public NonQueryResult Execute(Transaction transaction,
+                                      QueryTimeout? timeout = null,
+                                      Parameters useParameters = Parameters.Default,
+                                      string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
             ArgumentNullException.ThrowIfNull(debugName);
@@ -59,7 +67,13 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            string sql = database.InsertGenerator.GetSql<bool>(this, database, useParameters, out IParametersBuilder? parameters, outputFunc: null);
+            string sql = database.InsertGenerator.GetSql<bool>(
+                template: this,
+                database: database,
+                useParameters: useParameters,
+                parameters: out IParametersBuilder? parameters,
+                outputFunc: null
+            );
 
             NonQueryResult result = QueryExecutor.ExecuteNonQuery(
                 database: database,
@@ -73,8 +87,11 @@ namespace QueryLite {
             return result;
         }
 
-        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null,
-                                                   Parameters useParameters = Parameters.Default, string debugName = "") {
+        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func,
+                                                   Transaction transaction,
+                                                   QueryTimeout? timeout = null,
+                                                   Parameters useParameters = Parameters.Default,
+                                                   string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(func);
             ArgumentNullException.ThrowIfNull(transaction);
@@ -86,7 +103,13 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters, func);
+            string sql = database.InsertGenerator.GetSql(
+                template: this,
+                database: database,
+                useParameters: useParameters,
+                parameters: out IParametersBuilder? parameters,
+                outputFunc: func
+            );
 
             QueryResult<RESULT> result = QueryExecutor.Execute(
                 database: database,
@@ -101,8 +124,10 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
+                                                       CancellationToken? ct = null,
+                                                       QueryTimeout? timeout = null,
+                                                       Parameters useParameters = Parameters.Default,
                                                        string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(transaction);
@@ -114,7 +139,13 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            string sql = database.InsertGenerator.GetSql<bool>(this, database, useParameters, out IParametersBuilder? parameters, outputFunc: null);
+            string sql = database.InsertGenerator.GetSql<bool>(
+                template: this,
+                database: database,
+                useParameters: useParameters,
+                parameters: out IParametersBuilder? parameters,
+                outputFunc: null
+            );
 
             NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
                 database: database,
@@ -129,9 +160,12 @@ namespace QueryLite {
             return result;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
-                                                                    CancellationToken? ct = null, QueryTimeout? timeout = null,
-                                                                    Parameters useParameters = Parameters.Default, string debugName = "") {
+        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func,
+                                                                    Transaction transaction,
+                                                                    CancellationToken? ct = null,
+                                                                    QueryTimeout? timeout = null,
+                                                                    Parameters useParameters = Parameters.Default,
+                                                                    string debugName = "") {
 
             ArgumentNullException.ThrowIfNull(func);
             ArgumentNullException.ThrowIfNull(transaction);
@@ -143,7 +177,13 @@ namespace QueryLite {
 
             IDatabase database = transaction.Database;
 
-            string sql = database.InsertGenerator.GetSql(this, database, useParameters, out IParametersBuilder? parameters, func);
+            string sql = database.InsertGenerator.GetSql(
+                template: this,
+                database: database,
+                useParameters: useParameters,
+                parameters: out IParametersBuilder? parameters,
+                outputFunc: func
+            );
 
             QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
                 database: database,
@@ -160,14 +200,9 @@ namespace QueryLite {
         }
     }
 
-    internal sealed class SetValue {
+    internal sealed class SetValue(IColumn column, object? value) {
 
-        public IColumn Column { get; }
-        public object? Value { get; }
-
-        public SetValue(IColumn column, object? value) {
-            Column = column;
-            Value = value;
-        }
+        public IColumn Column { get; } = column;
+        public object? Value { get; } = value;
     }
 }
