@@ -27,7 +27,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public sealed class Namespaces {
 
-        public Namespaces(string baseNamespace, string tableNamespace, string classNamespace, string requestNamespace, string handlerNamespace) {
+        public Namespaces(string baseNamespace, string tableNamespace, string classNamespace,
+                          string requestNamespace, string handlerNamespace) {
+
             BaseNamespace = FirstLetterUpperCase(baseNamespace);
             TableNamespace = FirstLetterUpperCase(tableNamespace);
             ClassNamespace = FirstLetterUpperCase(classNamespace);

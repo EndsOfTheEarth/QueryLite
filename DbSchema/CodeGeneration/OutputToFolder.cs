@@ -30,7 +30,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
     public static class OutputToFolder {
 
-        public static void Output(List<DatabaseTable> tables, CodeGeneratorSettings settings, string folder, bool singleFiles, IDatabase database) {
+        public static void Output(List<DatabaseTable> tables, CodeGeneratorSettings settings,
+                                  string folder, bool singleFiles, IDatabase database) {
 
             if(string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder)) {
                 throw new ArgumentException($"{nameof(folder)} = '{folder}' does not exist");
@@ -52,7 +53,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
                     Directory.CreateDirectory(requestsFolder);
                     Directory.CreateDirectory(handlersFolder);
 
-                    TablePrefix prefix = new TablePrefix(table);
+                    TablePrefix prefix = new(table);
 
                     OutputTableFile(settings, tablesFolder, table);
                     OutputClassCodeFile(settings, database, classesFolder, table, prefix);
@@ -81,7 +82,8 @@ namespace QueryLite.DbSchema.CodeGeneration {
             }
         }
 
-        private static void OutputHandlersAndValidationToFile(CodeGeneratorSettings settings, string handlersFolder, DatabaseTable table, TablePrefix prefix) {
+        private static void OutputHandlersAndValidationToFile(CodeGeneratorSettings settings, string handlersFolder,
+                                                              DatabaseTable table, TablePrefix prefix) {
 
             string handlersAndSchemaFolder = Path.Combine(handlersFolder, (table.Schema.Value ?? ""));
 
@@ -89,18 +91,32 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 Directory.CreateDirectory(handlersAndSchemaFolder);
             }
 
-            CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(table, prefix, settings, includeUsings: true);
-            CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
+            CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(
+                table: table,
+                prefix: prefix,
+                settings: settings,
+                includeUsings: true
+            );
+            CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(
+                table: table,
+                prefix: prefix,
+                settings: settings,
+                includeUsings: true
+            );
 
             handlersCode.EndLine().EndLine();
             handlersCode.Append(validationCode.ToString()); //Add the validation code to the handlers code
 
-            string handlersFileName = Path.Combine(handlersAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Handlers.cs");
+            string handlersFileName = Path.Combine(handlersAndSchemaFolder, CodeHelper.GetTableName(
+                table: table,
+                includePostFix: false) + "Handlers.cs"
+            );
 
             File.WriteAllText(handlersFileName, handlersCode.ToString());
         }
 
-        private static void OutputRequestFile(CodeGeneratorSettings settings, string requestsFolder, DatabaseTable table, TablePrefix prefix) {
+        private static void OutputRequestFile(CodeGeneratorSettings settings, string requestsFolder,
+                                              DatabaseTable table, TablePrefix prefix) {
 
             string requestsAndSchemaFolder = Path.Combine(requestsFolder, (table.Schema.Value ?? ""));
 
@@ -108,41 +124,52 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 Directory.CreateDirectory(requestsAndSchemaFolder);
             }
 
-            CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(table, prefix, settings, includeUsings: true);
-            string requestsFileName = Path.Combine(requestsAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Requests.cs");
+            CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(
+                table: table,
+                prefix: prefix,
+                settings: settings,
+                includeUsings: true
+            );
+            string requestsFileName = Path.Combine(
+                path1: requestsAndSchemaFolder,
+                path2: CodeHelper.GetTableName(table, includePostFix: false) + "Requests.cs"
+            );
             File.WriteAllText(requestsFileName, requestsCode.ToString());
         }
 
-        //private static void OutputValidationFile(CodeGeneratorSettings settings, string validationFolder, DatabaseTable table, TablePrefix prefix) {
+        private static void OutputClassCodeFile(CodeGeneratorSettings settings, IDatabase database,
+                                                string classesFolder, DatabaseTable table, TablePrefix prefix) {
 
-        //    string validationAndSchemaFolder = Path.Combine(validationFolder, (table.Schema.Value ?? ""));
-
-        //    if(!Directory.Exists(validationAndSchemaFolder)) {
-        //        Directory.CreateDirectory(validationAndSchemaFolder);
-        //    }
-
-        //    CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(table, prefix, settings, includeUsings: true);
-        //    string validationFileName = Path.Combine(validationAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + "Validation.cs");
-        //    File.WriteAllText(validationFileName, validationCode.ToString());
-        //}
-
-        private static void OutputClassCodeFile(CodeGeneratorSettings settings, IDatabase database, string classesFolder, DatabaseTable table, TablePrefix prefix) {
-
-            string classesAndSchemaFolder = Path.Combine(classesFolder, (table.Schema.Value ?? ""));
+            string classesAndSchemaFolder = Path.Combine(
+                path1: classesFolder,
+                path2: table.Schema.Value ?? ""
+            );
 
             if(!Directory.Exists(classesAndSchemaFolder)) {
                 Directory.CreateDirectory(classesAndSchemaFolder);
             }
 
-            CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(database, table, prefix, settings, includeUsings: true);
+            CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(
+                database: database,
+                table: table,
+                prefix: prefix,
+                settings: settings,
+                includeUsings: true
+            );
 
-            string classesFileName = Path.Combine(classesAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: false) + (table.IsView ? "View" : "") + ".cs");
+            string classesFileName = Path.Combine(
+                path1: classesAndSchemaFolder,
+                path2: $"{CodeHelper.GetTableName(table, includePostFix: false)}{(table.IsView ? "View" : "")}.cs"
+            );
             File.WriteAllText(classesFileName, classCode.ToString());
         }
 
         private static void OutputTableFile(CodeGeneratorSettings settings, string tablesFolder, DatabaseTable table) {
 
-            string tablesAndSchemaFolder = Path.Combine(tablesFolder, (table.Schema.Value ?? ""));
+            string tablesAndSchemaFolder = Path.Combine(
+                path1: tablesFolder,
+                path2: table.Schema.Value ?? ""
+            );
 
             if(!Directory.Exists(tablesAndSchemaFolder)) {
                 Directory.CreateDirectory(tablesAndSchemaFolder);
@@ -150,7 +177,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             CodeBuilder tableCode = TableCodeGenerator.Generate([table], settings);
 
-            string tableFileName = Path.Combine(tablesAndSchemaFolder, CodeHelper.GetTableName(table, includePostFix: true) + ".cs");
+            string tableFileName = Path.Combine(
+                path1: tablesAndSchemaFolder,
+                path2: $"{CodeHelper.GetTableName(table, includePostFix: true)}.cs"
+            );
             File.WriteAllText(tableFileName, tableCode.ToString());
         }
     }

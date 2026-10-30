@@ -70,9 +70,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
             return code;
         }
 
-        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
+        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix,
+                                           CodeGeneratorSettings settings, bool includeUsings) {
 
-            CodeBuilder code = new CodeBuilder();
+            CodeBuilder code = new();
 
             if(includeUsings) {
 
@@ -84,7 +85,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             code.EndLine();
 
-            string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+            string tableClassName = CodeHelper.GetTableName(table: table, includePostFix: true);
 
             code.Indent(1).Append($"public sealed class {tableClassName} : ATable {{").EndLine().EndLine();
 
@@ -102,11 +103,18 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             foreach(DatabaseColumn column in table.Columns) {
 
-                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
+                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(
+                    table: table,
+                    column: column,
+                    useIdentifiers: settings.UseIdentifiers
+                );
 
                 string columnClass = !column.IsNullable ? "Column" : "NColumn";
 
-                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
+                string columnName = prefix.GetColumnName(
+                    columnName: column.ColumnName.Value,
+                    className: tableClassName
+                );
 
                 bool addSuppressAttribute = false;
 
@@ -163,7 +171,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 code.Append(");").EndLine();
             }
 
-            if(table.UniqueConstraints.Count > 0 && settings.IncludeConstraints) {
+            bool includeConstraints = table.UniqueConstraints.Count > 0 && settings.IncludeConstraints;
+
+            if(includeConstraints) {
 
                 code.EndLine();
 
@@ -187,7 +197,9 @@ namespace QueryLite.DbSchema.CodeGeneration {
                 code.Indent(2).Append("];").EndLine();
             }
 
-            if(table.ForeignKeys.Count > 0 && settings.IncludeConstraints) {
+            bool includeForeignKeys = table.ForeignKeys.Count > 0 && settings.IncludeConstraints;
+
+            if(includeForeignKeys) {
 
                 code.EndLine();
 
@@ -204,14 +216,23 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                     foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
 
-                        string foreignKeyColumnName = prefix.GetColumnName(reference.ForeignKeyColumn.ColumnName.Value, className: tableClassName);
+                        string foreignKeyColumnName = prefix.GetColumnName(
+                            columnName: reference.ForeignKeyColumn.ColumnName.Value,
+                            className: tableClassName
+                        );
 
-                        TablePrefix primaryKeyTablePrefix = new TablePrefix(reference.PrimaryKeyColumn.Table);
+                        TablePrefix primaryKeyTablePrefix = new(reference.PrimaryKeyColumn.Table);
 
-                        string primaryKeyTable = CodeHelper.GetTableName(reference.PrimaryKeyColumn.Table, includePostFix: true);
-                        string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(reference.PrimaryKeyColumn.ColumnName.Value, className: null);
+                        string primaryKeyTable = CodeHelper.GetTableName(
+                            table: reference.PrimaryKeyColumn.Table,
+                            includePostFix: true
+                        );
+                        string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(
+                            columnName: reference.PrimaryKeyColumn.ColumnName.Value,
+                            className: null
+                        );
 
-                        string primaryKeyTableSchemaName = !Namespaces.IsDefaultSchema(reference.PrimaryKeyColumn.Table.Schema) ? $"{reference.PrimaryKeyColumn.Table.Schema.Value}." : "";
+                        string primaryKeyTableSchemaName = !Namespaces.IsDefaultSchema(schema: reference.PrimaryKeyColumn.Table.Schema) ? $"{reference.PrimaryKeyColumn.Table.Schema.Value}." : "";
 
                         code.Append($".References({foreignKeyColumnName}, {primaryKeyTableSchemaName}{primaryKeyTable}.Instance.{primaryKeyColumnName})");
                     }
@@ -257,7 +278,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             if(settings.UseRepositoryPattern) {
 
-                string tableName = CodeHelper.GetTableName(table, includePostFix: false);
+                string tableName = CodeHelper.GetTableName(table: table, includePostFix: false);
 
                 code.EndLine();
                 code.Indent(1).Append(@$"[Repository<{tableClassName}>(MatchOn.AllColumns, repositoryName: ""{tableName}Repository"")]").EndLine();

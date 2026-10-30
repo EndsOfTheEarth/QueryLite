@@ -30,7 +30,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         public static CodeBuilder Generate(List<DatabaseTable> tables, CodeGeneratorSettings settings) {
 
-            CodeBuilder code = new CodeBuilder();
+            CodeBuilder code = new();
 
             code.Append("using FluentValidation;").EndLine();
 

@@ -54,7 +54,10 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
                 foreach(DatabaseColumn column in table.Columns) {
 
-                    if(index >= (column.ColumnName.Value.Length - 1) || (c != null && column.ColumnName.Value[index] != c)) {
+                    bool endOfPrefix = index >= (column.ColumnName.Value.Length - 1) ||
+                                  (c != null && column.ColumnName.Value[index] != c);
+
+                    if(endOfPrefix) {
                         stop = true;
                         break;
                     }
@@ -78,25 +81,35 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             name = name.Replace('.', '_').Replace(' ', '_');
 
-            if(className != null && (string.Equals(name, className, StringComparison.OrdinalIgnoreCase) || CodeHelper.IsCSharpKeyword(columnName))) {
+            bool nameClash = CodeHelper.IsCSharpKeyword(columnName) ||
+                             string.Equals(name, className ?? "", StringComparison.OrdinalIgnoreCase);
+
+            if(nameClash) {
                 name = name + "_";
             }
 
-            if(name.Length > 0 && Char.IsNumber(name[0])) {
+            bool isNumber = name.Length > 0 &&
+                            char.IsNumber(name[0]);
+
+            if(isNumber) {
                 name = "_" + name;
             }
 
-            if(Prefix.Length > 0 && columnName.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase)) {
+            bool hasPrefix = Prefix.Length > 0 &&
+                             columnName.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase);
+
+            if(hasPrefix) {
                 name = columnName[Prefix.Length..];
             }
 
-            StringBuilder nameText = new StringBuilder(name);
+            StringBuilder nameText = new(name);
 
             nameText[0] = char.ToUpper(name[0]);
 
             char previous = nameText[0];
 
-            for(int index = 1; index < nameText.Length; index++) {  //Replace underscores and make next character uppercase
+            //Replace underscores and make next character uppercase
+            for(int index = 1; index < nameText.Length; index++) {
 
                 char current = nameText[index];
 

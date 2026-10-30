@@ -119,7 +119,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
             string postFix = !table.IsView ? "Table" : "View";
 
-            StringBuilder nameText = new StringBuilder(table.TableName.Value);
+            StringBuilder nameText = new(table.TableName.Value);
 
             nameText[0] = char.ToUpper(nameText[0]);    //Make first character uppercase
 
@@ -145,7 +145,7 @@ namespace QueryLite.DbSchema.CodeGeneration {
 
         public static string FormatNameForClass(string name) {
 
-            StringBuilder nameText = new StringBuilder(name);
+            StringBuilder nameText = new(name);
 
             nameText[0] = char.ToUpper(nameText[0]);    //Make first character uppercase
 
