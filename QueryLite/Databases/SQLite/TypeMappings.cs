@@ -28,9 +28,9 @@ namespace QueryLite.Databases.Sqlite {
 
     public static class SqliteTypeMappings {
 
-        public readonly static SqliteTypeMap TypeMapper = new SqliteTypeMap();
+        public readonly static SqliteTypeMap TypeMapper = new();
 
-        public static SqliteToStringFunctions ToSqlStringFunctions { get; } = new SqliteToStringFunctions();
+        public static SqliteToStringFunctions ToSqlStringFunctions { get; } = new();
     }
 
     public sealed class SqliteToStringFunctions : AToSqlStringFunctions {

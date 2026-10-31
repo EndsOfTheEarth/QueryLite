@@ -27,11 +27,15 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlPreparedSelectQueryGenerator : IPreparedQueryGenerator {
 
-        string IPreparedQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        string IPreparedQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                  IDatabase database,
+                                                                  PreparedParameterList<PARAMETERS> parameters) {
             return GetSql(template, database, parameters);
         }
 
-        internal static string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        internal static string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                          IDatabase database,
+                                                          PreparedParameterList<PARAMETERS> parameters) {
 
             //We need to start with the first query template
             while(template.ParentUnion != null) {
@@ -83,7 +87,10 @@ namespace QueryLite.Databases.PostgreSql {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
+        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                     PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                     bool useAliases,
+                                                                     IDatabase database) {
 
             sql.Append(' ');
 
@@ -120,7 +127,10 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateFromClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
+        private static void GenerateFromClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                   PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                   bool useAliases,
+                                                                   IDatabase database) {
 
             if(template.FromTable == null) {
                 throw new Exception($"From table is null. Please check query");
@@ -141,7 +151,11 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateJoins<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateJoins<PARAMETERS, RESULT>(StringBuilder sql,
+                                                              PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                              bool useAliases,
+                                                              IDatabase database,
+                                                              PreparedParameterList<PARAMETERS> parameters) {
 
             if(template.Joins == null) {
                 return;
@@ -173,63 +187,39 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateWhereClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateWhereClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                    PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                    bool useAliases,
+                                                                    IDatabase database,
+                                                                    PreparedParameterList<PARAMETERS> parameters) {
 
-            if(template.WhereCondition != null) {
-                sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, parameters, useAlias: useAliases);
+            if(template.WhereCondition is null) {
+                return;
             }
+            sql.Append(" WHERE ");
+
+            template.WhereCondition.GetSql(
+                sql: sql,
+                database: database,
+                parameters: parameters,
+                useAlias: useAliases
+            );
         }
 
-        private static void GenerateGroupByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases) {
+        private static void GenerateGroupByClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                      PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                      bool useAliases) {
 
-            if(template.GroupByFields != null && template.GroupByFields.Length > 0) {
-
-                sql.Append(" GROUP BY ");
-
-                bool isFirst = true;
-
-                foreach(ISelectable field in template.GroupByFields) {
-
-                    if(field is IColumn column) {
-
-                        if(!isFirst) {
-                            sql.Append(',');
-                        }
-                        else {
-                            isFirst = false;
-                        }
-                        if(useAliases) {
-                            sql.Append(column.Table.Alias).Append('.');
-                        }
-                        SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
-                    }
-                    else {
-                        throw new Exception($"Unknown field type. Type = {field}");
-                    }
-                }
+            if(template.GroupByFields == null || template.GroupByFields.Length == 0) {
+                return;
             }
-        }
+            sql.Append(" GROUP BY ");
 
-        private static void GenerateHavingClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+            bool isFirst = true;
 
-            if(template.HavingCondition != null) {
-                sql.Append(" HAVING ");
-                template.HavingCondition.GetSql(sql, database, parameters, useAlias: useAliases);
-            }
-        }
+            foreach(ISelectable field in template.GroupByFields) {
 
-        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
-
-            if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
-
-                sql.Append(" ORDER BY ");
-
-                bool isFirst = true;
-
-                foreach(IOrderByColumn orderByColumn in template.OrderByFields) {
-
-                    IField field = orderByColumn.Field;
+                if(field is IColumn column) {
 
                     if(!isFirst) {
                         sql.Append(',');
@@ -237,97 +227,155 @@ namespace QueryLite.Databases.PostgreSql {
                     else {
                         isFirst = false;
                     }
-
-                    if(field is IColumn column) {
-
-                        if(template.ParentUnion == null && useAliases) {  //Cannot alias in the order by column when this is a union query
-                            sql.Append(column.Table.Alias).Append('.');
-                        }
-                        SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
+                    if(useAliases) {
+                        sql.Append(column.Table.Alias).Append('.');
                     }
-                    else if(field is IFunction function) {
-                        sql.Append(function.GetSql(database, useAlias: useAliases, null));
+                    SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
+                }
+                else {
+                    throw new Exception($"Unknown field type. Type = {field}");
+                }
+            }
+        }
+
+        private static void GenerateHavingClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                     PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                     bool useAliases,
+                                                                     IDatabase database,
+                                                                     PreparedParameterList<PARAMETERS> parameters) {
+
+            if(template.HavingCondition is null) {
+                return;
+            }
+            sql.Append(" HAVING ");
+
+            template.HavingCondition.GetSql(
+                sql: sql,
+                database: database,
+                parameters: parameters,
+                useAlias: useAliases
+            );
+        }
+
+        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                      PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                      bool useAliases,
+                                                                      IDatabase database) {
+
+            if(template.OrderByFields is null || template.OrderByFields.Length == 0) {
+                return;
+            }
+
+            sql.Append(" ORDER BY ");
+
+            bool isFirst = true;
+
+            foreach(IOrderByColumn orderByColumn in template.OrderByFields) {
+
+                IField field = orderByColumn.Field;
+
+                if(!isFirst) {
+                    sql.Append(',');
+                }
+                else {
+                    isFirst = false;
+                }
+
+                if(field is IColumn column) {
+
+                    //Cannot alias in the order by column when this is a union query
+                    if(template.ParentUnion == null && useAliases) {
+                        sql.Append(column.Table.Alias).Append('.');
+                    }
+                    SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
+                }
+                else if(field is IFunction function) {
+                    sql.Append(function.GetSql(database, useAlias: useAliases, null));
+                }
+                else {
+                    throw new Exception($"Unknown field type. Type = {field}");
+                }
+
+                sql.Append(orderByColumn.OrderBy switch {
+                    OrderBy.ASC => " ASC",
+                    OrderBy.DESC => " DESC",
+                    OrderBy.Default => "",
+                    _ => throw new Exception($"Unknown {nameof(OrderBy)} type. Type: '{field.OrderBy}'")
+                });
+            }
+        }
+        private static void GenerateLimitClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                    PreparedQueryTemplate<PARAMETERS, RESULT> template) {
+
+            if(template.TopRows is null) {
+                return;
+            }
+            sql.Append(" LIMIT ").Append(template.TopRows.Value);
+        }
+
+        private static void GenerateForClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                  PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                  bool useAliases) {
+
+            if(template.ForType is null) {
+                return;
+            }
+            sql.Append(" FOR ");
+
+            switch(template.ForType.Value) {
+                case ForType.UPDATE:
+                    sql.Append("UPDATE");
+                    break;
+                case ForType.NO_KEY_UPDATE:
+                    sql.Append("NO KEY UPDATE");
+                    break;
+                case ForType.SHARE:
+                    sql.Append("SHARE");
+                    break;
+                case ForType.KEY_SHARE:
+                    sql.Append("KEY SHARE");
+                    break;
+                default:
+                    throw new Exception($"Unknown {nameof(template.ForType)} type {template.ForType}");
+            }
+
+            if(template.OfTables != null && template.OfTables.Length > 0) {
+
+                sql.Append(" OF ");
+
+                bool isFirst = true;
+
+                foreach(ITable table in template.OfTables) {
+
+                    if(!isFirst) {
+                        sql.Append(',');
                     }
                     else {
-                        throw new Exception($"Unknown field type. Type = {field}");
+                        isFirst = false;
                     }
-
-                    sql.Append(orderByColumn.OrderBy switch {
-                        OrderBy.ASC => " ASC",
-                        OrderBy.DESC => " DESC",
-                        OrderBy.Default => "",
-                        _ => throw new Exception($"Unknown {nameof(OrderBy)} type. Type: '{field.OrderBy}'")
-                    });
+                    if(useAliases) {
+                        sql.Append(table.Alias);
+                    }
                 }
             }
-        }
-        private static void GenerateLimitClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template) {
 
-            if(template.TopRows != null) {
-                sql.Append(" LIMIT ").Append(template.TopRows.Value);
-            }
-        }
+            if(template.WaitType != null) {
 
-        private static void GenerateForClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases) {
-
-            if(template.ForType != null) {
-
-                sql.Append(" FOR ");
-
-                switch(template.ForType.Value) {
-                    case ForType.UPDATE:
-                        sql.Append("UPDATE");
+                switch(template.WaitType.Value) {
+                    case WaitType.WAIT:
+                        //Do nothing as this is the default value
                         break;
-                    case ForType.NO_KEY_UPDATE:
-                        sql.Append("NO KEY UPDATE");
+                    case WaitType.NOWAIT:
+                        sql.Append(" NOWAIT");
                         break;
-                    case ForType.SHARE:
-                        sql.Append("SHARE");
-                        break;
-                    case ForType.KEY_SHARE:
-                        sql.Append("KEY SHARE");
+                    case WaitType.SKIP_LOCKED:
+                        sql.Append(" SKIP LOCKED");
                         break;
                     default:
-                        throw new Exception($"Unknown {nameof(template.ForType)} type {template.ForType}");
-                }
-
-                if(template.OfTables != null && template.OfTables.Length > 0) {
-
-                    sql.Append(" OF ");
-
-                    bool isFirst = true;
-
-                    foreach(ITable table in template.OfTables) {
-
-                        if(!isFirst) {
-                            sql.Append(',');
-                        }
-                        else {
-                            isFirst = false;
-                        }
-                        if(useAliases) {
-                            sql.Append(table.Alias);
-                        }
-                    }
-                }
-
-                if(template.WaitType != null) {
-
-                    switch(template.WaitType.Value) {
-                        case WaitType.WAIT:
-                            //Do nothing as this is the default value
-                            break;
-                        case WaitType.NOWAIT:
-                            sql.Append(" NOWAIT");
-                            break;
-                        case WaitType.SKIP_LOCKED:
-                            sql.Append(" SKIP LOCKED");
-                            break;
-                        default:
-                            throw new Exception($"Unknown {nameof(template.WaitType)} type {template.WaitType}");
-                    }
+                        throw new Exception($"Unknown {nameof(template.WaitType)} type {template.WaitType}");
                 }
             }
+
         }
     }
 }

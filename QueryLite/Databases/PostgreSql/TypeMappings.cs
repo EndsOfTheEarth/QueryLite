@@ -30,7 +30,7 @@ namespace QueryLite.Databases.PostgreSql {
 
         public readonly static PostgreSqlTypeMap TypeMapper = new PostgreSqlTypeMap();
 
-        public static PostgreSqlToStringFunctions ToSqlStringFunctions { get; } = new PostgreSqlToStringFunctions();
+        public static PostgreSqlToStringFunctions ToSqlStringFunctions { get; } = new();
     }
 
     public sealed class PostgreSqlToStringFunctions : AToSqlStringFunctions {

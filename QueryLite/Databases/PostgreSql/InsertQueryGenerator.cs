@@ -28,7 +28,11 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlInsertQueryGenerator : IInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template,
+                                                    IDatabase database,
+                                                    Parameters useParameters,
+                                                    out IParametersBuilder? parameters,
+                                                    Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 
@@ -47,8 +51,13 @@ namespace QueryLite.Databases.PostgreSql {
 
                 StringBuilder paramSql = StringBuilderCache.Acquire();
 
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert, useAlias: false);
-
+                PostgreSqlSetValuesParameterCollector valuesCollector = new(
+                    sql: sql,
+                    paramSql: paramSql,
+                    database: database,
+                    collectorMode: CollectorMode.Insert,
+                    useAlias: false
+                );
                 sql.Append('(');
                 template.ValuesCollector!(valuesCollector);
                 sql.Append(") VALUES(");
@@ -62,8 +71,11 @@ namespace QueryLite.Databases.PostgreSql {
             }
             else {
 
-                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(sql, database, CollectorMode.Insert);
-
+                PostgreSqlSetValuesCollector valuesCollector = new(
+                    sql: sql,
+                    database: database,
+                    collectorMode: CollectorMode.Insert
+                );
                 sql.Append('(');
                 template.ValuesCollector!(valuesCollector);
                 sql.Append(") VALUES(");

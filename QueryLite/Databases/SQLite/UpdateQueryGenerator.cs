@@ -28,7 +28,11 @@ namespace QueryLite.Databases.Sqlite {
 
     internal sealed class SqliteUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+        string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template,
+                                                    IDatabase database,
+                                                    Parameters useParameters,
+                                                    out IParametersBuilder? parameters,
+                                                    Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 
@@ -51,8 +55,13 @@ namespace QueryLite.Databases.Sqlite {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                SqliteSetValuesParameterCollector valuesCollector = new SqliteSetValuesParameterCollector(sql, paramSql: null, database, CollectorMode.Update, useAlias: useAlias);
-
+                SqliteSetValuesParameterCollector valuesCollector = new(
+                    sql: sql,
+                    paramSql: null,
+                    database: database,
+                    collectorMode: CollectorMode.Update,
+                    useAlias: useAlias
+                );
                 sql.Append(" SET ");
 
                 template.ValuesCollector!(valuesCollector);
@@ -61,8 +70,11 @@ namespace QueryLite.Databases.Sqlite {
             }
             else {
 
-                SqliteSetValuesCollector valuesCollector = new SqliteSetValuesCollector(sql, database, CollectorMode.Update);
-
+                SqliteSetValuesCollector valuesCollector = new(
+                    sql: sql,
+                    database: database,
+                    collectorMode: CollectorMode.Update
+                );
                 sql.Append(" SET ");
 
                 template.ValuesCollector!(valuesCollector);

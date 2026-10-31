@@ -28,7 +28,10 @@ namespace QueryLite.Databases.Sqlite {
 
     internal sealed class SqliteDeleteQueryGenerator : IDeleteQueryGenerator {
 
-        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template, IDatabase database, IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template,
+                                                    IDatabase database,
+                                                    IParametersBuilder? parameters,
+                                                    Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 

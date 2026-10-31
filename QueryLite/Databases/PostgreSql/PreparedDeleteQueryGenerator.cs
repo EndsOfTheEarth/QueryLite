@@ -28,7 +28,10 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlPreparedDeleteQueryGenerator : IPreparedDeleteQueryGenerator {
 
-        string IPreparedDeleteQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
+        string IPreparedDeleteQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template,
+                                                                        IDatabase database,
+                                                                        out PreparedParameterList<PARAMETERS> parameters,
+                                                                        Func<IResultRow, RESULT>? outputFunc) {
 
             parameters = new PreparedParameterList<PARAMETERS>();
 

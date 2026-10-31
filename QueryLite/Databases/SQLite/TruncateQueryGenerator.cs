@@ -27,7 +27,9 @@ namespace QueryLite.Databases.Sqlite {
 
     internal sealed class SqliteTruncateQueryGenerator : ITruncateQueryGenerator {
 
-        string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
+        string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template,
+                                              IDatabase database,
+                                              IParametersBuilder? parameters) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 

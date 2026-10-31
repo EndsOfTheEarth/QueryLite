@@ -28,7 +28,11 @@ namespace QueryLite.Databases.Sqlite {
 
     internal sealed class SqliteInsertQueryGenerator : IInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template,
+                                                    IDatabase database,
+                                                    Parameters useParameters,
+                                                    out IParametersBuilder? parameters,
+                                                    Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 
@@ -47,8 +51,12 @@ namespace QueryLite.Databases.Sqlite {
 
                 StringBuilder paramSql = StringBuilderCache.Acquire();
 
-                SqliteSetValuesParameterCollector valuesCollector = new SqliteSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert, useAlias: false);
-
+                SqliteSetValuesParameterCollector valuesCollector = new(sql: sql,
+                    paramSql: paramSql,
+                    database: database,
+                    collectorMode: CollectorMode.Insert,
+                    useAlias: false
+                );
                 sql.Append('(');
                 template.ValuesCollector!(valuesCollector);
                 sql.Append(") VALUES(");
@@ -62,8 +70,11 @@ namespace QueryLite.Databases.Sqlite {
             }
             else {
 
-                SqliteSetValuesCollector valuesCollector = new SqliteSetValuesCollector(sql, database, CollectorMode.Insert);
-
+                SqliteSetValuesCollector valuesCollector = new(
+                    sql: sql,
+                    database: database,
+                    collectorMode: CollectorMode.Insert
+                );
                 sql.Append('(');
                 template.ValuesCollector!(valuesCollector);
                 sql.Append(") VALUES(");

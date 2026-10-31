@@ -27,11 +27,22 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlSelectQueryGenerator : IQueryGenerator {
 
-        string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, bool forceAlias, IParametersBuilder? parameters) {
-            return GetSql(template, database, forceAlias: forceAlias, parameters);
+        string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
+                                              IDatabase database,
+                                              bool forceAlias,
+                                              IParametersBuilder? parameters) {
+            return GetSql(
+                template: template,
+                database: database,
+                forceAlias: forceAlias,
+                parameters: parameters
+            );
         }
 
-        internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template, IDatabase database, bool forceAlias, IParametersBuilder? parameters) {
+        internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
+                                              IDatabase database,
+                                              bool forceAlias,
+                                              IParametersBuilder? parameters) {
 
             //We need to start with the first query template
             while(template.Extras != null && template.Extras.ParentUnion != null) {
@@ -56,7 +67,7 @@ namespace QueryLite.Databases.PostgreSql {
                 if(template.Joins != null) {
                     GenerateJoins(sql, template, useAliases: useAliases, database, parameters);
                 }
-                
+
                 if(template.WhereCondition != null) {
                     GenerateWhereClause(sql, template, useAliases: useAliases, database, parameters);
                 }
@@ -68,7 +79,7 @@ namespace QueryLite.Databases.PostgreSql {
                 if(template.Extras?.HavingCondition != null) {
                     GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
                 }
-                
+
                 if(template.OrderByFields?.Length > 0) {
                     GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
                 }
@@ -103,9 +114,19 @@ namespace QueryLite.Databases.PostgreSql {
         [ThreadStatic]
         private static PostgreSqlSelectFieldCollector? _cachedCollectorInstance;
 
-        private static void GenerateSelectClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
+        private static void GenerateSelectClause<RESULT>(StringBuilder sql,
+                                                         SelectQueryTemplate<RESULT> template,
+                                                         bool useAliases,
+                                                         IDatabase database,
+                                                         IParametersBuilder? parameters) {
 
-            if(template.SelectFunction == null && (template.Extras == null || template.Extras.NestedSelectFields == null || template.Extras.NestedSelectFields.Count == 0)) {
+            bool invalidState = template.SelectFunction == null &&
+                                    (template.Extras == null ||
+                                     template.Extras.NestedSelectFields == null ||
+                                     template.Extras.NestedSelectFields.Count == 0
+                                    );
+
+            if(invalidState) {
                 throw new Exception($"{nameof(template.SelectFunction)} and {nameof(template.Extras.NestedSelectFields)} cannot both be null or empty");
             }
 
@@ -118,24 +139,37 @@ namespace QueryLite.Databases.PostgreSql {
                     PostgreSqlSelectFieldCollector selectCollector;
 
                     if(_cachedCollectorInstance == null) {
-                        selectCollector = new PostgreSqlSelectFieldCollector(database, parameters, useAlias: useAliases, sql);
+
+                        selectCollector = new PostgreSqlSelectFieldCollector(
+                            database: database,
+                            parameterBuilder: parameters,
+                            useAlias: useAliases,
+                            sql: sql
+                        );
                     }
                     else {
 
                         selectCollector = _cachedCollectorInstance; //Use cached collector
-                        
+
                         //Note: We unset the cached collector as queries that contain nested queries in the select statement can
                         //      use more than one select collector and that causes problems when sharing a single instance.
                         _cachedCollectorInstance = null;
 
                         selectCollector.Reset(database, parameters, useAlias: useAliases, sql);
-                    }                    
+                    }
                     template.SelectFunction(selectCollector);
                     selectCollector.Clear();
                     _cachedCollectorInstance = selectCollector; //Return collector to cache
                 }
                 else {
-                    template.SelectFunction(new PostgreSqlSelectFieldCollector(database, parameters, useAlias: useAliases, sql));
+                    template.SelectFunction(
+                        new PostgreSqlSelectFieldCollector(
+                            database: database,
+                            parameterBuilder: parameters,
+                            useAlias: useAliases,
+                            sql: sql
+                        )
+                    );
                 }
             }
             else if(template.Extras != null) {
@@ -166,7 +200,10 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateFromClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database) {
+        private static void GenerateFromClause<RESULT>(StringBuilder sql,
+                                                       SelectQueryTemplate<RESULT> template,
+                                                       bool useAliases,
+                                                       IDatabase database) {
 
             if(template.FromTable == null) {
                 return;
@@ -187,7 +224,11 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateJoins<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
+        private static void GenerateJoins<RESULT>(StringBuilder sql,
+                                                  SelectQueryTemplate<RESULT> template,
+                                                  bool useAliases,
+                                                  IDatabase database,
+                                                  IParametersBuilder? parameters) {
 
             if(template.Joins == null) {
                 return;
@@ -217,15 +258,28 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateWhereClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
+        private static void GenerateWhereClause<RESULT>(StringBuilder sql,
+                                                        SelectQueryTemplate<RESULT> template,
+                                                        bool useAliases,
+                                                        IDatabase database,
+                                                        IParametersBuilder? parameters) {
 
-            if(template.WhereCondition != null) {
-                sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, useAlias: useAliases, parameters);
+            if(template.WhereCondition is null) {
+                return;
             }
+            sql.Append(" WHERE ");
+
+            template.WhereCondition.GetSql(
+                sql: sql,
+                database: database,
+                useAlias: useAliases,
+                parameters: parameters
+            );
         }
 
-        private static void GenerateGroupByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
+        private static void GenerateGroupByClause<RESULT>(StringBuilder sql,
+                                                          SelectQueryTemplate<RESULT> template,
+                                                          bool useAliases) {
 
             if(template.Extras?.GroupByFields?.Length > 0) {
 
@@ -255,15 +309,30 @@ namespace QueryLite.Databases.PostgreSql {
             }
         }
 
-        private static void GenerateHavingClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
+        private static void GenerateHavingClause<RESULT>(StringBuilder sql,
+                                                         SelectQueryTemplate<RESULT> template,
+                                                         bool useAliases,
+                                                         IDatabase database,
+                                                         IParametersBuilder? parameters) {
 
             if(template.Extras?.HavingCondition != null) {
+
                 sql.Append(" HAVING ");
-                template.Extras.HavingCondition.GetSql(sql, database, useAlias: useAliases, parameters);
+
+                template.Extras.HavingCondition.GetSql(
+                    sql: sql,
+                    database: database,
+                    useAlias: useAliases,
+                    parameters: parameters
+                );
             }
         }
 
-        private static void GenerateOrderByClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases, IDatabase database, IParametersBuilder? parameters) {
+        private static void GenerateOrderByClause<RESULT>(StringBuilder sql,
+                                                          SelectQueryTemplate<RESULT> template,
+                                                          bool useAliases,
+                                                          IDatabase database,
+                                                          IParametersBuilder? parameters) {
 
             if(template.OrderByFields?.Length > 0) {
 
@@ -284,7 +353,8 @@ namespace QueryLite.Databases.PostgreSql {
 
                     if(field is IColumn column) {
 
-                        if((template.Extras == null || template.Extras.ParentUnion == null) && useAliases) {  //Cannot alias in the order by column when this is a union query
+                        //Cannot alias in the order by column when this is a union query
+                        if((template.Extras == null || template.Extras.ParentUnion == null) && useAliases) {
                             sql.Append(column.Table.Alias).Append('.');
                         }
                         SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
@@ -307,69 +377,73 @@ namespace QueryLite.Databases.PostgreSql {
         }
         private static void GenerateLimitClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template) {
 
-            if(template.TopRows != null) {
-                sql.Append(" LIMIT ").Append(template.TopRows.Value);
+            if(template.TopRows is null) {
+                return;
             }
+            sql.Append(" LIMIT ").Append(template.TopRows.Value);
         }
 
-        private static void GenerateForClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template, bool useAliases) {
+        private static void GenerateForClause<RESULT>(StringBuilder sql,
+                                                      SelectQueryTemplate<RESULT> template,
+                                                      bool useAliases) {
 
-            if(template.Extras?.ForType != null) {
+            if(template.Extras?.ForType is null) {
+                return;
+            }
 
-                sql.Append(" FOR ");
+            sql.Append(" FOR ");
 
-                switch(template.Extras.ForType.Value) {
-                    case ForType.UPDATE:
-                        sql.Append("UPDATE");
+            switch(template.Extras.ForType.Value) {
+                case ForType.UPDATE:
+                    sql.Append("UPDATE");
+                    break;
+                case ForType.NO_KEY_UPDATE:
+                    sql.Append("NO KEY UPDATE");
+                    break;
+                case ForType.SHARE:
+                    sql.Append("SHARE");
+                    break;
+                case ForType.KEY_SHARE:
+                    sql.Append("KEY SHARE");
+                    break;
+                default:
+                    throw new Exception($"Unknown {nameof(template.Extras.ForType)} type {template.Extras.ForType}");
+            }
+
+            if(template.Extras.OfTables != null && template.Extras.OfTables.Length > 0) {
+
+                sql.Append(" OF ");
+
+                bool isFirst = true;
+
+                foreach(ITable table in template.Extras.OfTables) {
+
+                    if(!isFirst) {
+                        sql.Append(',');
+                    }
+                    else {
+                        isFirst = false;
+                    }
+                    if(useAliases) {
+                        sql.Append(table.Alias);
+                    }
+                }
+            }
+
+            if(template.Extras.WaitType != null) {
+
+                switch(template.Extras.WaitType.Value) {
+                    case WaitType.WAIT:
+                        //Do nothing as this is the default value
                         break;
-                    case ForType.NO_KEY_UPDATE:
-                        sql.Append("NO KEY UPDATE");
+                    case WaitType.NOWAIT:
+                        sql.Append(" NOWAIT");
                         break;
-                    case ForType.SHARE:
-                        sql.Append("SHARE");
-                        break;
-                    case ForType.KEY_SHARE:
-                        sql.Append("KEY SHARE");
+                    case WaitType.SKIP_LOCKED:
+                        sql.Append(" SKIP LOCKED");
                         break;
                     default:
-                        throw new Exception($"Unknown {nameof(template.Extras.ForType)} type {template.Extras.ForType}");
-                }
-
-                if(template.Extras.OfTables != null && template.Extras.OfTables.Length > 0) {
-
-                    sql.Append(" OF ");
-
-                    bool isFirst = true;
-
-                    foreach(ITable table in template.Extras.OfTables) {
-
-                        if(!isFirst) {
-                            sql.Append(',');
-                        }
-                        else {
-                            isFirst = false;
-                        }
-                        if(useAliases) {
-                            sql.Append(table.Alias);
-                        }
-                    }
-                }
-
-                if(template.Extras.WaitType != null) {
-
-                    switch(template.Extras.WaitType.Value) {
-                        case WaitType.WAIT:
-                            //Do nothing as this is the default value
-                            break;
-                        case WaitType.NOWAIT:
-                            sql.Append(" NOWAIT");
-                            break;
-                        case WaitType.SKIP_LOCKED:
-                            sql.Append(" SKIP LOCKED");
-                            break;
-                        default:
-                            throw new Exception($"Unknown {nameof(template.Extras.WaitType)} type {template.Extras.WaitType}");
-                    }
+                        throw new Exception($"Unknown {nameof(template.Extras.WaitType)} type {template.Extras.WaitType}");
                 }
             }
         }

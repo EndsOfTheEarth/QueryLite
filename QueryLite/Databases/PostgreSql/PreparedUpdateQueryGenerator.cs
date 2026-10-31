@@ -28,7 +28,10 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlPreparedUpdateQueryGenerator : IPreparedUpdateQueryGenerator {
 
-        string IPreparedUpdateQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
+        string IPreparedUpdateQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template,
+                                                                        IDatabase database,
+                                                                        out PreparedParameterList<PARAMETERS> parameters,
+                                                                        Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 
@@ -50,8 +53,12 @@ namespace QueryLite.Databases.PostgreSql {
             }
 
             {
-                PostgreSqlPreparedSetValuesCollector<PARAMETERS> valuesCollector = new PostgreSqlPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: null, database, CollectorMode.Update);
-
+                PostgreSqlPreparedSetValuesCollector<PARAMETERS> valuesCollector = new(
+                    sql: sql,
+                    paramSql: null,
+                    database: database,
+                    mode: CollectorMode.Update
+                );
                 sql.Append(" SET ");
                 template.SetValues!(valuesCollector);
 

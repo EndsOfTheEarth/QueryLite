@@ -28,7 +28,11 @@ namespace QueryLite.Databases.PostgreSql {
 
     internal sealed class PostgreSqlUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+        string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template,
+                                                    IDatabase database,
+                                                    Parameters useParameters,
+                                                    out IParametersBuilder? parameters,
+                                                    Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 
@@ -51,7 +55,12 @@ namespace QueryLite.Databases.PostgreSql {
 
             if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                PostgreSqlSetValuesParameterCollector valuesCollector = new PostgreSqlSetValuesParameterCollector(sql, paramSql: null, database, CollectorMode.Update, useAlias: useAlias);
+                PostgreSqlSetValuesParameterCollector valuesCollector = new(sql: sql,
+                    paramSql: null,
+                    database: database,
+                    collectorMode: CollectorMode.Update,
+                    useAlias: useAlias
+                );
 
                 sql.Append(" SET ");
 
@@ -61,7 +70,7 @@ namespace QueryLite.Databases.PostgreSql {
             }
             else {
 
-                PostgreSqlSetValuesCollector valuesCollector = new PostgreSqlSetValuesCollector(sql, database, CollectorMode.Update);
+                PostgreSqlSetValuesCollector valuesCollector = new(sql, database, CollectorMode.Update);
 
                 sql.Append(" SET ");
 

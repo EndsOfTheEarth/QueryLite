@@ -27,11 +27,15 @@ namespace QueryLite.Databases.Sqlite {
 
     internal sealed class SqlitePreparedSelectQueryGenerator : IPreparedQueryGenerator {
 
-        string IPreparedQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        string IPreparedQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                  IDatabase database,
+                                                                  PreparedParameterList<PARAMETERS> parameters) {
             return GetSql(template, database, parameters);
         }
 
-        internal static string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        internal static string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                          IDatabase database,
+                                                          PreparedParameterList<PARAMETERS> parameters) {
 
             //We need to start with the first query template
             while(template.ParentUnion != null) {
@@ -83,7 +87,10 @@ namespace QueryLite.Databases.Sqlite {
             return StringBuilderCache.ToStringAndRelease(sql);
         }
 
-        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
+        private static void GenerateSelectClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                     PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                     bool useAliases,
+                                                                     IDatabase database) {
 
             sql.Append(' ');
 
@@ -120,7 +127,10 @@ namespace QueryLite.Databases.Sqlite {
             }
         }
 
-        private static void GenerateFromClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
+        private static void GenerateFromClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                   PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                   bool useAliases,
+                                                                   IDatabase database) {
 
             if(template.FromTable == null) {
                 throw new Exception($"From table is null. Please check query");
@@ -141,7 +151,11 @@ namespace QueryLite.Databases.Sqlite {
             }
         }
 
-        private static void GenerateJoins<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateJoins<PARAMETERS, RESULT>(StringBuilder sql,
+                                                              PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                              bool useAliases,
+                                                              IDatabase database,
+                                                              PreparedParameterList<PARAMETERS> parameters) {
 
             if(template.Joins == null) {
                 return;
@@ -173,7 +187,11 @@ namespace QueryLite.Databases.Sqlite {
             }
         }
 
-        private static void GenerateWhereClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateWhereClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                    PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                    bool useAliases,
+                                                                    IDatabase database,
+                                                                    PreparedParameterList<PARAMETERS> parameters) {
 
             if(template.WhereCondition != null) {
                 sql.Append(" WHERE ");
@@ -181,7 +199,9 @@ namespace QueryLite.Databases.Sqlite {
             }
         }
 
-        private static void GenerateGroupByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases) {
+        private static void GenerateGroupByClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                      PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                      bool useAliases) {
 
             if(template.GroupByFields != null && template.GroupByFields.Length > 0) {
 
@@ -211,7 +231,11 @@ namespace QueryLite.Databases.Sqlite {
             }
         }
 
-        private static void GenerateHavingClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database, PreparedParameterList<PARAMETERS> parameters) {
+        private static void GenerateHavingClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                     PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                     bool useAliases,
+                                                                     IDatabase database,
+                                                                     PreparedParameterList<PARAMETERS> parameters) {
 
             if(template.HavingCondition != null) {
                 sql.Append(" HAVING ");
@@ -219,7 +243,10 @@ namespace QueryLite.Databases.Sqlite {
             }
         }
 
-        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases, IDatabase database) {
+        private static void GenerateOrderByClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                      PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                      bool useAliases,
+                                                                      IDatabase database) {
 
             if(template.OrderByFields != null && template.OrderByFields.Length > 0) {
 
@@ -261,14 +288,17 @@ namespace QueryLite.Databases.Sqlite {
                 }
             }
         }
-        private static void GenerateLimitClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template) {
+        private static void GenerateLimitClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                    PreparedQueryTemplate<PARAMETERS, RESULT> template) {
 
             if(template.TopRows != null) {
                 sql.Append(" LIMIT ").Append(template.TopRows.Value);
             }
         }
 
-        private static void GenerateForClause<PARAMETERS, RESULT>(StringBuilder sql, PreparedQueryTemplate<PARAMETERS, RESULT> template, bool useAliases) {
+        private static void GenerateForClause<PARAMETERS, RESULT>(StringBuilder sql,
+                                                                  PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                                                  bool useAliases) {
 
             if(template.ForType != null) {
 

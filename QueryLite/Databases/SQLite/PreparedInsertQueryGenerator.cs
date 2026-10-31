@@ -28,7 +28,10 @@ namespace QueryLite.Databases.Sqlite {
 
     internal sealed class SqlitePreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
 
-        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
+        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template,
+                                                 IDatabase database,
+                                                 out PreparedParameterList<PARAMETERS> parameters,
+                                                 Func<IResultRow, RESULT>? outputFunc) {
 
             StringBuilder sql = StringBuilderCache.Acquire();
 
@@ -45,8 +48,12 @@ namespace QueryLite.Databases.Sqlite {
 
             StringBuilder paramSql = StringBuilderCache.Acquire();
 
-            SqlitePreparedSetValuesCollector<PARAMETERS> valuesCollector = new SqlitePreparedSetValuesCollector<PARAMETERS>(sql, paramSql, database, CollectorMode.Insert);
-
+            SqlitePreparedSetValuesCollector<PARAMETERS> valuesCollector = new(
+                sql: sql,
+                paramSql: paramSql,
+                database: database,
+                mode: CollectorMode.Insert
+            );
             sql.Append('(');
             template.SetValues!(valuesCollector);
             sql.Append(") VALUES(");
@@ -57,7 +64,6 @@ namespace QueryLite.Databases.Sqlite {
             sql.Append(')');
 
             StringBuilderCache.Release(paramSql);
-
 
             if(outputFunc != null) {
 
