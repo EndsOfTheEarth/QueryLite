@@ -41,7 +41,8 @@ namespace QueryLite {
     public interface IUnsupportedType { }
 
     /// <summary>
-    /// Geography type. Note: This cannot be queried directly but can be used with geography sql functions
+    /// Geography type. Note: This cannot be queried directly but can be used
+    ///                       with geography sql functions.
     /// </summary>
     public interface IGeography { }
 
@@ -58,7 +59,8 @@ namespace QueryLite {
             foreach(IColumn column in columns) {
 
                 if(column.Table != table) {
-                    throw new Exception($"{nameof(column)} parent table must be the same table object as the {nameof(table)} parameter");
+                    throw new Exception($"{nameof(column)} parent table must be the same " +
+                                        $"table object as the {nameof(table)} parameter");
                 }
             }
             Table = table;
@@ -82,25 +84,29 @@ namespace QueryLite {
         public string Name { get; }
         public List<ForeignKeyReference> ColumnReferences { get; } = [];
 
-        public ForeignKey References<TYPE>(AColumn<TYPE> foreignKeyColumn, AColumn<TYPE> primaryKeyColumn) where TYPE : notnull {
-            ColumnReferences.Add(new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn));
+        public ForeignKey References<TYPE>(AColumn<TYPE> foreignKeyColumn,
+                                           AColumn<TYPE> primaryKeyColumn) where TYPE : notnull {
+
+            ColumnReferences.Add(
+                new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn)
+            );
             return this;
         }
-        public ForeignKey ReferencesNonMatching<TYPE_A, TYPE_B>(AColumn<TYPE_A> foreignKeyColumn, AColumn<TYPE_B> primaryKeyColumn)
+        public ForeignKey ReferencesNonMatching<TYPE_A, TYPE_B>(AColumn<TYPE_A> foreignKeyColumn,
+                                                                AColumn<TYPE_B> primaryKeyColumn)
                                                                 where TYPE_A : notnull where TYPE_B : notnull {
-            ColumnReferences.Add(new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn));
+
+            ColumnReferences.Add(
+                new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn)
+            );
             return this;
         }
     }
 
-    public sealed class ForeignKeyReference {
+    public sealed class ForeignKeyReference(IColumn foreignKeyColumn, IColumn primaryKeyColumn) {
 
-        public ForeignKeyReference(IColumn foreignKeyColumn, IColumn primaryKeyColumn) {
-            ForeignKeyColumn = foreignKeyColumn;
-            PrimaryKeyColumn = primaryKeyColumn;
-        }
-        public IColumn ForeignKeyColumn { get; }
-        public IColumn PrimaryKeyColumn { get; }
+        public IColumn ForeignKeyColumn { get; } = foreignKeyColumn;
+        public IColumn PrimaryKeyColumn { get; } = primaryKeyColumn;
     }
 
     public sealed class UniqueConstraint {
@@ -116,7 +122,8 @@ namespace QueryLite {
             foreach(IColumn column in columns) {
 
                 if(column.Table != table) {
-                    throw new Exception($"{nameof(column)} parent table must be the same table object as the {nameof(table)} parameter");
+                    throw new Exception($"{nameof(column)} parent table must be the same " +
+                                        $"table object as the {nameof(table)} parameter");
                 }
             }
             Table = table;
@@ -141,7 +148,9 @@ namespace QueryLite {
     public readonly struct Json {
 
         public static Json Empty { get; } = new("");
+
         public static Json ValueOf(string value) => new(value);
+
         public static Jsonb AsJson(object value) => new(JsonSerializer.Serialize(value));
 
         private readonly string _value;
@@ -156,7 +165,9 @@ namespace QueryLite {
     public readonly struct Jsonb {
 
         public static Jsonb Empty { get; } = new("");
+
         public static Jsonb ValueOf(string value) => new(value);
+
         public static Jsonb AsJson(object value) => new(JsonSerializer.Serialize(value));
 
         private readonly string _value;

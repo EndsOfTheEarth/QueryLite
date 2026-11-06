@@ -30,11 +30,21 @@ namespace QueryLite {
         void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters);
 
         public static ICondition And(ICondition? conditionA, ICondition conditionB) {
-            return conditionA != null ? new AndOrCondition(conditionA, isAnd: true, conditionB) : conditionB;
+
+            if(conditionA is null) {
+                return conditionB;
+            }
+            return new AndOrCondition(conditionA, isAnd: true, conditionB);
         }
+
         public static ICondition Or(ICondition? conditionA, ICondition conditionB) {
-            return conditionA != null ? new AndOrCondition(conditionA, isAnd: false, conditionB) : conditionB;
+
+            if(conditionA is null) {
+                return conditionB;
+            }
+            return new AndOrCondition(conditionA, isAnd: false, conditionB);
         }
+
         public static ICondition operator &(ICondition? conditionA, ICondition conditionB) {
 
             if(conditionA == null) {
@@ -63,7 +73,9 @@ namespace QueryLite {
             ConditionB = conditionB;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database,
+                           bool useAlias, IParametersBuilder? parameters) {
+
             sql.Append('(');
             ConditionA.GetSql(sql, database, useAlias, parameters);
             sql.Append(IsAnd ? " AND " : " OR ");
@@ -82,13 +94,17 @@ namespace QueryLite {
         public bool IsAnd { get; private set; }
         public ICondition ConditionB { get; private set; }
 
-        public AndOrConditionColumnCondition(ICondition conditionA, bool isAnd, ICondition conditionB) {
+        public AndOrConditionColumnCondition(ICondition conditionA,
+                                             bool isAnd,
+                                             ICondition conditionB) {
             ConditionA = conditionA;
             IsAnd = isAnd;
             ConditionB = conditionB;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database,
+                           bool useAlias, IParametersBuilder? parameters) {
+
             sql.Append('(');
             ConditionA.GetSql(sql, database, useAlias, parameters);
             sql.Append(IsAnd ? " AND " : " OR ");
@@ -119,7 +135,8 @@ namespace QueryLite {
             List = list;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
+                           IParametersBuilder? parameters) {
 
             if(useAlias) {
                 sql.Append(Left.Table.Alias).Append('.');
@@ -154,13 +171,15 @@ namespace QueryLite {
         private bool IsIn { get; }
         private IExecute<RESULT> NestedQuery { get; }
 
-        public InNotInNestedQueryCondition(AColumn<TYPE> left, bool isIn, IExecute<RESULT> nestedQuery) {
+        public InNotInNestedQueryCondition(AColumn<TYPE> left, bool isIn,
+                                           IExecute<RESULT> nestedQuery) {
             Left = left;
             IsIn = isIn;
             NestedQuery = nestedQuery;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database,
+                           bool useAlias, IParametersBuilder? parameters) {
 
             if(useAlias) {
                 sql.Append(Left.Table.Alias).Append('.');
@@ -180,8 +199,12 @@ namespace QueryLite {
             Left = left;
             IsNull = isNull;
         }
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            sql.Append((useAlias ? Left.Table.Alias + "." : "")).Append(Left.ColumnName).Append(IsNull ? " IS NULL" : " IS NOT NULL");
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
+                           IParametersBuilder? parameters) {
+
+            sql.Append((useAlias ? Left.Table.Alias + "." : ""))
+               .Append(Left.ColumnName)
+               .Append(IsNull ? " IS NULL" : " IS NOT NULL");
         }
     }
 
@@ -194,8 +217,11 @@ namespace QueryLite {
             Left = left;
             IsNull = isNull;
         }
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            sql.Append(Left.GetSql(database, useAlias, parameters)).Append(IsNull ? " IS NULL" : " IS NOT NULL");
+        public void GetSql(StringBuilder sql, IDatabase database,
+                           bool useAlias, IParametersBuilder? parameters) {
+
+            sql.Append(Left.GetSql(database, useAlias, parameters))
+               .Append(IsNull ? " IS NULL" : " IS NOT NULL");
         }
     }
 
@@ -211,9 +237,16 @@ namespace QueryLite {
             Right = right;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
+                           IParametersBuilder? parameters) {
 
-            ConditionHelper.AppendSqlValue(Left, sql, database, useAlias: useAlias, parameters);
+            ConditionHelper.AppendSqlValue(
+                value: Left,
+                sql: sql,
+                database: database,
+                useAlias: useAlias,
+                parameters: parameters
+            );
 
             sql.Append(Operator switch {
                 Operator.EQUALS => " = ",
@@ -224,7 +257,14 @@ namespace QueryLite {
                 Operator.LESS_THAN_OR_EQUAL => " <= ",
                 _ => throw new Exception($"Unknown join operator. {nameof(Operator)} == {Operator}")
             });
-            ConditionHelper.AppendSqlValue(Right, sql, database, useAlias: useAlias, parameters);
+
+            ConditionHelper.AppendSqlValue(
+                value: Right,
+                sql: sql,
+                database: database,
+                useAlias: useAlias,
+                parameters: parameters
+            );
         }
     }
 
@@ -238,7 +278,8 @@ namespace QueryLite {
             Like = like;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
+                           IParametersBuilder? parameters) {
 
             if(Left is IColumn leftColumn) {
 
@@ -271,28 +312,32 @@ namespace QueryLite {
             ValueB = valueB;
         }
 
-        public BetweenCondition(bool not, IField left, ISelectable<TYPE> valueA, TYPE valueB) {
+        public BetweenCondition(bool not, IField left,
+                                ISelectable<TYPE> valueA, TYPE valueB) {
             Not = not;
             Left = left;
             ValueA = valueA;
             ValueB = valueB;
         }
 
-        public BetweenCondition(bool not, IField left, ISelectable<TYPE> valueA, ISelectable<TYPE> valueB) {
+        public BetweenCondition(bool not, IField left,
+                                ISelectable<TYPE> valueA, ISelectable<TYPE> valueB) {
             Not = not;
             Left = left;
             ValueA = valueA;
             ValueB = valueB;
         }
 
-        public BetweenCondition(bool not, IField left, TYPE valueA, ISelectable<TYPE> valueB) {
+        public BetweenCondition(bool not, IField left,
+                                TYPE valueA, ISelectable<TYPE> valueB) {
             Not = not;
             Left = left;
             ValueA = valueA;
             ValueB = valueB;
         }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        public void GetSql(StringBuilder sql, IDatabase database,
+                           bool useAlias, IParametersBuilder? parameters) {
 
             if(Left is IColumn leftColumn) {
 
@@ -313,15 +358,30 @@ namespace QueryLite {
             else {
                 sql.Append(" BETWEEN ");
             }
-            ConditionHelper.AppendSqlValue(ValueA, sql, database, useAlias: useAlias, parameters);
+            ConditionHelper.AppendSqlValue(
+                value: ValueA,
+                sql: sql,
+                database: database,
+                useAlias: useAlias,
+                parameters: parameters
+            );
+            
             sql.Append(" AND ");
-            ConditionHelper.AppendSqlValue(ValueB, sql, database, useAlias: useAlias, parameters);
+            
+            ConditionHelper.AppendSqlValue(
+                value: ValueB,
+                sql: sql,
+                database: database,
+                useAlias: useAlias,
+                parameters: parameters
+            );
         }
     }
 
     internal static class ConditionHelper {
 
-        public static void AppendSqlValue(object value, StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        public static void AppendSqlValue(object value, StringBuilder sql, IDatabase database,
+                                          bool useAlias, IParametersBuilder? parameters) {
 
             if(value is IColumn rightColumn) {
 
