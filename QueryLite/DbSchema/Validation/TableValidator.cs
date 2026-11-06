@@ -27,947 +27,1286 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 
-namespace QueryLite {
+namespace QueryLite;
 
-    public sealed class ValidationItem {
+public sealed class ValidationItem {
 
-        public Type? TableType { get; }
+    public Type? TableType { get; }
 
-        public ITable? Table { get; private set; }
+    public ITable? Table { get; private set; }
 
-        public void SetTable(ITable table) {
-            Table = table;
-            Schema = table.SchemaName;
-            TableName = table.TableName;
-        }
-        public string Schema { get; private set; } = "";
-        public string TableName { get; private set; } = "";
+    public void SetTable(ITable table) {
+        Table = table;
+        Schema = table.SchemaName;
+        TableName = table.TableName;
+    }
+    public string Schema { get; private set; } = "";
+    public string TableName { get; private set; } = "";
 
-        public bool HasErrors => ValidationMessages.Count > 0;
-        public List<string> ValidationMessages { get; } = [];
+    public bool HasErrors => ValidationMessages.Count > 0;
+    public List<string> ValidationMessages { get; } = [];
 
-        public void Add(string message) {
-            ValidationMessages.Add(message);
-        }
-
-        public ValidationItem(Type? tableType, string schema = "", string tableName = "") {
-            TableType = tableType;
-            Schema = schema;
-            TableName = tableName;
-        }
-        public override string? ToString() {
-            return TableType?.FullName ?? base.ToString();
-        }
+    public void Add(string message) {
+        ValidationMessages.Add(message);
     }
 
-    public class SchemaValidationSettings {
-
-        public required PrimaryKeyValidation ValidatePrimaryKeys { get; init; }
-        public required bool ValidateUniqueConstraints { get; init; }
-        public required bool ValidateForeignKeys { get; init; }
-        public required bool ValidateCheckConstraintNames { get; init; }
-        public required bool ValidateMissingCodeTables { get; init; }
-        public required bool ValidateColumnLengths { get; init; }
-        public required bool ValidateColumnAutoGeneration { get; init; }
+    public ValidationItem(Type? tableType, string schema = "", string tableName = "") {
+        TableType = tableType;
+        Schema = schema;
+        TableName = tableName;
     }
-
-    public enum PrimaryKeyValidation { None, NamesAndColumns, Names, Columns }
-
-    public class ValidationResult {
-
-        public List<ValidationItem> Items { get; } = [];
-
-        public DatabaseSchema Schema { get; set; }
-
-        public ValidationResult(DatabaseSchema schema) {
-            Schema = schema;
-        }
+    public override string? ToString() {
+        return TableType?.FullName ?? base.ToString();
     }
+}
 
-    public static class SchemaValidator {
+public class SchemaValidationSettings {
 
-        public static ValidationResult ValidateTablesInCurrentDomain(IDatabase database, SchemaValidationSettings validationSettings) {
+    public required PrimaryKeyValidation ValidatePrimaryKeys { get; init; }
+    public required bool ValidateUniqueConstraints { get; init; }
+    public required bool ValidateForeignKeys { get; init; }
+    public required bool ValidateCheckConstraintNames { get; init; }
+    public required bool ValidateMissingCodeTables { get; init; }
+    public required bool ValidateColumnLengths { get; init; }
+    public required bool ValidateColumnAutoGeneration { get; init; }
+}
 
-            using DbConnection dbConnection = database.GetNewConnection();
+public enum PrimaryKeyValidation { None, NamesAndColumns, Names, Columns }
 
-            DatabaseSchema dbSchema = LoadSchema(database);
+public class ValidationResult {
 
-            dbConnection.Close();
+    public List<ValidationItem> Items { get; } = [];
 
-            ValidationResult result = new ValidationResult(dbSchema);
+    public DatabaseSchema Schema { get; set; }
 
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+    public ValidationResult(DatabaseSchema schema) {
+        Schema = schema;
+    }
+}
 
-            List<Type> types = [];
+public static class SchemaValidator {
 
-            foreach(Assembly assembly in assemblies) {
+    public static ValidationResult ValidateTablesInCurrentDomain(IDatabase database,
+                                                                 SchemaValidationSettings validationSettings) {
 
-                try {
+        using DbConnection dbConnection = database.GetNewConnection();
 
-                    Type[] assemblyTypes = assembly.GetTypes();
+        DatabaseSchema dbSchema = LoadSchema(database);
 
-                    foreach(Type p in assemblyTypes) {
+        dbConnection.Close();
 
-                        if(typeof(ITable).IsAssignableFrom(p) && p != typeof(ITable) && p != typeof(ATable)) {
-                            types.Add(p);
-                        }
+        ValidationResult result = new ValidationResult(dbSchema);
+
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        List<Type> types = [];
+
+        foreach(Assembly assembly in assemblies) {
+
+            try {
+
+                Type[] assemblyTypes = assembly.GetTypes();
+
+                foreach(Type p in assemblyTypes) {
+
+                    bool isTable = typeof(ITable).IsAssignableFrom(p) &&
+                                   p != typeof(ITable) &&
+                                   p != typeof(ATable);
+
+                    if(isTable) {
+                        types.Add(p);
                     }
                 }
-                catch(ReflectionTypeLoadException ex) {
-                    //Ignore as some types cannot be loaded
-                    ValidationItem tableValidation = new ValidationItem(tableType: null);
-                    tableValidation.Add($"Warning: Unable to load the a type from the assembly '{assembly.FullName}'.{Environment.NewLine}{ex}");
-                    result.Items.Add(tableValidation);
-                }
             }
+            catch(ReflectionTypeLoadException ex) {
 
-            List<ITable> codeTables = [];
+                //Ignore as some types cannot be loaded
+                ValidationItem tableValidation = new(tableType: null);
 
-            foreach(Type type in types) {
-
-                result.Items.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
-
-                if(table != null) {
-                    codeTables.Add(table);
-                }
+                tableValidation.Add(
+                    $"Warning: Unable to load the a type from the assembly " +
+                    $"'{assembly.FullName}'.{Environment.NewLine}{ex}"
+                );
+                result.Items.Add(tableValidation);
             }
-
-            if(validationSettings.ValidateMissingCodeTables) {
-                ValidateMissingCodeTables(dbSchema, database, codeTables, result);
-            }
-            return result;
         }
 
-        public static ValidationResult ValidateTablesInAssemblies(Assembly[] assemblies, IDatabase database, SchemaValidationSettings validationSettings) {
+        List<ITable> codeTables = [];
 
-            using DbConnection dbConnection = database.GetNewConnection();
+        foreach(Type type in types) {
 
-            DatabaseSchema dbSchema = LoadSchema(database);
+            result.Items.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
 
-            dbConnection.Close();
+            if(table != null) {
+                codeTables.Add(table);
+            }
+        }
 
-            List<Type> types = [];
+        if(validationSettings.ValidateMissingCodeTables) {
+            ValidateMissingCodeTables(dbSchema, database, codeTables, result);
+        }
+        return result;
+    }
 
-            foreach(Assembly assembly in assemblies) {
+    public static ValidationResult ValidateTablesInAssemblies(Assembly[] assemblies,
+                                                              IDatabase database,
+                                                              SchemaValidationSettings validationSettings) {
 
-                try {
+        using DbConnection dbConnection = database.GetNewConnection();
 
-                    Type[] assemblyTypes = assembly.GetTypes();
+        DatabaseSchema dbSchema = LoadSchema(database);
 
-                    foreach(Type p in assemblyTypes) {
+        dbConnection.Close();
 
-                        if(typeof(ITable).IsAssignableFrom(p) && p != typeof(ITable) && p != typeof(ATable)) {
-                            types.Add(p);
-                        }
+        List<Type> types = [];
+
+        foreach(Assembly assembly in assemblies) {
+
+            try {
+
+                Type[] assemblyTypes = assembly.GetTypes();
+
+                foreach(Type p in assemblyTypes) {
+
+                    bool isTable = typeof(ITable).IsAssignableFrom(p) &&
+                                   p != typeof(ITable) &&
+                                   p != typeof(ATable);
+
+                    if(isTable) {
+                        types.Add(p);
                     }
                 }
-                catch(ReflectionTypeLoadException ex) {
-                    //Ignore as some types cannot be loaded
-                    ex = true ? ex : ex;
+            }
+            catch(ReflectionTypeLoadException ex) {
+                //Ignore as some types cannot be loaded
+                ex = true ? ex : ex;
+            }
+        }
+
+        ValidationResult result = new(dbSchema);
+
+        List<ITable> codeTables = [];
+
+        foreach(Type type in types) {
+
+            result.Items.Add(
+                ValidateFromType(
+                    type: type,
+                    database: database,
+                    dbSchema: dbSchema,
+                    validationSettings: validationSettings,
+                    table: out ITable? table
+                )
+            );
+
+            if(table != null) {
+                codeTables.Add(table);
+            }
+        }
+
+        if(validationSettings.ValidateMissingCodeTables) {
+
+            ValidateMissingCodeTables(
+                dbSchema: dbSchema,
+                database: database,
+                tables: codeTables,
+                validationResult: result
+            );
+        }
+        return result;
+    }
+
+    public static ValidationResult ValidateTablesInAssembly(IDatabase database,
+                                                            Assembly assembly,
+                                                            SchemaValidationSettings validationSettings) {
+
+        using DbConnection dbConnection = database.GetNewConnection();
+
+        DatabaseSchema dbSchema = LoadSchema(database);
+
+        dbConnection.Close();
+
+        List<Type> types = assembly.GetTypes()
+            .Select(type => type)
+            .Where(type => typeof(ITable).IsAssignableFrom(type) &&
+                           type != typeof(ITable) &&
+                           type != typeof(ATable)
+            )
+            .ToList();
+
+        ValidationResult result = new ValidationResult(dbSchema);
+
+        List<ITable> codeTables = [];
+
+        foreach(Type type in types) {
+
+            result.Items.Add(
+                ValidateFromType(
+                    type: type,
+                    database: database,
+                    dbSchema: dbSchema,
+                    validationSettings: validationSettings,
+                    table: out ITable? table
+                )
+            );
+
+            if(table != null) {
+                codeTables.Add(table);
+            }
+        }
+
+        if(validationSettings.ValidateMissingCodeTables) {
+            ValidateMissingCodeTables(dbSchema, database, codeTables, result);
+        }
+        return result;
+    }
+
+    public static ValidationResult ValidateTables(IDatabase database, List<ITable> tables,
+                                                  SchemaValidationSettings validationSettings) {
+
+        using DbConnection dbConnection = database.GetNewConnection();
+
+        DatabaseSchema dbSchema = LoadSchema(database);
+
+        dbConnection.Close();
+
+        ValidationResult result = new(dbSchema);
+
+        foreach(ITable table in tables) {
+
+            result.Items.Add(
+                ValidateFromType(
+                    type: table.GetType(),
+                    database: database,
+                    dbSchema: dbSchema,
+                    validationSettings: validationSettings,
+                    table: out _
+                )
+            );
+        }
+
+        if(validationSettings.ValidateMissingCodeTables) {
+            ValidateMissingCodeTables(
+                dbSchema: dbSchema,
+                database: database,
+                tables: tables,
+                validationResult: result
+            );
+        }
+        return result;
+    }
+
+    public static ValidationItem ValidateTable(IDatabase database, ITable table,
+                                               SchemaValidationSettings validationSettings) {
+
+        using DbConnection dbConnection = database.GetNewConnection();
+
+        DatabaseSchema dbSchema = LoadSchema(database);
+
+        dbConnection.Close();
+
+        return ValidateFromType(
+            type: table.GetType(),
+            database: database,
+            dbSchema: dbSchema,
+            validationSettings: validationSettings,
+            table: out _
+        );
+    }
+
+    private static DatabaseSchema LoadSchema(IDatabase database) {
+
+        List<DatabaseTable> dbTables;
+
+        if(database.DatabaseType == DatabaseType.PostgreSql) {
+            dbTables = PostgreSqlSchemaLoader.LoadTables(database);
+        }
+        else if(database.DatabaseType == DatabaseType.SqlServer) {
+            dbTables = SqlServerSchemaLoader.LoadTables(database);
+        }
+        else if(database.DatabaseType == DatabaseType.Sqlite) {
+            dbTables = SqliteSchemaLoader.LoadTables(database);
+        }
+        else {
+            throw new Exception($"Unknown {nameof(DatabaseType)} == {database.DatabaseType}");
+        }
+        return new DatabaseSchema(dbTables);
+    }
+
+    private static ValidationItem ValidateFromType(Type type, IDatabase database,
+                                                   DatabaseSchema dbSchema,
+                                                   SchemaValidationSettings validationSettings,
+                                                   out ITable? table) {
+
+        FieldInfo? instanceField1 = type.GetField("Instance1");
+
+        if(instanceField1 == null) {
+            instanceField1 = type.GetField("Instance");
+        }
+
+        PropertyInfo? instance1Property = type.GetProperty("Instance1");
+
+        if(instance1Property == null) {
+            type.GetProperty("Instance");
+        }
+
+        ValidationItem tableValidation = new ValidationItem(type);
+
+        if(instanceField1 == null && instance1Property == null) {
+
+            tableValidation.Add(
+                $"Table does not have a static field or property called " +
+                $"'Instance' or 'Instance1' which returns an instance of " +
+                $"the code table"
+            );
+        }
+
+        table = null;
+
+        if(instanceField1 != null) {
+            table = (ITable?)instanceField1.GetValue(null);
+        }
+        else if(instance1Property != null) {
+            table = (ITable?)instance1Property.GetValue(null);
+        }
+
+        if(table == null) {
+            tableValidation.Add(
+                $"Unable to load an instance of class table in order to validate table"
+            );
+        }
+        else {
+
+            tableValidation.SetTable(table);
+
+            Validate(database, table, dbSchema, tableValidation, validationSettings);
+        }
+        return tableValidation;
+    }
+
+    private static List<DatabaseTable> FindMatchingSchemaTables(IDatabase database, ITable table,
+                                                                DatabaseSchema dbSchema) {
+
+        List<DatabaseTable> foundTables = [];
+
+        string mappedSchemaName;
+
+        if(!string.IsNullOrEmpty(table.SchemaName)) {
+            mappedSchemaName = database.SchemaMap(table.SchemaName);
+        }
+        else {
+            mappedSchemaName = table.SchemaName;
+        }
+
+        foreach(DatabaseTable schemaTable in dbSchema.Tables) {
+
+            bool tableNameMatches = schemaTable.TableName.Value.EqualsOIC(table.TableName);
+
+            if(tableNameMatches) {
+
+                bool schemaMatches = schemaTable.Schema.Value.EqualsOIC(mappedSchemaName);
+
+                if(schemaMatches) {
+                    foundTables.Add(schemaTable);
                 }
             }
+        }
+        return foundTables;
+    }
 
-            ValidationResult result = new ValidationResult(dbSchema);
+    public static void Validate(IDatabase database, ITable table, DatabaseSchema dbSchema,
+                                ValidationItem validation, SchemaValidationSettings validationSettings) {
 
-            List<ITable> codeTables = [];
-
-            foreach(Type type in types) {
-
-                result.Items.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
-
-                if(table != null) {
-                    codeTables.Add(table);
-                }
-            }
-
-            if(validationSettings.ValidateMissingCodeTables) {
-                ValidateMissingCodeTables(dbSchema, database, codeTables, result);
-            }
-            return result;
+        if(string.IsNullOrWhiteSpace(table.SchemaName)) {
+            validation.Add($"Table schema name cannot be null or empty in code");
         }
 
-        public static ValidationResult ValidateTablesInAssembly(IDatabase database, Assembly assembly, SchemaValidationSettings validationSettings) {
+        List<DatabaseTable> dbTables = FindMatchingSchemaTables(database, table, dbSchema);
 
-            using DbConnection dbConnection = database.GetNewConnection();
+        if(dbTables == null || dbTables.Count == 0) {
 
-            DatabaseSchema dbSchema = LoadSchema(database);
-
-            dbConnection.Close();
-
-            List<Type> types = assembly.GetTypes()
-                .Select(type => type)
-                .Where(type => typeof(ITable).IsAssignableFrom(type) && type != typeof(ITable) && type != typeof(ATable))
-                .ToList();
-
-            ValidationResult result = new ValidationResult(dbSchema);
-
-            List<ITable> codeTables = [];
-
-            foreach(Type type in types) {
-
-                result.Items.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
-
-                if(table != null) {
-                    codeTables.Add(table);
-                }
-            }
-
-            if(validationSettings.ValidateMissingCodeTables) {
-                ValidateMissingCodeTables(dbSchema, database, codeTables, result);
-            }
-            return result;
+            validation.Add(
+                $"Code table definition exists but the database table does not. " +
+                $"This can happen if the table does not exist in the database " +
+                $"or the schema names do not match or the table names do not match."
+            );
+            return;
         }
 
-        public static ValidationResult ValidateTables(IDatabase database, List<ITable> tables, SchemaValidationSettings validationSettings) {
+        if(dbTables.Count > 1) {
 
-            using DbConnection dbConnection = database.GetNewConnection();
+            string mappedSchemaName;
 
-            DatabaseSchema dbSchema = LoadSchema(database);
-
-            dbConnection.Close();
-
-            ValidationResult result = new ValidationResult(dbSchema);
-
-            foreach(ITable table in tables) {
-                result.Items.Add(ValidateFromType(table.GetType(), database, dbSchema, validationSettings, table: out _));
-            }
-
-            if(validationSettings.ValidateMissingCodeTables) {
-                ValidateMissingCodeTables(dbSchema, database, tables, result);
-            }
-            return result;
-        }
-
-        public static ValidationItem ValidateTable(IDatabase database, ITable table, SchemaValidationSettings validationSettings) {
-
-            using DbConnection dbConnection = database.GetNewConnection();
-
-            DatabaseSchema dbSchema = LoadSchema(database);
-
-            dbConnection.Close();
-
-            return ValidateFromType(table.GetType(), database, dbSchema, validationSettings, table: out _);
-        }
-
-        private static DatabaseSchema LoadSchema(IDatabase database) {
-
-            List<DatabaseTable> dbTables;
-
-            if(database.DatabaseType == DatabaseType.PostgreSql) {
-                dbTables = PostgreSqlSchemaLoader.LoadTables(database);
-            }
-            else if(database.DatabaseType == DatabaseType.SqlServer) {
-                dbTables = SqlServerSchemaLoader.LoadTables(database);
-            }
-            else if(database.DatabaseType == DatabaseType.Sqlite) {
-                dbTables = SqliteSchemaLoader.LoadTables(database);
+            if(!string.IsNullOrEmpty(table.SchemaName)) {
+                mappedSchemaName = database.SchemaMap(table.SchemaName);
             }
             else {
-                throw new Exception($"Unknown {nameof(DatabaseType)} == {database.DatabaseType}");
+                mappedSchemaName = table.SchemaName;
             }
-            return new DatabaseSchema(dbTables);
+
+            validation.Add(
+                $"Unable to match table name to database table. {dbTables.Count} tables " +
+                $"exist with the name '{mappedSchemaName}.{table.TableName}' in the database."
+            );
+            return;
         }
 
-        private static ValidationItem ValidateFromType(Type type, IDatabase database, DatabaseSchema dbSchema, SchemaValidationSettings validationSettings, out ITable? table) {
+        DatabaseTable dbTable = dbTables[0];
 
-            FieldInfo? instanceField1 = type.GetField("Instance1");
+        List<CodeColumnProperty> tableColumnProperties = LoadTableColumnsProperties(table, validation);
 
-            if(instanceField1 == null) {
-                instanceField1 = type.GetField("Instance");
-            }
+        foreach(DatabaseColumn dbColumn in dbTable.Columns) {
 
-            PropertyInfo? instance1Property = type.GetProperty("Instance1");
+            string columnDetail = $"Table Column: '{dbColumn.ColumnName.Value}'";
 
-            if(instance1Property == null) {
-                type.GetProperty("Instance");
-            }
+            CodeColumnProperty? codeColumnProperty = tableColumnProperties
+                .Find(c => c.Column.ColumnName.EqualsOIC(dbColumn.ColumnName.Value));
 
-            ValidationItem tableValidation = new ValidationItem(type);
-
-            if(instanceField1 == null && instance1Property == null) {
-                tableValidation.Add($"Table does not have a static field or property called 'Instance' or 'Instance1' which returns an instance of the code table");
-            }
-
-            table = null;
-
-            if(instanceField1 != null) {
-                table = (ITable?)instanceField1.GetValue(null);
-            }
-            else if(instance1Property != null) {
-                table = (ITable?)instance1Property.GetValue(null);
-            }
-
-            if(table == null) {
-                tableValidation.Add($"Unable to load an instance of class table in order to validate table");
+            if(codeColumnProperty == null) {
+                validation.Add(
+                    $"{columnDetail}: Column exists in database table but not in code table"
+                );
             }
             else {
 
-                tableValidation.SetTable(table);
+                IColumn codeColumn = codeColumnProperty.Column;
 
-                Validate(database, table, dbSchema, tableValidation, validationSettings);
-            }
-            return tableValidation;
-        }
-
-        private static List<DatabaseTable> FindMatchingSchemaTables(IDatabase database, ITable table, DatabaseSchema dbSchema) {
-
-            List<DatabaseTable> foundTables = [];
-
-            string mappedSchemaName = !string.IsNullOrEmpty(table.SchemaName) ? database.SchemaMap(table.SchemaName) : table.SchemaName;
-
-            foreach(DatabaseTable schemaTable in dbSchema.Tables) {
-
-                if(string.Compare(schemaTable.TableName.Value, table.TableName, ignoreCase: true) == 0) {
-
-                    if(string.Compare(schemaTable.Schema.Value, mappedSchemaName, ignoreCase: true) == 0) {
-                        foundTables.Add(schemaTable);
-                    }
-                }
-            }
-            return foundTables;
-        }
-
-        public static void Validate(IDatabase database, ITable table, DatabaseSchema dbSchema,
-                                    ValidationItem tableValidation, SchemaValidationSettings validationSettings) {
-
-            if(string.IsNullOrWhiteSpace(table.SchemaName)) {
-                tableValidation.Add($"Table schema name cannot be null or empty in code");
-            }
-
-            List<DatabaseTable> dbTables = FindMatchingSchemaTables(database, table, dbSchema);
-
-            if(dbTables == null || dbTables.Count == 0) {
-                tableValidation.Add($"Code table definition exists but the database table does not. This can happen if the table does not exist in the database or the schema names do not match or the table names do not match.");
-                return;
-            }
-
-            if(dbTables.Count > 1) {
-                string mappedSchemaName = !string.IsNullOrEmpty(table.SchemaName) ? database.SchemaMap(table.SchemaName) : table.SchemaName;
-                tableValidation.Add($"Unable to match table name to database table. {dbTables.Count} tables exist with the name '{mappedSchemaName}.{table.TableName}' in the database.");
-                return;
-            }
-
-            DatabaseTable dbTable = dbTables[0];
-
-            List<CodeColumnProperty> tableColumnProperties = LoadTableColumnsProperties(table, tableValidation);
-
-            foreach(DatabaseColumn dbColumn in dbTable.Columns) {
-
-                string columnDetail = $"Table Column: '{dbColumn.ColumnName.Value}'";
-
-                CodeColumnProperty? codeColumnProperty = tableColumnProperties.Find(c => string.Compare(c.Column.ColumnName, dbColumn.ColumnName.Value, ignoreCase: true) == 0);
-
-                if(codeColumnProperty == null) {
-                    tableValidation.Add($"{columnDetail}: Column exists in database table but not in code table");
-                }
-                else {
-
-                    IColumn codeColumn = codeColumnProperty.Column;
-
-                    if(!codeColumn.Enclose && SqlKeyWordLookup.IsKeyWord(codeColumn.ColumnName)) {
-                        tableValidation.Add($"{columnDetail}, column name '{codeColumn.ColumnName}' is an SQL keyword so the {nameof(codeColumn.Enclose)} property should be set to true on the column");
-                    }
-
-                    Type dbNetType = dbColumn.DataType.DotNetType;
-                    Type codeAdoType = ConvertToAdoType(codeColumn.Type);    //This is for the case with types like IntKey<> where the ado type is int
-
-                    if(!codeColumnProperty.SuppressColumnTypeValidation) {
-                        ValidateColumnDataType(database, tableValidation, columnDetail, codeColumn, dbNetType, codeAdoType);
-                    }
-
-                    if(dbColumn.IsNullable && !codeColumn.IsNullable) {
-                        tableValidation.Add($"{columnDetail}, database column is nullable but code column is non-nullable");
-                    }
-                    else if(!dbColumn.IsNullable && codeColumn.IsNullable) {
-                        tableValidation.Add($"{columnDetail}, database column is non-nullable but code column is nullable");
-                    }
-
-                    if(validationSettings.ValidateColumnAutoGeneration) {
-
-                        if(dbColumn.IsAutoGenerated && !codeColumn.IsAutoGenerated) {
-                            tableValidation.Add($"{columnDetail}, database column is auto generated but code column is not");
-                        }
-                        else if(!dbColumn.IsAutoGenerated && codeColumn.IsAutoGenerated) {
-                            tableValidation.Add($"{columnDetail}, database column is not auto generated but code column is");
-                        }
-                    }
-
-                    if(validationSettings.ValidateColumnLengths) {
-
-                        bool codeColumnIsMaxLength = codeColumn.Length?.LengthType == LengthType.Max;
-                        bool dbColumnIsMaxLength = dbColumn.Length?.LengthType == LengthType.Max;
-
-                        if(codeColumnIsMaxLength != dbColumnIsMaxLength) {
-                            tableValidation.Add($"{columnDetail}, database column length and column column length do not match. Database Length = {dbColumn.Length}, Code Column Length = {codeColumn.Length}");
-                        }
-                        else {
-
-                            int? codeColumnMaxLength = codeColumn.Length?.Length ?? null;
-                            int? dbColumnMaxLength = dbColumn.Length?.Length ?? null;
-
-                            if(codeColumnMaxLength != dbColumnMaxLength) {
-                                tableValidation.Add($"{columnDetail}, database column length and column column length do not match. Database Length = {dbColumn.Length}, Code Column Length = {codeColumn.Length}");
-                            }
-                        }
-                    }
-                }
-            }
-
-            Dictionary<string, int> duplicateColumnNameLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-            foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
-
-                IColumn codeColumn = columnProperty.Column;
-
-                string columnDetail = $"Column: '{codeColumn.ColumnName}'";
-
-                DatabaseColumn? dbColumn = dbTable.Columns.Find(c => string.Compare(c.ColumnName.Value, codeColumn.ColumnName, ignoreCase: true) == 0);
-
-                if(dbColumn == null) {
-                    tableValidation.Add($"{columnDetail}, column exists in code but not in the database");
-                }
-                else {
-
-                    if(!duplicateColumnNameLookup.ContainsKey(codeColumn.ColumnName)) {
-                        duplicateColumnNameLookup.Add(codeColumn.ColumnName, 1);
-                    }
-                    else {
-                        duplicateColumnNameLookup[codeColumn.ColumnName]++;
-                    }
-                }
-            }
-
-            foreach(KeyValuePair<string, int> duplicate in duplicateColumnNameLookup) {
-
-                if(duplicate.Value > 1) {
-
-                    string columnDetail = $"Column: '{duplicate.Key}'";
-
-                    tableValidation.Add($"{columnDetail}, column name is defined {duplicate.Value} times in code table");
-                }
-            }
-
-            Type tableType = table.GetType();
-
-            if(tableType.BaseType == null || tableType.BaseType != typeof(ATable)) {
-                tableValidation.Add($"code table base class must be of type {typeof(ATable)}");
-            }
-
-            PropertyInfo[] tableProperties = tableType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-            List<PropertyInfo> columnProperties = [];
-
-            foreach(PropertyInfo tableProperty in tableProperties) {
-
-                bool allowedTableProperty = tableProperty.Name == nameof(table.PrimaryKey) ||
-                    tableProperty.Name == nameof(table.UniqueConstraints) ||
-                    tableProperty.Name == nameof(table.ForeignKeys) ||
-                    tableProperty.Name == nameof(table.CheckConstraints);
-
-                if(allowedTableProperty) {
-                    continue;
+                if(!codeColumn.Enclose && SqlKeyWordLookup.IsKeyWord(codeColumn.ColumnName)) {
+                    
+                    validation.Add(
+                        $"{columnDetail}, column name '{codeColumn.ColumnName}' is an SQL keyword " +
+                        $"so the {nameof(codeColumn.Enclose)} property should be set to true on the column"
+                    );
                 }
 
-                Type underlyingPropertyType = tableProperty.PropertyType.IsGenericType ? tableProperty.PropertyType.GetGenericTypeDefinition() : tableProperty.PropertyType;
+                Type dbNetType = dbColumn.DataType.DotNetType;
 
-                string tablePropertyDetail = $"Table Property '{tableProperty.Name}'";
+                //This is for the case with types like IntKey<> where the ado type is int
+                Type codeAdoType = ConvertToAdoType(codeColumn.Type);
 
-                if(underlyingPropertyType != typeof(Column<>) && underlyingPropertyType != typeof(Column<,>) && underlyingPropertyType != typeof(NColumn<>) && underlyingPropertyType != typeof(NColumn<,>)) {
-                    tableValidation.Add($"{tablePropertyDetail} (Type: '{underlyingPropertyType}') is not a column type. All table instance properties must inherit from either {typeof(Column<>).Name}<>, {typeof(Column<>).Name}<,>, {typeof(NColumn<>).Name}<> or {typeof(NColumn<,>).Name}<>");
+                if(!codeColumnProperty.SuppressColumnTypeValidation) {
+                    ValidateColumnDataType(database, validation, columnDetail, codeColumn, dbNetType, codeAdoType);
                 }
-                else {
 
-                    columnProperties.Add(tableProperty);
+                if(dbColumn.IsNullable && !codeColumn.IsNullable) {
+                    
+                    validation.Add(
+                        $"{columnDetail}, database column is nullable but code column is non-nullable"
+                    );
+                }
+                else if(!dbColumn.IsNullable && codeColumn.IsNullable) {
 
-                    //TODO: Checking reference nullability is not straight forward at the moment so I have chosen to skip that for now
+                    validation.Add(
+                        $"{columnDetail}, database column is non-nullable but code column is nullable"
+                    );
+                }
 
-                    object? propertyValue = tableProperty.GetValue(table);
+                if(validationSettings.ValidateColumnAutoGeneration) {
 
-                    if(propertyValue == null) {
-                        tableValidation.Add($"{tablePropertyDetail} (Type: '{underlyingPropertyType}') is not populated. Value is null");
+                    if(dbColumn.IsAutoGenerated && !codeColumn.IsAutoGenerated) {
+                        
+                        validation.Add(
+                            $"{columnDetail}, database column is auto generated but code column is not"
+                        );
+                    }
+                    else if(!dbColumn.IsAutoGenerated && codeColumn.IsAutoGenerated) {
+                        validation.Add(
+                            $"{columnDetail}, database column is not auto generated but code column is"
+                        );
+                    }
+                }
+
+                if(validationSettings.ValidateColumnLengths) {
+
+                    bool codeColumnIsMaxLength = codeColumn.Length?.LengthType == LengthType.Max;
+                    bool dbColumnIsMaxLength = dbColumn.Length?.LengthType == LengthType.Max;
+
+                    if(codeColumnIsMaxLength != dbColumnIsMaxLength) {
+                        validation.Add(
+                            $"{columnDetail}, database column length and column column length do not match. " +
+                            $"Database Length = {dbColumn.Length}, Code Column Length = {codeColumn.Length}");
                     }
                     else {
 
-                        bool match = false;
+                        int? codeColumnMaxLength = codeColumn.Length?.Length ?? null;
+                        int? dbColumnMaxLength = dbColumn.Length?.Length ?? null;
 
-                        foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
-
-                            if(columnProperty.Column == ((IColumn)propertyValue)) {
-                                match = true;
-                                break;
-                            }
-                        }
-                        if(!match) {
-                            tableValidation.Add($"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') column has not been assigned to table");
+                        if(codeColumnMaxLength != dbColumnMaxLength) {
+                            validation.Add(
+                                $"{columnDetail}, database column length and column column length do not match. " +
+                                $"Database Length = {dbColumn.Length}, Code Column Length = {codeColumn.Length}");
                         }
                     }
-
-                    MethodInfo? getMethod = tableProperty.GetGetMethod();
-
-                    if(getMethod == null) {
-                        tableValidation.Add($"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') Get method does not exist");
-                    }
-                    else if(!getMethod.IsPublic) {
-                        tableValidation.Add($"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') Get method must be public");
-                    }
-
-                    MethodInfo? setMethod = tableProperty.GetSetMethod();
-
-                    if(setMethod != null && !setMethod.IsPrivate) {
-                        tableValidation.Add($"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') Set method must either not exist or be private");
-                    }
                 }
-            }
-            if(validationSettings.ValidatePrimaryKeys != PrimaryKeyValidation.None) {
-                ValidatePrimaryKeyForTable(table, dbTable, tableValidation, validationSettings.ValidatePrimaryKeys);
-            }
-            if(validationSettings.ValidateUniqueConstraints) {
-                ValidateUniqueConstraintsForTable(table, dbTable, tableValidation);
-            }
-            if(validationSettings.ValidateCheckConstraintNames) {
-                ValidateCheckConstraintNamesForTable(table, dbTable, tableValidation);
-            }
-            if(validationSettings.ValidateForeignKeys) {
-                ValidateForeignKeys(table, dbTable, tableValidation);
             }
         }
 
-        private static void ValidateColumnDataType(IDatabase database, ValidationItem tableValidation, string columnDetail, IColumn codeColumn, Type dbNetType, Type codeAdoType) {
+        Dictionary<string, int> duplicateColumnNameLookup = new(StringComparer.OrdinalIgnoreCase);
 
-            if(database.DatabaseType == DatabaseType.Sqlite) {
-                ValidateDataTypeForSqlite(codeColumn, tableValidation, columnDetail, codeAdoType: codeAdoType, dbNetType: dbNetType, useStrictTypeValidation: false);
-                return;
+        foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
+
+            IColumn codeColumn = columnProperty.Column;
+
+            string columnDetail = $"Column: '{codeColumn.ColumnName}'";
+
+            DatabaseColumn? dbColumn = dbTable.Columns.Find(
+                c => c.ColumnName.Value.EqualsOIC(codeColumn.ColumnName)
+            );
+
+            if(dbColumn == null) {
+                validation.Add($"{columnDetail}, column exists in code but not in the database");
             }
-            //SQL Server does not have a specific Json type. So a json or jsonb type is equivalent to string with SQL Server
-            bool isValidJsonType = (database.DatabaseType == DatabaseType.SqlServer) &&
-                                   (codeAdoType == typeof(Json) || codeAdoType == typeof(Jsonb)) &
-                                   dbNetType == typeof(string);
+            else {
 
-            if(codeColumn.Type.IsEnum) {
-
-                if(codeAdoType != typeof(short) && codeAdoType != typeof(int) && dbNetType != typeof(byte) && codeAdoType != typeof(long)) {
-                    throw new Exception("An enum type must be mapped as a short, integer or long. This might be a bug");
+                if(!duplicateColumnNameLookup.ContainsKey(codeColumn.ColumnName)) {
+                    duplicateColumnNameLookup.Add(codeColumn.ColumnName, 1);
                 }
-                if(dbNetType != typeof(int) && dbNetType != typeof(short) && dbNetType != typeof(byte) && dbNetType != typeof(long)) {
-                    tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
+                else {
+                    duplicateColumnNameLookup[codeColumn.ColumnName]++;
                 }
-            }
-            else if(codeAdoType == typeof(bool) && dbNetType == typeof(short)) {
-                //For sql servers TINYINT data type we can map to bool or short
-            }
-            else if(codeAdoType != dbNetType && !isValidJsonType) {
-                tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
             }
         }
 
-        private static void ValidateDataTypeForSqlite(IColumn codeColumn, ValidationItem tableValidation,
-                                                      string columnDetail, Type codeAdoType, Type dbNetType,
-                                                      bool useStrictTypeValidation) {
+        foreach(KeyValuePair<string, int> duplicate in duplicateColumnNameLookup) {
 
-            if(codeColumn.Type.IsEnum) {
+            if(duplicate.Value > 1) {
 
-                if(codeAdoType != typeof(short) && codeAdoType != typeof(int) && codeAdoType != typeof(byte) && codeAdoType != typeof(long)) {
-                    throw new Exception("An enum type must be mapped as a short, integer or long. This might be a bug");
-                }
-                if(dbNetType != typeof(int)) {
-                    tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
-                }
-                return;
+                string columnDetail = $"Column: '{duplicate.Key}'";
+
+                validation.Add($"{columnDetail}, column name is defined {duplicate.Value} times in code table");
             }
-
-            bool allowedType = false;
-
-            if(useStrictTypeValidation) {
-
-                if(dbNetType == typeof(int)) {
-                    allowedType = codeAdoType == typeof(short) || codeAdoType == typeof(int) || codeAdoType == typeof(long) || codeAdoType == typeof(byte);
-                }
-                else if(dbNetType == typeof(string)) {
-                    allowedType = codeAdoType == typeof(string);
-                }
-                else if(dbNetType == typeof(double)) {
-                    allowedType = codeAdoType == typeof(float) || codeAdoType == typeof(double);
-                }
-                else if(dbNetType == typeof(byte[])) {
-                    allowedType = codeAdoType == typeof(byte[]);
-                }
-            }
-
-            if(!useStrictTypeValidation) {
-
-                if(dbNetType == typeof(int)) {
-
-                    allowedType = codeAdoType == typeof(short) || codeAdoType == typeof(int) ||
-                                  codeAdoType == typeof(long) || codeAdoType == typeof(byte) ||
-                                  codeAdoType == typeof(bool) || codeAdoType == typeof(Bit);
-                }
-                else if(dbNetType == typeof(string)) {
-
-                    allowedType = codeAdoType == typeof(string) ||
-                                  codeAdoType == typeof(decimal) ||
-                                  codeAdoType == typeof(Json) ||
-                                  codeAdoType == typeof(Jsonb) ||
-                                  codeAdoType == typeof(DateTimeOffset) ||
-                                  codeAdoType == typeof(DateTime) ||
-                                  codeAdoType == typeof(DateOnly) ||
-                                  codeAdoType == typeof(TimeOnly);
-                }
-                else if(dbNetType == typeof(double)) {
-                    allowedType = codeAdoType == typeof(float) || codeAdoType == typeof(double);
-                }
-                else if(dbNetType == typeof(byte[])) {
-                    allowedType = codeAdoType == typeof(byte[]) || codeAdoType == typeof(Guid);
-                }
-            }
-
-            if(!allowedType) {
-                tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
-            }
-
-
-            //else if(codeAdoType == typeof(bool) && dbNetType == typeof(short)) {
-            //    //For sql servers TINYINT data type we can map to bool or short
-            //}
-            //else if(codeAdoType != dbNetType && !isValidJsonType) {
-            //    tableValidation.Add($"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) between database and code column. Tip: The attribute [SuppressColumnTypeValidation] can be used on the table column property to suppress this error.");
-            //}
         }
 
-        private static void ValidateCheckConstraintNamesForTable(ITable table, DatabaseTable dbTable, ValidationItem tableValidation) {
+        Type tableType = table.GetType();
 
-            if(table.UniqueConstraints.Length != dbTable.UniqueConstraints.Count) {
-                tableValidation.Add($"The number of unique constraints between the code and database do not match. '{table.UniqueConstraints.Length}' != '{dbTable.UniqueConstraints.Count}'");
+        if(tableType.BaseType == null || tableType.BaseType != typeof(ATable)) {
+            validation.Add($"code table base class must be of type {typeof(ATable)}");
+        }
+
+        PropertyInfo[] tableProperties = tableType.GetProperties(
+            BindingFlags.Public |
+            BindingFlags.NonPublic |
+            BindingFlags.Instance |
+            BindingFlags.DeclaredOnly
+        );
+
+        List<PropertyInfo> columnProperties = [];
+
+        foreach(PropertyInfo tableProperty in tableProperties) {
+
+            bool allowedTableProperty = tableProperty.Name == nameof(table.PrimaryKey) ||
+                                        tableProperty.Name == nameof(table.UniqueConstraints) ||
+                                        tableProperty.Name == nameof(table.ForeignKeys) ||
+                                        tableProperty.Name == nameof(table.CheckConstraints);
+
+            if(allowedTableProperty) {
+                continue;
             }
 
-            foreach(DatabaseCheckConstraint dbConstraint in dbTable.CheckConstraints) {
+            Type underlyingPropertyType;
 
-                CheckConstraint? tableCheckConstraint = null;
+            if(tableProperty.PropertyType.IsGenericType) {
+                underlyingPropertyType = tableProperty.PropertyType.GetGenericTypeDefinition();
+            }
+            else {
+                underlyingPropertyType = tableProperty.PropertyType;
+            }
 
-                foreach(CheckConstraint tableConstraint in table.CheckConstraints) {
+            string tablePropertyDetail = $"Table Property '{tableProperty.Name}'";
 
-                    bool matches = string.Equals(dbConstraint.ConstraintName, tableConstraint.Name, StringComparison.OrdinalIgnoreCase);
+            bool isColumnType = underlyingPropertyType != typeof(Column<>) &&
+                                underlyingPropertyType != typeof(Column<,>) &&
+                                underlyingPropertyType != typeof(NColumn<>) &&
+                                underlyingPropertyType != typeof(NColumn<,>);
 
-                    if(matches) {
+            if(isColumnType) {
 
-                        if(tableCheckConstraint != null) {
-                            tableValidation.Add($"The check constraint '{dbConstraint.ConstraintName}'is defined more than once in code");
+                validation.Add(
+                    $"{tablePropertyDetail} (Type: '{underlyingPropertyType}') is not a column type. " +
+                    $"All table instance properties must inherit from either " +
+                    $"{typeof(Column<>).Name}<>, {typeof(Column<>).Name}<,>, " +
+                    $"{typeof(NColumn<>).Name}<> or {typeof(NColumn<,>).Name}<>"
+                );
+            }
+            else {
+
+                columnProperties.Add(tableProperty);
+
+                //TODO: Checking reference nullability is not straight forward at the moment
+                //so I have chosen to skip that for now
+
+                object? propertyValue = tableProperty.GetValue(table);
+
+                if(propertyValue == null) {
+                    validation.Add(
+                        $"{tablePropertyDetail} (Type: '{underlyingPropertyType}') is not populated. Value is null"
+                    );
+                }
+                else {
+
+                    bool match = false;
+
+                    foreach(CodeColumnProperty columnProperty in tableColumnProperties) {
+
+                        if(columnProperty.Column == ((IColumn)propertyValue)) {
+                            match = true;
                             break;
                         }
-                        tableCheckConstraint = tableConstraint;
+                    }
+                    if(!match) {
+                        validation.Add(
+                            $"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') column has " +
+                            $"not been assigned to table"
+                        );
                     }
                 }
 
-                if(tableCheckConstraint == null) {
-                    tableValidation.Add($"The check constraint '{dbConstraint.ConstraintName}' is not defined in code. Definition = '{dbConstraint.Definition}'");
+                MethodInfo? getMethod = tableProperty.GetGetMethod();
+
+                if(getMethod == null) {
+                    validation.Add(
+                        $"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') Get method does not exist"
+                    );
+                }
+                else if(!getMethod.IsPublic) {
+                    validation.Add(
+                        $"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') Get method must be public"
+                    );
+                }
+
+                MethodInfo? setMethod = tableProperty.GetSetMethod();
+
+                if(setMethod != null && !setMethod.IsPrivate) {
+                    validation.Add(
+                        $"{tablePropertyDetail}  (Type: '{underlyingPropertyType}') Set method must either " +
+                        $"not exist or be private"
+                    );
                 }
             }
         }
+        if(validationSettings.ValidatePrimaryKeys != PrimaryKeyValidation.None) {
+            ValidatePrimaryKeyForTable(table, dbTable, validation, validationSettings.ValidatePrimaryKeys);
+        }
+        if(validationSettings.ValidateUniqueConstraints) {
+            ValidateUniqueConstraintsForTable(table, dbTable, validation);
+        }
+        if(validationSettings.ValidateCheckConstraintNames) {
+            ValidateCheckConstraintNamesForTable(table, dbTable, validation);
+        }
+        if(validationSettings.ValidateForeignKeys) {
+            ValidateForeignKeys(table, dbTable, validation);
+        }
+    }
 
-        private static void ValidatePrimaryKeyForTable(ITable table, DatabaseTable dbTable, ValidationItem tableValidation, PrimaryKeyValidation primaryKeyValidation) {
+    private static void ValidateColumnDataType(IDatabase database, ValidationItem tableValidation,
+                                               string columnDetail, IColumn codeColumn, Type dbNetType,
+                                               Type codeAdoType) {
 
-            DatabasePrimaryKey? dbPrimaryKey = dbTable.PrimaryKey;
-            PrimaryKey? codePrimaryKey = table.PrimaryKey;
+        if(database.DatabaseType == DatabaseType.Sqlite) {
+            
+            ValidateDataTypeForSqlite(
+                codeColumn: codeColumn,
+                validation: tableValidation,
+                columnDetail: columnDetail,
+                codeAdoType: codeAdoType,
+                dbNetType: dbNetType,
+                useStrictTypeValidation: false
+            );
+            return;
+        }
+        //SQL Server does not have a specific Json type. So a json or jsonb type is
+        //equivalent to string with SQL Server
+        bool isValidJsonType = (database.DatabaseType == DatabaseType.SqlServer) &&
+                               (codeAdoType == typeof(Json) || codeAdoType == typeof(Jsonb)) &
+                               dbNetType == typeof(string);
 
-            if(dbPrimaryKey != null && codePrimaryKey == null) {
-                tableValidation.Add($"Code table is missing primary key definition");
+        if(codeColumn.Type.IsEnum) {
+
+            bool invalidType = codeAdoType != typeof(short) &&
+                               codeAdoType != typeof(int) &&
+                               dbNetType != typeof(byte) &&
+                               codeAdoType != typeof(long);
+
+            if(invalidType) {
+                throw new Exception(
+                    message: "An enum type must be mapped as a short, integer or long. This might be a bug"
+                );
             }
-            else if(dbPrimaryKey == null && codePrimaryKey != null) {
-                tableValidation.Add($"Code table has a primary key definition but it does not exist in the database");
+
+            bool invalidDbNetType = dbNetType != typeof(int) &&
+                                    dbNetType != typeof(short) &&
+                                    dbNetType != typeof(byte) &&
+                                    dbNetType != typeof(long);
+
+            if(invalidDbNetType) {
+                
+                tableValidation.Add(
+                    $"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) " +
+                    $"between database and code column. Tip: The attribute [SuppressColumnTypeValidation] " +
+                    $"can be used on the table column property to suppress this error."
+                );
             }
-            else if(dbPrimaryKey != null && codePrimaryKey != null) {
+        }
+        else if(codeAdoType == typeof(bool) && dbNetType == typeof(short)) {
+            //For sql servers TINYINT data type we can map to bool or short
+        }
+        else if(codeAdoType != dbNetType && !isValidJsonType) {
+            
+            tableValidation.Add(
+                $"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) " +
+                $"between database and code column. Tip: The attribute [SuppressColumnTypeValidation] " +
+                $"can be used on the table column property to suppress this error."
+            );
+        }
+    }
 
-                bool validateName = primaryKeyValidation == PrimaryKeyValidation.NamesAndColumns || primaryKeyValidation == PrimaryKeyValidation.Names;
+    private static void ValidateDataTypeForSqlite(IColumn codeColumn, ValidationItem validation,
+                                                  string columnDetail, Type codeAdoType, Type dbNetType,
+                                                  bool useStrictTypeValidation) {
 
-                if(validateName) {
+        if(codeColumn.Type.IsEnum) {
 
-                    if(string.Compare(dbPrimaryKey!.ConstraintName, codePrimaryKey!.Name, ignoreCase: true) != 0) {
-                        tableValidation.Add($"Code and database primary key constraint names are different. '{dbPrimaryKey.ConstraintName}' != '{codePrimaryKey.Name}'");
+            bool isInvalid = codeAdoType != typeof(short) &&
+                             codeAdoType != typeof(int) &&
+                             codeAdoType != typeof(byte) &&
+                             codeAdoType != typeof(long);
+
+            if(isInvalid) {
+                throw new Exception("An enum type must be mapped as a short, integer or long. This might be a bug");
+            }
+            if(dbNetType != typeof(int)) {
+                
+                validation.Add(
+                    $"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) " +
+                    $"between database and code column. Tip: The attribute [SuppressColumnTypeValidation] " +
+                    $"can be used on the table column property to suppress this error."
+                );
+            }
+            return;
+        }
+
+        bool allowedType = false;
+
+        if(useStrictTypeValidation) {
+
+            if(dbNetType == typeof(int)) {
+
+                allowedType = codeAdoType == typeof(short) ||
+                              codeAdoType == typeof(int) ||
+                              codeAdoType == typeof(long) ||
+                              codeAdoType == typeof(byte);
+            }
+            else if(dbNetType == typeof(string)) {
+                allowedType = codeAdoType == typeof(string);
+            }
+            else if(dbNetType == typeof(double)) {
+
+                allowedType = codeAdoType == typeof(float) ||
+                              codeAdoType == typeof(double);
+            }
+            else if(dbNetType == typeof(byte[])) {
+                allowedType = codeAdoType == typeof(byte[]);
+            }
+        }
+
+        if(!useStrictTypeValidation) {
+
+            if(dbNetType == typeof(int)) {
+
+                allowedType = codeAdoType == typeof(short) ||
+                              codeAdoType == typeof(int) ||
+                              codeAdoType == typeof(long) ||
+                              codeAdoType == typeof(byte) ||
+                              codeAdoType == typeof(bool) ||
+                              codeAdoType == typeof(Bit);
+            }
+            else if(dbNetType == typeof(string)) {
+
+                allowedType = codeAdoType == typeof(string) ||
+                              codeAdoType == typeof(decimal) ||
+                              codeAdoType == typeof(Json) ||
+                              codeAdoType == typeof(Jsonb) ||
+                              codeAdoType == typeof(DateTimeOffset) ||
+                              codeAdoType == typeof(DateTime) ||
+                              codeAdoType == typeof(DateOnly) ||
+                              codeAdoType == typeof(TimeOnly);
+            }
+            else if(dbNetType == typeof(double)) {
+                allowedType = codeAdoType == typeof(float) ||
+                              codeAdoType == typeof(double);
+            }
+            else if(dbNetType == typeof(byte[])) {
+                allowedType = codeAdoType == typeof(byte[]) ||
+                              codeAdoType == typeof(Guid);
+            }
+        }
+
+        if(!allowedType) {
+
+            validation.Add(
+                $"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) " +
+                $"between database and code column. Tip: The attribute [SuppressColumnTypeValidation] " +
+                $"can be used on the table column property to suppress this error."
+            );
+        }
+    }
+
+    private static void ValidateCheckConstraintNamesForTable(ITable table, DatabaseTable dbTable,
+                                                             ValidationItem validation) {
+
+        if(table.UniqueConstraints.Length != dbTable.UniqueConstraints.Count) {
+            
+            validation.Add(
+                $"The number of unique constraints between the code and database do not match. " +
+                $"'{table.UniqueConstraints.Length}' != '{dbTable.UniqueConstraints.Count}'"
+            );
+        }
+
+        foreach(DatabaseCheckConstraint dbConstraint in dbTable.CheckConstraints) {
+
+            CheckConstraint? tableCheckConstraint = null;
+
+            foreach(CheckConstraint tableConstraint in table.CheckConstraints) {
+
+                bool matches = dbConstraint.ConstraintName.EqualsOIC(tableConstraint.Name);
+
+                if(matches) {
+
+                    if(tableCheckConstraint != null) {
+                        
+                        validation.Add(
+                            $"The check constraint '{dbConstraint.ConstraintName}'is defined more than once in code"
+                        );
+                        break;
+                    }
+                    tableCheckConstraint = tableConstraint;
+                }
+            }
+
+            if(tableCheckConstraint == null) {
+
+                validation.Add(
+                    $"The check constraint '{dbConstraint.ConstraintName}' is not defined in code. " +
+                    $"Definition = '{dbConstraint.Definition}'"
+                );
+            }
+        }
+    }
+
+    private static void ValidatePrimaryKeyForTable(ITable table, DatabaseTable dbTable,
+                                                   ValidationItem validation,
+                                                   PrimaryKeyValidation primaryKeyValidation) {
+
+        DatabasePrimaryKey? dbPrimaryKey = dbTable.PrimaryKey;
+
+        PrimaryKey? codePrimaryKey = table.PrimaryKey;
+
+        if(dbPrimaryKey != null && codePrimaryKey == null) {
+
+            validation.Add($"Code table is missing primary key definition");
+        }
+        else if(dbPrimaryKey == null && codePrimaryKey != null) {
+
+            validation.Add($"Code table has a primary key definition but it does not exist in the database");
+        }
+        else if(dbPrimaryKey != null && codePrimaryKey != null) {
+
+            bool validateName = primaryKeyValidation == PrimaryKeyValidation.NamesAndColumns ||
+                                primaryKeyValidation == PrimaryKeyValidation.Names;
+
+            if(validateName) {
+
+                if(!str.EqualsOIC(dbPrimaryKey!.ConstraintName, codePrimaryKey!.Name)) {
+
+                    validation.Add(
+                        $"Code and database primary key constraint names are different. " +
+                        $"'{dbPrimaryKey.ConstraintName}' != '{codePrimaryKey.Name}'"
+                    );
+                }
+            }
+
+            bool validateColumns = primaryKeyValidation == PrimaryKeyValidation.NamesAndColumns ||
+                                   primaryKeyValidation == PrimaryKeyValidation.Columns;
+
+            if(validateColumns) {
+
+                if(dbPrimaryKey.ColumnNames.Count != codePrimaryKey.Columns.Length) {
+                    
+                    validation.Add(
+                        $"Code and database primary key column counts do not match. " +
+                        $"{dbPrimaryKey.ColumnNames.Count} != {codePrimaryKey.Columns.Length}"
+                    );
+                }
+                else {
+
+                    for(int index = 0; index < dbPrimaryKey.ColumnNames.Count; index++) {
+
+                        string dbColumn = dbPrimaryKey.ColumnNames[index];
+                        string codeColumn = codePrimaryKey.Columns[index].ColumnName;
+
+                        if(!str.EqualsOIC(dbColumn, codeColumn)) {
+                            validation.Add(
+                                $"Code and database primary key columns do not match. '{dbColumn}' != '{codeColumn}'"
+                            );
+                        }
                     }
                 }
+            }
+        }
+    }
 
-                bool validateColumns = primaryKeyValidation == PrimaryKeyValidation.NamesAndColumns || primaryKeyValidation == PrimaryKeyValidation.Columns;
+    private static void ValidateUniqueConstraintsForTable(ITable table, DatabaseTable dbTable,
+                                                          ValidationItem validation) {
 
-                if(validateColumns) {
+        if(table.UniqueConstraints.Length != dbTable.UniqueConstraints.Count) {
+            
+            validation.Add(
+                $"The number of unique constraints between the code and database " +
+                $"do not match. '{table.UniqueConstraints.Length}' != '{dbTable.UniqueConstraints.Count}'"
+            );
+        }
 
-                    if(dbPrimaryKey.ColumnNames.Count != codePrimaryKey.Columns.Length) {
-                        tableValidation.Add($"Code and database primary key column counts do not match. {dbPrimaryKey.ColumnNames.Count} != {codePrimaryKey.Columns.Length}");
+        foreach(DatabaseUniqueConstraint dbUniqueConstraint in dbTable.UniqueConstraints) {
+
+            UniqueConstraint? tableUniqueConstraint = null;
+
+            foreach(UniqueConstraint tableUC in table.UniqueConstraints) {
+
+                if(str.EqualsOIC(dbUniqueConstraint.ConstraintName, tableUC.Name)) {
+
+                    if(tableUniqueConstraint != null) {
+
+                        validation.Add(
+                            $"The unique constraint '{dbUniqueConstraint.ConstraintName}'is defined " +
+                            $"more than once in code"
+                        );
+                        break;
                     }
-                    else {
+                    tableUniqueConstraint = tableUC;
+                }
+            }
 
-                        for(int index = 0; index < dbPrimaryKey.ColumnNames.Count; index++) {
+            if(tableUniqueConstraint == null) {
 
-                            string dbColumn = dbPrimaryKey.ColumnNames[index];
-                            string codeColumn = codePrimaryKey.Columns[index].ColumnName;
+                validation.Add(
+                    $"The unique constraint '{dbUniqueConstraint.ConstraintName}' is not defined in code"
+                );
+            }
+            else {
+                //Check columns exist
 
-                            if(string.Compare(dbColumn, codeColumn, ignoreCase: true) != 0) {
-                                tableValidation.Add($"Code and database primary key columns do not match. '{dbColumn}' != '{codeColumn}'");
-                            }
+                if(dbUniqueConstraint.ColumnNames.Count != tableUniqueConstraint.Columns.Length) {
+                    
+                    validation.Add(
+                        $"Code and database unique constraint '{dbUniqueConstraint.ConstraintName}' " +
+                        $"column counts do not match. " +
+                        $"{dbUniqueConstraint.ColumnNames.Count} != {tableUniqueConstraint.Columns.Length}"
+                    );
+                }
+                else {
+
+                    for(int index = 0; index < dbUniqueConstraint.ColumnNames.Count; index++) {
+
+                        string dbColumn = dbUniqueConstraint.ColumnNames[index].Value;
+                        string codeColumn = tableUniqueConstraint.Columns[index].ColumnName;
+
+                        if(!str.EqualsOIC(dbColumn, codeColumn)) {
+
+                            validation.Add(
+                                $"Code and database unique constraint columns do not match. " +
+                                $"'{dbColumn}' != '{codeColumn}'. " +
+                                $"Names must match and be in the same order as defined in the database"
+                            );
                         }
                     }
                 }
             }
         }
 
-        private static void ValidateUniqueConstraintsForTable(ITable table, DatabaseTable dbTable, ValidationItem tableValidation) {
+        foreach(UniqueConstraint tableUniqueConstraint in table.UniqueConstraints) {
 
-            if(table.UniqueConstraints.Length != dbTable.UniqueConstraints.Count) {
-                tableValidation.Add($"The number of unique constraints between the code and database do not match. '{table.UniqueConstraints.Length}' != '{dbTable.UniqueConstraints.Count}'");
-            }
+            bool found = false;
 
             foreach(DatabaseUniqueConstraint dbUniqueConstraint in dbTable.UniqueConstraints) {
 
-                UniqueConstraint? tableUniqueConstraint = null;
-
-                foreach(UniqueConstraint tableUC in table.UniqueConstraints) {
-
-                    if(string.Equals(dbUniqueConstraint.ConstraintName, tableUC.Name, StringComparison.OrdinalIgnoreCase)) {
-
-                        if(tableUniqueConstraint != null) {
-                            tableValidation.Add($"The unique constraint '{dbUniqueConstraint.ConstraintName}'is defined more than once in code");
-                            break;
-                        }
-                        tableUniqueConstraint = tableUC;
-                    }
-                }
-
-                if(tableUniqueConstraint == null) {
-                    tableValidation.Add($"The unique constraint '{dbUniqueConstraint.ConstraintName}' is not defined in code");
-                }
-                else {
-                    //Check columns exist
-
-                    if(dbUniqueConstraint.ColumnNames.Count != tableUniqueConstraint.Columns.Length) {
-                        tableValidation.Add($"Code and database unique constraint '{dbUniqueConstraint.ConstraintName}' column counts do not match. {dbUniqueConstraint.ColumnNames.Count} != {tableUniqueConstraint.Columns.Length}");
-                    }
-                    else {
-
-                        for(int index = 0; index < dbUniqueConstraint.ColumnNames.Count; index++) {
-
-                            string dbColumn = dbUniqueConstraint.ColumnNames[index].Value;
-                            string codeColumn = tableUniqueConstraint.Columns[index].ColumnName;
-
-                            if(!string.Equals(dbColumn, codeColumn, StringComparison.OrdinalIgnoreCase)) {
-                                tableValidation.Add($"Code and database unique constraint columns do not match. '{dbColumn}' != '{codeColumn}'. Names must match and be in the same order as defined in the database");
-                            }
-                        }
-                    }
+                if(str.EqualsOIC(dbUniqueConstraint.ConstraintName, tableUniqueConstraint.Name)) {
+                    found = true;
+                    break;
                 }
             }
+            if(!found) {
 
-            foreach(UniqueConstraint tableUniqueConstraint in table.UniqueConstraints) {
-
-                bool found = false;
-
-                foreach(DatabaseUniqueConstraint dbUniqueConstraint in dbTable.UniqueConstraints) {
-
-                    if(string.Equals(dbUniqueConstraint.ConstraintName, tableUniqueConstraint.Name, StringComparison.OrdinalIgnoreCase)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if(!found) {
-                    tableValidation.Add($"The unique code constraint name '{tableUniqueConstraint.Name}' does not exist in the database.");
-                }
+                validation.Add(
+                    $"The unique code constraint name '{tableUniqueConstraint.Name}' " +
+                    $"does not exist in the database."
+                );
             }
         }
+    }
 
-        private static void ValidateForeignKeys(ITable table, DatabaseTable dbTable, ValidationItem tableValidation) {
+    private static void ValidateForeignKeys(ITable table, DatabaseTable dbTable,
+                                            ValidationItem validation) {
 
-            if(table.ForeignKeys.Length != dbTable.ForeignKeys.Count) {
-                tableValidation.Add($"The number of foreign keys defined in code is different from database. {table.ForeignKeys.Length} foreign keys are defined in code and {dbTable.ForeignKeys.Count} {(dbTable.ForeignKeys.Count == 1 ? "is" : "are")} defined in the database");
-            }
+        if(table.ForeignKeys.Length != dbTable.ForeignKeys.Count) {
+            
+            validation.Add(
+                $"The number of foreign keys defined in code is different from database. " +
+                $"{table.ForeignKeys.Length} foreign keys are defined in code and " +
+                $"{dbTable.ForeignKeys.Count} {(dbTable.ForeignKeys.Count == 1 ? "is" : "are")} " +
+                $"defined in the database"
+            );
+        }
 
-            foreach(DatabaseForeignKey dbForeignKey in dbTable.ForeignKeys) {
+        foreach(DatabaseForeignKey dbForeignKey in dbTable.ForeignKeys) {
 
-                ForeignKey? matchingForeignKey = null;
-
-                foreach(ForeignKey codeForeignKey in table.ForeignKeys) {
-
-                    if(string.Compare(dbForeignKey.ConstraintName, codeForeignKey.Name, ignoreCase: true) == 0) {
-
-                        if(matchingForeignKey != null) {
-                            tableValidation.Add($"The foreign key '{matchingForeignKey.Name}'is defined more than once in code");
-                            break;
-                        }
-                        matchingForeignKey = codeForeignKey;
-                    }
-                }
-                if(matchingForeignKey == null) {
-                    tableValidation.Add($"The foreign key '{dbForeignKey.ConstraintName}' is not defined in code");
-                }
-                else {  //Compare referenced table and columns
-
-                    if(dbForeignKey.References.Count != matchingForeignKey.ColumnReferences.Count) {
-                        tableValidation.Add($"The foreign key constraint '{matchingForeignKey.Name}' has a different number of column references between the code and database");
-                    }
-                    else {
-
-                        for(int refIndex = 0; refIndex < dbForeignKey.References.Count; refIndex++) {
-
-                            DatabaseForeignKeyReference dbReference = dbForeignKey.References[refIndex];
-
-                            ForeignKeyReference codeReference = matchingForeignKey.ColumnReferences[refIndex];
-
-                            string dbFkColumnName = dbReference.ForeignKeyColumn.ColumnName.Value;
-                            string codeFkColumnName = codeReference.ForeignKeyColumn.ColumnName;
-
-                            if(string.Compare(dbFkColumnName, codeFkColumnName, ignoreCase: true) != 0) {
-                                tableValidation.Add($"The foreign key constraint '{matchingForeignKey.Name}' column references do not match. '{dbFkColumnName} != '{codeFkColumnName}'. (Note: Columns must be in the same order between the code and database)");
-                            }
-                            else {
-
-                                string dbPkTableName = dbReference.PrimaryKeyColumn.Table.TableName.Value;
-                                string codePkTableName = codeReference.PrimaryKeyColumn.Table.TableName;
-
-                                if(string.Compare(dbPkTableName, codePkTableName, ignoreCase: true) != 0) {
-                                    tableValidation.Add($"The foreign key constraint '{matchingForeignKey.Name}' column '{dbFkColumnName}' reference table is different between code and database. Table name: '{dbPkTableName}' != '{codePkTableName}'");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            ForeignKey? matchingForeignKey = null;
 
             foreach(ForeignKey codeForeignKey in table.ForeignKeys) {
 
-                bool matchFound = false;
+                if(str.EqualsOIC(dbForeignKey.ConstraintName, codeForeignKey.Name)) {
 
-                foreach(DatabaseForeignKey dbForeignKey in dbTable.ForeignKeys) {
+                    if(matchingForeignKey != null) {
+                        
+                        validation.Add(
+                            $"The foreign key '{matchingForeignKey.Name}'is defined more than once in code"
+                        );
+                        break;
+                    }
+                    matchingForeignKey = codeForeignKey;
+                }
+            }
+            if(matchingForeignKey == null) {
+                validation.Add(
+                    $"The foreign key '{dbForeignKey.ConstraintName}' is not defined in code"
+                );
+            }
+            else {  //Compare referenced table and columns
 
-                    if(string.Compare(dbForeignKey.ConstraintName, codeForeignKey.Name, ignoreCase: true) == 0) {
+                if(dbForeignKey.References.Count != matchingForeignKey.ColumnReferences.Count) {
+                    
+                    validation.Add(
+                        $"The foreign key constraint '{matchingForeignKey.Name}' has a " +
+                        $"different number of column references between the code and database"
+                    );
+                }
+                else {
 
-                        if(matchFound) {
-                            tableValidation.Add($"The foreign key '{codeForeignKey.Name}' is defined more than once in table code definition");
+                    for(int refIndex = 0; refIndex < dbForeignKey.References.Count; refIndex++) {
+
+                        DatabaseForeignKeyReference dbReference = dbForeignKey.References[refIndex];
+
+                        ForeignKeyReference codeReference = matchingForeignKey.ColumnReferences[refIndex];
+
+                        string dbFkColumnName = dbReference.ForeignKeyColumn.ColumnName.Value;
+                        string codeFkColumnName = codeReference.ForeignKeyColumn.ColumnName;
+
+                        if(!str.EqualsOIC(dbFkColumnName, codeFkColumnName)) {
+                            
+                            validation.Add(
+                                $"The foreign key constraint '{matchingForeignKey.Name}' column " +
+                                $"references do not match. '{dbFkColumnName} != '{codeFkColumnName}'. " +
+                                $"(Note: Columns must be in the same order between the code and database)"
+                            );
                         }
-                        matchFound = true;
-                    }
-                }
+                        else {
 
-                if(!matchFound) {
-                    tableValidation.Add($"The foreign key '{codeForeignKey.Name}' is defined in code but does not exist in the database");
-                }
-            }
-        }
-
-        private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, IDatabase database, List<ITable> tables, ValidationResult validationResult) {
-
-            Dictionary<string, ITable> codeTableLookup = new Dictionary<string, ITable>(StringComparer.OrdinalIgnoreCase);
-
-            foreach(ITable codeTable in tables) {
-
-                string key = $"{database.SchemaMap(codeTable.SchemaName)}~~{codeTable.TableName}";
-
-                if(!codeTableLookup.TryAdd(key, codeTable)) {
-                    throw new Exception($"Table schema name and table name are not unique. Table: {codeTable.SchemaName}.{codeTable.TableName}");
-                }
-            }
-
-            foreach(DatabaseTable dbTable in dbSchema.Tables) {
-
-                if(string.Compare(dbTable.Schema.Value, "pg_catalog", ignoreCase: true) == 0 || string.Compare(dbTable.Schema.Value, "information_schema", ignoreCase: true) == 0) {
-                    continue;
-                }
-
-                string key = $"{dbTable.Schema}~~{dbTable.TableName}";
-
-                if(!codeTableLookup.ContainsKey(key)) {
-
-                    ValidationItem validation = new ValidationItem(tableType: null, schema: dbTable.Schema.Value, tableName: dbTable.TableName.Value);
-
-                    validation.Add($"Code table definition is missing for the database table: '{dbTable.Schema}.{dbTable.TableName}'. This can happen if the table code definition does not exist or the schema names do not match or the table names do not match.");
-                    validationResult.Items.Add(validation);
-                }
-            }
-        }
-
-        private static List<CodeColumnProperty> LoadTableColumnsProperties(ITable table, ValidationItem tableValidation) {
-
-            Type tableType = table.GetType();
-
-            PropertyInfo[] properties = tableType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-            List<CodeColumnProperty> columns = [];
-
-            foreach(PropertyInfo property in properties) {
-
-                Type underlyingPropertyType = property.PropertyType.IsGenericType ? property.PropertyType.GetGenericTypeDefinition() : property.PropertyType;
-
-                if(underlyingPropertyType == typeof(Column<>) || underlyingPropertyType == typeof(Column<,>) || underlyingPropertyType == typeof(NColumn<>) || underlyingPropertyType == typeof(NColumn<,>)) {
-
-                    object? column = property.GetValue(table);
-
-                    if(column == null) {
-                        tableValidation.Add($"Table: {table.TableName}, Column property '{property.Name}' is returning null. This property should have an IColumn assigned");
-                    }
-                    else {
-                        SuppressColumnTypeValidationAttribute? suppressAttribute = property.GetCustomAttribute<SuppressColumnTypeValidationAttribute>();
-                        columns.Add(new CodeColumnProperty(property.Name, (IColumn)column, suppressColumnTypeValidation: suppressAttribute != null));
+                            string dbPkTableName = dbReference.PrimaryKeyColumn.Table.TableName.Value;
+                            string codePkTableName = codeReference.PrimaryKeyColumn.Table.TableName;
+                            
+                            if(!str.EqualsOIC(dbPkTableName, codePkTableName)) {
+                                
+                                validation.Add(
+                                    $"The foreign key constraint '{matchingForeignKey.Name}' column " +
+                                    $"'{dbFkColumnName}' reference table is different between code and " +
+                                    $"database. Table name: '{dbPkTableName}' != '{codePkTableName}'"
+                                );
+                            }
+                        }
                     }
                 }
             }
-            return columns;
         }
 
-        private class CodeColumnProperty {
+        foreach(ForeignKey codeForeignKey in table.ForeignKeys) {
 
-            public CodeColumnProperty(string propertyName, IColumn column, bool suppressColumnTypeValidation) {
-                PropertyName = propertyName;
-                Column = column;
-                SuppressColumnTypeValidation = suppressColumnTypeValidation;
+            bool matchFound = false;
+
+            foreach(DatabaseForeignKey dbForeignKey in dbTable.ForeignKeys) {
+
+                if(str.EqualsOIC(dbForeignKey.ConstraintName, codeForeignKey.Name)) {
+
+                    if(matchFound) {
+                        validation.Add(
+                            $"The foreign key '{codeForeignKey.Name}' is defined more than once " +
+                            $"in table code definition"
+                        );
+                    }
+                    matchFound = true;
+                }
             }
-            public string PropertyName { get; }
-            public IColumn Column { get; }
-            public bool SuppressColumnTypeValidation { get; }
+
+            if(!matchFound) {
+                validation.Add(
+                    $"The foreign key '{codeForeignKey.Name}' is defined in code " +
+                    $"but does not exist in the database"
+                );
+            }
+        }
+    }
+
+    private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, IDatabase database,
+                                                  List<ITable> tables, ValidationResult validationResult) {
+
+        Dictionary<string, ITable> codeTableLookup = new(StringComparer.OrdinalIgnoreCase);
+
+        foreach(ITable codeTable in tables) {
+
+            string key = $"{database.SchemaMap(codeTable.SchemaName)}~~{codeTable.TableName}";
+
+            if(!codeTableLookup.TryAdd(key, codeTable)) {
+                throw new Exception(
+                    $"Table schema name and table name are not unique. " +
+                    $"Table: {codeTable.SchemaName}.{codeTable.TableName}"
+                );
+            }
         }
 
-        private static Type ConvertToAdoType(Type type) {
+        foreach(DatabaseTable dbTable in dbSchema.Tables) {
 
-            if(type.IsAssignableTo(typeof(IValue<Guid>))) {
-                type = typeof(Guid);
+            if(str.EqualsOIC(dbTable.Schema.Value, "pg_catalog") ||
+               str.EqualsOIC(dbTable.Schema.Value, "information_schema")) {
+                continue;
             }
-            else if(type.IsAssignableTo(typeof(IValue<short>))) {
-                type = typeof(short);
+
+            string key = $"{dbTable.Schema}~~{dbTable.TableName}";
+
+            if(!codeTableLookup.ContainsKey(key)) {
+
+                ValidationItem validation = new(
+                    tableType: null,
+                    schema: dbTable.Schema.Value,
+                    tableName: dbTable.TableName.Value
+                );
+                validation.Add(
+                    $"Code table definition is missing for the database table: '{dbTable.Schema}.{dbTable.TableName}'. " +
+                    $"This can happen if the table code definition does not exist or the schema " +
+                    $"names do not match or the table names do not match."
+                );
+                validationResult.Items.Add(validation);
             }
-            else if(type.IsAssignableTo(typeof(IValue<int>))) {
-                type = typeof(int);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<long>))) {
-                type = typeof(long);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<string>))) {
-                type = typeof(string);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<bool>))) {
-                type = typeof(bool);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<decimal>))) {
-                type = typeof(decimal);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
-                type = typeof(DateTime);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
-                type = typeof(DateTimeOffset);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
-                type = typeof(DateOnly);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
-                type = typeof(TimeOnly);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<float>))) {
-                type = typeof(float);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<double>))) {
-                type = typeof(double);
-            }
-            else if(type.IsAssignableTo(typeof(IValue<Bit>))) {
-                type = typeof(Bit);
-            }
-            else if(type.IsEnum) {
-                type = typeof(int);
-            }
-            return type;
         }
+    }
+
+    private static List<CodeColumnProperty> LoadTableColumnsProperties(ITable table, ValidationItem tableValidation) {
+
+        Type tableType = table.GetType();
+
+        PropertyInfo[] properties = tableType.GetProperties(BindingFlags.Public |
+                                                            BindingFlags.NonPublic |
+                                                            BindingFlags.Instance |
+                                                            BindingFlags.DeclaredOnly);
+
+        List<CodeColumnProperty> columns = [];
+
+        foreach(PropertyInfo property in properties) {
+
+            Type underlyingPropertyType;
+
+            if(property.PropertyType.IsGenericType) {
+                underlyingPropertyType = property.PropertyType.GetGenericTypeDefinition();
+            }
+            else {
+                underlyingPropertyType = property.PropertyType;
+            }
+
+            bool isColumn = underlyingPropertyType == typeof(Column<>) ||
+                            underlyingPropertyType == typeof(Column<,>) ||
+                            underlyingPropertyType == typeof(NColumn<>) ||
+                            underlyingPropertyType == typeof(NColumn<,>);
+
+            if(isColumn) {
+
+                object? column = property.GetValue(table);
+
+                if(column == null) {
+                    tableValidation.Add(
+                        $"Table: {table.TableName}, Column property '{property.Name}' is returning null. " +
+                        $"This property should have an IColumn assigned"
+                    );
+                }
+                else {
+                    
+                    SuppressColumnTypeValidationAttribute? suppressAttribute =
+                        property.GetCustomAttribute<SuppressColumnTypeValidationAttribute>();
+                    
+                    columns.Add(
+                        new CodeColumnProperty(
+                            propertyName: property.Name,
+                            column: (IColumn)column,
+                            suppressColumnTypeValidation: suppressAttribute != null
+                        )
+                    );
+                }
+            }
+        }
+        return columns;
+    }
+
+    private class CodeColumnProperty(string propertyName, IColumn column,
+                                     bool suppressColumnTypeValidation) {
+
+        public string PropertyName { get; } = propertyName;
+        public IColumn Column { get; } = column;
+        public bool SuppressColumnTypeValidation { get; } = suppressColumnTypeValidation;
+    }
+
+    private static Type ConvertToAdoType(Type type) {
+
+        if(type.IsAssignableTo(typeof(IValue<Guid>))) {
+            type = typeof(Guid);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<short>))) {
+            type = typeof(short);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<int>))) {
+            type = typeof(int);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<long>))) {
+            type = typeof(long);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<string>))) {
+            type = typeof(string);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<bool>))) {
+            type = typeof(bool);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<decimal>))) {
+            type = typeof(decimal);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<DateTime>))) {
+            type = typeof(DateTime);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<DateTimeOffset>))) {
+            type = typeof(DateTimeOffset);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<DateOnly>))) {
+            type = typeof(DateOnly);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<TimeOnly>))) {
+            type = typeof(TimeOnly);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<float>))) {
+            type = typeof(float);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<double>))) {
+            type = typeof(double);
+        }
+        else if(type.IsAssignableTo(typeof(IValue<Bit>))) {
+            type = typeof(Bit);
+        }
+        else if(type.IsEnum) {
+            type = typeof(int);
+        }
+        return type;
     }
 }

@@ -34,4 +34,28 @@ namespace QueryLite {
             return text.Replace("'", "''");
         }
     }
-}
+
+    public static class StringExtensions {
+
+        /// <summary>
+        /// a Equals b, OrdinalIgnoreCase
+        /// </summary>
+        public static bool EqualsOIC(this string a, string b) {
+            return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    // The type name only contains lower-cased ascii characters.
+    // Naming Styles
+    #pragma warning disable CS8981, IDE1006
+    public static class str {
+    #pragma warning restore IDE1006,CS8981
+
+        /// <summary>
+        /// a Equals b, OrdinalIgnoreCase
+        /// </summary>
+        public static bool EqualsOIC(string a, string b) {
+            return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+}   
