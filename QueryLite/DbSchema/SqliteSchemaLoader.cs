@@ -48,12 +48,12 @@ namespace QueryLite.DbSchema {
 
             foreach(var row in result.Rows) {
 
-                bool exclude = string.Equals(row.TblName, "sqlite_sequence", StringComparison.OrdinalIgnoreCase);
+                bool exclude = str.EqualsOIC(row.TblName, "sqlite_sequence");
 
                 if(exclude) {
                     continue;
                 }
-                DatabaseTable table = new DatabaseTable(
+                DatabaseTable table = new(
                     schema: SchemaName.Empty,
                     name: TableName.ValueOf(row.TblName),
                     isView: false
@@ -84,7 +84,10 @@ namespace QueryLite.DbSchema {
 
                 Type? dotNetType = SqliteTypes.GetDotNetType(type);
 
-                DataType dataType = new DataType(name: type, dotNetType: (dotNetType ?? typeof(IUnknownType)));
+                DataType dataType = new DataType(
+                    name: type,
+                    dotNetType: (dotNetType ?? typeof(IUnknownType))
+                );
 
                 DatabaseColumn column = new(
                     table: table,

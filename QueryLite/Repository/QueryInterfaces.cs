@@ -25,11 +25,11 @@
 namespace QueryLite.Repository {
 
     public interface IRepositoryWith : IRepositoryWhere {
+
         /// <summary>
-        /// The 'With' option only works on sql server. For other databases the query will ignore these table hints and execute without them.
+        /// The 'With' option only works on sql server. For other databases the query will ignore
+        /// these table hints and execute without them.
         /// </summary>
-        /// <param name="hints"></param>
-        /// <returns></returns>
         public IRepositoryJoin With(params SqlServerTableHint[] hints);
     }
 
@@ -38,15 +38,11 @@ namespace QueryLite.Repository {
         /// <summary>
         /// Join table clause
         /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
         IRepositoryJoinOn Join(ITable table);
 
         /// <summary>
         /// Left join table clause
         /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
         IRepositoryJoinOn LeftJoin(ITable table);
     }
 
@@ -55,8 +51,6 @@ namespace QueryLite.Repository {
         /// <summary>
         /// Join condition
         /// </summary>
-        /// <param name="on"></param>
-        /// <returns></returns>
         IRepositoryJoin On(ICondition on);
     }
 
@@ -65,8 +59,6 @@ namespace QueryLite.Repository {
         /// <summary>
         /// Where condition clause
         /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
         IRepositoryOrderBy Where(ICondition? condition);
     }
 
@@ -75,8 +67,6 @@ namespace QueryLite.Repository {
         /// <summary>
         /// Order by clause
         /// </summary>
-        /// <param name="columns"></param>
-        /// <returns></returns>
         IRepositoryFor OrderBy(params IOrderByColumn[] columns);
     }
 
@@ -85,10 +75,6 @@ namespace QueryLite.Repository {
         /// <summary>
         /// FOR clause. PostgreSql only
         /// </summary>
-        /// <param name="forType"></param>
-        /// <param name="ofTables"></param>
-        /// <param name="waitType"></param>
-        /// <returns></returns>
         IRepositoryExecute FOR(ForType forType, ITable[] ofTables, WaitType waitType);
     }
 

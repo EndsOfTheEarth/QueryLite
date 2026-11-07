@@ -43,6 +43,13 @@ namespace QueryLite {
         public static bool EqualsOIC(this string a, string b) {
             return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
         }
+
+        /// <summary>
+        /// a Contains b, OrdinalIgnoreCase
+        /// </summary>
+        public static bool ContainsOIC(this string a, string b) {
+            return a.Contains(b, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     // The type name only contains lower-cased ascii characters.
@@ -56,6 +63,13 @@ namespace QueryLite {
         /// </summary>
         public static bool EqualsOIC(string a, string b) {
             return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsNullOrEmpty(string? value) {
+            return string.IsNullOrEmpty(value);
+        }
+        public static bool IsNullOrWhiteSpace(string? value) {
+            return string.IsNullOrWhiteSpace(value);
         }
     }
 }   

@@ -25,10 +25,11 @@
 namespace QueryLite.Repository {
 
     internal class RepositoryQueryTemplate<TABLE, ROW> : IRepositoryWith,
-                                                IRepositoryJoin, IRepositoryWhere,
-                                                IRepositoryOrderBy,
-                                                IRepositoryFor, IRepositoryExecute
-                                                where TABLE : ATable where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
+                                                         IRepositoryJoin, IRepositoryWhere,
+                                                         IRepositoryOrderBy,
+                                                         IRepositoryFor, IRepositoryExecute
+                                                         where TABLE : ATable
+                                                         where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
 
         private ARepository<TABLE, ROW> Repository { get; }
         private TABLE Table { get; }
@@ -36,8 +37,11 @@ namespace QueryLite.Repository {
         private SelectQueryTemplate<RowState<ROW>> QueryTemplate { get; }
 
         public RepositoryQueryTemplate(ARepository<TABLE, ROW> repository, TABLE table) {
+
             Repository = repository;
+
             Table = table;
+
             QueryTemplate = new SelectQueryTemplate<RowState<ROW>>(
                 row => {
 
@@ -95,8 +99,11 @@ namespace QueryLite.Repository {
 
             Repository.ClearRows();
 
-            QueryResult<RowState<ROW>> result = QueryTemplate.Execute(database, timeout, debugName: debugName);
-
+            QueryResult<RowState<ROW>> result = QueryTemplate.Execute(
+                database: database,
+                timeout: timeout,
+                debugName: debugName
+            );
             Repository.PopulateWithExistingRows(result.Rows);
         }
 
@@ -114,8 +121,11 @@ namespace QueryLite.Repository {
 
             Repository.ClearRows();
 
-            QueryResult<RowState<ROW>> result = QueryTemplate.Execute(transaction, timeout, debugName: debugName);
-
+            QueryResult<RowState<ROW>> result = QueryTemplate.Execute(
+                transaction: transaction,
+                timeout: timeout,
+                debugName: debugName
+            );
             Repository.PopulateWithExistingRows(result.Rows);
         }
 
@@ -127,14 +137,19 @@ namespace QueryLite.Repository {
             await ExecuteAsync(database, timeout, debugName: "", ct);
         }
 
-        public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken ct) {
+        public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName,
+                                       CancellationToken ct) {
 
             ArgumentNullException.ThrowIfNull(database);
 
             Repository.ClearRows();
 
-            QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(database, ct, timeout, debugName: debugName);
-
+            QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(
+                database: database,
+                ct: ct,
+                timeout: timeout,
+                debugName: debugName
+            );
             Repository.PopulateWithExistingRows(result.Rows);
         }
 
@@ -146,27 +161,29 @@ namespace QueryLite.Repository {
             await ExecuteAsync(transaction, timeout, debugName: "", ct);
         }
 
-        public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct) {
+        public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName,
+                                       CancellationToken ct) {
 
             ArgumentNullException.ThrowIfNull(transaction);
 
             Repository.ClearRows();
 
-            QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(transaction, ct, timeout, debugName: debugName);
-
+            QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(
+                transaction: transaction,
+                ct: ct,
+                timeout: timeout,
+                debugName: debugName
+            );
             Repository.PopulateWithExistingRows(result.Rows);
         }
     }
 
-    internal class RepositoryQueryJoinOn<RESULT> : IRepositoryJoinOn {
+    internal class RepositoryQueryJoinOn<RESULT>(IRepositoryJoin template,
+                                                 IJoinOn<RESULT> joinOn) : IRepositoryJoinOn {
 
-        private IRepositoryJoin Template { get; }
-        private IJoinOn<RESULT> JoinOn { get; }
+        private IRepositoryJoin Template { get; } = template;
+        private IJoinOn<RESULT> JoinOn { get; } = joinOn;
 
-        public RepositoryQueryJoinOn(IRepositoryJoin template, IJoinOn<RESULT> joinOn) {
-            Template = template;
-            JoinOn = joinOn;
-        }
         public IRepositoryJoin On(ICondition on) {
             JoinOn.On(on);
             return Template;
