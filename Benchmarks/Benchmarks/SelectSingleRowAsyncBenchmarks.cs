@@ -27,7 +27,7 @@ namespace Benchmarks {
                     row => new Test01(table, row)
                 )
                 .From(table)
-                .Where(where => where.EQUALS(table.Row_guid, info => info._guid))
+                .Where(where => where.EQUALS(table.RowGuid, info => info._guid))
                 .Build();
 
             _preparedSelectQuery.Initialize(Databases.TestDatabase);
@@ -47,7 +47,7 @@ namespace Benchmarks {
                 NonQueryResult result = Query
                     .Insert(table)
                     .Values(values => values
-                        .Set(table.Row_guid, _guid)
+                        .Set(table.RowGuid, _guid)
                         .Set(table.Message, _message)
                         .Set(table.Date, _date)
                     )
@@ -151,7 +151,7 @@ namespace Benchmarks {
                             row => new Test01(table, row)
                         )
                         .From(table)
-                        .Where(table.Row_guid == _guid)
+                        .Where(table.RowGuid == _guid)
                         .ExecuteAsync(Databases.TestDatabase);
                 });
                 tasks.Add(task);
@@ -172,7 +172,7 @@ namespace Benchmarks {
 
                     repository
                         .SelectRows
-                        .Where(repository.Table.Row_guid == _guid)
+                        .Where(repository.Table.RowGuid == _guid)
                         .Execute(Databases.TestDatabase);
                 });
                 tasks.Add(task);
@@ -194,7 +194,7 @@ namespace Benchmarks {
                     List<Test01Row_EfCore> result = await context.TestRows
                         .AsNoTracking()
                         .Select(row => row)
-                        .Where(row => row.Row_guid == _guid)
+                        .Where(row => row.RowGuid == _guid)
                         .ToListAsync();
                 });
                 tasks.Add(task);
@@ -215,7 +215,7 @@ namespace Benchmarks {
 
                     List<Test01Row_EfCore> result = await context.TestRows
                         .Select(row => row)
-                        .Where(row => row.Row_guid == _guid)
+                        .Where(row => row.RowGuid == _guid)
                         .ToListAsync();
                 });
                 tasks.Add(task);

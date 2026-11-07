@@ -28,7 +28,7 @@ namespace Benchmarks {
                     .Set(table.Message, info => _message2)
                     .Set(table.Date, info => DateTime.Now)
                 )
-                .Where(where => where.EQUALS(table.Row_guid, info => info._guid))
+                .Where(where => where.EQUALS(table.RowGuid, info => info._guid))
                 .Build();
 
             _preparedUpdateQuery.Initialize(Databases.TestDatabase);
@@ -48,7 +48,7 @@ namespace Benchmarks {
                 QueryResult<int> result = Query
                     .Insert(table)
                     .Values(values => values
-                        .Set(table.Row_guid, _guid)
+                        .Set(table.RowGuid, _guid)
                         .Set(table.Message, _message1)
                         .Set(table.Date, _date)
                     )
@@ -58,7 +58,7 @@ namespace Benchmarks {
                 transaction.Commit();
             }
             using TestContext context = Databases.ContextFactory.CreateDbContext();
-            Test01Row_EfCore row = context.TestRows.Where(test => test.Row_guid == _guid).First();
+            Test01Row_EfCore row = context.TestRows.Where(test => test.RowGuid == _guid).First();
         }
 
         private readonly int _iterations = 2000;
@@ -137,7 +137,7 @@ namespace Benchmarks {
                         .Set(table.Message, "New Message")
                         .Set(table.Date, DateTime.Now)
                     )
-                    .Where(table.Row_guid == _guid)
+                    .Where(table.RowGuid == _guid)
                     .Execute(transaction);
 
                 transaction.Commit();
@@ -153,7 +153,7 @@ namespace Benchmarks {
 
                 repository
                     .SelectRows
-                    .Where(repository.Table.Row_guid == _guid)
+                    .Where(repository.Table.RowGuid == _guid)
                     .Execute(Databases.TestDatabase);
 
                 Test01Row row = repository[0];
@@ -174,7 +174,7 @@ namespace Benchmarks {
 
                 Test01Row_EfCore row = context
                     .TestRows
-                    .Where(test => test.Row_guid == _guid)
+                    .Where(test => test.RowGuid == _guid)
                     .First();
 
                 row.Message = row.Message == _message1 ? _message2 : _message2; //Alternate messages

@@ -88,8 +88,8 @@ namespace QueryLite {
         bool IsNullable { get; }
 
         /// <summary>
-        /// Enclose column name in sql query. For example enclose column name with [] (square brackets) in
-        /// sql server queries or "" for PostgreSQL queries.
+        /// Enclose column name in sql query. For example enclose column name with
+        /// [] (square brackets) in sql server queries or "" for PostgreSQL queries.
         /// </summary>
         bool Enclose { get; }
     }
@@ -102,7 +102,7 @@ namespace QueryLite {
     /// </summary>
     public readonly struct ColumnLength {
 
-        public static ColumnLength MAX { get; } = new ColumnLength(LengthType.Max);
+        public static ColumnLength MAX { get; } = new(LengthType.Max);
 
         public ColumnLength(int length) : this() {
             Length = length;

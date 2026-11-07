@@ -27,7 +27,7 @@ namespace Benchmarks {
                     row => new Test01(table, row)
                 )
                 .From(table)
-                .Where(where => where.EQUALS(table.Row_guid, info => info._guid))
+                .Where(where => where.EQUALS(table.RowGuid, info => info._guid))
                 .Build();
 
             _preparedSelectQuery.Initialize(Databases.TestDatabase);
@@ -47,7 +47,7 @@ namespace Benchmarks {
                 NonQueryResult result = Query
                     .Insert(table)
                     .Values(values => values
-                        .Set(table.Row_guid, _guid)
+                        .Set(table.RowGuid, _guid)
                         .Set(table.Message, _message)
                         .Set(table.Date, _date)
                     )
@@ -56,7 +56,7 @@ namespace Benchmarks {
                 transaction.Commit();
             }
             using TestContext context = Databases.ContextFactory.CreateDbContext();
-            Test01Row_EfCore? r = context.TestRows.Where(row => row.Row_guid == _guid).SingleOrDefault();
+            Test01Row_EfCore? r = context.TestRows.Where(row => row.RowGuid == _guid).SingleOrDefault();
         }
 
         private readonly int _iterations = 2000;
@@ -123,7 +123,7 @@ namespace Benchmarks {
                         row => new Test01(table, row)
                     )
                     .From(table)
-                    .Where(table.Row_guid == _guid)
+                    .Where(table.RowGuid == _guid)
                     .SingleOrDefault(Databases.TestDatabase);
             }
         }
@@ -137,7 +137,7 @@ namespace Benchmarks {
 
                 repository
                     .SelectRows
-                    .Where(repository.Table.Row_guid == _guid)
+                    .Where(repository.Table.RowGuid == _guid)
                     .Execute(Databases.TestDatabase);
             }
         }
@@ -151,7 +151,7 @@ namespace Benchmarks {
 
                 Test01Row_EfCore? result = context.TestRows
                     .AsNoTracking()
-                    .Where(row => row.Row_guid == _guid)
+                    .Where(row => row.RowGuid == _guid)
                     .SingleOrDefault();
             }
         }
@@ -164,7 +164,7 @@ namespace Benchmarks {
                 using TestContext context = Databases.ContextFactory.CreateDbContext();    //Keep in loop so that it does not cache records across all iterations
 
                 Test01Row_EfCore? result = context.TestRows
-                    .Where(row => row.Row_guid == _guid)
+                    .Where(row => row.RowGuid == _guid)
                     .SingleOrDefault();
             }
         }

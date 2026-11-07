@@ -23,7 +23,7 @@ namespace Benchmarks {
             _preparedDeleteQuery = Query
                 .Prepare<Guid>()
                 .Delete(table)
-                .Where(where => where.EQUALS(table.Row_guid, guid => guid))
+                .Where(where => where.EQUALS(table.RowGuid, guid => guid))
                 .Build();
 
             _preparedDeleteQuery.Initialize(Databases.TestDatabase);
@@ -43,7 +43,7 @@ namespace Benchmarks {
                 NonQueryResult result = Query
                     .Insert(table)
                     .Values(values => values
-                        .Set(table.Row_guid, _guid)
+                        .Set(table.RowGuid, _guid)
                         .Set(table.Message, _message)
                         .Set(table.Date, _date)
                     )
@@ -136,7 +136,7 @@ namespace Benchmarks {
 
                 NonQueryResult result = Query
                     .Delete(table)
-                    .Where(table.Row_guid == _guid)
+                    .Where(table.RowGuid == _guid)
                     .Execute(transaction);
 
                 if(result.RowsEffected != 1) {

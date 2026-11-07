@@ -16,7 +16,7 @@ namespace Benchmarks.Classes {
 
         public Test01(Test01Table table, IResultRow row) {
             Id = row.Get(table.Id);
-            Row_guid = row.Get(table.Row_guid);
+            Row_guid = row.Get(table.RowGuid);
             Message = row.Get(table.Message);
             Date = row.Get(table.Date);
         }

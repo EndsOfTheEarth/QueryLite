@@ -20,7 +20,7 @@ namespace Benchmarks {
                 .Prepare<InsertBenchmarks>()
                 .Insert(table)
                 .Values(values => values
-                    .Set(table.Row_guid, info => info._guid)
+                    .Set(table.RowGuid, info => info._guid)
                     .Set(table.Message, info => info._message)
                     .Set(table.Date, info => info._date)
                 )
@@ -126,7 +126,7 @@ namespace Benchmarks {
                 NonQueryResult result = Query
                     .Insert(table)
                     .Values(values => values
-                        .Set(table.Row_guid, _guid)
+                        .Set(table.RowGuid, _guid)
                         .Set(table.Message, _message)
                         .Set(table.Date, _date)
                     )
@@ -145,7 +145,7 @@ namespace Benchmarks {
 
                 Test01Row row = new(
                     id: 0,
-                    row_guid: _guid,
+                    rowGuid: _guid,
                     message: _message,
                     date: _date
                 );
@@ -166,7 +166,7 @@ namespace Benchmarks {
 
                 Test01Row row = new Test01Row(
                     id: 0,
-                    row_guid: _guid,
+                    rowGuid: _guid,
                     message: _message,
                     date: _date
                 );
@@ -188,7 +188,7 @@ namespace Benchmarks {
 
                 Test01Row_EfCore row = new(
                     id: 0,
-                    row_guid: _guid,
+                    rowGuid: _guid,
                     message: _message,
                     date: _date.ToUniversalTime()
                 );

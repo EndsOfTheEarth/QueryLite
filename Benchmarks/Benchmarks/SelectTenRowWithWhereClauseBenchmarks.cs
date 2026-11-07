@@ -48,7 +48,7 @@ namespace Benchmarks {
                     NonQueryResult result = Query
                         .Insert(table)
                         .Values(values => values
-                            .Set(table.Row_guid, Guid.NewGuid())
+                            .Set(table.RowGuid, Guid.NewGuid())
                             .Set(table.Message, _message)
                             .Set(table.Date, _date)
                         )
