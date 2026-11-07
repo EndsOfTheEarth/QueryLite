@@ -49,5 +49,6 @@
     <PackageReference Include="Npgsql" />
     <PackageReference Include="QueryLite.Utility" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" />
   </ItemGroup>
 </Project>
