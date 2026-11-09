@@ -2,6 +2,7 @@
 using Benchmarks.Tables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using QueryLite.Databases.PostgreSql;
 
 namespace Benchmarks; 
 
@@ -42,7 +43,7 @@ public static class Databases {
 
     public readonly static string ConnectionString = "Server=127.0.0.1;Port=5432;Database=Benchmarks;User Id=postgres;Password=1;";
 
-    public readonly static QueryLite.IDatabase TestDatabase = new QueryLite.Databases.PostgreSql.PostgreSqlDatabase(
+    public readonly static QueryLite.IDatabase TestDatabase = new PostgreSqlDatabase(
         name: "Benchmarks",
         connectionString: ConnectionString
     );

@@ -25,9 +25,11 @@ namespace QueryLite.DbSchema;
 
 public interface IUnknownType { }
 
-public readonly partial struct SchemaName : ICustomType<string, SchemaName>, IEquatable<SchemaName>, IComparable<SchemaName> {
+public readonly partial struct SchemaName : ICustomType<string, SchemaName>,
+                                            IEquatable<SchemaName>,
+                                            IComparable<SchemaName> {
 
-    public static SchemaName Empty { get; } = new SchemaName("");
+    public static SchemaName Empty { get; } = new("");
 
     private readonly string _value = "";
 
@@ -95,9 +97,11 @@ public readonly partial struct SchemaName : ICustomType<string, SchemaName>, IEq
     }
 }
 
-public readonly partial struct TableName : ICustomType<string, TableName>, IEquatable<TableName>, IComparable<TableName> {
+public readonly partial struct TableName : ICustomType<string, TableName>,
+                                           IEquatable<TableName>,
+                                           IComparable<TableName> {
 
-    public static TableName Empty { get; } = new TableName("");
+    public static TableName Empty { get; } = new("");
 
     private readonly string _value = "";
 
@@ -165,9 +169,11 @@ public readonly partial struct TableName : ICustomType<string, TableName>, IEqua
     }
 }
 
-public readonly partial struct ColumnName : ICustomType<string, ColumnName>, IEquatable<ColumnName>, IComparable<ColumnName> {
+public readonly partial struct ColumnName : ICustomType<string, ColumnName>,
+                                            IEquatable<ColumnName>,
+                                            IComparable<ColumnName> {
 
-    public static ColumnName Empty { get; } = new ColumnName("");
+    public static ColumnName Empty { get; } = new("");
 
     private readonly string _value = "";
 

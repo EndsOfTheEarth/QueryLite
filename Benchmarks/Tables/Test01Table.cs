@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public sealed class Test01Table : ATable {
 
-    public static readonly Test01Table Instance = new Test01Table();
+    public static readonly Test01Table Instance = new();
 
     public Column<int> Id { get; }
     public Column<Guid> RowGuid { get; }

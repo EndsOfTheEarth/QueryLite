@@ -3,6 +3,9 @@
 # IDE0305: Simplify collection initialization
 dotnet_diagnostic.IDE0305.severity = silent
 
+# IDE0270: Use coalesce expression
+dotnet_diagnostic.IDE0270.severity = silent
+
 # CS8603: Possible null reference return.
 dotnet_diagnostic.CS8603.severity = error
 

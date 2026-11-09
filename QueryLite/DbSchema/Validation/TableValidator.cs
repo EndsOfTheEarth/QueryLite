@@ -95,7 +95,7 @@ public static class SchemaValidator {
 
         dbConnection.Close();
 
-        ValidationResult result = new ValidationResult(dbSchema);
+        ValidationResult result = new(dbSchema);
 
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
@@ -135,22 +135,35 @@ public static class SchemaValidator {
 
         foreach(Type type in types) {
 
-            result.Items.Add(ValidateFromType(type, database, dbSchema, validationSettings, out ITable? table));
-
+            result.Items.Add(
+                ValidateFromType(
+                    type: type,
+                    database: database,
+                    dbSchema: dbSchema,
+                    settings: validationSettings,
+                    table: out ITable? table
+                )
+            );
             if(table != null) {
                 codeTables.Add(table);
             }
         }
 
         if(validationSettings.ValidateMissingCodeTables) {
-            ValidateMissingCodeTables(dbSchema, database, codeTables, result);
+            
+            ValidateMissingCodeTables(
+                dbSchema: dbSchema,
+                database: database,
+                tables: codeTables,
+                result: result
+            );
         }
         return result;
     }
 
     public static ValidationResult ValidateTablesInAssemblies(Assembly[] assemblies,
                                                               IDatabase database,
-                                                              SchemaValidationSettings validationSettings) {
+                                                              SchemaValidationSettings settings) {
 
         using DbConnection dbConnection = database.GetNewConnection();
 
@@ -194,23 +207,22 @@ public static class SchemaValidator {
                     type: type,
                     database: database,
                     dbSchema: dbSchema,
-                    validationSettings: validationSettings,
+                    settings: settings,
                     table: out ITable? table
                 )
             );
-
             if(table != null) {
                 codeTables.Add(table);
             }
         }
 
-        if(validationSettings.ValidateMissingCodeTables) {
+        if(settings.ValidateMissingCodeTables) {
 
             ValidateMissingCodeTables(
                 dbSchema: dbSchema,
                 database: database,
                 tables: codeTables,
-                validationResult: result
+                result: result
             );
         }
         return result;
@@ -218,7 +230,7 @@ public static class SchemaValidator {
 
     public static ValidationResult ValidateTablesInAssembly(IDatabase database,
                                                             Assembly assembly,
-                                                            SchemaValidationSettings validationSettings) {
+                                                            SchemaValidationSettings settings) {
 
         using DbConnection dbConnection = database.GetNewConnection();
 
@@ -245,24 +257,29 @@ public static class SchemaValidator {
                     type: type,
                     database: database,
                     dbSchema: dbSchema,
-                    validationSettings: validationSettings,
+                    settings: settings,
                     table: out ITable? table
                 )
             );
-
             if(table != null) {
                 codeTables.Add(table);
             }
         }
 
-        if(validationSettings.ValidateMissingCodeTables) {
-            ValidateMissingCodeTables(dbSchema, database, codeTables, result);
+        if(settings.ValidateMissingCodeTables) {
+            
+            ValidateMissingCodeTables(
+                dbSchema: dbSchema,
+                database: database,
+                tables: codeTables,
+                result: result
+            );
         }
         return result;
     }
 
     public static ValidationResult ValidateTables(IDatabase database, List<ITable> tables,
-                                                  SchemaValidationSettings validationSettings) {
+                                                  SchemaValidationSettings settings) {
 
         using DbConnection dbConnection = database.GetNewConnection();
 
@@ -279,25 +296,26 @@ public static class SchemaValidator {
                     type: table.GetType(),
                     database: database,
                     dbSchema: dbSchema,
-                    validationSettings: validationSettings,
+                    settings: settings,
                     table: out _
                 )
             );
         }
 
-        if(validationSettings.ValidateMissingCodeTables) {
+        if(settings.ValidateMissingCodeTables) {
+
             ValidateMissingCodeTables(
                 dbSchema: dbSchema,
                 database: database,
                 tables: tables,
-                validationResult: result
+                result: result
             );
         }
         return result;
     }
 
     public static ValidationItem ValidateTable(IDatabase database, ITable table,
-                                               SchemaValidationSettings validationSettings) {
+                                               SchemaValidationSettings settings) {
 
         using DbConnection dbConnection = database.GetNewConnection();
 
@@ -309,7 +327,7 @@ public static class SchemaValidator {
             type: table.GetType(),
             database: database,
             dbSchema: dbSchema,
-            validationSettings: validationSettings,
+            settings: settings,
             table: out _
         );
     }
@@ -328,14 +346,16 @@ public static class SchemaValidator {
             dbTables = SqliteSchemaLoader.LoadTables(database);
         }
         else {
-            throw new Exception($"Unknown {nameof(DatabaseType)} == {database.DatabaseType}");
+            throw new Exception(
+                $"Unknown {nameof(DatabaseType)} == {database.DatabaseType}"
+            );
         }
         return new DatabaseSchema(dbTables);
     }
 
     private static ValidationItem ValidateFromType(Type type, IDatabase database,
                                                    DatabaseSchema dbSchema,
-                                                   SchemaValidationSettings validationSettings,
+                                                   SchemaValidationSettings settings,
                                                    out ITable? table) {
 
         FieldInfo? instanceField1 = type.GetField("Instance1");
@@ -350,7 +370,7 @@ public static class SchemaValidator {
             type.GetProperty("Instance");
         }
 
-        ValidationItem tableValidation = new ValidationItem(type);
+        ValidationItem tableValidation = new(type);
 
         if(instanceField1 == null && instance1Property == null) {
 
@@ -379,7 +399,13 @@ public static class SchemaValidator {
 
             tableValidation.SetTable(table);
 
-            Validate(database, table, dbSchema, tableValidation, validationSettings);
+            Validate(
+                database: database,
+                table: table,
+                dbSchema: dbSchema,
+                validation: tableValidation,
+                settings: settings
+            );
         }
         return tableValidation;
     }
@@ -415,7 +441,7 @@ public static class SchemaValidator {
     }
 
     public static void Validate(IDatabase database, ITable table, DatabaseSchema dbSchema,
-                                ValidationItem validation, SchemaValidationSettings validationSettings) {
+                                ValidationItem validation, SchemaValidationSettings settings) {
 
         if(string.IsNullOrWhiteSpace(table.SchemaName)) {
             validation.Add($"Table schema name cannot be null or empty in code");
@@ -471,8 +497,7 @@ public static class SchemaValidator {
 
                 IColumn codeColumn = codeColumnProperty.Column;
 
-                if(!codeColumn.Enclose && SqlKeyWordLookup.IsKeyWord(codeColumn.ColumnName)) {
-                    
+                if(!codeColumn.Enclose && SqlKeyWordLookup.IsKeyWord(codeColumn.ColumnName)) {                    
                     validation.Add(
                         $"{columnDetail}, column name '{codeColumn.ColumnName}' is an SQL keyword " +
                         $"so the {nameof(codeColumn.Enclose)} property should be set to true on the column"
@@ -485,26 +510,31 @@ public static class SchemaValidator {
                 Type codeAdoType = ConvertToAdoType(codeColumn.Type);
 
                 if(!codeColumnProperty.SuppressColumnTypeValidation) {
-                    ValidateColumnDataType(database, validation, columnDetail, codeColumn, dbNetType, codeAdoType);
+                    
+                    ValidateColumnDataType(
+                        database: database,
+                        validation: validation,
+                        columnDetail: columnDetail,
+                        codeColumn: codeColumn,
+                        dbNetType: dbNetType,
+                        codeAdoType: codeAdoType
+                    );
                 }
 
-                if(dbColumn.IsNullable && !codeColumn.IsNullable) {
-                    
+                if(dbColumn.IsNullable && !codeColumn.IsNullable) {                    
                     validation.Add(
                         $"{columnDetail}, database column is nullable but code column is non-nullable"
                     );
                 }
                 else if(!dbColumn.IsNullable && codeColumn.IsNullable) {
-
                     validation.Add(
                         $"{columnDetail}, database column is non-nullable but code column is nullable"
                     );
                 }
 
-                if(validationSettings.ValidateColumnAutoGeneration) {
+                if(settings.ValidateColumnAutoGeneration) {
 
-                    if(dbColumn.IsAutoGenerated && !codeColumn.IsAutoGenerated) {
-                        
+                    if(dbColumn.IsAutoGenerated && !codeColumn.IsAutoGenerated) {                        
                         validation.Add(
                             $"{columnDetail}, database column is auto generated but code column is not"
                         );
@@ -516,7 +546,7 @@ public static class SchemaValidator {
                     }
                 }
 
-                if(validationSettings.ValidateColumnLengths) {
+                if(settings.ValidateColumnLengths) {
 
                     bool codeColumnIsMaxLength = codeColumn.Length?.LengthType == LengthType.Max;
                     bool dbColumnIsMaxLength = dbColumn.Length?.LengthType == LengthType.Max;
@@ -684,21 +714,21 @@ public static class SchemaValidator {
                 }
             }
         }
-        if(validationSettings.ValidatePrimaryKeys != PrimaryKeyValidation.None) {
-            ValidatePrimaryKeyForTable(table, dbTable, validation, validationSettings.ValidatePrimaryKeys);
+        if(settings.ValidatePrimaryKeys != PrimaryKeyValidation.None) {
+            ValidatePrimaryKeyForTable(table, dbTable, validation, settings.ValidatePrimaryKeys);
         }
-        if(validationSettings.ValidateUniqueConstraints) {
+        if(settings.ValidateUniqueConstraints) {
             ValidateUniqueConstraintsForTable(table, dbTable, validation);
         }
-        if(validationSettings.ValidateCheckConstraintNames) {
+        if(settings.ValidateCheckConstraintNames) {
             ValidateCheckConstraintNamesForTable(table, dbTable, validation);
         }
-        if(validationSettings.ValidateForeignKeys) {
+        if(settings.ValidateForeignKeys) {
             ValidateForeignKeys(table, dbTable, validation);
         }
     }
 
-    private static void ValidateColumnDataType(IDatabase database, ValidationItem tableValidation,
+    private static void ValidateColumnDataType(IDatabase database, ValidationItem validation,
                                                string columnDetail, IColumn codeColumn, Type dbNetType,
                                                Type codeAdoType) {
 
@@ -706,7 +736,7 @@ public static class SchemaValidator {
             
             ValidateDataTypeForSqlite(
                 codeColumn: codeColumn,
-                validation: tableValidation,
+                validation: validation,
                 columnDetail: columnDetail,
                 codeAdoType: codeAdoType,
                 dbNetType: dbNetType,
@@ -740,7 +770,7 @@ public static class SchemaValidator {
 
             if(invalidDbNetType) {
                 
-                tableValidation.Add(
+                validation.Add(
                     $"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) " +
                     $"between database and code column. Tip: The attribute [SuppressColumnTypeValidation] " +
                     $"can be used on the table column property to suppress this error."
@@ -752,7 +782,7 @@ public static class SchemaValidator {
         }
         else if(codeAdoType != dbNetType && !isValidJsonType) {
             
-            tableValidation.Add(
+            validation.Add(
                 $"{columnDetail}, column types are different ({codeAdoType.Name} != {dbNetType.Name}) " +
                 $"between database and code column. Tip: The attribute [SuppressColumnTypeValidation] " +
                 $"can be used on the table column property to suppress this error."
@@ -895,24 +925,26 @@ public static class SchemaValidator {
 
     private static void ValidatePrimaryKeyForTable(ITable table, DatabaseTable dbTable,
                                                    ValidationItem validation,
-                                                   PrimaryKeyValidation primaryKeyValidation) {
+                                                   PrimaryKeyValidation pkValidation) {
 
         DatabasePrimaryKey? dbPrimaryKey = dbTable.PrimaryKey;
 
         PrimaryKey? codePrimaryKey = table.PrimaryKey;
 
         if(dbPrimaryKey != null && codePrimaryKey == null) {
-
-            validation.Add($"Code table is missing primary key definition");
+            validation.Add(
+                $"Code table is missing primary key definition"
+            );
         }
         else if(dbPrimaryKey == null && codePrimaryKey != null) {
-
-            validation.Add($"Code table has a primary key definition but it does not exist in the database");
+            validation.Add(
+                $"Code table has a primary key definition but it does not exist in the database"
+            );
         }
         else if(dbPrimaryKey != null && codePrimaryKey != null) {
 
-            bool validateName = primaryKeyValidation == PrimaryKeyValidation.NamesAndColumns ||
-                                primaryKeyValidation == PrimaryKeyValidation.Names;
+            bool validateName = pkValidation == PrimaryKeyValidation.NamesAndColumns ||
+                                pkValidation == PrimaryKeyValidation.Names;
 
             if(validateName) {
 
@@ -925,8 +957,8 @@ public static class SchemaValidator {
                 }
             }
 
-            bool validateColumns = primaryKeyValidation == PrimaryKeyValidation.NamesAndColumns ||
-                                   primaryKeyValidation == PrimaryKeyValidation.Columns;
+            bool validateColumns = pkValidation == PrimaryKeyValidation.NamesAndColumns ||
+                                   pkValidation == PrimaryKeyValidation.Columns;
 
             if(validateColumns) {
 
@@ -1155,7 +1187,7 @@ public static class SchemaValidator {
     }
 
     private static void ValidateMissingCodeTables(DatabaseSchema dbSchema, IDatabase database,
-                                                  List<ITable> tables, ValidationResult validationResult) {
+                                                  List<ITable> tables, ValidationResult result) {
 
         Dictionary<string, ITable> codeTableLookup = new(StringComparer.OrdinalIgnoreCase);
 
@@ -1192,12 +1224,12 @@ public static class SchemaValidator {
                     $"This can happen if the table code definition does not exist or the schema " +
                     $"names do not match or the table names do not match."
                 );
-                validationResult.Items.Add(validation);
+                result.Items.Add(validation);
             }
         }
     }
 
-    private static List<CodeColumnProperty> LoadTableColumnsProperties(ITable table, ValidationItem tableValidation) {
+    private static List<CodeColumnProperty> LoadTableColumnsProperties(ITable table, ValidationItem validatoin) {
 
         Type tableType = table.GetType();
 
@@ -1229,7 +1261,7 @@ public static class SchemaValidator {
                 object? column = property.GetValue(table);
 
                 if(column == null) {
-                    tableValidation.Add(
+                    validatoin.Add(
                         $"Table: {table.TableName}, Column property '{property.Name}' is returning null. " +
                         $"This property should have an IColumn assigned"
                     );
