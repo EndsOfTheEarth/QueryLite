@@ -22,78 +22,77 @@
  * SOFTWARE.
  **/
 
-namespace QueryLite.Repository {
+namespace QueryLite.Repository; 
 
-    public interface IRepositoryWith : IRepositoryWhere {
+public interface IRepositoryWith : IRepositoryWhere {
 
-        /// <summary>
-        /// The 'With' option only works on sql server. For other databases the query will ignore
-        /// these table hints and execute without them.
-        /// </summary>
-        public IRepositoryJoin With(params SqlServerTableHint[] hints);
-    }
+    /// <summary>
+    /// The 'With' option only works on sql server. For other databases the query will ignore
+    /// these table hints and execute without them.
+    /// </summary>
+    public IRepositoryJoin With(params SqlServerTableHint[] hints);
+}
 
-    public interface IRepositoryJoin : IRepositoryWhere {
+public interface IRepositoryJoin : IRepositoryWhere {
 
-        /// <summary>
-        /// Join table clause
-        /// </summary>
-        IRepositoryJoinOn Join(ITable table);
+    /// <summary>
+    /// Join table clause
+    /// </summary>
+    IRepositoryJoinOn Join(ITable table);
 
-        /// <summary>
-        /// Left join table clause
-        /// </summary>
-        IRepositoryJoinOn LeftJoin(ITable table);
-    }
+    /// <summary>
+    /// Left join table clause
+    /// </summary>
+    IRepositoryJoinOn LeftJoin(ITable table);
+}
 
-    public interface IRepositoryJoinOn {
+public interface IRepositoryJoinOn {
 
-        /// <summary>
-        /// Join condition
-        /// </summary>
-        IRepositoryJoin On(ICondition on);
-    }
+    /// <summary>
+    /// Join condition
+    /// </summary>
+    IRepositoryJoin On(ICondition on);
+}
 
-    public interface IRepositoryWhere : IRepositoryOrderBy {
+public interface IRepositoryWhere : IRepositoryOrderBy {
 
-        /// <summary>
-        /// Where condition clause
-        /// </summary>
-        IRepositoryOrderBy Where(ICondition? condition);
-    }
+    /// <summary>
+    /// Where condition clause
+    /// </summary>
+    IRepositoryOrderBy Where(ICondition? condition);
+}
 
-    public interface IRepositoryOrderBy : IRepositoryFor {
+public interface IRepositoryOrderBy : IRepositoryFor {
 
-        /// <summary>
-        /// Order by clause
-        /// </summary>
-        IRepositoryFor OrderBy(params IOrderByColumn[] columns);
-    }
+    /// <summary>
+    /// Order by clause
+    /// </summary>
+    IRepositoryFor OrderBy(params IOrderByColumn[] columns);
+}
 
-    public interface IRepositoryFor : IRepositoryExecute {
+public interface IRepositoryFor : IRepositoryExecute {
 
-        /// <summary>
-        /// FOR clause. PostgreSql only
-        /// </summary>
-        IRepositoryExecute FOR(ForType forType, ITable[] ofTables, WaitType waitType);
-    }
+    /// <summary>
+    /// FOR clause. PostgreSql only
+    /// </summary>
+    IRepositoryExecute FOR(ForType forType, ITable[] ofTables, WaitType waitType);
+}
 
-    public interface IRepositoryExecute {
+public interface IRepositoryExecute {
 
-        void Execute(IDatabase database);
-        void Execute(IDatabase database, QueryTimeout timeout);
-        void Execute(IDatabase database, QueryTimeout timeout, string debugName);
+    void Execute(IDatabase database);
+    void Execute(IDatabase database, QueryTimeout timeout);
+    void Execute(IDatabase database, QueryTimeout timeout, string debugName);
 
-        void Execute(Transaction transaction);
-        void Execute(Transaction transaction, QueryTimeout timeout);
-        void Execute(Transaction transaction, QueryTimeout timeout, string debugName);
+    void Execute(Transaction transaction);
+    void Execute(Transaction transaction, QueryTimeout timeout);
+    void Execute(Transaction transaction, QueryTimeout timeout, string debugName);
 
-        Task ExecuteAsync(IDatabase database, CancellationToken ct);
-        Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken ct);
-        Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken ct);
+    Task ExecuteAsync(IDatabase database, CancellationToken ct);
+    Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken ct);
+    Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName, CancellationToken ct);
 
-        Task ExecuteAsync(Transaction transaction, CancellationToken ct);
-        Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct);
-        Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct);
-    }
+    Task ExecuteAsync(Transaction transaction, CancellationToken ct);
+    Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct);
+    Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName, CancellationToken ct);
 }

@@ -24,29 +24,28 @@
 using Avalonia;
 using System;
 
-namespace QueryLite.CodeGeneratorUI {
+namespace QueryLite.CodeGeneratorUI; 
 
-    internal sealed class Program {
+internal sealed class Program {
 
-        [STAThread]
-        public static void Main(string[] args) {
+    [STAThread]
+    public static void Main(string[] args) {
 
-            try {
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            }
+        try {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
 // (Variable is declared but never used) (Unnecessary assignment of a value)
 #pragma warning disable CS0168, IDE0059
-            catch(Exception ex) {
+        catch(Exception ex) {
 #pragma warning restore CS0168, IDE0059
-                throw;
-            }
+            throw;
         }
-
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace();
     }
+
+    // Avalonia configuration, don't remove; also used by visual designer.
+    public static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont()
+            .LogToTrace();
 }

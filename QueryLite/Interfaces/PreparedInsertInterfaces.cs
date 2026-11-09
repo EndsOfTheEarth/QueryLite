@@ -23,211 +23,210 @@
  **/
 using QueryLite.Utility;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    public interface IPreparedInsertSet<PARAMETERS> {
+public interface IPreparedInsertSet<PARAMETERS> {
 
-        IPreparedInsertBuild<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
-    }
+    IPreparedInsertBuild<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
+}
 
-    public interface IPreparedInsertBuild<PARAMETERS> {
+public interface IPreparedInsertBuild<PARAMETERS> {
 
-        IPreparedInsertQuery<PARAMETERS> Build();
-        IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc);
-    }
+    IPreparedInsertQuery<PARAMETERS> Build();
+    IPreparedInsertQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc);
+}
 
-    public interface IPreparedInsertBuild<PARAMETERS, RESULT> {
+public interface IPreparedInsertBuild<PARAMETERS, RESULT> {
 
-        IPreparedInsertQuery<PARAMETERS, RESULT> Build();
-    }
+    IPreparedInsertQuery<PARAMETERS, RESULT> Build();
+}
 
-    public interface IPreparedInsertQuery<PARAMETERS> {
+public interface IPreparedInsertQuery<PARAMETERS> {
 
-        void Initialize(IDatabase database);
+    void Initialize(IDatabase database);
 
-        NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+    NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                          QueryTimeout? timeout = null, string debugName = "");
-    }
+    Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
+                                      QueryTimeout? timeout = null, string debugName = "");
+}
 
-    public interface IPreparedInsertQuery<PARAMETERS, RESULT> {
+public interface IPreparedInsertQuery<PARAMETERS, RESULT> {
 
-        void Initialize(IDatabase database);
+    void Initialize(IDatabase database);
 
-        QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+    QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                               QueryTimeout? timeout = null, string debugName = "");
+    Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
+                                           QueryTimeout? timeout = null, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                  QueryTimeout? timeout = null, string debugName = "");
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
+                                              QueryTimeout? timeout = null, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
-                                                  QueryTimeout? timeout = null, string debugName = "");
-    }
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
+                                              QueryTimeout? timeout = null, string debugName = "");
+}
 
-    public interface IPreparedSetValuesCollector<PARAMETERS> {
+public interface IPreparedSetValuesCollector<PARAMETERS> {
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<string> column, Func<PARAMETERS, string> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<string> column, Func<PARAMETERS, string?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<string> column, Func<PARAMETERS, string> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<string> column, Func<PARAMETERS, string?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<Guid> column, Func<PARAMETERS, Guid> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<Guid> column, Func<PARAMETERS, Guid?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<Guid> column, Func<PARAMETERS, Guid> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<Guid> column, Func<PARAMETERS, Guid?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<bool> column, Func<PARAMETERS, bool> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<bool> column, Func<PARAMETERS, bool?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<bool> column, Func<PARAMETERS, bool> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<bool> column, Func<PARAMETERS, bool?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<Bit> column, Func<PARAMETERS, Bit> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<Bit> column, Func<PARAMETERS, Bit?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<Bit> column, Func<PARAMETERS, Bit> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<Bit> column, Func<PARAMETERS, Bit?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<decimal> column, Func<PARAMETERS, decimal> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<decimal> column, Func<PARAMETERS, decimal?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<decimal> column, Func<PARAMETERS, decimal> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<decimal> column, Func<PARAMETERS, decimal?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<short> column, Func<PARAMETERS, short> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<short> column, Func<PARAMETERS, short?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<short> column, Func<PARAMETERS, short> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<short> column, Func<PARAMETERS, short?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<int> column, Func<PARAMETERS, int> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<int> column, Func<PARAMETERS, int?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<int> column, Func<PARAMETERS, int> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<int> column, Func<PARAMETERS, int?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<long> column, Func<PARAMETERS, long> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<long> column, Func<PARAMETERS, long?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<long> column, Func<PARAMETERS, long> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<long> column, Func<PARAMETERS, long?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<float> column, Func<PARAMETERS, float> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<float> column, Func<PARAMETERS, float?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<float> column, Func<PARAMETERS, float> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<float> column, Func<PARAMETERS, float?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<double> column, Func<PARAMETERS, double> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<double> column, Func<PARAMETERS, double?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<double> column, Func<PARAMETERS, double> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<double> column, Func<PARAMETERS, double?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<TimeOnly> column, Func<PARAMETERS, TimeOnly> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<TimeOnly> column, Func<PARAMETERS, TimeOnly?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<TimeOnly> column, Func<PARAMETERS, TimeOnly> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<TimeOnly> column, Func<PARAMETERS, TimeOnly?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateTime> column, Func<PARAMETERS, DateTime> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<DateTime> column, Func<PARAMETERS, DateTime?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateTime> column, Func<PARAMETERS, DateTime> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<DateTime> column, Func<PARAMETERS, DateTime?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateOnly> column, Func<PARAMETERS, DateOnly> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<DateOnly> column, Func<PARAMETERS, DateOnly?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateOnly> column, Func<PARAMETERS, DateOnly> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<DateOnly> column, Func<PARAMETERS, DateOnly?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateTimeOffset> column, Func<PARAMETERS, DateTimeOffset> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<DateTimeOffset> column, Func<PARAMETERS, DateTimeOffset?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<DateTimeOffset> column, Func<PARAMETERS, DateTimeOffset> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<DateTimeOffset> column, Func<PARAMETERS, DateTimeOffset?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<byte> column, Func<PARAMETERS, byte> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<byte> column, Func<PARAMETERS, byte?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<byte> column, Func<PARAMETERS, byte> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<byte> column, Func<PARAMETERS, byte?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(Column<byte[]> column, Func<PARAMETERS, byte[]> value);
-        public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<byte[]> column, Func<PARAMETERS, byte[]?> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(Column<byte[]> column, Func<PARAMETERS, byte[]> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(NColumn<byte[]> column, Func<PARAMETERS, byte[]?> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(Column<ENUM> column, Func<PARAMETERS, ENUM> value) where ENUM : struct, Enum;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(NColumn<ENUM> column, Func<PARAMETERS, ENUM?> value) where ENUM : struct, Enum;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(Column<ENUM> column, Func<PARAMETERS, ENUM> value) where ENUM : struct, Enum;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<ENUM>(NColumn<ENUM> column, Func<PARAMETERS, ENUM?> value) where ENUM : struct, Enum;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<string> column, AFunction<string> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<string> column, AFunction<string> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<Guid> column, AFunction<Guid> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<Guid> column, AFunction<Guid> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<bool> column, AFunction<bool> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<bool> column, AFunction<bool> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<Bit> column, AFunction<Bit> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<Bit> column, AFunction<Bit> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<decimal> column, AFunction<decimal> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<decimal> column, AFunction<decimal> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<short> column, AFunction<short> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<short> column, AFunction<short> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<int> column, AFunction<int> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<int> column, AFunction<int> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<long> column, AFunction<long> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<long> column, AFunction<long> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<float> column, AFunction<float> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<float> column, AFunction<float> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<double> column, AFunction<double> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<double> column, AFunction<double> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<TimeOnly> column, AFunction<TimeOnly> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<TimeOnly> column, AFunction<TimeOnly> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateTime> column, AFunction<DateTime> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateTime> column, AFunction<DateTime> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateOnly> column, AFunction<DateOnly> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateOnly> column, AFunction<DateOnly> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<byte> column, AFunction<byte> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<byte> column, AFunction<byte> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<byte[]> column, AFunction<byte[]> value);
+    public IPreparedSetValuesCollector<PARAMETERS> Set(AColumn<byte[]> column, AFunction<byte[]> value);
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
 
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
-        public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
-    }
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, Func<PARAMETERS, CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
+    public IPreparedSetValuesCollector<PARAMETERS> Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, Func<PARAMETERS, CUSTOM_TYPE?> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
 }

@@ -21,34 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.DbSchema.Tables.PostgreSql {
+namespace QueryLite.DbSchema.Tables.PostgreSql; 
 
-    public sealed class KeyColumnUsageTable : ATable {
+public sealed class KeyColumnUsageTable : ATable {
 
-        public static readonly KeyColumnUsageTable Instance = new();
-        public static readonly KeyColumnUsageTable Instance2 = new();
+    public static readonly KeyColumnUsageTable Instance = new();
+    public static readonly KeyColumnUsageTable Instance2 = new();
 
-        public Column<string> ConstraintCatalog { get; }
-        public Column<SchemaName, string> ConstraintSchema { get; }
-        public Column<string> ConstraintName { get; }
-        public Column<string> TableCatalog { get; }
-        public Column<SchemaName, string> TableSchema { get; }
-        public Column<TableName, string> TableName_ { get; }
-        public Column<ColumnName, string> ColumnName { get; }
-        public NColumn<int> OrdinalPosition { get; }
-        public NColumn<int> PositionInUniqueConstraint { get; }
+    public Column<string> ConstraintCatalog { get; }
+    public Column<SchemaName, string> ConstraintSchema { get; }
+    public Column<string> ConstraintName { get; }
+    public Column<string> TableCatalog { get; }
+    public Column<SchemaName, string> TableSchema { get; }
+    public Column<TableName, string> TableName_ { get; }
+    public Column<ColumnName, string> ColumnName { get; }
+    public NColumn<int> OrdinalPosition { get; }
+    public NColumn<int> PositionInUniqueConstraint { get; }
 
-        public KeyColumnUsageTable() : base(name: "key_column_usage", schemaName: "information_schema") {
+    public KeyColumnUsageTable() : base(name: "key_column_usage", schemaName: "information_schema") {
 
-            ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
-            ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
-            ConstraintName = new Column<string>(table: this, name: "constraint_name");
-            TableCatalog = new Column<string>(table: this, name: "table_catalog");
-            TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
-            TableName_ = new Column<TableName, string>(table: this, name: "table_name");
-            ColumnName = new Column<ColumnName, string>(table: this, name: "column_name");
-            OrdinalPosition = new NColumn<int>(this, name: "ordinal_position");
-            PositionInUniqueConstraint = new NColumn<int>(this, name: "position_in_unique_constraint");
-        }
+        ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
+        ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
+        ConstraintName = new Column<string>(table: this, name: "constraint_name");
+        TableCatalog = new Column<string>(table: this, name: "table_catalog");
+        TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
+        TableName_ = new Column<TableName, string>(table: this, name: "table_name");
+        ColumnName = new Column<ColumnName, string>(table: this, name: "column_name");
+        OrdinalPosition = new NColumn<int>(this, name: "ordinal_position");
+        PositionInUniqueConstraint = new NColumn<int>(this, name: "position_in_unique_constraint");
     }
 }

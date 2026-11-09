@@ -24,100 +24,99 @@
 using QueryLite.Databases.PostgreSql.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql; 
 
-    internal sealed class PostgreSqlUpdateQueryGenerator : IUpdateQueryGenerator {
+internal sealed class PostgreSqlUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template,
-                                                    IDatabase database,
-                                                    Parameters useParameters,
-                                                    out IParametersBuilder? parameters,
-                                                    Func<IResultRow, RESULT>? outputFunc) {
+    string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template,
+                                                IDatabase database,
+                                                Parameters useParameters,
+                                                out IParametersBuilder? parameters,
+                                                Func<IResultRow, RESULT>? outputFunc) {
 
-            StringBuilder sql = StringBuilderCache.Acquire();
+        StringBuilder sql = StringBuilderCache.Acquire();
 
-            sql.Append("UPDATE ");
+        sql.Append("UPDATE ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
-                sql.Append('.');
-            }
-
-            bool useAlias = template.FromTables != null;
-
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
-
-            if(useAlias) {
-                sql.Append(" AS ").Append(template.Table.Alias);
-            }
-
-            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
-
-                PostgreSqlSetValuesParameterCollector valuesCollector = new(sql: sql,
-                    paramSql: null,
-                    database: database,
-                    collectorMode: CollectorMode.Update,
-                    useAlias: useAlias
-                );
-
-                sql.Append(" SET ");
-
-                template.ValuesCollector!(valuesCollector);
-
-                parameters = valuesCollector.Parameters;
-            }
-            else {
-
-                PostgreSqlSetValuesCollector valuesCollector = new(sql, database, CollectorMode.Update);
-
-                sql.Append(" SET ");
-
-                template.ValuesCollector!(valuesCollector);
-
-                parameters = null;
-            }
-
-            if(template.FromTables != null) {
-
-                sql.Append(" FROM ");
-
-                for(int index = 0; index < template.FromTables.Count; index++) {
-
-                    ITable fromTable = template.FromTables[index];
-
-                    if(index > 0) {
-                        sql.Append(',');
-                    }
-
-                    string fromSchemaName = database.SchemaMap(fromTable.SchemaName);
-
-                    if(!string.IsNullOrWhiteSpace(fromSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName, EncloseWith.DoubleQuote);
-                        sql.Append('.');
-                    }
-                    SqlHelper.AppendEncloseTableName(sql, fromTable, EncloseWith.DoubleQuote);
-                    sql.Append(" as ").Append(fromTable.Alias);
-                }
-            }
-
-            if(template.WhereCondition != null) {
-                sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, useAlias: useAlias, parameters);
-            }
-
-            if(outputFunc != null) {
-
-                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: useAlias);
-
-                sql.Append(" RETURNING ");
-
-                outputFunc(collector);
-
-                PostgreSqlReturningCollectorCache.Release(collector);
-            }
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
+            sql.Append('.');
         }
+
+        bool useAlias = template.FromTables != null;
+
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
+
+        if(useAlias) {
+            sql.Append(" AS ").Append(template.Table.Alias);
+        }
+
+        if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
+
+            PostgreSqlSetValuesParameterCollector valuesCollector = new(sql: sql,
+                paramSql: null,
+                database: database,
+                collectorMode: CollectorMode.Update,
+                useAlias: useAlias
+            );
+
+            sql.Append(" SET ");
+
+            template.ValuesCollector!(valuesCollector);
+
+            parameters = valuesCollector.Parameters;
+        }
+        else {
+
+            PostgreSqlSetValuesCollector valuesCollector = new(sql, database, CollectorMode.Update);
+
+            sql.Append(" SET ");
+
+            template.ValuesCollector!(valuesCollector);
+
+            parameters = null;
+        }
+
+        if(template.FromTables != null) {
+
+            sql.Append(" FROM ");
+
+            for(int index = 0; index < template.FromTables.Count; index++) {
+
+                ITable fromTable = template.FromTables[index];
+
+                if(index > 0) {
+                    sql.Append(',');
+                }
+
+                string fromSchemaName = database.SchemaMap(fromTable.SchemaName);
+
+                if(!string.IsNullOrWhiteSpace(fromSchemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName, EncloseWith.DoubleQuote);
+                    sql.Append('.');
+                }
+                SqlHelper.AppendEncloseTableName(sql, fromTable, EncloseWith.DoubleQuote);
+                sql.Append(" as ").Append(fromTable.Alias);
+            }
+        }
+
+        if(template.WhereCondition != null) {
+            sql.Append(" WHERE ");
+            template.WhereCondition.GetSql(sql, database, useAlias: useAlias, parameters);
+        }
+
+        if(outputFunc != null) {
+
+            PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: useAlias);
+
+            sql.Append(" RETURNING ");
+
+            outputFunc(collector);
+
+            PostgreSqlReturningCollectorCache.Release(collector);
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

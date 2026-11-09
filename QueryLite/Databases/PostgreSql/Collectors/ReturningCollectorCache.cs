@@ -23,33 +23,32 @@
  **/
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql.Collectors {
+namespace QueryLite.Databases.PostgreSql.Collectors; 
 
-    internal static class PostgreSqlReturningCollectorCache {
+internal static class PostgreSqlReturningCollectorCache {
 
-        [ThreadStatic]
-        private static PostgreSqlReturningFieldCollector? Instance;
+    [ThreadStatic]
+    private static PostgreSqlReturningFieldCollector? Instance;
 
-        public static PostgreSqlReturningFieldCollector Acquire(StringBuilder sql, bool useAlias) {
+    public static PostgreSqlReturningFieldCollector Acquire(StringBuilder sql, bool useAlias) {
 
-            if(Settings.EnableCollectorCaching) {
+        if(Settings.EnableCollectorCaching) {
 
-                PostgreSqlReturningFieldCollector? instance = Instance;
+            PostgreSqlReturningFieldCollector? instance = Instance;
 
-                if(instance != null) {
-                    Instance = null;
-                    instance.Reset(sql, useAlias: useAlias);
-                    return instance;
-                }
+            if(instance != null) {
+                Instance = null;
+                instance.Reset(sql, useAlias: useAlias);
+                return instance;
             }
-            return new PostgreSqlReturningFieldCollector(sql, useAlias: useAlias);
         }
+        return new PostgreSqlReturningFieldCollector(sql, useAlias: useAlias);
+    }
 
-        public static void Release(PostgreSqlReturningFieldCollector instance) {
+    public static void Release(PostgreSqlReturningFieldCollector instance) {
 
-            if(Settings.EnableCollectorCaching) {
-                Instance = instance;
-            }
+        if(Settings.EnableCollectorCaching) {
+            Instance = instance;
         }
     }
 }

@@ -24,39 +24,38 @@
 using Microsoft.Data.Sqlite;
 using System.Data.Common;
 
-namespace QueryLite.Databases.Sqlite {
+namespace QueryLite.Databases.Sqlite; 
 
-    public sealed class SqliteParameters : IParametersBuilder {
+public sealed class SqliteParameters : IParametersBuilder {
 
-        public IList<DbParameter> ParameterList { get; }
+    public IList<DbParameter> ParameterList { get; }
 
-        public SqliteParameters(int initParams) {
-            ParameterList = new List<DbParameter>(initParams);
+    public SqliteParameters(int initParams) {
+        ParameterList = new List<DbParameter>(initParams);
+    }
+
+    public string GetNextParameterName() {
+
+        if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
+            return ParamNameCache.ParamNames[ParameterList.Count];
         }
+        return $"@{ParameterList.Count}";
+    }
 
-        public string GetNextParameterName() {
+    public void Add(IDatabase database, Type type, object? value, out string paramName) {
 
-            if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
-                return ParamNameCache.ParamNames[ParameterList.Count];
-            }
-            return $"@{ParameterList.Count}";
+        paramName = GetNextParameterName();
+
+        if(value != null) {
+            CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
+            ParameterList.Add(createParameter(name: paramName, value));
         }
-
-        public void Add(IDatabase database, Type type, object? value, out string paramName) {
-
-            paramName = GetNextParameterName();
-
-            if(value != null) {
-                CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
-                ParameterList.Add(createParameter(name: paramName, value));
-            }
-            else {
-                ParameterList.Add(
-                    new SqliteParameter(name: paramName, value: DBNull.Value) {
-                        SqliteType = SqliteTypeMappings.TypeMapper.GetDbType(type)
-                    }
-                );
-            }
+        else {
+            ParameterList.Add(
+                new SqliteParameter(name: paramName, value: DBNull.Value) {
+                    SqliteType = SqliteTypeMappings.TypeMapper.GetDbType(type)
+                }
+            );
         }
     }
 }

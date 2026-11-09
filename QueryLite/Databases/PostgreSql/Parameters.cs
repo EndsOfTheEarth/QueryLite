@@ -24,39 +24,38 @@
 using Npgsql;
 using System.Data.Common;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql; 
 
-    public sealed class PostgreSqlParameters : IParametersBuilder {
+public sealed class PostgreSqlParameters : IParametersBuilder {
 
-        public IList<DbParameter> ParameterList { get; }
+    public IList<DbParameter> ParameterList { get; }
 
-        public PostgreSqlParameters(int initParams) {
-            ParameterList = new List<DbParameter>(initParams);
+    public PostgreSqlParameters(int initParams) {
+        ParameterList = new List<DbParameter>(initParams);
+    }
+
+    public string GetNextParameterName() {
+
+        if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
+            return ParamNameCache.ParamNames[ParameterList.Count];
         }
+        return $"@{ParameterList.Count}";
+    }
 
-        public string GetNextParameterName() {
+    public void Add(IDatabase database, Type type, object? value, out string paramName) {
 
-            if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
-                return ParamNameCache.ParamNames[ParameterList.Count];
-            }
-            return $"@{ParameterList.Count}";
+        paramName = GetNextParameterName();
+
+        if(value != null) {
+            CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
+            ParameterList.Add(createParameter(name: paramName, value));
         }
-
-        public void Add(IDatabase database, Type type, object? value, out string paramName) {
-
-            paramName = GetNextParameterName();
-
-            if(value != null) {
-                CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
-                ParameterList.Add(createParameter(name: paramName, value));
-            }
-            else {
-                ParameterList.Add(
-                    new NpgsqlParameter(parameterName: paramName, value: DBNull.Value) {
-                        NpgsqlDbType = PostgreSqlTypeMappings.TypeMapper.GetDbType(type)
-                    }
-                );
-            }
+        else {
+            ParameterList.Add(
+                new NpgsqlParameter(parameterName: paramName, value: DBNull.Value) {
+                    NpgsqlDbType = PostgreSqlTypeMappings.TypeMapper.GetDbType(type)
+                }
+            );
         }
     }
 }

@@ -21,252 +21,251 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    internal sealed class DeleteQueryTemplate : IDeleteFrom, IDeleteNoWhere, IDeleteWhere, IDeleteExecute {
+internal sealed class DeleteQueryTemplate : IDeleteFrom, IDeleteNoWhere, IDeleteWhere, IDeleteExecute {
 
-        public ITable Table { get; }
-        public List<ITable>? FromTables { get; private set; }
-        public ICondition? WhereCondition { get; private set; }
+    public ITable Table { get; }
+    public List<ITable>? FromTables { get; private set; }
+    public ICondition? WhereCondition { get; private set; }
 
-        public DeleteQueryTemplate(ITable table) {
+    public DeleteQueryTemplate(ITable table) {
 
-            ArgumentNullException.ThrowIfNull(table);
-            Table = table;
+        ArgumentNullException.ThrowIfNull(table);
+        Table = table;
+    }
+    public DeleteQueryTemplate(ITable table, ICondition whereCondition) {
+
+        ArgumentNullException.ThrowIfNull(table);
+        ArgumentNullException.ThrowIfNull(whereCondition);
+
+        Table = table;
+        WhereCondition = whereCondition;
+    }
+
+    public IDeleteWhere From(ITable table, params ITable[] tables) {
+        Using(table, tables);
+        return this;
+    }
+
+    public IDeleteWhere Using(ITable table, params ITable[] tables) {
+
+        ArgumentNullException.ThrowIfNull(table);
+
+        FromTables = new List<ITable>(tables.Length + 1) {
+            table
+        };
+
+        if(tables.Length > 0) {
+            FromTables.AddRange(tables);
         }
-        public DeleteQueryTemplate(ITable table, ICondition whereCondition) {
+        return this;
+    }
 
-            ArgumentNullException.ThrowIfNull(table);
-            ArgumentNullException.ThrowIfNull(whereCondition);
+    public IDeleteExecute Where(ICondition condition) {
 
-            Table = table;
-            WhereCondition = whereCondition;
+        ArgumentNullException.ThrowIfNull(condition);
+
+        if(WhereCondition != null) {
+            throw new Exception($"Where condition has already been set");
         }
+        WhereCondition = condition;
+        return this;
+    }
 
-        public IDeleteWhere From(ITable table, params ITable[] tables) {
-            Using(table, tables);
-            return this;
-        }
+    public IDeleteExecute NoWhereCondition() {
+        WhereCondition = null;
+        return this;
+    }
 
-        public IDeleteWhere Using(ITable table, params ITable[] tables) {
+    public string GetSql(IDatabase database) {
 
-            ArgumentNullException.ThrowIfNull(table);
+        ArgumentNullException.ThrowIfNull(database);
 
-            FromTables = new List<ITable>(tables.Length + 1) {
-                table
-            };
+        return database.DeleteGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            parameters: null,
+            outputFunc: null
+        );
+    }
 
-            if(tables.Length > 0) {
-                FromTables.AddRange(tables);
-            }
-            return this;
-        }
+    public NonQueryResult Execute(Transaction transaction,
+                                  QueryTimeout? timeout = null,
+                                  Parameters useParameters = Parameters.Default,
+                                  string debugName = "") {
 
-        public IDeleteExecute Where(ICondition condition) {
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            ArgumentNullException.ThrowIfNull(condition);
-
-            if(WhereCondition != null) {
-                throw new Exception($"Where condition has already been set");
-            }
-            WhereCondition = condition;
-            return this;
-        }
-
-        public IDeleteExecute NoWhereCondition() {
-            WhereCondition = null;
-            return this;
-        }
-
-        public string GetSql(IDatabase database) {
-
-            ArgumentNullException.ThrowIfNull(database);
-
-            return database.DeleteGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                parameters: null,
-                outputFunc: null
-            );
-        }
-
-        public NonQueryResult Execute(Transaction transaction,
-                                      QueryTimeout? timeout = null,
-                                      Parameters useParameters = Parameters.Default,
-                                      string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortDelete;
-            }
-
-            IDatabase database = transaction.Database;
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = database.CreateParameters(initParams: 1);
-            }
-
-            string sql = database.DeleteGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                parameters: parameters,
-                outputFunc: null
-            );
-
-            NonQueryResult result = QueryExecutor.ExecuteNonQuery(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                sql: sql,
-                queryType: QueryType.Delete,
-                debugName: debugName
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortDelete;
         }
 
+        IDatabase database = transaction.Database;
 
-        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func,
-                                                   Transaction transaction,
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = database.CreateParameters(initParams: 1);
+        }
+
+        string sql = database.DeleteGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            parameters: parameters,
+            outputFunc: null
+        );
+
+        NonQueryResult result = QueryExecutor.ExecuteNonQuery(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            sql: sql,
+            queryType: QueryType.Delete,
+            debugName: debugName
+        );
+        return result;
+    }
+
+
+    public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func,
+                                               Transaction transaction,
+                                               QueryTimeout? timeout = null,
+                                               Parameters useParameters = Parameters.Default,
+                                               string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(func);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortDelete;
+        }
+
+        IDatabase database = transaction.Database;
+
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = database.CreateParameters(initParams: 1);
+        }
+
+        string sql = database.DeleteGenerator.GetSql(
+            template: this,
+            database: database,
+            parameters: parameters,
+            outputFunc: func
+        );
+
+        QueryResult<RESULT> result = QueryExecutor.Execute(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: func,
+            sql: sql,
+            queryType: QueryType.Update,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
+                                                   CancellationToken? ct = null,
                                                    QueryTimeout? timeout = null,
                                                    Parameters useParameters = Parameters.Default,
                                                    string debugName = "") {
 
-            ArgumentNullException.ThrowIfNull(func);
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortDelete;
-            }
-
-            IDatabase database = transaction.Database;
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = database.CreateParameters(initParams: 1);
-            }
-
-            string sql = database.DeleteGenerator.GetSql(
-                template: this,
-                database: database,
-                parameters: parameters,
-                outputFunc: func
-            );
-
-            QueryResult<RESULT> result = QueryExecutor.Execute(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: func,
-                sql: sql,
-                queryType: QueryType.Update,
-                debugName: debugName
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortDelete;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
-                                                       CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null,
-                                                       Parameters useParameters = Parameters.Default,
-                                                       string debugName = "") {
+        IDatabase database = transaction.Database;
 
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        IParametersBuilder? parameters = null;
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortDelete;
-            }
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
 
-            IDatabase database = transaction.Database;
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = database.CreateParameters(initParams: 1);
-            }
-
-            string sql = database.DeleteGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                parameters: parameters,
-                outputFunc: null
-            );
-
-            NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                sql: sql,
-                queryType: QueryType.Delete,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
+        if(createParameters) {
+            parameters = database.CreateParameters(initParams: 1);
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func,
-                                                                    Transaction transaction,
-                                                                    CancellationToken? ct = null,
-                                                                    QueryTimeout? timeout = null,
-                                                                    Parameters useParameters = Parameters.Default,
-                                                                    string debugName = "") {
+        string sql = database.DeleteGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            parameters: parameters,
+            outputFunc: null
+        );
 
-            ArgumentNullException.ThrowIfNull(func);
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            sql: sql,
+            queryType: QueryType.Delete,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
+    }
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortDelete;
-            }
+    public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func,
+                                                                Transaction transaction,
+                                                                CancellationToken? ct = null,
+                                                                QueryTimeout? timeout = null,
+                                                                Parameters useParameters = Parameters.Default,
+                                                                string debugName = "") {
 
-            IDatabase database = transaction.Database;
+        ArgumentNullException.ThrowIfNull(func);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = database.CreateParameters(initParams: 1);
-            }
-
-            string sql = database.DeleteGenerator.GetSql(
-                template: this,
-                database: database,
-                parameters: parameters,
-                outputFunc: func
-            );
-
-            QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: func,
-                sql: sql,
-                queryType: QueryType.Update,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortDelete;
         }
+
+        IDatabase database = transaction.Database;
+
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = database.CreateParameters(initParams: 1);
+        }
+
+        string sql = database.DeleteGenerator.GetSql(
+            template: this,
+            database: database,
+            parameters: parameters,
+            outputFunc: func
+        );
+
+        QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: func,
+            sql: sql,
+            queryType: QueryType.Update,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
     }
 }

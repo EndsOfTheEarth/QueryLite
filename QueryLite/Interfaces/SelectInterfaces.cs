@@ -21,425 +21,424 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    public enum JoinType {
-        Join, LeftJoin
+public enum JoinType {
+    Join, LeftJoin
+}
+
+public interface IJoin {
+
+    JoinType JoinType { get; }
+    ITable Table { get; }
+    ICondition Condition { get; }
+}
+internal sealed class Join<RESULT> : IJoin, IJoinOn<RESULT> {
+
+    public JoinType JoinType { get; private set; }
+    public ITable Table { get; private set; }
+
+    private ICondition? _condition;
+
+    public ICondition Condition {
+        get { return _condition!; }
     }
 
-    public interface IJoin {
+    private readonly SelectQueryTemplate<RESULT> Template;
 
-        JoinType JoinType { get; }
-        ITable Table { get; }
-        ICondition Condition { get; }
+    internal Join(JoinType joinType, ITable table, SelectQueryTemplate<RESULT> template) {
+        JoinType = joinType;
+        Table = table;
+        Template = template;
     }
-    internal sealed class Join<RESULT> : IJoin, IJoinOn<RESULT> {
+    public IJoin<RESULT> On(ICondition on) {
 
-        public JoinType JoinType { get; private set; }
-        public ITable Table { get; private set; }
+        ArgumentNullException.ThrowIfNull(on);
 
-        private ICondition? _condition;
-
-        public ICondition Condition {
-            get { return _condition!; }
-        }
-
-        private readonly SelectQueryTemplate<RESULT> Template;
-
-        internal Join(JoinType joinType, ITable table, SelectQueryTemplate<RESULT> template) {
-            JoinType = joinType;
-            Table = table;
-            Template = template;
-        }
-        public IJoin<RESULT> On(ICondition on) {
-
-            ArgumentNullException.ThrowIfNull(on);
-
-            _condition = on;
-            return Template;
-        }
+        _condition = on;
+        return Template;
     }
+}
 
-    public interface IDistinct<RESULT> : ITop<RESULT> {
+public interface IDistinct<RESULT> : ITop<RESULT> {
 
-        ITop<RESULT> Distinct { get; }
-    }
+    ITop<RESULT> Distinct { get; }
+}
 
-    public interface ITop<RESULT> : IFrom<RESULT> {
+public interface ITop<RESULT> : IFrom<RESULT> {
 
-        /// <summary>
-        /// Return TOP n rows
-        /// </summary>
-        /// <param name="rows"></param>
-        /// <returns></returns>
-        IFrom<RESULT> Top(int rows);
-    }
-    public interface IFrom<RESULT> {
+    /// <summary>
+    /// Return TOP n rows
+    /// </summary>
+    /// <param name="rows"></param>
+    /// <returns></returns>
+    IFrom<RESULT> Top(int rows);
+}
+public interface IFrom<RESULT> {
 
-        /// <summary>
-        /// From table clause
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IHint<RESULT> From(ITable table);
+    /// <summary>
+    /// From table clause
+    /// </summary>
+    /// <param name="table"></param>
+    /// <returns></returns>
+    IHint<RESULT> From(ITable table);
 
-        /// <summary>
-        /// Explicitly state this query does not have a from statement.
-        /// </summary>
-        IExecute<RESULT> NoFromClause();
-    }
+    /// <summary>
+    /// Explicitly state this query does not have a from statement.
+    /// </summary>
+    IExecute<RESULT> NoFromClause();
+}
 
-    public interface IHint<RESULT> : IJoin<RESULT> {
+public interface IHint<RESULT> : IJoin<RESULT> {
 
-        /// <summary>
-        /// The 'With' option only works on sql server. For other databases the query will ignore these table hints and execute without them.
-        /// </summary>
-        /// <param name="hints"></param>
-        /// <returns></returns>
-        public IJoin<RESULT> With(params SqlServerTableHint[] hints);
-    }
+    /// <summary>
+    /// The 'With' option only works on sql server. For other databases the query will ignore these table hints and execute without them.
+    /// </summary>
+    /// <param name="hints"></param>
+    /// <returns></returns>
+    public IJoin<RESULT> With(params SqlServerTableHint[] hints);
+}
 
-    public enum SqlServerTableHint {
-        KEEPIDENTITY,
-        KEEPDEFAULTS,
-        HOLDLOCK,
-        IGNORE_CONSTRAINTS,
-        IGNORE_TRIGGERS,
-        NOLOCK,
-        NOWAIT,
-        PAGLOCK,
-        READCOMMITTED,
-        READCOMMITTEDLOCK,
-        READPAST,
-        REPEATABLEREAD,
-        ROWLOCK,
-        SERIALIZABLE,
-        SNAPSHOT,
-        TABLOCK,
-        TABLOCKX,
-        UPDLOCK,
-        XLOCK
-    }
-    public interface IJoin<RESULT> : IWhere<RESULT> {
+public enum SqlServerTableHint {
+    KEEPIDENTITY,
+    KEEPDEFAULTS,
+    HOLDLOCK,
+    IGNORE_CONSTRAINTS,
+    IGNORE_TRIGGERS,
+    NOLOCK,
+    NOWAIT,
+    PAGLOCK,
+    READCOMMITTED,
+    READCOMMITTEDLOCK,
+    READPAST,
+    REPEATABLEREAD,
+    ROWLOCK,
+    SERIALIZABLE,
+    SNAPSHOT,
+    TABLOCK,
+    TABLOCKX,
+    UPDLOCK,
+    XLOCK
+}
+public interface IJoin<RESULT> : IWhere<RESULT> {
 
-        /// <summary>
-        /// Join table clause
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IJoinOn<RESULT> Join(ITable table);
+    /// <summary>
+    /// Join table clause
+    /// </summary>
+    /// <param name="table"></param>
+    /// <returns></returns>
+    IJoinOn<RESULT> Join(ITable table);
 
-        /// <summary>
-        /// Left join table clause
-        /// </summary>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        IJoinOn<RESULT> LeftJoin(ITable table);
-    }
+    /// <summary>
+    /// Left join table clause
+    /// </summary>
+    /// <param name="table"></param>
+    /// <returns></returns>
+    IJoinOn<RESULT> LeftJoin(ITable table);
+}
 
-    public interface IJoinOn<RESULT> {
+public interface IJoinOn<RESULT> {
 
-        /// <summary>
-        /// Join condition
-        /// </summary>
-        /// <param name="on"></param>
-        /// <returns></returns>
-        IJoin<RESULT> On(ICondition on);
-    }
+    /// <summary>
+    /// Join condition
+    /// </summary>
+    /// <param name="on"></param>
+    /// <returns></returns>
+    IJoin<RESULT> On(ICondition on);
+}
 
-    public interface IWhere<RESULT> : IGroupBy<RESULT> {
+public interface IWhere<RESULT> : IGroupBy<RESULT> {
 
-        /// <summary>
-        /// Where condition clause
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        IGroupBy<RESULT> Where(ICondition? condition);
-    }
+    /// <summary>
+    /// Where condition clause
+    /// </summary>
+    /// <param name="condition"></param>
+    /// <returns></returns>
+    IGroupBy<RESULT> Where(ICondition? condition);
+}
 
-    public interface IGroupBy<RESULT> : IHaving<RESULT> {
+public interface IGroupBy<RESULT> : IHaving<RESULT> {
 
-        /// <summary>
-        /// Group by clause
-        /// </summary>
-        /// <param name="columns"></param>
-        /// <returns></returns>
-        IHaving<RESULT> GroupBy(params ISelectable[] columns);
-    }
+    /// <summary>
+    /// Group by clause
+    /// </summary>
+    /// <param name="columns"></param>
+    /// <returns></returns>
+    IHaving<RESULT> GroupBy(params ISelectable[] columns);
+}
 
-    public interface IHaving<RESULT> : IOrderBy<RESULT> {
+public interface IHaving<RESULT> : IOrderBy<RESULT> {
 
-        /// <summary>
-        /// Having clause
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        IOrderBy<RESULT> Having(ICondition condition);
-    }
+    /// <summary>
+    /// Having clause
+    /// </summary>
+    /// <param name="condition"></param>
+    /// <returns></returns>
+    IOrderBy<RESULT> Having(ICondition condition);
+}
 
-    public interface IOrderBy<RESULT> : IFor<RESULT> {
+public interface IOrderBy<RESULT> : IFor<RESULT> {
 
-        /// <summary>
-        /// Order by clause
-        /// </summary>
-        /// <param name="columns"></param>
-        /// <returns></returns>
-        IFor<RESULT> OrderBy(params IOrderByColumn[] columns);
+    /// <summary>
+    /// Order by clause
+    /// </summary>
+    /// <param name="columns"></param>
+    /// <returns></returns>
+    IFor<RESULT> OrderBy(params IOrderByColumn[] columns);
 
-        /// <summary>
-        /// Union query
-        /// </summary>
-        /// <param name="selectFunc"></param>
-        /// <returns></returns>
-        IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc);
+    /// <summary>
+    /// Union query
+    /// </summary>
+    /// <param name="selectFunc"></param>
+    /// <returns></returns>
+    IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc);
 
-        /// <summary>
-        /// Union all query
-        /// </summary>
-        /// <param name="selectFunc"></param>
-        /// <returns></returns>
-        IDistinct<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc);
-    }
+    /// <summary>
+    /// Union all query
+    /// </summary>
+    /// <param name="selectFunc"></param>
+    /// <returns></returns>
+    IDistinct<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc);
+}
 
-    public interface IFor<RESULT> : IOption<RESULT> {
+public interface IFor<RESULT> : IOption<RESULT> {
 
-        /// <summary>
-        /// FOR clause. PostgreSql only
-        /// </summary>
-        /// <param name="forType"></param>
-        /// <param name="ofTables"></param>
-        /// <param name="waitType"></param>
-        /// <returns></returns>
-        IOption<RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType);
-    }
+    /// <summary>
+    /// FOR clause. PostgreSql only
+    /// </summary>
+    /// <param name="forType"></param>
+    /// <param name="ofTables"></param>
+    /// <param name="waitType"></param>
+    /// <returns></returns>
+    IOption<RESULT> FOR(ForType forType, ITable[] ofTables, WaitType waitType);
+}
 
-    public interface IOption<RESULT> : IExecute<RESULT> {
+public interface IOption<RESULT> : IExecute<RESULT> {
 
-        /// <summary>
-        /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will
-        /// ignore these table hints and execute without them.
-        /// </summary>
-        /// <param name="hints"></param>
-        /// <returns></returns>
-        IExecute<RESULT> Option(params SqlServerQueryOption[] options);
+    /// <summary>
+    /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will
+    /// ignore these table hints and execute without them.
+    /// </summary>
+    /// <param name="hints"></param>
+    /// <returns></returns>
+    IExecute<RESULT> Option(params SqlServerQueryOption[] options);
 
-        /// <summary>
-        /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will
-        /// ignore these table hints and execute without them.
-        /// </summary>
-        /// <param name="hints"></param>
-        /// <returns></returns>
-        IExecute<RESULT> Option(string labelName, params SqlServerQueryOption[] options);
-    }
+    /// <summary>
+    /// Sql server OPTION syntax. Note: 'Option' only works on sql server. For other databases the query will
+    /// ignore these table hints and execute without them.
+    /// </summary>
+    /// <param name="hints"></param>
+    /// <returns></returns>
+    IExecute<RESULT> Option(string labelName, params SqlServerQueryOption[] options);
+}
 
-    public enum ForType {
-        UPDATE,
-        NO_KEY_UPDATE,
-        SHARE,
-        KEY_SHARE
-    }
-    public enum WaitType {
-        WAIT,
-        NOWAIT,
-        SKIP_LOCKED
-    }
-    public enum UnionType {
-        Union,
-        UnionAll
-    }
+public enum ForType {
+    UPDATE,
+    NO_KEY_UPDATE,
+    SHARE,
+    KEY_SHARE
+}
+public enum WaitType {
+    WAIT,
+    NOWAIT,
+    SKIP_LOCKED
+}
+public enum UnionType {
+    Union,
+    UnionAll
+}
 
-    public enum SqlServerQueryOption {
-        HASH_JOIN,
-        LOOP_JOIN,
-        MERGE_JOIN,
-        FORCE_ORDER,
-        FORCE_EXTERNALPUSHDOWN,
-        DISABLE_EXTERNALPUSHDOWN
-    }
+public enum SqlServerQueryOption {
+    HASH_JOIN,
+    LOOP_JOIN,
+    MERGE_JOIN,
+    FORCE_ORDER,
+    FORCE_EXTERNALPUSHDOWN,
+    DISABLE_EXTERNALPUSHDOWN
+}
 
-    public interface IGetSelectSql {
+public interface IGetSelectSql {
 
-        /// <summary>
-        /// Get select query sql
-        /// </summary>
-        /// <param name="database"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public string GetSql(IDatabase database, IParametersBuilder? parameters = null);
+    /// <summary>
+    /// Get select query sql
+    /// </summary>
+    /// <param name="database"></param>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
+    public string GetSql(IDatabase database, IParametersBuilder? parameters = null);
 
-        /// <summary>
-        /// Get select query sql
-        /// </summary>
-        /// <param name="database"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public string GetSql(IDatabase database, bool forceAlias, IParametersBuilder? parameters = null);
+    /// <summary>
+    /// Get select query sql
+    /// </summary>
+    /// <param name="database"></param>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
+    public string GetSql(IDatabase database, bool forceAlias, IParametersBuilder? parameters = null);
 
-    }
-    public interface IExecute<RESULT> : IGetSelectSql {
+}
+public interface IExecute<RESULT> : IGetSelectSql {
 
-        public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-        
-        public QueryResult<RESULT> Execute(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+    public QueryResult<RESULT> Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+    
+    public QueryResult<RESULT> Execute(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
-                                                      QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
-                                                      string debugName = "");
+    public Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
+                                                  QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                                  string debugName = "");
 
-        public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
-                                                      Parameters useParameters = Parameters.Default, string debugName = "");
-
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public RESULT? SingleOrDefault(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public RESULT? SingleOrDefault(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? ct = null, QueryTimeout? timeout = null,
+    public Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
                                                   Parameters useParameters = Parameters.Default, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
-                                                  Parameters useParameters = Parameters.Default, string debugName = "");
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public RESULT? SingleOrDefault(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public RESULT? SingleOrDefault(IDatabase database, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public Task<RESULT?> SingleOrDefaultAsync(Transaction transaction, CancellationToken? ct = null, QueryTimeout? timeout = null,
+                                              Parameters useParameters = Parameters.Default, string debugName = "");
+
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public Task<RESULT?> SingleOrDefaultAsync(IDatabase database, CancellationToken? ct = null, QueryTimeout? timeout = null,
+                                              Parameters useParameters = Parameters.Default, string debugName = "");
+}
+
+public interface IQueryResult { }
+
+public readonly struct QueryResult<RESULT> : IQueryResult {
+
+    /// <summary>
+    /// Returned rows
+    /// </summary>
+    public IList<RESULT> Rows { get; }
+
+    /// <summary>
+    /// Sql of query
+    /// </summary>
+    public string Sql { get; }
+
+    /// <summary>
+    /// Rows effected by a change
+    /// </summary>
+    public int RowsEffected { get; }
+
+    public QueryResult(IList<RESULT> rows, string sql, int rowsEffected) {
+        Rows = rows;
+        Sql = sql;
+        RowsEffected = rowsEffected;
     }
 
-    public interface IQueryResult { }
+    /// <summary>
+    /// Throws an exception if the number of rows in the QueryResult does not equal rows.
+    /// </summary>
+    public void AssertRowCount(int rows) {
 
-    public readonly struct QueryResult<RESULT> : IQueryResult {
-
-        /// <summary>
-        /// Returned rows
-        /// </summary>
-        public IList<RESULT> Rows { get; }
-
-        /// <summary>
-        /// Sql of query
-        /// </summary>
-        public string Sql { get; }
-
-        /// <summary>
-        /// Rows effected by a change
-        /// </summary>
-        public int RowsEffected { get; }
-
-        public QueryResult(IList<RESULT> rows, string sql, int rowsEffected) {
-            Rows = rows;
-            Sql = sql;
-            RowsEffected = rowsEffected;
+        if(rows < 0) {
+            throw new ArgumentException($"{nameof(rows)} must be a positive number. {nameof(rows)} == {rows}");
         }
 
-        /// <summary>
-        /// Throws an exception if the number of rows in the QueryResult does not equal rows.
-        /// </summary>
-        public void AssertRowCount(int rows) {
-
-            if(rows < 0) {
-                throw new ArgumentException($"{nameof(rows)} must be a positive number. {nameof(rows)} == {rows}");
-            }
-
-            if(Rows.Count != rows) {
-                throw new Exception($"Expected {rows} row{(rows != 1 ? "s" : "")} but {Rows.Count} rows were returned.");
-            }
-        }
-
-        /// <summary>
-        /// Throws an exception if the number of rows in the QueryResult is not between min and max (Inclusive).
-        /// </summary>
-        public void AssertRowCountBetween(int min, int max) {
-
-            if(min < 0) {
-                throw new ArgumentException($"{nameof(min)} must be a positive number. {nameof(min)} == {min}");
-            }
-
-            if(max <= min) {
-                throw new ArgumentException($"{nameof(max)} must be greater than {nameof(min)}. {nameof(min)} == {min}, {nameof(max)} == {max}");
-            }
-
-            if(Rows.Count < min || Rows.Count > max) {
-                throw new Exception($"Expected between {min} and {max} rows but {Rows.Count} rows were returned.");
-            }
-        }
-
-        public override string ToString() {
-            return $"Rows: {Rows.Count}, Rows Effected: {RowsEffected}";
+        if(Rows.Count != rows) {
+            throw new Exception($"Expected {rows} row{(rows != 1 ? "s" : "")} but {Rows.Count} rows were returned.");
         }
     }
-    public readonly struct NonQueryResult : IQueryResult {
 
-        /// <summary>
-        /// Sql of query
-        /// </summary>
-        public string Sql { get; }
+    /// <summary>
+    /// Throws an exception if the number of rows in the QueryResult is not between min and max (Inclusive).
+    /// </summary>
+    public void AssertRowCountBetween(int min, int max) {
 
-        /// <summary>
-        /// Rows effected by a change
-        /// </summary>
-        public int RowsEffected { get; }
-
-        public NonQueryResult(string sql, int rowsEffected) {
-            Sql = sql;
-            RowsEffected = rowsEffected;
+        if(min < 0) {
+            throw new ArgumentException($"{nameof(min)} must be a positive number. {nameof(min)} == {min}");
         }
 
-        /// <summary>
-        /// Throws an exception if the number of rows in the QueryResult do not equal rows.
-        /// </summary>
-        public void AssertRowsEffected(int rows) {
-
-            if(rows < 0) {
-                throw new ArgumentException($"{nameof(rows)} must be a positive number. {nameof(rows)} == {rows}");
-            }
-
-            if(RowsEffected != rows) {
-                throw new Exception($"Expected {rows} row{(rows != 1 ? "s" : "")} but {RowsEffected} rows were effected.");
-            }
+        if(max <= min) {
+            throw new ArgumentException($"{nameof(max)} must be greater than {nameof(min)}. {nameof(min)} == {min}, {nameof(max)} == {max}");
         }
 
-        /// <summary>
-        /// Throws an exception if the number of rows in the QueryResult is not between min and max (Inclusive).
-        /// </summary>
-        public void AssertRowsEffectedBetween(int min, int max) {
+        if(Rows.Count < min || Rows.Count > max) {
+            throw new Exception($"Expected between {min} and {max} rows but {Rows.Count} rows were returned.");
+        }
+    }
 
-            if(min < 0) {
-                throw new ArgumentException($"{nameof(min)} must be a positive number. {nameof(min)} == {min}");
-            }
+    public override string ToString() {
+        return $"Rows: {Rows.Count}, Rows Effected: {RowsEffected}";
+    }
+}
+public readonly struct NonQueryResult : IQueryResult {
 
-            if(max <= min) {
-                throw new ArgumentException($"{nameof(max)} must be greater than {nameof(min)}. {nameof(min)} == {min}, {nameof(max)} == {max}");
-            }
+    /// <summary>
+    /// Sql of query
+    /// </summary>
+    public string Sql { get; }
 
-            if(RowsEffected < min || RowsEffected > max) {
-                throw new Exception($"Expected between {min} and {max} rows but {RowsEffected} rows were effected.");
-            }
+    /// <summary>
+    /// Rows effected by a change
+    /// </summary>
+    public int RowsEffected { get; }
+
+    public NonQueryResult(string sql, int rowsEffected) {
+        Sql = sql;
+        RowsEffected = rowsEffected;
+    }
+
+    /// <summary>
+    /// Throws an exception if the number of rows in the QueryResult do not equal rows.
+    /// </summary>
+    public void AssertRowsEffected(int rows) {
+
+        if(rows < 0) {
+            throw new ArgumentException($"{nameof(rows)} must be a positive number. {nameof(rows)} == {rows}");
+        }
+
+        if(RowsEffected != rows) {
+            throw new Exception($"Expected {rows} row{(rows != 1 ? "s" : "")} but {RowsEffected} rows were effected.");
+        }
+    }
+
+    /// <summary>
+    /// Throws an exception if the number of rows in the QueryResult is not between min and max (Inclusive).
+    /// </summary>
+    public void AssertRowsEffectedBetween(int min, int max) {
+
+        if(min < 0) {
+            throw new ArgumentException($"{nameof(min)} must be a positive number. {nameof(min)} == {min}");
+        }
+
+        if(max <= min) {
+            throw new ArgumentException($"{nameof(max)} must be greater than {nameof(min)}. {nameof(min)} == {min}, {nameof(max)} == {max}");
+        }
+
+        if(RowsEffected < min || RowsEffected > max) {
+            throw new Exception($"Expected between {min} and {max} rows but {RowsEffected} rows were effected.");
         }
     }
 }

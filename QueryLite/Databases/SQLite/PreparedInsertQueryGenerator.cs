@@ -24,58 +24,57 @@
 using QueryLite.Databases.Sqlite.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.Sqlite {
+namespace QueryLite.Databases.Sqlite; 
 
-    internal sealed class SqlitePreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
+internal sealed class SqlitePreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
 
-        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template,
-                                                 IDatabase database,
-                                                 out PreparedParameterList<PARAMETERS> parameters,
-                                                 Func<IResultRow, RESULT>? outputFunc) {
+    public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template,
+                                             IDatabase database,
+                                             out PreparedParameterList<PARAMETERS> parameters,
+                                             Func<IResultRow, RESULT>? outputFunc) {
 
-            StringBuilder sql = StringBuilderCache.Acquire();
+        StringBuilder sql = StringBuilderCache.Acquire();
 
-            sql.Append("INSERT INTO ");
+        sql.Append("INSERT INTO ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                sql.Append('.');
-            }
-
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-
-            StringBuilder paramSql = StringBuilderCache.Acquire();
-
-            SqlitePreparedSetValuesCollector<PARAMETERS> valuesCollector = new(
-                sql: sql,
-                paramSql: paramSql,
-                database: database,
-                mode: CollectorMode.Insert
-            );
-            sql.Append('(');
-            template.SetValues!(valuesCollector);
-            sql.Append(") VALUES(");
-
-            parameters = valuesCollector.Parameters;
-
-            sql.Append(paramSql);
-            sql.Append(')');
-
-            StringBuilderCache.Release(paramSql);
-
-            if(outputFunc != null) {
-
-                SqliteReturningFieldCollector collector = SqliteReturningCollectorCache.Acquire(sql, useAlias: false);
-
-                sql.Append(" RETURNING ");
-
-                outputFunc(collector);
-
-                SqliteReturningCollectorCache.Release(collector);
-            }
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+            sql.Append('.');
         }
+
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
+
+        StringBuilder paramSql = StringBuilderCache.Acquire();
+
+        SqlitePreparedSetValuesCollector<PARAMETERS> valuesCollector = new(
+            sql: sql,
+            paramSql: paramSql,
+            database: database,
+            mode: CollectorMode.Insert
+        );
+        sql.Append('(');
+        template.SetValues!(valuesCollector);
+        sql.Append(") VALUES(");
+
+        parameters = valuesCollector.Parameters;
+
+        sql.Append(paramSql);
+        sql.Append(')');
+
+        StringBuilderCache.Release(paramSql);
+
+        if(outputFunc != null) {
+
+            SqliteReturningFieldCollector collector = SqliteReturningCollectorCache.Acquire(sql, useAlias: false);
+
+            sql.Append(" RETURNING ");
+
+            outputFunc(collector);
+
+            SqliteReturningCollectorCache.Release(collector);
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

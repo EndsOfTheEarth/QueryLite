@@ -6,167 +6,166 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using QueryLite;
 
-namespace Benchmarks {
+namespace Benchmarks; 
 
-    [MemoryDiagnoser]
-    public class SelectSingleRowBenchmarks {
+[MemoryDiagnoser]
+public class SelectSingleRowBenchmarks {
 
-        private readonly Guid _guid = new Guid("{A94E044C-CDE2-40E2-9A81-5803AFB746A2}");
-        private readonly string _message = "this is my new message";
-        private readonly DateTime _date = DateTime.Now;
+    private readonly Guid _guid = new Guid("{A94E044C-CDE2-40E2-9A81-5803AFB746A2}");
+    private readonly string _message = "this is my new message";
+    private readonly DateTime _date = DateTime.Now;
 
-        private readonly IPreparedQueryExecute<SelectSingleRowBenchmarks, Test01> _preparedSelectQuery;
+    private readonly IPreparedQueryExecute<SelectSingleRowBenchmarks, Test01> _preparedSelectQuery;
 
-        public SelectSingleRowBenchmarks() {
+    public SelectSingleRowBenchmarks() {
+
+        Test01Table table = Test01Table.Instance;
+
+        _preparedSelectQuery = Query
+            .Prepare<SelectSingleRowBenchmarks>()
+            .Select(
+                row => new Test01(table, row)
+            )
+            .From(table)
+            .Where(where => where.EQUALS(table.RowGuid, info => info._guid))
+            .Build();
+
+        _preparedSelectQuery.Initialize(Databases.TestDatabase);
+    }
+
+    [IterationSetup]
+    public void Setup() {
+
+        Databases.ResetTable();
+
+        Test01Table table = Test01Table.Instance;
+
+        using(Transaction transaction = new(Databases.TestDatabase)) {
+
+            Query.Truncate(table).Execute(transaction);
+
+            NonQueryResult result = Query
+                .Insert(table)
+                .Values(values => values
+                    .Set(table.RowGuid, _guid)
+                    .Set(table.Message, _message)
+                    .Set(table.Date, _date)
+                )
+                .Execute(transaction);
+
+            transaction.Commit();
+        }
+        using TestContext context = Databases.ContextFactory.CreateDbContext();
+        Test01Row_EfCore? r = context.TestRows.Where(row => row.RowGuid == _guid).SingleOrDefault();
+    }
+
+    private readonly int _iterations = 2000;
+
+    [Benchmark]
+    public void Ado_Single_Row_Select() {
+
+        for(int index = 0; index < _iterations; index++) {
+
+            using NpgsqlConnection connection = new(Databases.ConnectionString);
+
+            connection.Open();
+
+            using NpgsqlCommand command = connection.CreateCommand();
+
+            command.CommandText = "SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0";
+
+            command.Parameters.Add(new NpgsqlParameter(parameterName: "@0", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = _guid });
+
+            using NpgsqlDataReader reader = command.ExecuteReader();
+
+            reader.Read();
+
+            Test01 test01 = new Test01(
+                id: reader.GetInt32(0),
+                row_guid: reader.GetGuid(1),
+                message: reader.GetString(2),
+                date: reader.GetDateTime(3)
+            );
+        }
+    }
+
+    [Benchmark]
+    public void Dapper_Single_Row_Select() {
+
+        for(int index = 0; index < _iterations; index++) {
+
+            using NpgsqlConnection connection = new(Databases.ConnectionString);
+
+            connection.Open();
+
+            Test01 result = connection.QuerySingle<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@_guid", new { _guid });
+        }
+    }
+
+    [Benchmark]
+    public void QueryLite_Single_Row_Prepared_Select() {
+
+        for(int index = 0; index < _iterations; index++) {
+
+            Test01? result = _preparedSelectQuery.SingleOrDefault(parameters: this, Databases.TestDatabase);
+        }
+    }
+
+    [Benchmark]
+    public void QueryLite_Single_Row_Dynamic_Select() {
+
+        for(int index = 0; index < _iterations; index++) {
 
             Test01Table table = Test01Table.Instance;
 
-            _preparedSelectQuery = Query
-                .Prepare<SelectSingleRowBenchmarks>()
+            Test01? result = Query
                 .Select(
                     row => new Test01(table, row)
                 )
                 .From(table)
-                .Where(where => where.EQUALS(table.RowGuid, info => info._guid))
-                .Build();
-
-            _preparedSelectQuery.Initialize(Databases.TestDatabase);
+                .Where(table.RowGuid == _guid)
+                .SingleOrDefault(Databases.TestDatabase);
         }
+    }
 
-        [IterationSetup]
-        public void Setup() {
+    [Benchmark]
+    public void QueryLite_Single_Row_Repository_Select() {
 
-            Databases.ResetTable();
+        for(int index = 0; index < _iterations; index++) {
 
-            Test01Table table = Test01Table.Instance;
+            Test01RowRepository repository = new();
 
-            using(Transaction transaction = new(Databases.TestDatabase)) {
-
-                Query.Truncate(table).Execute(transaction);
-
-                NonQueryResult result = Query
-                    .Insert(table)
-                    .Values(values => values
-                        .Set(table.RowGuid, _guid)
-                        .Set(table.Message, _message)
-                        .Set(table.Date, _date)
-                    )
-                    .Execute(transaction);
-
-                transaction.Commit();
-            }
-            using TestContext context = Databases.ContextFactory.CreateDbContext();
-            Test01Row_EfCore? r = context.TestRows.Where(row => row.RowGuid == _guid).SingleOrDefault();
+            repository
+                .SelectRows
+                .Where(repository.Table.RowGuid == _guid)
+                .Execute(Databases.TestDatabase);
         }
+    }
 
-        private readonly int _iterations = 2000;
+    [Benchmark]
+    public void EF_Core_Single_Row_Select_No_Change_Tracking() {
 
-        [Benchmark]
-        public void Ado_Single_Row_Select() {
+        for(int index = 0; index < _iterations; index++) {
 
-            for(int index = 0; index < _iterations; index++) {
+            using TestContext context = Databases.ContextFactory.CreateDbContext();    //Keep in loop so that it does not cache records across all iterations
 
-                using NpgsqlConnection connection = new(Databases.ConnectionString);
-
-                connection.Open();
-
-                using NpgsqlCommand command = connection.CreateCommand();
-
-                command.CommandText = "SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@0";
-
-                command.Parameters.Add(new NpgsqlParameter(parameterName: "@0", NpgsqlTypes.NpgsqlDbType.Uuid) { Value = _guid });
-
-                using NpgsqlDataReader reader = command.ExecuteReader();
-
-                reader.Read();
-
-                Test01 test01 = new Test01(
-                    id: reader.GetInt32(0),
-                    row_guid: reader.GetGuid(1),
-                    message: reader.GetString(2),
-                    date: reader.GetDateTime(3)
-                );
-            }
+            Test01Row_EfCore? result = context.TestRows
+                .AsNoTracking()
+                .Where(row => row.RowGuid == _guid)
+                .SingleOrDefault();
         }
+    }
 
-        [Benchmark]
-        public void Dapper_Single_Row_Select() {
+    [Benchmark]
+    public void EF_Core_Single_Row_Select() {
 
-            for(int index = 0; index < _iterations; index++) {
+        for(int index = 0; index < _iterations; index++) {
 
-                using NpgsqlConnection connection = new(Databases.ConnectionString);
+            using TestContext context = Databases.ContextFactory.CreateDbContext();    //Keep in loop so that it does not cache records across all iterations
 
-                connection.Open();
-
-                Test01 result = connection.QuerySingle<Test01>(sql: "SELECT id,row_guid,message,date FROM Test01 WHERE row_guid=@_guid", new { _guid });
-            }
-        }
-
-        [Benchmark]
-        public void QueryLite_Single_Row_Prepared_Select() {
-
-            for(int index = 0; index < _iterations; index++) {
-
-                Test01? result = _preparedSelectQuery.SingleOrDefault(parameters: this, Databases.TestDatabase);
-            }
-        }
-
-        [Benchmark]
-        public void QueryLite_Single_Row_Dynamic_Select() {
-
-            for(int index = 0; index < _iterations; index++) {
-
-                Test01Table table = Test01Table.Instance;
-
-                Test01? result = Query
-                    .Select(
-                        row => new Test01(table, row)
-                    )
-                    .From(table)
-                    .Where(table.RowGuid == _guid)
-                    .SingleOrDefault(Databases.TestDatabase);
-            }
-        }
-
-        [Benchmark]
-        public void QueryLite_Single_Row_Repository_Select() {
-
-            for(int index = 0; index < _iterations; index++) {
-
-                Test01RowRepository repository = new();
-
-                repository
-                    .SelectRows
-                    .Where(repository.Table.RowGuid == _guid)
-                    .Execute(Databases.TestDatabase);
-            }
-        }
-
-        [Benchmark]
-        public void EF_Core_Single_Row_Select_No_Change_Tracking() {
-
-            for(int index = 0; index < _iterations; index++) {
-
-                using TestContext context = Databases.ContextFactory.CreateDbContext();    //Keep in loop so that it does not cache records across all iterations
-
-                Test01Row_EfCore? result = context.TestRows
-                    .AsNoTracking()
-                    .Where(row => row.RowGuid == _guid)
-                    .SingleOrDefault();
-            }
-        }
-
-        [Benchmark]
-        public void EF_Core_Single_Row_Select() {
-
-            for(int index = 0; index < _iterations; index++) {
-
-                using TestContext context = Databases.ContextFactory.CreateDbContext();    //Keep in loop so that it does not cache records across all iterations
-
-                Test01Row_EfCore? result = context.TestRows
-                    .Where(row => row.RowGuid == _guid)
-                    .SingleOrDefault();
-            }
+            Test01Row_EfCore? result = context.TestRows
+                .Where(row => row.RowGuid == _guid)
+                .SingleOrDefault();
         }
     }
 }

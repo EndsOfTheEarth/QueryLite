@@ -24,77 +24,76 @@
 using QueryLite.Databases;
 using System.Data.Common;
 
-namespace QueryLite {
+namespace QueryLite; 
+
+/// <summary>
+/// Represents a database
+/// </summary>
+public interface IDatabase : IInternalConnection {
 
     /// <summary>
-    /// Represents a database
+    /// Descriptive name of database
     /// </summary>
-    public interface IDatabase : IInternalConnection {
-
-        /// <summary>
-        /// Descriptive name of database
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// Database type
-        /// </summary>
-        public DatabaseType DatabaseType { get; }
-
-        /// <summary>
-        /// Function to map between schema names when using more than one type of database.
-        /// For example: the Sql Server schema might be 'dbo' but it is 'public' in PostgreSql.
-        /// </summary>
-        Func<string, string> SchemaMap { get; }
-
-        EncloseWith EncloseWith { get; }
-
-        public UtfType DefaultUtfType { get; }
-
-        /// <summary>
-        /// Creates a new database connection
-        /// </summary>
-        /// <returns></returns>
-        DbConnection GetNewConnection();
-    }
-
-    public enum DatabaseType {
-        SqlServer = 0,  //Note: These integer values are used by the prepared query functionality
-        PostgreSql = 1,
-        Sqlite = 2
-    }
-
-    public enum UtfType{
-        UTF8,
-        UTF16,
-        UTF32
-    }
+    public string Name { get; }
 
     /// <summary>
-    /// Internal properties and methods that help with the generation of sql queries
+    /// Database type
     /// </summary>
-    public interface IInternalConnection {
+    public DatabaseType DatabaseType { get; }
 
-        internal IQueryGenerator QueryGenerator { get; }
-        internal IInsertQueryGenerator InsertGenerator { get; }
-        internal IPreparedInsertQueryGenerator PreparedInsertGenerator { get; }
-        internal IUpdateQueryGenerator UpdateGenerator { get; }
-        internal IPreparedUpdateQueryGenerator PreparedUpdateGenerator { get; }
-        internal IPreparedDeleteQueryGenerator PreparedDeleteQueryGenerator { get; }
-        internal IDeleteQueryGenerator DeleteGenerator { get; }
-        internal ITruncateQueryGenerator TruncateGenerator { get; }
-        internal IPreparedQueryGenerator PreparedQueryGenerator { get; }
-        internal IPreparedParameterMapper ParameterMapper { get; }
-        internal ILikeSqlConditionGenerator LikeSqlConditionGenerator { get; }
+    /// <summary>
+    /// Function to map between schema names when using more than one type of database.
+    /// For example: the Sql Server schema might be 'dbo' but it is 'public' in PostgreSql.
+    /// </summary>
+    Func<string, string> SchemaMap { get; }
 
-        /// <summary>
-        /// Converts object into sql value. Use
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        string ConvertToSql(object value);
+    EncloseWith EncloseWith { get; }
 
-        internal IParametersBuilder CreateParameters(int initParams);
-        string? GetCSharpCodeSet(Type dotNetType);
-    }
+    public UtfType DefaultUtfType { get; }
+
+    /// <summary>
+    /// Creates a new database connection
+    /// </summary>
+    /// <returns></returns>
+    DbConnection GetNewConnection();
+}
+
+public enum DatabaseType {
+    SqlServer = 0,  //Note: These integer values are used by the prepared query functionality
+    PostgreSql = 1,
+    Sqlite = 2
+}
+
+public enum UtfType{
+    UTF8,
+    UTF16,
+    UTF32
+}
+
+/// <summary>
+/// Internal properties and methods that help with the generation of sql queries
+/// </summary>
+public interface IInternalConnection {
+
+    internal IQueryGenerator QueryGenerator { get; }
+    internal IInsertQueryGenerator InsertGenerator { get; }
+    internal IPreparedInsertQueryGenerator PreparedInsertGenerator { get; }
+    internal IUpdateQueryGenerator UpdateGenerator { get; }
+    internal IPreparedUpdateQueryGenerator PreparedUpdateGenerator { get; }
+    internal IPreparedDeleteQueryGenerator PreparedDeleteQueryGenerator { get; }
+    internal IDeleteQueryGenerator DeleteGenerator { get; }
+    internal ITruncateQueryGenerator TruncateGenerator { get; }
+    internal IPreparedQueryGenerator PreparedQueryGenerator { get; }
+    internal IPreparedParameterMapper ParameterMapper { get; }
+    internal ILikeSqlConditionGenerator LikeSqlConditionGenerator { get; }
+
+    /// <summary>
+    /// Converts object into sql value. Use
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    string ConvertToSql(object value);
+
+    internal IParametersBuilder CreateParameters(int initParams);
+    string? GetCSharpCodeSet(Type dotNetType);
 }

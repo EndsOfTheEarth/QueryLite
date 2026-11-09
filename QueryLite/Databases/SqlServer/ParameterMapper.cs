@@ -25,208 +25,207 @@ using Microsoft.Data.SqlClient;
 using QueryLite.Utility;
 using System.Data;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    /// <summary>
-    /// Creates Sql Server parameters for the supported csharp types.
-    /// </summary>
-    public sealed class SqlServerParameterMap : AParameterMap<SqlParameter, SqlDbType>, IPreparedParameterMapper {
+/// <summary>
+/// Creates Sql Server parameters for the supported csharp types.
+/// </summary>
+public sealed class SqlServerParameterMap : AParameterMap<SqlParameter, SqlDbType>, IPreparedParameterMapper {
 
-        public SqlServerParameterMap() : base(new SqlServerTypeMap()) { }
+    public SqlServerParameterMap() : base(new SqlServerTypeMap()) { }
 
-        protected override SqlParameter CreateParameter(string name, Bit? value) {
+    protected override SqlParameter CreateParameter(string name, Bit? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(Bit))) {
-                Value = (value != null ? value.Value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(Bit))) {
+            Value = (value != null ? value.Value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, bool? value) {
+    protected override SqlParameter CreateParameter(string name, bool? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(bool))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(bool))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, byte[]? value) {
+    protected override SqlParameter CreateParameter(string name, byte[]? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(byte[]))) {
-                Value = (value != null ? value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(byte[]))) {
+            Value = (value != null ? value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, DateOnly? value) {
+    protected override SqlParameter CreateParameter(string name, DateOnly? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateOnly))) {
-                Value = (value != null ? value.Value.ToDateTime(TimeOnly.MinValue) : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateOnly))) {
+            Value = (value != null ? value.Value.ToDateTime(TimeOnly.MinValue) : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, DateTime? value) {
+    protected override SqlParameter CreateParameter(string name, DateTime? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateTime))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateTime))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, DateTimeOffset? value) {
+    protected override SqlParameter CreateParameter(string name, DateTimeOffset? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateTimeOffset))) {
-                Value = (value != null ? value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(DateTimeOffset))) {
+            Value = (value != null ? value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, decimal? value) {
+    protected override SqlParameter CreateParameter(string name, decimal? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(decimal))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(decimal))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, double? value) {
+    protected override SqlParameter CreateParameter(string name, double? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(double))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(double))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, float? value) {
+    protected override SqlParameter CreateParameter(string name, float? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(float))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(float))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, Guid? value) {
+    protected override SqlParameter CreateParameter(string name, Guid? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(Guid))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(Guid))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, int? value) {
+    protected override SqlParameter CreateParameter(string name, int? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(int))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(int))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, long? value) {
+    protected override SqlParameter CreateParameter(string name, long? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(long))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(long))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, short? value) {
+    protected override SqlParameter CreateParameter(string name, short? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(short))) {
-                Value = (value != null ? value.Value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(short))) {
+            Value = (value != null ? value.Value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, string? value) {
+    protected override SqlParameter CreateParameter(string name, string? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(string))) {
-                Value = (value != null ? value : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(string))) {
+            Value = (value != null ? value : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, TimeOnly? value) {
+    protected override SqlParameter CreateParameter(string name, TimeOnly? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(TimeOnly))) {
-                Value = (value != null ? value.Value.ToTimeSpan() : DBNull.Value)
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(TimeOnly))) {
+            Value = (value != null ? value.Value.ToTimeSpan() : DBNull.Value)
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, byte? value) {
+    protected override SqlParameter CreateParameter(string name, byte? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(byte))) {
-                Value = value != null ? value.Value : DBNull.Value
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(byte))) {
+            Value = value != null ? value.Value : DBNull.Value
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, sbyte? value) {
+    protected override SqlParameter CreateParameter(string name, sbyte? value) {
 
-            return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(sbyte))) {
-                Value = value != null ? value.Value : DBNull.Value
-            };
-        }
+        return new SqlParameter(parameterName: name, dbType: TypeMap.GetDbType(typeof(sbyte))) {
+            Value = value != null ? value.Value : DBNull.Value
+        };
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<Guid>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<Guid>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<string>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<string>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<short>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<short>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<int>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<int>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<long>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<long>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<bool>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<bool>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<Bit>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<Bit>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<decimal>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<decimal>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<float>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<float>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<double>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<double>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<byte[]>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<byte[]>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<DateTime>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<DateTime>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<DateTimeOffset>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<DateTimeOffset>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<DateOnly>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<DateOnly>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<TimeOnly>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<TimeOnly>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, Json? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, Json? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, Jsonb? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, Jsonb? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<Json>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<Json>? value) {
+        return CreateParameter(name, value?.Value);
+    }
 
-        protected override SqlParameter CreateParameter(string name, IValue<Jsonb>? value) {
-            return CreateParameter(name, value?.Value);
-        }
+    protected override SqlParameter CreateParameter(string name, IValue<Jsonb>? value) {
+        return CreateParameter(name, value?.Value);
     }
 }

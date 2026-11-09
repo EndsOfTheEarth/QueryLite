@@ -23,40 +23,39 @@
  **/
 using System.Data.Common;
 
-namespace QueryLite {
+namespace QueryLite; 
+
+/// <summary>
+/// The parameters class is used to help sql query generators create and execute queries with parameters
+/// </summary>
+public interface IParametersBuilder {
+
+    public IList<DbParameter> ParameterList { get; }
 
     /// <summary>
-    /// The parameters class is used to help sql query generators create and execute queries with parameters
+    /// Add a new parameter to query
     /// </summary>
-    public interface IParametersBuilder {
+    /// <param name="database">Database being used for sql query</param>
+    /// <param name="type">.net type of parameter value</param>
+    /// <param name="value">Value of parameter</param>
+    /// <param name="paramName">Name of the newly generated parameter name for the sql query</param>
+    void Add(IDatabase database, Type type, object? value, out string paramName);
+}
 
-        public IList<DbParameter> ParameterList { get; }
+public enum Parameters {
 
-        /// <summary>
-        /// Add a new parameter to query
-        /// </summary>
-        /// <param name="database">Database being used for sql query</param>
-        /// <param name="type">.net type of parameter value</param>
-        /// <param name="value">Value of parameter</param>
-        /// <param name="paramName">Name of the newly generated parameter name for the sql query</param>
-        void Add(IDatabase database, Type type, object? value, out string paramName);
-    }
+    /// <summary>
+    /// Use the default parameters setting. This default value is located in Settings.UseParameters
+    /// </summary>
+    Default = 0,
 
-    public enum Parameters {
+    /// <summary>
+    /// Use parameters in sql query
+    /// </summary>
+    On = 1,
 
-        /// <summary>
-        /// Use the default parameters setting. This default value is located in Settings.UseParameters
-        /// </summary>
-        Default = 0,
-
-        /// <summary>
-        /// Use parameters in sql query
-        /// </summary>
-        On = 1,
-
-        /// <summary>
-        /// Do not use parameters in sql query
-        /// </summary>
-        Off = 2
-    }
+    /// <summary>
+    /// Do not use parameters in sql query
+    /// </summary>
+    Off = 2
 }

@@ -26,56 +26,56 @@ using QueryLite.DbSchema.CodeGeneration;
 using System;
 using System.Text;
 
-namespace DbSchema.CodeGeneration {
+namespace DbSchema.CodeGeneration; 
 
-    public static class MediatorLoadSingleRecordRequestGenerator {
+public static class MediatorLoadSingleRecordRequestGenerator {
 
-        public static string GetLoadRequest(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
+    public static string GetLoadRequest(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-            string requestName = GetLoadListRequestName(name);
+        string requestName = GetLoadListRequestName(name);
 
-            StringBuilder parametersText = new();
-            StringBuilder settersText = new();
-            StringBuilder propertiesText = new();
+        StringBuilder parametersText = new();
+        StringBuilder settersText = new();
+        StringBuilder propertiesText = new();
 
-            foreach(DatabaseColumn column in table.Columns) {
+        foreach(DatabaseColumn column in table.Columns) {
 
-                if(column.IsPrimaryKey) {
+            if(column.IsPrimaryKey) {
 
-                    CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
+                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
-                    if(parametersText.Length > 0) {
-                        parametersText.Append(',');
-                    }
-
-                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
-
-                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
-                    string parameterName = propertyName.FirstLetterLowerCase();
-
-                    parametersText.Append($"{columnInfo.ColumnTypeName} {parameterName}");
-
-                    if(settersText.Length > 0) {
-                        settersText.Append(Environment.NewLine);
-                    }
-
-                    if(propertyName != parameterName) {
-                        settersText.Append($"            {propertyName} = {parameterName};");
-                    }
-                    else {
-                        settersText.Append($"            this.{propertyName} = {parameterName};");
-                    }
-
-                    if(propertiesText.Length > 0) {
-                        propertiesText.Append(Environment.NewLine);
-                    }
-                    propertiesText.Append($"        public {columnInfo.ColumnTypeName} {propertyName} {{ get; set; }}");
+                if(parametersText.Length > 0) {
+                    parametersText.Append(',');
                 }
-            }
 
-            string code = $@"
+                string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+                string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
+                string parameterName = propertyName.FirstLetterLowerCase();
+
+                parametersText.Append($"{columnInfo.ColumnTypeName} {parameterName}");
+
+                if(settersText.Length > 0) {
+                    settersText.Append(Environment.NewLine);
+                }
+
+                if(propertyName != parameterName) {
+                    settersText.Append($"            {propertyName} = {parameterName};");
+                }
+                else {
+                    settersText.Append($"            this.{propertyName} = {parameterName};");
+                }
+
+                if(propertiesText.Length > 0) {
+                    propertiesText.Append(Environment.NewLine);
+                }
+                propertiesText.Append($"        public {columnInfo.ColumnTypeName} {propertyName} {{ get; set; }}");
+            }
+        }
+
+        string code = $@"
     public sealed class {requestName} : IRequest<{name}> {{
 
         public {requestName}({parametersText}) {{
@@ -84,54 +84,54 @@ namespace DbSchema.CodeGeneration {
 {propertiesText}
     }}
 ";
-            return code;
+        return code;
+    }
+
+    private static string GetLoadListRequestName(string name) {
+        return $"Load{CodeHelper.FormatNameForClass(name)}Request";
+    }
+    private static string GetLoadListHandlerName(string name) {
+        return $"Load{CodeHelper.FormatNameForClass(name)}Handler";
+    }
+
+    public static string GetLoadListHandlerCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
+
+        if(settings.UsePreparedQueries) {
+            return GetLoadListHandlerCodeWithCompiledQuery(table, prefix);
         }
-
-        private static string GetLoadListRequestName(string name) {
-            return $"Load{CodeHelper.FormatNameForClass(name)}Request";
+        else {
+            return GetLoadListHandlerCodeNonCompiledQuery(table, prefix);
         }
-        private static string GetLoadListHandlerName(string name) {
-            return $"Load{CodeHelper.FormatNameForClass(name)}Handler";
-        }
+    }
 
-        public static string GetLoadListHandlerCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
+    private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            if(settings.UsePreparedQueries) {
-                return GetLoadListHandlerCodeWithCompiledQuery(table, prefix);
-            }
-            else {
-                return GetLoadListHandlerCodeNonCompiledQuery(table, prefix);
-            }
-        }
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-        private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix) {
+        string requestName = GetLoadListRequestName(name);
+        string handlerName = GetLoadListHandlerName(name);
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
+        StringBuilder whereClause = new();
 
-            string requestName = GetLoadListRequestName(name);
-            string handlerName = GetLoadListHandlerName(name);
+        foreach(DatabaseColumn column in table.Columns) {
 
-            StringBuilder whereClause = new();
+            if(column.IsPrimaryKey) {
 
-            foreach(DatabaseColumn column in table.Columns) {
+                string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+                string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
-                if(column.IsPrimaryKey) {
-
-                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
-                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
-
-                    if(whereClause.Length > 0) {
-                        whereClause.Append(" & ");
-                    }
-                    whereClause.Append($"where.EQUALS(table.{propertyName}, request => request.{propertyName})");
+                if(whereClause.Length > 0) {
+                    whereClause.Append(" & ");
                 }
+                whereClause.Append($"where.EQUALS(table.{propertyName}, request => request.{propertyName})");
             }
+        }
 
-            if(whereClause.Length == 0) {
-                whereClause.Append("??? No Primary Key Columns Exist ???");
-            }
+        if(whereClause.Length == 0) {
+            whereClause.Append("??? No Primary Key Columns Exist ???");
+        }
 
-            string code = $@"
+        string code = $@"
     public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
 
         private readonly static IPreparedQueryExecute<{requestName}, {name}> _query;
@@ -164,38 +164,38 @@ namespace DbSchema.CodeGeneration {
         }}
     }}
 ";
-            return code;
+        return code;
+    }
+
+    private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
+
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
+
+        string requestName = GetLoadListRequestName(name);
+        string handlerName = GetLoadListHandlerName(name);
+
+
+        StringBuilder whereClause = new();
+
+        foreach(DatabaseColumn column in table.Columns) {
+
+            if(column.IsPrimaryKey) {
+
+                string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+                string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
+
+                if(whereClause.Length > 0) {
+                    whereClause.Append(" & ");
+                }
+                whereClause.Append($"table.{propertyName} == request.{propertyName}");
+            }
         }
 
-        private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
+        if(whereClause.Length == 0) {
+            whereClause.Append("??? No Primary Key Columns Exist ???");
+        }
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
-
-            string requestName = GetLoadListRequestName(name);
-            string handlerName = GetLoadListHandlerName(name);
-
-
-            StringBuilder whereClause = new();
-
-            foreach(DatabaseColumn column in table.Columns) {
-
-                if(column.IsPrimaryKey) {
-
-                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
-                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
-
-                    if(whereClause.Length > 0) {
-                        whereClause.Append(" & ");
-                    }
-                    whereClause.Append($"table.{propertyName} == request.{propertyName}");
-                }
-            }
-
-            if(whereClause.Length == 0) {
-                whereClause.Append("??? No Primary Key Columns Exist ???");
-            }
-
-            string code = $@"
+        string code = $@"
     public sealed class {handlerName}: IRequestHandler<{requestName}, {name}> {{
 
         private readonly IMyDatabase _database;
@@ -222,7 +222,6 @@ namespace DbSchema.CodeGeneration {
         }}
     }}
 ";
-            return code;
-        }
+        return code;
     }
 }

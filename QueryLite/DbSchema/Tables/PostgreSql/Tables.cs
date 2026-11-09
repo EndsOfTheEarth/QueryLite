@@ -21,39 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.DbSchema.Tables.PostgreSql {
+namespace QueryLite.DbSchema.Tables.PostgreSql; 
 
-    public sealed class TablesTable : ATable {
+public sealed class TablesTable : ATable {
 
-        public static readonly TablesTable Instance = new();
+    public static readonly TablesTable Instance = new();
 
-        public Column<string> TableCatalog { get; }
-        public Column<SchemaName, string> TableSchema { get; }
-        public Column<TableName, string> TableName_ { get; }
-        public Column<string> TableType { get; }
-        public Column<string> SelfReferencingColumnName { get; }
-        public Column<string> ReferenceGeneration { get; }
-        public Column<string> UserDefinedTypeCatalog { get; }
-        public Column<string> UserDefinedTypeSchema { get; }
-        public Column<string> UserDefinedTypeName { get; }
-        public Column<string> IsInsertableInto { get; }
-        public Column<string> IsTyped { get; }
-        public Column<string> CommitAction { get; }
+    public Column<string> TableCatalog { get; }
+    public Column<SchemaName, string> TableSchema { get; }
+    public Column<TableName, string> TableName_ { get; }
+    public Column<string> TableType { get; }
+    public Column<string> SelfReferencingColumnName { get; }
+    public Column<string> ReferenceGeneration { get; }
+    public Column<string> UserDefinedTypeCatalog { get; }
+    public Column<string> UserDefinedTypeSchema { get; }
+    public Column<string> UserDefinedTypeName { get; }
+    public Column<string> IsInsertableInto { get; }
+    public Column<string> IsTyped { get; }
+    public Column<string> CommitAction { get; }
 
-        public TablesTable() : base(name: "tables", schemaName: "information_schema") {
+    public TablesTable() : base(name: "tables", schemaName: "information_schema") {
 
-            TableCatalog = new Column<string>(table: this, name: "table_catalog");
-            TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
-            TableName_ = new Column<TableName, string>(table: this, name: "table_name");
-            TableType = new Column<string>(table: this, name: "table_type");
-            SelfReferencingColumnName = new Column<string>(table: this, name: "self_referencing_column_name");
-            ReferenceGeneration = new Column<string>(table: this, name: "reference_generation");
-            UserDefinedTypeCatalog = new Column<string>(table: this, name: "user_defined_type_catalog");
-            UserDefinedTypeSchema = new Column<string>(table: this, name: "user_defined_type_schema");
-            UserDefinedTypeName = new Column<string>(table: this, name: "user_defined_type_name");
-            IsInsertableInto = new Column<string>(table: this, name: "is_insertable_into");
-            IsTyped = new Column<string>(table: this, name: "is_typed");
-            CommitAction = new Column<string>(table: this, name: "commit_action");
-        }
+        TableCatalog = new Column<string>(table: this, name: "table_catalog");
+        TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
+        TableName_ = new Column<TableName, string>(table: this, name: "table_name");
+        TableType = new Column<string>(table: this, name: "table_type");
+        SelfReferencingColumnName = new Column<string>(table: this, name: "self_referencing_column_name");
+        ReferenceGeneration = new Column<string>(table: this, name: "reference_generation");
+        UserDefinedTypeCatalog = new Column<string>(table: this, name: "user_defined_type_catalog");
+        UserDefinedTypeSchema = new Column<string>(table: this, name: "user_defined_type_schema");
+        UserDefinedTypeName = new Column<string>(table: this, name: "user_defined_type_name");
+        IsInsertableInto = new Column<string>(table: this, name: "is_insertable_into");
+        IsTyped = new Column<string>(table: this, name: "is_typed");
+        CommitAction = new Column<string>(table: this, name: "commit_action");
     }
 }

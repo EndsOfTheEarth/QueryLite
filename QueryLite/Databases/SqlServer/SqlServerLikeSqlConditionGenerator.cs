@@ -21,25 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    internal class SqlServerLikeSqlConditionGenerator : ILikeSqlConditionGenerator {
+internal class SqlServerLikeSqlConditionGenerator : ILikeSqlConditionGenerator {
 
-        string ILikeSqlConditionGenerator.GetSql<TYPE>(ILike<TYPE> like, IDatabase database) {
-            
-            string sql = like.LikeType switch {
-                LikeType.Like => " LIKE",
-                LikeType.NotLike => " NOT LIKE",
-                LikeType.ILike => " LIKE",
-                LikeType.NotILike => " NOT LIKE",
-                _ => throw new Exception($"Unknown {nameof(like.LikeType)}. Value = '{like.LikeType}'")
-            };
-            sql += $" {database.ConvertToSql(like.Expression)}";
+    string ILikeSqlConditionGenerator.GetSql<TYPE>(ILike<TYPE> like, IDatabase database) {
+        
+        string sql = like.LikeType switch {
+            LikeType.Like => " LIKE",
+            LikeType.NotLike => " NOT LIKE",
+            LikeType.ILike => " LIKE",
+            LikeType.NotILike => " NOT LIKE",
+            _ => throw new Exception($"Unknown {nameof(like.LikeType)}. Value = '{like.LikeType}'")
+        };
+        sql += $" {database.ConvertToSql(like.Expression)}";
 
-            if(!string.IsNullOrEmpty(like.Collation)) {
-                sql += $" COLLATE \"{like.Collation}\"";
-            }
-            return sql;
+        if(!string.IsNullOrEmpty(like.Collation)) {
+            sql += $" COLLATE \"{like.Collation}\"";
         }
+        return sql;
     }
 }

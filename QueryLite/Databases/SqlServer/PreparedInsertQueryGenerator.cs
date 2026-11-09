@@ -24,58 +24,57 @@
 using QueryLite.Databases.SqlServer.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    internal sealed class SqlServerPreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
+internal sealed class SqlServerPreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
 
-        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
+    public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
-            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
+        StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
-            sql.Append("INSERT INTO ");
+        sql.Append("INSERT INTO ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                sql.Append('.');
-            }
-
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-
-            StringBuilder paramSql = StringBuilderCache.Acquire();
-
-            SqlServerPreparedSetValuesCollector<PARAMETERS> valuesCollector = new SqlServerPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: paramSql, database, CollectorMode.Insert, useAlias: false);
-
-            sql.Append('(');
-
-            template.SetValues!(valuesCollector); //Note: This outputs sql to the sql string builder
-
-            sql.Append(')');
-
-            parameters = valuesCollector.Parameters;
-
-            GetReturningSyntax<PARAMETERS, RESULT>(sql, outputFunc);
-
-            sql.Append(" VALUES(").Append(paramSql).Append(')');
-
-            StringBuilderCache.Release(paramSql);
-
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+            sql.Append('.');
         }
 
-        private static void GetReturningSyntax<PARAMETERS, RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
 
-            if(outputFunc != null) {
+        StringBuilder paramSql = StringBuilderCache.Acquire();
 
-                SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
+        SqlServerPreparedSetValuesCollector<PARAMETERS> valuesCollector = new SqlServerPreparedSetValuesCollector<PARAMETERS>(sql, paramSql: paramSql, database, CollectorMode.Insert, useAlias: false);
 
-                sql.Append(" OUTPUT ");
+        sql.Append('(');
 
-                outputFunc(collector);
+        template.SetValues!(valuesCollector); //Note: This outputs sql to the sql string builder
 
-                SqlServerReturningCollectorCache.Release(collector);
-            }
+        sql.Append(')');
+
+        parameters = valuesCollector.Parameters;
+
+        GetReturningSyntax<PARAMETERS, RESULT>(sql, outputFunc);
+
+        sql.Append(" VALUES(").Append(paramSql).Append(')');
+
+        StringBuilderCache.Release(paramSql);
+
+        return StringBuilderCache.ToStringAndRelease(sql);
+    }
+
+    private static void GetReturningSyntax<PARAMETERS, RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+
+        if(outputFunc != null) {
+
+            SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
+
+            sql.Append(" OUTPUT ");
+
+            outputFunc(collector);
+
+            SqlServerReturningCollectorCache.Release(collector);
         }
     }
 }

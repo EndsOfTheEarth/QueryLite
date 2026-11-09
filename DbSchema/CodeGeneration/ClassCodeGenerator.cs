@@ -25,229 +25,228 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace QueryLite.DbSchema.CodeGeneration {
+namespace QueryLite.DbSchema.CodeGeneration; 
 
-    public static class ClassCodeGenerator {
+public static class ClassCodeGenerator {
 
-        public static CodeBuilder Generate(IDatabase database, List<DatabaseTable> tables, CodeGeneratorSettings settings) {
+    public static CodeBuilder Generate(IDatabase database, List<DatabaseTable> tables, CodeGeneratorSettings settings) {
 
-            CodeBuilder code = new CodeBuilder();
+        CodeBuilder code = new CodeBuilder();
 
-            code.Append("using System;").EndLine();
-            code.Append("using QueryLite;").EndLine();
+        code.Append("using System;").EndLine();
+        code.Append("using QueryLite;").EndLine();
 
-            List<SchemaName> schemaNames = [];
+        List<SchemaName> schemaNames = [];
+
+        foreach(DatabaseTable table in tables) {
+
+            if(!schemaNames.Contains(table.Schema)) {
+                schemaNames.Add(table.Schema);
+            }
+        }
+
+        schemaNames.Sort((a, b) => a.Value.CompareTo(b.Value));
+
+        int count = 0;
+
+        foreach(SchemaName schema in schemaNames) {
+
+            if(count > 0) {
+                code.EndLine();
+            }
+            count++;
+            code.EndLine().Append($"namespace {settings.Namespaces.GetTableNamespace(schema)} {{").EndLine();
 
             foreach(DatabaseTable table in tables) {
 
-                if(!schemaNames.Contains(table.Schema)) {
-                    schemaNames.Add(table.Schema);
+                if(string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
+                    TablePrefix prefix = new TablePrefix(table);
+                    code.Append(GenerateClassCode(database, table, prefix, settings, includeUsings: false).ToString());
                 }
             }
+            code.Append("}");
+        }
+        return code;
+    }
 
-            schemaNames.Sort((a, b) => a.Value.CompareTo(b.Value));
+    public static CodeBuilder GenerateClassCode(IDatabase database, DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
 
-            int count = 0;
+        CodeBuilder classCode = new CodeBuilder();
 
-            foreach(SchemaName schema in schemaNames) {
+        if(includeUsings) {
 
-                if(count > 0) {
-                    code.EndLine();
-                }
-                count++;
-                code.EndLine().Append($"namespace {settings.Namespaces.GetTableNamespace(schema)} {{").EndLine();
+            classCode.Append($"namespace {settings.Namespaces.GetClassesNamespace(table.Schema)} {{").EndLine().EndLine();
+            classCode.Indent(1).Append("using System;").EndLine();
+            classCode.Indent(1).Append("using QueryLite;").EndLine();
 
-                foreach(DatabaseTable table in tables) {
+            classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
 
-                    if(string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
-                        TablePrefix prefix = new TablePrefix(table);
-                        code.Append(GenerateClassCode(database, table, prefix, settings, includeUsings: false).ToString());
-                    }
-                }
-                code.Append("}");
+
+            string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
+
+            if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
+                classCode.Indent(1).Append($"using {tableNamespace};").EndLine();
             }
-            return code;
         }
 
-        public static CodeBuilder GenerateClassCode(IDatabase database, DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
+        if(settings.IncludeMessagePackAttributes) {
+            classCode.Indent(1).Append("using MessagePack;").EndLine();
+        }
+        if(settings.IncludeJsonAttributes) {
+            classCode.Indent(1).Append("using System.Text.Json.Serialization;").EndLine();
+        }
 
-            CodeBuilder classCode = new CodeBuilder();
+        classCode.EndLine();
 
-            if(includeUsings) {
+        string className = CodeHelper.GetTableName(table, includePostFix: false);
 
-                classCode.Append($"namespace {settings.Namespaces.GetClassesNamespace(table.Schema)} {{").EndLine().EndLine();
-                classCode.Indent(1).Append("using System;").EndLine();
-                classCode.Indent(1).Append("using QueryLite;").EndLine();
+        if(table.IsView) {
+            className += "_View";
+        }
 
-                classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
+        if(settings.IncludeMessagePackAttributes) {
+            classCode.Indent(1).Append("[MessagePackObject]").EndLine();
+        }
 
+        classCode.Indent(1).Append($"public sealed record class {className} {{").EndLine().EndLine();
 
-                string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
+        if(table.Columns.Count > 0) {
+            classCode.Indent(2).Append("public ").Append(className).Append("() { }").EndLine().EndLine();
+        }
+        classCode.Indent(2).Append("public ").Append(className).Append("(");
 
-                if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
-                    classCode.Indent(1).Append($"using {tableNamespace};").EndLine();
-                }
+        CodeBuilder constructor = new CodeBuilder();
+
+        int count = 0;
+        foreach(DatabaseColumn column in table.Columns) {
+
+            if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
+                continue;
             }
 
-            if(settings.IncludeMessagePackAttributes) {
-                classCode.Indent(1).Append("using MessagePack;").EndLine();
+            if(count > 0) {
+                classCode.Append(", ");
             }
-            if(settings.IncludeJsonAttributes) {
-                classCode.Indent(1).Append("using System.Text.Json.Serialization;").EndLine();
+            count++;
+
+            CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
+
+            string nullable = column.IsNullable ? "?" : "";
+            string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
+
+            string paramName = string.Concat(columnName.First().ToString().ToLower(), columnName.AsSpan(start: 1));
+
+            if(columnName == paramName || CodeHelper.IsCSharpKeyword(paramName)) {
+                paramName = "_" + paramName;
+            }
+
+            classCode.Append($"{columnInfo.ColumnTypeName}{nullable} {paramName}");
+
+            constructor.Indent(3).Append($"{columnName} = {paramName};").EndLine();
+        }
+
+        classCode.Append(") {").EndLine();
+        classCode.Append(constructor.ToString());
+        classCode.Indent(2).Append("}").EndLine();
+        classCode.EndLine();
+
+        string tableOrViewClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+        string tableOrViewParamName = table.IsView ? "view" : "table";
+
+        classCode.Indent(2).Append("public ").Append(className).Append("(").Append(tableOrViewClassName).Append(" ").Append(tableOrViewParamName).Append(", IResultRow row) {").EndLine();
+
+        CodeBuilder constructor2 = new CodeBuilder();
+
+        foreach(DatabaseColumn column in table.Columns) {
+
+            if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
+                continue;
+            }
+
+            string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
+
+            string columnNameForTable = prefix.GetColumnName(column.ColumnName.Value, className: tableOrViewClassName);
+
+            constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{columnNameForTable});").EndLine();
+        }
+        classCode.Append(constructor2.ToString());
+        classCode.Indent(2).Append("}").EndLine();
+
+        count = 0;
+
+        foreach(DatabaseColumn column in table.Columns) {
+
+            if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
+                continue;
             }
 
             classCode.EndLine();
 
-            string className = CodeHelper.GetTableName(table, includePostFix: false);
+            CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
-            if(table.IsView) {
-                className += "_View";
-            }
+            string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
 
-            if(settings.IncludeMessagePackAttributes) {
-                classCode.Indent(1).Append("[MessagePackObject]").EndLine();
-            }
-
-            classCode.Indent(1).Append($"public sealed record class {className} {{").EndLine().EndLine();
-
-            if(table.Columns.Count > 0) {
-                classCode.Indent(2).Append("public ").Append(className).Append("() { }").EndLine().EndLine();
-            }
-            classCode.Indent(2).Append("public ").Append(className).Append("(");
-
-            CodeBuilder constructor = new CodeBuilder();
-
-            int count = 0;
-            foreach(DatabaseColumn column in table.Columns) {
-
-                if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
-                    continue;
-                }
-
-                if(count > 0) {
-                    classCode.Append(", ");
-                }
-                count++;
-
-                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
-
-                string nullable = column.IsNullable ? "?" : "";
-                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
-
-                string paramName = string.Concat(columnName.First().ToString().ToLower(), columnName.AsSpan(start: 1));
-
-                if(columnName == paramName || CodeHelper.IsCSharpKeyword(paramName)) {
-                    paramName = "_" + paramName;
-                }
-
-                classCode.Append($"{columnInfo.ColumnTypeName}{nullable} {paramName}");
-
-                constructor.Indent(3).Append($"{columnName} = {paramName};").EndLine();
-            }
-
-            classCode.Append(") {").EndLine();
-            classCode.Append(constructor.ToString());
-            classCode.Indent(2).Append("}").EndLine();
-            classCode.EndLine();
-
-            string tableOrViewClassName = CodeHelper.GetTableName(table, includePostFix: true);
-
-            string tableOrViewParamName = table.IsView ? "view" : "table";
-
-            classCode.Indent(2).Append("public ").Append(className).Append("(").Append(tableOrViewClassName).Append(" ").Append(tableOrViewParamName).Append(", IResultRow row) {").EndLine();
-
-            CodeBuilder constructor2 = new CodeBuilder();
-
-            foreach(DatabaseColumn column in table.Columns) {
-
-                if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
-                    continue;
-                }
-
-                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
-
-                string columnNameForTable = prefix.GetColumnName(column.ColumnName.Value, className: tableOrViewClassName);
-
-                constructor2.Indent(3).Append($"{columnName} = row.Get({tableOrViewParamName}.{columnNameForTable});").EndLine();
-            }
-            classCode.Append(constructor2.ToString());
-            classCode.Indent(2).Append("}").EndLine();
-
-            count = 0;
-
-            foreach(DatabaseColumn column in table.Columns) {
-
-                if(column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
-                    continue;
-                }
-
+            if(settings.IncludeMessagePackAttributes || settings.IncludeJsonAttributes) {
                 classCode.EndLine();
+            }
 
-                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
+            string attributes = "";
 
-                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: className);
+            if(settings.IncludeMessagePackAttributes) {
+                attributes += $"Key({count})";
+            }
 
-                if(settings.IncludeMessagePackAttributes || settings.IncludeJsonAttributes) {
-                    classCode.EndLine();
-                }
-
-                string attributes = "";
-
-                if(settings.IncludeMessagePackAttributes) {
-                    attributes += $"Key({count})";
-                }
-
-                if(settings.IncludeJsonAttributes) {
-                    if(attributes.Length > 0) {
-                        attributes += ", ";
-                    }
-                    attributes += $"JsonPropertyName(\"{columnName}\")";
-                }
-
+            if(settings.IncludeJsonAttributes) {
                 if(attributes.Length > 0) {
-                    classCode.Indent(2).Append($"[{attributes}]").EndLine();
+                    attributes += ", ";
                 }
+                attributes += $"JsonPropertyName(\"{columnName}\")";
+            }
 
-                classCode.Indent(2).Append($"public {columnInfo.ColumnTypeName}{(column.IsNullable ? "?" : "")} {columnName} {{ get; set; }}");
+            if(attributes.Length > 0) {
+                classCode.Indent(2).Append($"[{attributes}]").EndLine();
+            }
 
-                if(!column.IsNullable && (!columnInfo.DotNetType.IsPrimitive) && columnInfo.IdentifierType == IdentifierType.None) {
+            classCode.Indent(2).Append($"public {columnInfo.ColumnTypeName}{(column.IsNullable ? "?" : "")} {columnName} {{ get; set; }}");
 
-                    string? propSet = database.GetCSharpCodeSet(columnInfo.DotNetType);
+            if(!column.IsNullable && (!columnInfo.DotNetType.IsPrimitive) && columnInfo.IdentifierType == IdentifierType.None) {
 
-                    if(propSet != null) {
-                        classCode.Append(" = ").Append(propSet).Append(";");
-                    }
+                string? propSet = database.GetCSharpCodeSet(columnInfo.DotNetType);
+
+                if(propSet != null) {
+                    classCode.Append(" = ").Append(propSet).Append(";");
                 }
-                count++;
             }
-            classCode.EndLine();
-            classCode.Indent(1).Append("}").EndLine();
-
-            if(includeUsings) {
-                classCode.Append("}");
-            }
-            return classCode;
+            count++;
         }
+        classCode.EndLine();
+        classCode.Indent(1).Append("}").EndLine();
 
-        public static DatabaseTable? GetReferenceTable(DatabaseTable table, DatabaseColumn column) {
+        if(includeUsings) {
+            classCode.Append("}");
+        }
+        return classCode;
+    }
 
-            DatabaseTable? referencedTable = null;
+    public static DatabaseTable? GetReferenceTable(DatabaseTable table, DatabaseColumn column) {
 
-            foreach(DatabaseForeignKey foreignKey in table.ForeignKeys) {
+        DatabaseTable? referencedTable = null;
 
-                foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
+        foreach(DatabaseForeignKey foreignKey in table.ForeignKeys) {
 
-                    if(string.Compare(reference.ForeignKeyColumn.ColumnName.Value, column.ColumnName.Value, ignoreCase: true) == 0) {
+            foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
 
-                        referencedTable = reference.PrimaryKeyColumn.Table;
-                        break;
-                    }
-                }
-                if(referencedTable != null) {
+                if(string.Compare(reference.ForeignKeyColumn.ColumnName.Value, column.ColumnName.Value, ignoreCase: true) == 0) {
+
+                    referencedTable = reference.PrimaryKeyColumn.Table;
                     break;
                 }
             }
-            return referencedTable;
+            if(referencedTable != null) {
+                break;
+            }
         }
+        return referencedTable;
     }
 }

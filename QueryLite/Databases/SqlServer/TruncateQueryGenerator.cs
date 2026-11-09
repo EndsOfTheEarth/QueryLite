@@ -23,24 +23,23 @@
  **/
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    internal sealed class SqlServerTruncateQueryGenerator : ITruncateQueryGenerator {
+internal sealed class SqlServerTruncateQueryGenerator : ITruncateQueryGenerator {
 
-        string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
+    string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template, IDatabase database, IParametersBuilder? parameters) {
 
-            StringBuilder sql = StringBuilderCache.Acquire();
+        StringBuilder sql = StringBuilderCache.Acquire();
 
-            sql.Append("TRUNCATE TABLE ");
+        sql.Append("TRUNCATE TABLE ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                sql.Append('.');
-            }
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+            sql.Append('.');
         }
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

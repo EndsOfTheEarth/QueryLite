@@ -23,400 +23,273 @@
  **/
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql; 
 
-    internal sealed class PostgreSqlSelectQueryGenerator : IQueryGenerator {
+internal sealed class PostgreSqlSelectQueryGenerator : IQueryGenerator {
 
-        string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
-                                              IDatabase database,
-                                              bool forceAlias,
-                                              IParametersBuilder? parameters) {
-            return GetSql(
-                template: template,
-                database: database,
-                forceAlias: forceAlias,
-                parameters: parameters
-            );
+    string IQueryGenerator.GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
+                                          IDatabase database,
+                                          bool forceAlias,
+                                          IParametersBuilder? parameters) {
+        return GetSql(
+            template: template,
+            database: database,
+            forceAlias: forceAlias,
+            parameters: parameters
+        );
+    }
+
+    internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
+                                          IDatabase database,
+                                          bool forceAlias,
+                                          IParametersBuilder? parameters) {
+
+        //We need to start with the first query template
+        while(template.Extras != null && template.Extras.ParentUnion != null) {
+            template = template.Extras.ParentUnion;
         }
 
-        internal static string GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
-                                              IDatabase database,
-                                              bool forceAlias,
-                                              IParametersBuilder? parameters) {
+        StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
-            //We need to start with the first query template
-            while(template.Extras != null && template.Extras.ParentUnion != null) {
-                template = template.Extras.ParentUnion;
+        while(true) {
+
+            sql.Append("SELECT");
+
+            if(template.IsDistinct) {
+                sql.Append(" DISTINCT");
             }
 
-            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
+            bool useAliases = forceAlias || (template.Joins != null && template.Joins.Count > 0);
 
-            while(true) {
+            GenerateSelectClause(sql, template, useAliases: useAliases, database, parameters);
+            GenerateFromClause(sql, template, useAliases: useAliases, database);
 
-                sql.Append("SELECT");
+            if(template.Joins != null) {
+                GenerateJoins(sql, template, useAliases: useAliases, database, parameters);
+            }
 
-                if(template.IsDistinct) {
-                    sql.Append(" DISTINCT");
+            if(template.WhereCondition != null) {
+                GenerateWhereClause(sql, template, useAliases: useAliases, database, parameters);
+            }
+
+            if(template.Extras?.GroupByFields?.Length > 0) {
+                GenerateGroupByClause(sql, template, useAliases: useAliases);
+            }
+
+            if(template.Extras?.HavingCondition != null) {
+                GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
+            }
+
+            if(template.OrderByFields?.Length > 0) {
+                GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
+            }
+            if(template.TopRows != null) {
+                GenerateLimitClause(sql, template);
+            }
+
+            if(template.Extras?.ForType != null) {
+                GenerateForClause(sql, template, useAliases: useAliases);
+            }
+
+            if(template.Extras?.ChildUnion != null) {
+
+                if(template.Extras.ChildUnionType == UnionType.Union) {
+                    sql.Append(" UNION ");
                 }
-
-                bool useAliases = forceAlias || (template.Joins != null && template.Joins.Count > 0);
-
-                GenerateSelectClause(sql, template, useAliases: useAliases, database, parameters);
-                GenerateFromClause(sql, template, useAliases: useAliases, database);
-
-                if(template.Joins != null) {
-                    GenerateJoins(sql, template, useAliases: useAliases, database, parameters);
-                }
-
-                if(template.WhereCondition != null) {
-                    GenerateWhereClause(sql, template, useAliases: useAliases, database, parameters);
-                }
-
-                if(template.Extras?.GroupByFields?.Length > 0) {
-                    GenerateGroupByClause(sql, template, useAliases: useAliases);
-                }
-
-                if(template.Extras?.HavingCondition != null) {
-                    GenerateHavingClause(sql, template, useAliases: useAliases, database, parameters);
-                }
-
-                if(template.OrderByFields?.Length > 0) {
-                    GenerateOrderByClause(sql, template, useAliases: useAliases, database, parameters);
-                }
-                if(template.TopRows != null) {
-                    GenerateLimitClause(sql, template);
-                }
-
-                if(template.Extras?.ForType != null) {
-                    GenerateForClause(sql, template, useAliases: useAliases);
-                }
-
-                if(template.Extras?.ChildUnion != null) {
-
-                    if(template.Extras.ChildUnionType == UnionType.Union) {
-                        sql.Append(" UNION ");
-                    }
-                    else if(template.Extras.ChildUnionType == UnionType.UnionAll) {
-                        sql.Append(" UNION ALL ");
-                    }
-                    else {
-                        throw new Exception($"Unknown {nameof(template.Extras.ChildUnionType)} type. Value {template.Extras.ChildUnionType}");
-                    }
-                    template = template.Extras.ChildUnion;
+                else if(template.Extras.ChildUnionType == UnionType.UnionAll) {
+                    sql.Append(" UNION ALL ");
                 }
                 else {
-                    break;
+                    throw new Exception($"Unknown {nameof(template.Extras.ChildUnionType)} type. Value {template.Extras.ChildUnionType}");
                 }
+                template = template.Extras.ChildUnion;
             }
-            return StringBuilderCache.ToStringAndRelease(sql);
+            else {
+                break;
+            }
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
+    }
+
+    [ThreadStatic]
+    private static PostgreSqlSelectFieldCollector? _cachedCollectorInstance;
+
+    private static void GenerateSelectClause<RESULT>(StringBuilder sql,
+                                                     SelectQueryTemplate<RESULT> template,
+                                                     bool useAliases,
+                                                     IDatabase database,
+                                                     IParametersBuilder? parameters) {
+
+        bool invalidState = template.SelectFunction == null &&
+                                (template.Extras == null ||
+                                 template.Extras.NestedSelectFields == null ||
+                                 template.Extras.NestedSelectFields.Count == 0
+                                );
+
+        if(invalidState) {
+            throw new Exception($"{nameof(template.SelectFunction)} and {nameof(template.Extras.NestedSelectFields)} cannot both be null or empty");
         }
 
-        [ThreadStatic]
-        private static PostgreSqlSelectFieldCollector? _cachedCollectorInstance;
+        sql.Append(' ');
 
-        private static void GenerateSelectClause<RESULT>(StringBuilder sql,
-                                                         SelectQueryTemplate<RESULT> template,
-                                                         bool useAliases,
-                                                         IDatabase database,
-                                                         IParametersBuilder? parameters) {
+        if(template.SelectFunction != null) {
 
-            bool invalidState = template.SelectFunction == null &&
-                                    (template.Extras == null ||
-                                     template.Extras.NestedSelectFields == null ||
-                                     template.Extras.NestedSelectFields.Count == 0
-                                    );
+            if(Settings.EnableCollectorCaching) {
 
-            if(invalidState) {
-                throw new Exception($"{nameof(template.SelectFunction)} and {nameof(template.Extras.NestedSelectFields)} cannot both be null or empty");
-            }
+                PostgreSqlSelectFieldCollector selectCollector;
 
-            sql.Append(' ');
+                if(_cachedCollectorInstance == null) {
 
-            if(template.SelectFunction != null) {
-
-                if(Settings.EnableCollectorCaching) {
-
-                    PostgreSqlSelectFieldCollector selectCollector;
-
-                    if(_cachedCollectorInstance == null) {
-
-                        selectCollector = new PostgreSqlSelectFieldCollector(
-                            database: database,
-                            parameterBuilder: parameters,
-                            useAlias: useAliases,
-                            sql: sql
-                        );
-                    }
-                    else {
-
-                        selectCollector = _cachedCollectorInstance; //Use cached collector
-
-                        //Note: We unset the cached collector as queries that contain nested queries in the select statement can
-                        //      use more than one select collector and that causes problems when sharing a single instance.
-                        _cachedCollectorInstance = null;
-
-                        selectCollector.Reset(database, parameters, useAlias: useAliases, sql);
-                    }
-                    template.SelectFunction(selectCollector);
-                    selectCollector.Clear();
-                    _cachedCollectorInstance = selectCollector; //Return collector to cache
-                }
-                else {
-                    template.SelectFunction(
-                        new PostgreSqlSelectFieldCollector(
-                            database: database,
-                            parameterBuilder: parameters,
-                            useAlias: useAliases,
-                            sql: sql
-                        )
+                    selectCollector = new PostgreSqlSelectFieldCollector(
+                        database: database,
+                        parameterBuilder: parameters,
+                        useAlias: useAliases,
+                        sql: sql
                     );
                 }
+                else {
+
+                    selectCollector = _cachedCollectorInstance; //Use cached collector
+
+                    //Note: We unset the cached collector as queries that contain nested queries in the select statement can
+                    //      use more than one select collector and that causes problems when sharing a single instance.
+                    _cachedCollectorInstance = null;
+
+                    selectCollector.Reset(database, parameters, useAlias: useAliases, sql);
+                }
+                template.SelectFunction(selectCollector);
+                selectCollector.Clear();
+                _cachedCollectorInstance = selectCollector; //Return collector to cache
             }
-            else if(template.Extras != null) {
+            else {
+                template.SelectFunction(
+                    new PostgreSqlSelectFieldCollector(
+                        database: database,
+                        parameterBuilder: parameters,
+                        useAlias: useAliases,
+                        sql: sql
+                    )
+                );
+            }
+        }
+        else if(template.Extras != null) {
 
-                for(int index = 0; index < template.Extras.NestedSelectFields!.Count; index++) {
+            for(int index = 0; index < template.Extras.NestedSelectFields!.Count; index++) {
 
-                    if(index > 0) {
-                        sql.Append(',');
+                if(index > 0) {
+                    sql.Append(',');
+                }
+
+                IField field = template.Extras.NestedSelectFields[index];
+
+                if(field is IColumn column) {
+
+                    if(useAliases) {
+                        sql.Append(column.Table.Alias).Append('.');
                     }
+                    SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
+                }
+                else if(field is IFunction function) {
 
-                    IField field = template.Extras.NestedSelectFields[index];
-
-                    if(field is IColumn column) {
-
-                        if(useAliases) {
-                            sql.Append(column.Table.Alias).Append('.');
-                        }
-                        SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
-                    }
-                    else if(field is IFunction function) {
-
-                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
-                    }
-                    else {
-                        throw new Exception($"Unknown field type. Type = {field}");
-                    }
+                    sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                }
+                else {
+                    throw new Exception($"Unknown field type. Type = {field}");
                 }
             }
         }
+    }
 
-        private static void GenerateFromClause<RESULT>(StringBuilder sql,
-                                                       SelectQueryTemplate<RESULT> template,
-                                                       bool useAliases,
-                                                       IDatabase database) {
+    private static void GenerateFromClause<RESULT>(StringBuilder sql,
+                                                   SelectQueryTemplate<RESULT> template,
+                                                   bool useAliases,
+                                                   IDatabase database) {
 
-            if(template.FromTable == null) {
-                return;
-            }
-            sql.Append(" FROM ");
+        if(template.FromTable == null) {
+            return;
+        }
+        sql.Append(" FROM ");
 
-            string schemaName = database.SchemaMap(template.FromTable.SchemaName);
+        string schemaName = database.SchemaMap(template.FromTable.SchemaName);
+
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
+            sql.Append('.');
+        }
+
+        SqlHelper.AppendEncloseTableName(sql, template.FromTable, EncloseWith.DoubleQuote);
+
+        if(useAliases) {
+            sql.Append(" AS ").Append(template.FromTable.Alias);
+        }
+    }
+
+    private static void GenerateJoins<RESULT>(StringBuilder sql,
+                                              SelectQueryTemplate<RESULT> template,
+                                              bool useAliases,
+                                              IDatabase database,
+                                              IParametersBuilder? parameters) {
+
+        if(template.Joins == null) {
+            return;
+        }
+
+        foreach(IJoin join in template.Joins) {
+
+            sql.Append(join.JoinType switch {
+                JoinType.Join => " JOIN ",
+                JoinType.LeftJoin => " LEFT JOIN ",
+                _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
+            });
+
+            string schemaName = database.SchemaMap(join.Table.SchemaName);
 
             if(!string.IsNullOrWhiteSpace(schemaName)) {
                 SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
                 sql.Append('.');
             }
-
-            SqlHelper.AppendEncloseTableName(sql, template.FromTable, EncloseWith.DoubleQuote);
+            SqlHelper.AppendEncloseTableName(sql, join.Table, EncloseWith.DoubleQuote);
 
             if(useAliases) {
-                sql.Append(" AS ").Append(template.FromTable.Alias);
+                sql.Append(" AS ").Append(join.Table.Alias);
             }
+            sql.Append(" ON ");
+            join.Condition.GetSql(sql, database, useAlias: useAliases, parameters);
         }
+    }
 
-        private static void GenerateJoins<RESULT>(StringBuilder sql,
-                                                  SelectQueryTemplate<RESULT> template,
-                                                  bool useAliases,
-                                                  IDatabase database,
-                                                  IParametersBuilder? parameters) {
+    private static void GenerateWhereClause<RESULT>(StringBuilder sql,
+                                                    SelectQueryTemplate<RESULT> template,
+                                                    bool useAliases,
+                                                    IDatabase database,
+                                                    IParametersBuilder? parameters) {
 
-            if(template.Joins == null) {
-                return;
-            }
-
-            foreach(IJoin join in template.Joins) {
-
-                sql.Append(join.JoinType switch {
-                    JoinType.Join => " JOIN ",
-                    JoinType.LeftJoin => " LEFT JOIN ",
-                    _ => throw new Exception($"Unknown join type. Type = {join.JoinType}")
-                });
-
-                string schemaName = database.SchemaMap(join.Table.SchemaName);
-
-                if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
-                    sql.Append('.');
-                }
-                SqlHelper.AppendEncloseTableName(sql, join.Table, EncloseWith.DoubleQuote);
-
-                if(useAliases) {
-                    sql.Append(" AS ").Append(join.Table.Alias);
-                }
-                sql.Append(" ON ");
-                join.Condition.GetSql(sql, database, useAlias: useAliases, parameters);
-            }
+        if(template.WhereCondition is null) {
+            return;
         }
+        sql.Append(" WHERE ");
 
-        private static void GenerateWhereClause<RESULT>(StringBuilder sql,
-                                                        SelectQueryTemplate<RESULT> template,
-                                                        bool useAliases,
-                                                        IDatabase database,
-                                                        IParametersBuilder? parameters) {
+        template.WhereCondition.GetSql(
+            sql: sql,
+            database: database,
+            useAlias: useAliases,
+            parameters: parameters
+        );
+    }
 
-            if(template.WhereCondition is null) {
-                return;
-            }
-            sql.Append(" WHERE ");
-
-            template.WhereCondition.GetSql(
-                sql: sql,
-                database: database,
-                useAlias: useAliases,
-                parameters: parameters
-            );
-        }
-
-        private static void GenerateGroupByClause<RESULT>(StringBuilder sql,
-                                                          SelectQueryTemplate<RESULT> template,
-                                                          bool useAliases) {
-
-            if(template.Extras?.GroupByFields?.Length > 0) {
-
-                sql.Append(" GROUP BY ");
-
-                bool isFirst = true;
-
-                foreach(ISelectable field in template.Extras.GroupByFields) {
-
-                    if(field is IColumn column) {
-
-                        if(!isFirst) {
-                            sql.Append(',');
-                        }
-                        else {
-                            isFirst = false;
-                        }
-                        if(useAliases) {
-                            sql.Append(column.Table.Alias).Append('.');
-                        }
-                        SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
-                    }
-                    else {
-                        throw new Exception($"Unknown field type. Type = {field}");
-                    }
-                }
-            }
-        }
-
-        private static void GenerateHavingClause<RESULT>(StringBuilder sql,
-                                                         SelectQueryTemplate<RESULT> template,
-                                                         bool useAliases,
-                                                         IDatabase database,
-                                                         IParametersBuilder? parameters) {
-
-            if(template.Extras?.HavingCondition != null) {
-
-                sql.Append(" HAVING ");
-
-                template.Extras.HavingCondition.GetSql(
-                    sql: sql,
-                    database: database,
-                    useAlias: useAliases,
-                    parameters: parameters
-                );
-            }
-        }
-
-        private static void GenerateOrderByClause<RESULT>(StringBuilder sql,
-                                                          SelectQueryTemplate<RESULT> template,
-                                                          bool useAliases,
-                                                          IDatabase database,
-                                                          IParametersBuilder? parameters) {
-
-            if(template.OrderByFields?.Length > 0) {
-
-                sql.Append(" ORDER BY ");
-
-                bool isFirst = true;
-
-                foreach(IOrderByColumn orderByColumn in template.OrderByFields) {
-
-                    IField field = orderByColumn.Field;
-
-                    if(!isFirst) {
-                        sql.Append(',');
-                    }
-                    else {
-                        isFirst = false;
-                    }
-
-                    if(field is IColumn column) {
-
-                        //Cannot alias in the order by column when this is a union query
-                        if((template.Extras == null || template.Extras.ParentUnion == null) && useAliases) {
-                            sql.Append(column.Table.Alias).Append('.');
-                        }
-                        SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
-                    }
-                    else if(field is IFunction function) {
-                        sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
-                    }
-                    else {
-                        throw new Exception($"Unknown field type. Type = {field}");
-                    }
-
-                    sql.Append(orderByColumn.OrderBy switch {
-                        OrderBy.ASC => " ASC",
-                        OrderBy.DESC => " DESC",
-                        OrderBy.Default => "",
-                        _ => throw new Exception($"Unknown {nameof(OrderBy)} type. Type: '{field.OrderBy}'")
-                    });
-                }
-            }
-        }
-        private static void GenerateLimitClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template) {
-
-            if(template.TopRows is null) {
-                return;
-            }
-            sql.Append(" LIMIT ").Append(template.TopRows.Value);
-        }
-
-        private static void GenerateForClause<RESULT>(StringBuilder sql,
+    private static void GenerateGroupByClause<RESULT>(StringBuilder sql,
                                                       SelectQueryTemplate<RESULT> template,
                                                       bool useAliases) {
 
-            if(template.Extras?.ForType is null) {
-                return;
-            }
+        if(template.Extras?.GroupByFields?.Length > 0) {
 
-            sql.Append(" FOR ");
+            sql.Append(" GROUP BY ");
 
-            switch(template.Extras.ForType.Value) {
-                case ForType.UPDATE:
-                    sql.Append("UPDATE");
-                    break;
-                case ForType.NO_KEY_UPDATE:
-                    sql.Append("NO KEY UPDATE");
-                    break;
-                case ForType.SHARE:
-                    sql.Append("SHARE");
-                    break;
-                case ForType.KEY_SHARE:
-                    sql.Append("KEY SHARE");
-                    break;
-                default:
-                    throw new Exception($"Unknown {nameof(template.Extras.ForType)} type {template.Extras.ForType}");
-            }
+            bool isFirst = true;
 
-            if(template.Extras.OfTables != null && template.Extras.OfTables.Length > 0) {
+            foreach(ISelectable field in template.Extras.GroupByFields) {
 
-                sql.Append(" OF ");
-
-                bool isFirst = true;
-
-                foreach(ITable table in template.Extras.OfTables) {
+                if(field is IColumn column) {
 
                     if(!isFirst) {
                         sql.Append(',');
@@ -425,26 +298,152 @@ namespace QueryLite.Databases.PostgreSql {
                         isFirst = false;
                     }
                     if(useAliases) {
-                        sql.Append(table.Alias);
+                        sql.Append(column.Table.Alias).Append('.');
                     }
+                    SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
+                }
+                else {
+                    throw new Exception($"Unknown field type. Type = {field}");
                 }
             }
+        }
+    }
 
-            if(template.Extras.WaitType != null) {
+    private static void GenerateHavingClause<RESULT>(StringBuilder sql,
+                                                     SelectQueryTemplate<RESULT> template,
+                                                     bool useAliases,
+                                                     IDatabase database,
+                                                     IParametersBuilder? parameters) {
 
-                switch(template.Extras.WaitType.Value) {
-                    case WaitType.WAIT:
-                        //Do nothing as this is the default value
-                        break;
-                    case WaitType.NOWAIT:
-                        sql.Append(" NOWAIT");
-                        break;
-                    case WaitType.SKIP_LOCKED:
-                        sql.Append(" SKIP LOCKED");
-                        break;
-                    default:
-                        throw new Exception($"Unknown {nameof(template.Extras.WaitType)} type {template.Extras.WaitType}");
+        if(template.Extras?.HavingCondition != null) {
+
+            sql.Append(" HAVING ");
+
+            template.Extras.HavingCondition.GetSql(
+                sql: sql,
+                database: database,
+                useAlias: useAliases,
+                parameters: parameters
+            );
+        }
+    }
+
+    private static void GenerateOrderByClause<RESULT>(StringBuilder sql,
+                                                      SelectQueryTemplate<RESULT> template,
+                                                      bool useAliases,
+                                                      IDatabase database,
+                                                      IParametersBuilder? parameters) {
+
+        if(template.OrderByFields?.Length > 0) {
+
+            sql.Append(" ORDER BY ");
+
+            bool isFirst = true;
+
+            foreach(IOrderByColumn orderByColumn in template.OrderByFields) {
+
+                IField field = orderByColumn.Field;
+
+                if(!isFirst) {
+                    sql.Append(',');
                 }
+                else {
+                    isFirst = false;
+                }
+
+                if(field is IColumn column) {
+
+                    //Cannot alias in the order by column when this is a union query
+                    if((template.Extras == null || template.Extras.ParentUnion == null) && useAliases) {
+                        sql.Append(column.Table.Alias).Append('.');
+                    }
+                    SqlHelper.AppendEncloseColumnName(sql, column, EncloseWith.DoubleQuote);
+                }
+                else if(field is IFunction function) {
+                    sql.Append(function.GetSql(database, useAlias: useAliases, parameters));
+                }
+                else {
+                    throw new Exception($"Unknown field type. Type = {field}");
+                }
+
+                sql.Append(orderByColumn.OrderBy switch {
+                    OrderBy.ASC => " ASC",
+                    OrderBy.DESC => " DESC",
+                    OrderBy.Default => "",
+                    _ => throw new Exception($"Unknown {nameof(OrderBy)} type. Type: '{field.OrderBy}'")
+                });
+            }
+        }
+    }
+    private static void GenerateLimitClause<RESULT>(StringBuilder sql, SelectQueryTemplate<RESULT> template) {
+
+        if(template.TopRows is null) {
+            return;
+        }
+        sql.Append(" LIMIT ").Append(template.TopRows.Value);
+    }
+
+    private static void GenerateForClause<RESULT>(StringBuilder sql,
+                                                  SelectQueryTemplate<RESULT> template,
+                                                  bool useAliases) {
+
+        if(template.Extras?.ForType is null) {
+            return;
+        }
+
+        sql.Append(" FOR ");
+
+        switch(template.Extras.ForType.Value) {
+            case ForType.UPDATE:
+                sql.Append("UPDATE");
+                break;
+            case ForType.NO_KEY_UPDATE:
+                sql.Append("NO KEY UPDATE");
+                break;
+            case ForType.SHARE:
+                sql.Append("SHARE");
+                break;
+            case ForType.KEY_SHARE:
+                sql.Append("KEY SHARE");
+                break;
+            default:
+                throw new Exception($"Unknown {nameof(template.Extras.ForType)} type {template.Extras.ForType}");
+        }
+
+        if(template.Extras.OfTables != null && template.Extras.OfTables.Length > 0) {
+
+            sql.Append(" OF ");
+
+            bool isFirst = true;
+
+            foreach(ITable table in template.Extras.OfTables) {
+
+                if(!isFirst) {
+                    sql.Append(',');
+                }
+                else {
+                    isFirst = false;
+                }
+                if(useAliases) {
+                    sql.Append(table.Alias);
+                }
+            }
+        }
+
+        if(template.Extras.WaitType != null) {
+
+            switch(template.Extras.WaitType.Value) {
+                case WaitType.WAIT:
+                    //Do nothing as this is the default value
+                    break;
+                case WaitType.NOWAIT:
+                    sql.Append(" NOWAIT");
+                    break;
+                case WaitType.SKIP_LOCKED:
+                    sql.Append(" SKIP LOCKED");
+                    break;
+                default:
+                    throw new Exception($"Unknown {nameof(template.Extras.WaitType)} type {template.Extras.WaitType}");
             }
         }
     }

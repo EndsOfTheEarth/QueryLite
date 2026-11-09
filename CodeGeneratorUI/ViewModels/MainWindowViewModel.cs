@@ -25,55 +25,54 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using QueryLite.DbSchema;
 using System.Collections.ObjectModel;
 
-namespace QueryLite.CodeGeneratorUI.ViewModels {
+namespace QueryLite.CodeGeneratorUI.ViewModels; 
 
-    public partial class MainWindowViewModel : ViewModelBase {
+public partial class MainWindowViewModel : ViewModelBase {
 
-        internal ObservableCollection<TreeNodeViewModel> Nodes { get; set; }
-        public ObservableCollection<TreeNodeViewModel> SelectedNodes { get; }
+    internal ObservableCollection<TreeNodeViewModel> Nodes { get; set; }
+    public ObservableCollection<TreeNodeViewModel> SelectedNodes { get; }
 
-        public MainWindowViewModel() {
-            Nodes = [];
-            SelectedNodes = [];
-        }
+    public MainWindowViewModel() {
+        Nodes = [];
+        SelectedNodes = [];
     }
+}
 
-    public partial class TreeNodeViewModel : ViewModelBase {
+public partial class TreeNodeViewModel : ViewModelBase {
 
-        public string Text { get; set; } = "";
+    public string Text { get; set; } = "";
 
-        [ObservableProperty]
-        public partial bool IsEnabled { get; set; } = true;
+    [ObservableProperty]
+    public partial bool IsEnabled { get; set; } = true;
 
-        public ObservableCollection<TreeNodeViewModel> Nodes { get; set; } = [];
+    public ObservableCollection<TreeNodeViewModel> Nodes { get; set; } = [];
+}
+internal class SchemaNode : TreeNodeViewModel {
+
+    public SchemaName SchemaName { get; }
+
+    public SchemaNode(SchemaName schemaName) {
+        SchemaName = schemaName;
+        Text = !string.IsNullOrWhiteSpace(SchemaName.Value) ? SchemaName.Value : "[Unknown]";
     }
-    internal class SchemaNode : TreeNodeViewModel {
+}
+internal class TableNode : TreeNodeViewModel {
 
-        public SchemaName SchemaName { get; }
+    public DatabaseTable Table { get; }
 
-        public SchemaNode(SchemaName schemaName) {
-            SchemaName = schemaName;
-            Text = !string.IsNullOrWhiteSpace(SchemaName.Value) ? SchemaName.Value : "[Unknown]";
-        }
+    public TableNode(DatabaseTable table) {
+        Table = table;
+        Text = $"{table.TableName.Value}{(table.IsView ? " (View)" : "")}";
     }
-    internal class TableNode : TreeNodeViewModel {
+}
+internal partial class ColumnNode : TreeNodeViewModel {
 
-        public DatabaseTable Table { get; }
+    public TableNode TableNode { get; }
+    public DatabaseColumn Column { get; }
 
-        public TableNode(DatabaseTable table) {
-            Table = table;
-            Text = $"{table.TableName.Value}{(table.IsView ? " (View)" : "")}";
-        }
-    }
-    internal partial class ColumnNode : TreeNodeViewModel {
-
-        public TableNode TableNode { get; }
-        public DatabaseColumn Column { get; }
-
-        public ColumnNode(TableNode tableNode, DatabaseColumn column) {
-            TableNode = tableNode;
-            Column = column;
-            Text = $"{column.ColumnName} ({column.SqlDataTypeName} {(column.IsNullable ? "NULL" : "NOT NULL")} {(column.IsPrimaryKey ? "PK" : "")})";
-        }
+    public ColumnNode(TableNode tableNode, DatabaseColumn column) {
+        TableNode = tableNode;
+        Column = column;
+        Text = $"{column.ColumnName} ({column.SqlDataTypeName} {(column.IsNullable ? "NULL" : "NOT NULL")} {(column.IsPrimaryKey ? "PK" : "")})";
     }
 }

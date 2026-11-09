@@ -21,55 +21,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    public static class Helpers {
+public static class Helpers {
 
-        /// <summary>
-        /// Escape string text for use in an sql query
-        /// </summary>
-        /// <param name="text">Text to be escaped</param>
-        /// <returns></returns>
-        public static string EscapeForSql(string text) {
-            return text.Replace("'", "''");
-        }
+    /// <summary>
+    /// Escape string text for use in an sql query
+    /// </summary>
+    /// <param name="text">Text to be escaped</param>
+    /// <returns></returns>
+    public static string EscapeForSql(string text) {
+        return text.Replace("'", "''");
+    }
+}
+
+public static class StringExtensions {
+
+    /// <summary>
+    /// a Equals b, OrdinalIgnoreCase
+    /// </summary>
+    public static bool EqualsOIC(this string a, string b) {
+        return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
     }
 
-    public static class StringExtensions {
+    /// <summary>
+    /// a Contains b, OrdinalIgnoreCase
+    /// </summary>
+    public static bool ContainsOIC(this string a, string b) {
+        return a.Contains(b, StringComparison.OrdinalIgnoreCase);
+    }
+}
 
-        /// <summary>
-        /// a Equals b, OrdinalIgnoreCase
-        /// </summary>
-        public static bool EqualsOIC(this string a, string b) {
-            return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
-        }
+// The type name only contains lower-cased ascii characters.
+// Naming Styles
+#pragma warning disable CS8981, IDE1006
+public static class str {
+#pragma warning restore IDE1006,CS8981
 
-        /// <summary>
-        /// a Contains b, OrdinalIgnoreCase
-        /// </summary>
-        public static bool ContainsOIC(this string a, string b) {
-            return a.Contains(b, StringComparison.OrdinalIgnoreCase);
-        }
+    /// <summary>
+    /// a Equals b, OrdinalIgnoreCase
+    /// </summary>
+    public static bool EqualsOIC(string a, string b) {
+        return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
     }
 
-    // The type name only contains lower-cased ascii characters.
-    // Naming Styles
-    #pragma warning disable CS8981, IDE1006
-    public static class str {
-    #pragma warning restore IDE1006,CS8981
-
-        /// <summary>
-        /// a Equals b, OrdinalIgnoreCase
-        /// </summary>
-        public static bool EqualsOIC(string a, string b) {
-            return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static bool IsNullOrEmpty(string? value) {
-            return string.IsNullOrEmpty(value);
-        }
-        public static bool IsNullOrWhiteSpace(string? value) {
-            return string.IsNullOrWhiteSpace(value);
-        }
+    public static bool IsNullOrEmpty(string? value) {
+        return string.IsNullOrEmpty(value);
     }
-}   
+    public static bool IsNullOrWhiteSpace(string? value) {
+        return string.IsNullOrWhiteSpace(value);
+    }
+}

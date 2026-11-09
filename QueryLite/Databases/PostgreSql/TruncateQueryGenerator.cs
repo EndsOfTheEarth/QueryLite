@@ -23,27 +23,26 @@
  **/
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql; 
 
-    internal sealed class PostgreSqlTruncateQueryGenerator : ITruncateQueryGenerator {
+internal sealed class PostgreSqlTruncateQueryGenerator : ITruncateQueryGenerator {
 
-        string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template,
-                                              IDatabase database,
-                                              IParametersBuilder? parameters) {
+    string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template,
+                                          IDatabase database,
+                                          IParametersBuilder? parameters) {
 
-            StringBuilder sql = StringBuilderCache.Acquire();
+        StringBuilder sql = StringBuilderCache.Acquire();
 
-            sql.Append("TRUNCATE TABLE ");
+        sql.Append("TRUNCATE TABLE ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
-                sql.Append('.');
-            }
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
-
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
+            sql.Append('.');
         }
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
+
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

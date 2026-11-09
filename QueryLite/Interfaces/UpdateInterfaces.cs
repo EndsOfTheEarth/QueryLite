@@ -21,54 +21,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    public interface IUpdateSet {
+public interface IUpdateSet {
 
-        IUpdateFrom Values(Action<ISetValuesCollector> values);
-    }
+    IUpdateFrom Values(Action<ISetValuesCollector> values);
+}
 
-    public interface IUpdateFrom : IUpdateWhere {
+public interface IUpdateFrom : IUpdateWhere {
 
-        public IUpdateWhere From(ITable table, params ITable[] tables);
-    }
+    public IUpdateWhere From(ITable table, params ITable[] tables);
+}
 
-    public interface IUpdateWhere {
+public interface IUpdateWhere {
 
-        /// <summary>
-        /// Where clause
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        public IUpdateExecute Where(ICondition condition);
+    /// <summary>
+    /// Where clause
+    /// </summary>
+    /// <param name="condition"></param>
+    /// <returns></returns>
+    public IUpdateExecute Where(ICondition condition);
 
-        /// <summary>
-        /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used
-        /// when there is no where clause on an update query.
-        /// </summary>
-        /// <returns></returns>
-        public IUpdateExecute NoWhereCondition();
-    }
+    /// <summary>
+    /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used
+    /// when there is no where clause on an update query.
+    /// </summary>
+    /// <returns></returns>
+    public IUpdateExecute NoWhereCondition();
+}
 
-    public interface IUpdateExecute {
+public interface IUpdateExecute {
 
-        /// <summary>
-        /// Get update sql
-        /// </summary>
-        /// <param name="database"></param>
-        /// <returns></returns>
-        string GetSql(IDatabase database);
+    /// <summary>
+    /// Get update sql
+    /// </summary>
+    /// <param name="database"></param>
+    /// <returns></returns>
+    string GetSql(IDatabase database);
 
-        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+    NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
-        QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null,
-                                            Parameters useParameters = Parameters.Default, string debugName = "");
+    QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null,
+                                        Parameters useParameters = Parameters.Default, string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
-                                          QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
-                                          string debugName = "");
+    Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
+                                      QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                      string debugName = "");
 
-        Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? ct = null,
-                                                      QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-    }
+    Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? ct = null,
+                                                  QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 }

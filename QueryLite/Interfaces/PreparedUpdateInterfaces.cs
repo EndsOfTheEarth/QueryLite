@@ -23,100 +23,99 @@
  **/
 using QueryLite.PreparedQuery;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    public interface IPreparedUpdateSet<PARAMETERS> {
+public interface IPreparedUpdateSet<PARAMETERS> {
 
-        IPreparedUpdateFrom<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
-    }
+    IPreparedUpdateFrom<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values);
+}
 
-    public interface IPreparedUpdateFrom<PARAMETERS> : IPreparedUpdateWhere<PARAMETERS> {
+public interface IPreparedUpdateFrom<PARAMETERS> : IPreparedUpdateWhere<PARAMETERS> {
 
-        public IPreparedUpdateWhere<PARAMETERS> From(ITable table, params ITable[] tables);
-    }
+    public IPreparedUpdateWhere<PARAMETERS> From(ITable table, params ITable[] tables);
+}
 
-    public interface IPreparedUpdateWhere<PARAMETERS> : IPreparedUpdateSet<PARAMETERS> {
+public interface IPreparedUpdateWhere<PARAMETERS> : IPreparedUpdateSet<PARAMETERS> {
 
-        /// <summary>
-        /// Where clause
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        public IPreparedUpdateBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition);
+    /// <summary>
+    /// Where clause
+    /// </summary>
+    /// <param name="condition"></param>
+    /// <returns></returns>
+    public IPreparedUpdateBuild<PARAMETERS> Where(Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition);
 
-        /// <summary>
-        /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used
-        /// when there is no where clause on an update query.
-        /// </summary>
-        /// <returns></returns>
-        public IPreparedUpdateBuild<PARAMETERS> NoWhereCondition();
-    }
+    /// <summary>
+    /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used
+    /// when there is no where clause on an update query.
+    /// </summary>
+    /// <returns></returns>
+    public IPreparedUpdateBuild<PARAMETERS> NoWhereCondition();
+}
 
-    public interface IPreparedUpdateBuild<PARAMETERS> {
+public interface IPreparedUpdateBuild<PARAMETERS> {
 
-        IPreparedUpdateQuery<PARAMETERS> Build();
-        IPreparedUpdateQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc);
-    }
+    IPreparedUpdateQuery<PARAMETERS> Build();
+    IPreparedUpdateQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc);
+}
 
-    public interface IPreparedUpdateQuery<PARAMETERS> {
+public interface IPreparedUpdateQuery<PARAMETERS> {
 
-        void Initialize(IDatabase database);
+    void Initialize(IDatabase database);
 
-        NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+    NonQueryResult Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                            QueryTimeout? timeout = null, string debugName = "");
-    }
+    Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
+                                        QueryTimeout? timeout = null, string debugName = "");
+}
 
-    public interface IPreparedUpdateQuery<PARAMETERS, RESULT> {
+public interface IPreparedUpdateQuery<PARAMETERS, RESULT> {
 
-        void Initialize(IDatabase database);
+    void Initialize(IDatabase database);
 
-        QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+    QueryResult<RESULT> Execute(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                               QueryTimeout? timeout = null, string debugName = "");
+    Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
+                                           QueryTimeout? timeout = null, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public RESULT? SingleOrDefault(PARAMETERS parameters, Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public RESULT? SingleOrDefault(PARAMETERS parameters, IDatabase database, QueryTimeout? timeout = null, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
-                                                  QueryTimeout? timeout = null, string debugName = "");
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, Transaction transaction, CancellationToken? ct = null,
+                                              QueryTimeout? timeout = null, string debugName = "");
 
-        /// <summary>
-        /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <param name="timeout"></param>
-        /// <param name="useParameters"></param>
-        /// <param name="debugName"></param>
-        /// <returns></returns>
-        public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
-                                                  QueryTimeout? timeout = null, string debugName = "");
-    }
+    /// <summary>
+    /// Returns a value if there is only one row. If there are zero rows the default value is returned. If there is more than one row an exception is thrown
+    /// </summary>
+    /// <param name="transaction"></param>
+    /// <param name="timeout"></param>
+    /// <param name="useParameters"></param>
+    /// <param name="debugName"></param>
+    /// <returns></returns>
+    public Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters, IDatabase database, CancellationToken? ct = null,
+                                              QueryTimeout? timeout = null, string debugName = "");
 }

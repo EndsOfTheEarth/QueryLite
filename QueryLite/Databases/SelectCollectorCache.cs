@@ -26,85 +26,84 @@ using QueryLite.Databases.Sqlite.Collectors;
 using QueryLite.Databases.SqlServer;
 using System.Data.Common;
 
-namespace QueryLite.Databases {
+namespace QueryLite.Databases; 
 
-    internal static class SelectCollectorCache {
+internal static class SelectCollectorCache {
 
-        [ThreadStatic]
-        private static SqlServerResultRowCollector? SqlServerInstance;
+    [ThreadStatic]
+    private static SqlServerResultRowCollector? SqlServerInstance;
 
-        [ThreadStatic]
-        private static PostgreSqlResultRowCollector? PostgreSqlInstance;
+    [ThreadStatic]
+    private static PostgreSqlResultRowCollector? PostgreSqlInstance;
 
-        [ThreadStatic]
-        private static SqliteResultRowCollector? SqliteInstance;
+    [ThreadStatic]
+    private static SqliteResultRowCollector? SqliteInstance;
 
-        public static IResultRow Acquire(DatabaseType databaseType, DbDataReader reader) {
+    public static IResultRow Acquire(DatabaseType databaseType, DbDataReader reader) {
 
-            if(databaseType == DatabaseType.SqlServer) {
+        if(databaseType == DatabaseType.SqlServer) {
 
-                if(Settings.EnableCollectorCaching) {
+            if(Settings.EnableCollectorCaching) {
 
-                    SqlServerResultRowCollector? resultRow = SqlServerInstance;
+                SqlServerResultRowCollector? resultRow = SqlServerInstance;
 
-                    if(resultRow != null) {
-                        SqlServerInstance = null;
-                        resultRow.Reset(reader);
-                        return resultRow;
-                    }
+                if(resultRow != null) {
+                    SqlServerInstance = null;
+                    resultRow.Reset(reader);
+                    return resultRow;
                 }
-                return new SqlServerResultRowCollector(reader);
             }
-            else if(databaseType == DatabaseType.PostgreSql) {
-
-                if(Settings.EnableCollectorCaching) {
-
-                    PostgreSqlResultRowCollector? resultRow = PostgreSqlInstance;
-
-                    if(resultRow != null) {
-                        PostgreSqlInstance = null;
-                        resultRow.Reset(reader);
-                        return resultRow;
-                    }
-                }
-                return new PostgreSqlResultRowCollector(reader);
-            }
-            else if(databaseType == DatabaseType.Sqlite) {
-
-                if(Settings.EnableCollectorCaching) {
-
-                    SqliteResultRowCollector? resultRow = SqliteInstance;
-
-                    if(resultRow != null) {
-                        SqliteInstance = null;
-                        resultRow.Reset(reader);
-                        return resultRow;
-                    }
-                }
-                return new SqliteResultRowCollector(reader);
-            }
-            else {
-                throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{databaseType}'");
-            }
+            return new SqlServerResultRowCollector(reader);
         }
+        else if(databaseType == DatabaseType.PostgreSql) {
 
-        public static void Release(DatabaseType databaseType, IResultRow resultRow) {
+            if(Settings.EnableCollectorCaching) {
 
-            if(databaseType == DatabaseType.SqlServer) {
-                SqlServerInstance = (SqlServerResultRowCollector)resultRow;
-                SqlServerInstance.ReleaseReader();
+                PostgreSqlResultRowCollector? resultRow = PostgreSqlInstance;
+
+                if(resultRow != null) {
+                    PostgreSqlInstance = null;
+                    resultRow.Reset(reader);
+                    return resultRow;
+                }
             }
-            else if(databaseType == DatabaseType.PostgreSql) {
-                PostgreSqlInstance = (PostgreSqlResultRowCollector)resultRow;
-                PostgreSqlInstance.ReleaseReader();
+            return new PostgreSqlResultRowCollector(reader);
+        }
+        else if(databaseType == DatabaseType.Sqlite) {
+
+            if(Settings.EnableCollectorCaching) {
+
+                SqliteResultRowCollector? resultRow = SqliteInstance;
+
+                if(resultRow != null) {
+                    SqliteInstance = null;
+                    resultRow.Reset(reader);
+                    return resultRow;
+                }
             }
-            else if(databaseType == DatabaseType.Sqlite) {
-                SqliteInstance = (SqliteResultRowCollector)resultRow;
-                SqliteInstance.ReleaseReader();
-            }
-            else {
-                throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{databaseType}'");
-            }
+            return new SqliteResultRowCollector(reader);
+        }
+        else {
+            throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{databaseType}'");
+        }
+    }
+
+    public static void Release(DatabaseType databaseType, IResultRow resultRow) {
+
+        if(databaseType == DatabaseType.SqlServer) {
+            SqlServerInstance = (SqlServerResultRowCollector)resultRow;
+            SqlServerInstance.ReleaseReader();
+        }
+        else if(databaseType == DatabaseType.PostgreSql) {
+            PostgreSqlInstance = (PostgreSqlResultRowCollector)resultRow;
+            PostgreSqlInstance.ReleaseReader();
+        }
+        else if(databaseType == DatabaseType.Sqlite) {
+            SqliteInstance = (SqliteResultRowCollector)resultRow;
+            SqliteInstance.ReleaseReader();
+        }
+        else {
+            throw new Exception($"Unknown {nameof(DatabaseType)}. Value = '{databaseType}'");
         }
     }
 }

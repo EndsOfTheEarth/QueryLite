@@ -24,687 +24,686 @@
 using QueryLite.Databases;
 using System.Transactions;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    internal interface IQueryGenerator {
+internal interface IQueryGenerator {
 
-        internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
-                                       IDatabase database,
-                                       bool forceAlias,
-                                       IParametersBuilder? parameters);
+    internal string GetSql<RESULT>(SelectQueryTemplate<RESULT> template,
+                                   IDatabase database,
+                                   bool forceAlias,
+                                   IParametersBuilder? parameters);
+}
+internal interface IInsertQueryGenerator {
+
+    internal string GetSql<RESULT>(InsertQueryTemplate template,
+                                   IDatabase database,
+                                   Parameters useParameters,
+                                   out IParametersBuilder? parameters,
+                                   Func<IResultRow, RESULT>? outputFunc);
+}
+
+internal interface IPreparedInsertQueryGenerator {
+
+    internal string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template,
+                                               IDatabase database,
+                                               out PreparedParameterList<PARAMETERS> parameters,
+                                               Func<IResultRow, RESULT>? outputFunc);
+}
+
+internal interface IUpdateQueryGenerator {
+
+    internal string GetSql<RESULT>(UpdateQueryTemplate template,
+                                   IDatabase database,
+                                   Parameters useParameters,
+                                   out IParametersBuilder? parameters,
+                                   Func<IResultRow, RESULT>? outputFunc);
+}
+internal interface IPreparedUpdateQueryGenerator {
+
+    internal string GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template,
+                                               IDatabase database,
+                                               out PreparedParameterList<PARAMETERS> parameters,
+                                               Func<IResultRow, RESULT>? outputFunc);
+}
+internal interface IDeleteQueryGenerator {
+
+    internal string GetSql<RESULT>(DeleteQueryTemplate template,
+                                   IDatabase database,
+                                   IParametersBuilder? parameters,
+                                   Func<IResultRow, RESULT>? outputFunc);
+}
+internal interface IPreparedDeleteQueryGenerator {
+
+    internal string GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template,
+                                               IDatabase database,
+                                               out PreparedParameterList<PARAMETERS> parameters,
+                                               Func<IResultRow, RESULT>? outputFunc);
+}
+internal interface ITruncateQueryGenerator {
+
+    internal string GetSql(TruncateQueryTemplate template,
+                           IDatabase database,
+                           IParametersBuilder? parameters);
+}
+
+internal interface IPreparedQueryGenerator {
+
+    internal string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template,
+                                               IDatabase database,
+                                               PreparedParameterList<PARAMETERS> parameters);
+}
+
+internal interface ILikeSqlConditionGenerator {
+
+    internal string GetSql<TYPE>(ILike<TYPE> like,
+                                 IDatabase database);
+}
+
+/*
+ * The less common query features exist in a second class to reduce memory allocation
+ * for the most common types of query.
+ */
+internal class TemplateExtra<RESULT> {
+
+    public SelectQueryTemplate<RESULT>? ParentUnion { get; internal set; }
+    public SelectQueryTemplate<RESULT>? ChildUnion { get; internal set; }
+
+    public UnionType? ChildUnionType { get; internal set; }
+
+    public IList<IField>? NestedSelectFields { get; internal set; }
+
+    public SqlServerTableHint[]? Hints { get; internal set; }
+
+    public ISelectable[]? GroupByFields { get; internal set; }
+    public ICondition? HavingCondition { get; internal set; }
+
+    public ForType? ForType { get; internal set; } = null;
+    public ITable[]? OfTables { get; internal set; } = null;
+    public WaitType? WaitType { get; internal set; } = null;
+
+    public string? OptionLabelName { get; internal set; } = null;
+    public SqlServerQueryOption[]? Options { get; internal set; } = null;
+}
+internal sealed class SelectQueryTemplate<RESULT> : IDistinct<RESULT>,
+                                                    ITop<RESULT>,
+                                                    IFrom<RESULT>,
+                                                    IHint<RESULT>,
+                                                    IJoin<RESULT>,
+                                                    IWhere<RESULT>,
+                                                    IGroupBy<RESULT>,
+                                                    IHaving<RESULT>,
+                                                    IOrderBy<RESULT>,
+                                                    IFor<RESULT>,
+                                                    IExecute<RESULT> {
+
+    public Func<IResultRow, RESULT>? SelectFunction { get; }
+
+    public bool IsDistinct { get; private set; }
+    public int? TopRows { get; private set; }
+    public ITable? FromTable { get; private set; }
+    public IList<IJoin>? Joins { get; private set; }
+    public ICondition? WhereCondition { get; private set; }
+    public IOrderByColumn[]? OrderByFields { get; private set; }
+
+    public TemplateExtra<RESULT>? Extras { get; private set; }
+
+    public SelectQueryTemplate(Func<IResultRow, RESULT> selectFunction) {
+
+        ArgumentNullException.ThrowIfNull(selectFunction);
+
+        SelectFunction = selectFunction;
     }
-    internal interface IInsertQueryGenerator {
+    public SelectQueryTemplate(IList<IField> selectFields) {
 
-        internal string GetSql<RESULT>(InsertQueryTemplate template,
-                                       IDatabase database,
-                                       Parameters useParameters,
-                                       out IParametersBuilder? parameters,
-                                       Func<IResultRow, RESULT>? outputFunc);
-    }
+        ArgumentNullException.ThrowIfNull(selectFields);
 
-    internal interface IPreparedInsertQueryGenerator {
-
-        internal string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template,
-                                                   IDatabase database,
-                                                   out PreparedParameterList<PARAMETERS> parameters,
-                                                   Func<IResultRow, RESULT>? outputFunc);
-    }
-
-    internal interface IUpdateQueryGenerator {
-
-        internal string GetSql<RESULT>(UpdateQueryTemplate template,
-                                       IDatabase database,
-                                       Parameters useParameters,
-                                       out IParametersBuilder? parameters,
-                                       Func<IResultRow, RESULT>? outputFunc);
-    }
-    internal interface IPreparedUpdateQueryGenerator {
-
-        internal string GetSql<PARAMETERS, RESULT>(PreparedUpdateTemplate<PARAMETERS> template,
-                                                   IDatabase database,
-                                                   out PreparedParameterList<PARAMETERS> parameters,
-                                                   Func<IResultRow, RESULT>? outputFunc);
-    }
-    internal interface IDeleteQueryGenerator {
-
-        internal string GetSql<RESULT>(DeleteQueryTemplate template,
-                                       IDatabase database,
-                                       IParametersBuilder? parameters,
-                                       Func<IResultRow, RESULT>? outputFunc);
-    }
-    internal interface IPreparedDeleteQueryGenerator {
-
-        internal string GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template,
-                                                   IDatabase database,
-                                                   out PreparedParameterList<PARAMETERS> parameters,
-                                                   Func<IResultRow, RESULT>? outputFunc);
-    }
-    internal interface ITruncateQueryGenerator {
-
-        internal string GetSql(TruncateQueryTemplate template,
-                               IDatabase database,
-                               IParametersBuilder? parameters);
-    }
-
-    internal interface IPreparedQueryGenerator {
-
-        internal string GetSql<PARAMETERS, RESULT>(PreparedQueryTemplate<PARAMETERS, RESULT> template,
-                                                   IDatabase database,
-                                                   PreparedParameterList<PARAMETERS> parameters);
-    }
-
-    internal interface ILikeSqlConditionGenerator {
-
-        internal string GetSql<TYPE>(ILike<TYPE> like,
-                                     IDatabase database);
-    }
-
-    /*
-     * The less common query features exist in a second class to reduce memory allocation
-     * for the most common types of query.
-     */
-    internal class TemplateExtra<RESULT> {
-
-        public SelectQueryTemplate<RESULT>? ParentUnion { get; internal set; }
-        public SelectQueryTemplate<RESULT>? ChildUnion { get; internal set; }
-
-        public UnionType? ChildUnionType { get; internal set; }
-
-        public IList<IField>? NestedSelectFields { get; internal set; }
-
-        public SqlServerTableHint[]? Hints { get; internal set; }
-
-        public ISelectable[]? GroupByFields { get; internal set; }
-        public ICondition? HavingCondition { get; internal set; }
-
-        public ForType? ForType { get; internal set; } = null;
-        public ITable[]? OfTables { get; internal set; } = null;
-        public WaitType? WaitType { get; internal set; } = null;
-
-        public string? OptionLabelName { get; internal set; } = null;
-        public SqlServerQueryOption[]? Options { get; internal set; } = null;
-    }
-    internal sealed class SelectQueryTemplate<RESULT> : IDistinct<RESULT>,
-                                                        ITop<RESULT>,
-                                                        IFrom<RESULT>,
-                                                        IHint<RESULT>,
-                                                        IJoin<RESULT>,
-                                                        IWhere<RESULT>,
-                                                        IGroupBy<RESULT>,
-                                                        IHaving<RESULT>,
-                                                        IOrderBy<RESULT>,
-                                                        IFor<RESULT>,
-                                                        IExecute<RESULT> {
-
-        public Func<IResultRow, RESULT>? SelectFunction { get; }
-
-        public bool IsDistinct { get; private set; }
-        public int? TopRows { get; private set; }
-        public ITable? FromTable { get; private set; }
-        public IList<IJoin>? Joins { get; private set; }
-        public ICondition? WhereCondition { get; private set; }
-        public IOrderByColumn[]? OrderByFields { get; private set; }
-
-        public TemplateExtra<RESULT>? Extras { get; private set; }
-
-        public SelectQueryTemplate(Func<IResultRow, RESULT> selectFunction) {
-
-            ArgumentNullException.ThrowIfNull(selectFunction);
-
-            SelectFunction = selectFunction;
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
         }
-        public SelectQueryTemplate(IList<IField> selectFields) {
-
-            ArgumentNullException.ThrowIfNull(selectFields);
-
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.NestedSelectFields = selectFields;
-        }
-        public ITop<RESULT> Distinct {
-            get {
-                IsDistinct = true;
-                return this;
-            }
-        }
-        public IFrom<RESULT> Top(int rows) {
-
-            if(rows <= 0) {
-                throw new ArgumentException($"{nameof(rows)} must be greater than zero");
-            }
-            TopRows = rows;
+        Extras.NestedSelectFields = selectFields;
+    }
+    public ITop<RESULT> Distinct {
+        get {
+            IsDistinct = true;
             return this;
         }
-        public IHint<RESULT> From(ITable table) {
+    }
+    public IFrom<RESULT> Top(int rows) {
 
-            ArgumentNullException.ThrowIfNull(table);
+        if(rows <= 0) {
+            throw new ArgumentException($"{nameof(rows)} must be greater than zero");
+        }
+        TopRows = rows;
+        return this;
+    }
+    public IHint<RESULT> From(ITable table) {
 
-            FromTable = table;
-            return this;
+        ArgumentNullException.ThrowIfNull(table);
+
+        FromTable = table;
+        return this;
+    }
+
+    public IExecute<RESULT> NoFromClause() => this;
+
+    public IJoin<RESULT> With(params SqlServerTableHint[] hints) {
+
+        ArgumentNullException.ThrowIfNull(hints);
+
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
+        }
+        Extras.Hints = hints;
+        return this;
+    }
+
+    public IJoinOn<RESULT> Join(ITable table) {
+
+        ArgumentNullException.ThrowIfNull(table);
+
+        Join<RESULT> join = new(
+            joinType: JoinType.Join,
+            table: table,
+            template: this
+        );
+
+        if(Joins == null) {
+            Joins = [];
+        }
+        Joins.Add(join);
+        return join;
+    }
+    public IJoinOn<RESULT> LeftJoin(ITable table) {
+
+        ArgumentNullException.ThrowIfNull(table);
+
+        Join<RESULT> join = new(
+            joinType: JoinType.LeftJoin,
+            table: table,
+            template: this
+        );
+
+        if(Joins == null) {
+            Joins = [];
+        }
+        Joins.Add(join);
+        return join;
+    }
+
+    public IGroupBy<RESULT> Where(ICondition? condition) {
+        WhereCondition = condition;
+        return this;
+    }
+    public IHaving<RESULT> GroupBy(params ISelectable[] groupBy) {
+
+        ArgumentNullException.ThrowIfNull(groupBy);
+
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
+        }
+        Extras.GroupByFields = groupBy;
+        return this;
+    }
+
+    public IOrderBy<RESULT> Having(ICondition condition) {
+
+        ArgumentNullException.ThrowIfNull(condition);
+
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
+        }
+        Extras.HavingCondition = condition;
+        return this;
+    }
+
+    public IFor<RESULT> OrderBy(params IOrderByColumn[] orderBy) {
+
+        ArgumentNullException.ThrowIfNull(orderBy);
+
+        OrderByFields = orderBy;
+        return this;
+    }
+
+    public IOption<RESULT> FOR(ForType forType,
+                               ITable[] ofTables,
+                               WaitType waitType) {
+
+        ArgumentNullException.ThrowIfNull(ofTables);
+
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
+        }
+        Extras.ForType = forType;
+        Extras.OfTables = ofTables;
+        Extras.WaitType = waitType;
+        return this;
+    }
+
+    public IExecute<RESULT> Option(params SqlServerQueryOption[] options) {
+
+        ArgumentNullException.ThrowIfNull(options);
+
+        if(options.Length == 0) {
+            throw new ArgumentException($"{nameof(options)} cannot be empty");
         }
 
-        public IExecute<RESULT> NoFromClause() => this;
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
+        }
+        Extras.Options = options;
+        return this;
+    }
 
-        public IJoin<RESULT> With(params SqlServerTableHint[] hints) {
+    public IExecute<RESULT> Option(string labelName,
+                                   params SqlServerQueryOption[] options) {
 
-            ArgumentNullException.ThrowIfNull(hints);
+        ArgumentException.ThrowIfNullOrEmpty(labelName);
+        ArgumentNullException.ThrowIfNull(options);
 
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.Hints = hints;
-            return this;
+        if(options.Length == 0) {
+            throw new ArgumentException($"{nameof(options)} cannot be empty");
         }
 
-        public IJoinOn<RESULT> Join(ITable table) {
-
-            ArgumentNullException.ThrowIfNull(table);
-
-            Join<RESULT> join = new(
-                joinType: JoinType.Join,
-                table: table,
-                template: this
-            );
-
-            if(Joins == null) {
-                Joins = [];
-            }
-            Joins.Add(join);
-            return join;
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
         }
-        public IJoinOn<RESULT> LeftJoin(ITable table) {
+        Extras.OptionLabelName = labelName;
+        Extras.Options = options;
+        return this;
+    }
 
-            ArgumentNullException.ThrowIfNull(table);
+    public string GetSql(IDatabase database,
+                         IParametersBuilder? parameters = null) {
 
-            Join<RESULT> join = new(
-                joinType: JoinType.LeftJoin,
-                table: table,
-                template: this
-            );
+        ArgumentNullException.ThrowIfNull(database);
 
-            if(Joins == null) {
-                Joins = [];
-            }
-            Joins.Add(join);
-            return join;
-        }
+        return database.QueryGenerator.GetSql(
+            template: this,
+            database: database,
+            forceAlias: false,
+            parameters: parameters
+        );
+    }
 
-        public IGroupBy<RESULT> Where(ICondition? condition) {
-            WhereCondition = condition;
-            return this;
-        }
-        public IHaving<RESULT> GroupBy(params ISelectable[] groupBy) {
+    public string GetSql(IDatabase database,
+                         bool forceAlias,
+                         IParametersBuilder? parameters = null) {
 
-            ArgumentNullException.ThrowIfNull(groupBy);
+        ArgumentNullException.ThrowIfNull(database);
 
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.GroupByFields = groupBy;
-            return this;
-        }
+        return database.QueryGenerator.GetSql(
+            template: this,
+            database: database,
+            forceAlias: forceAlias,
+            parameters: parameters
+        );
+    }
 
-        public IOrderBy<RESULT> Having(ICondition condition) {
-
-            ArgumentNullException.ThrowIfNull(condition);
-
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.HavingCondition = condition;
-            return this;
-        }
-
-        public IFor<RESULT> OrderBy(params IOrderByColumn[] orderBy) {
-
-            ArgumentNullException.ThrowIfNull(orderBy);
-
-            OrderByFields = orderBy;
-            return this;
-        }
-
-        public IOption<RESULT> FOR(ForType forType,
-                                   ITable[] ofTables,
-                                   WaitType waitType) {
-
-            ArgumentNullException.ThrowIfNull(ofTables);
-
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.ForType = forType;
-            Extras.OfTables = ofTables;
-            Extras.WaitType = waitType;
-            return this;
-        }
-
-        public IExecute<RESULT> Option(params SqlServerQueryOption[] options) {
-
-            ArgumentNullException.ThrowIfNull(options);
-
-            if(options.Length == 0) {
-                throw new ArgumentException($"{nameof(options)} cannot be empty");
-            }
-
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.Options = options;
-            return this;
-        }
-
-        public IExecute<RESULT> Option(string labelName,
-                                       params SqlServerQueryOption[] options) {
-
-            ArgumentException.ThrowIfNullOrEmpty(labelName);
-            ArgumentNullException.ThrowIfNull(options);
-
-            if(options.Length == 0) {
-                throw new ArgumentException($"{nameof(options)} cannot be empty");
-            }
-
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.OptionLabelName = labelName;
-            Extras.Options = options;
-            return this;
-        }
-
-        public string GetSql(IDatabase database,
-                             IParametersBuilder? parameters = null) {
-
-            ArgumentNullException.ThrowIfNull(database);
-
-            return database.QueryGenerator.GetSql(
-                template: this,
-                database: database,
-                forceAlias: false,
-                parameters: parameters
-            );
-        }
-
-        public string GetSql(IDatabase database,
-                             bool forceAlias,
-                             IParametersBuilder? parameters = null) {
-
-            ArgumentNullException.ThrowIfNull(database);
-
-            return database.QueryGenerator.GetSql(
-                template: this,
-                database: database,
-                forceAlias: forceAlias,
-                parameters: parameters
-            );
-        }
-
-        public QueryResult<RESULT> Execute(Transaction transaction,
-                                           QueryTimeout? timeout = null,
-                                           Parameters useParameters = Parameters.Default,
-                                           string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortSelect;
-            }
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = transaction.Database.CreateParameters(initParams: 1);
-            }
-
-            string sql = transaction.Database.QueryGenerator.GetSql(
-                template: this,
-                database: transaction.Database,
-                forceAlias: false,
-                parameters: parameters
-            );
-
-            QueryResult<RESULT> result = QueryExecutor.Execute(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: SelectFunction!,
-                sql: sql,
-                queryType: QueryType.Select,
-                debugName: debugName
-            );
-            return result;
-        }
-
-        public async Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction,
-                                                            CancellationToken? ct = null,
-                                                            QueryTimeout? timeout = null,
-                                                            Parameters useParameters = Parameters.Default,
-                                                            string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortSelect;
-            }
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = transaction.Database.CreateParameters(initParams: 1);
-            }
-
-            string sql = transaction.Database.QueryGenerator.GetSql(
-                template: this,
-                database: transaction.Database,
-                forceAlias: false,
-                parameters: parameters
-            );
-
-            QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: SelectFunction!,
-                sql: sql,
-                queryType: QueryType.Select,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
-
-        public async Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database,
-                                                            CancellationToken? ct = null,
-                                                            QueryTimeout? timeout = null,
-                                                            Parameters useParameters = Parameters.Default,
-                                                            string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(database);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortSelect;
-            }
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = database.CreateParameters(initParams: 1);
-            }
-
-            string sql = database.QueryGenerator.GetSql(
-                template: this,
-                database: database,
-                forceAlias: false,
-                parameters: parameters
-            );
-
-            QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
-                database: database,
-                transaction: null,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: SelectFunction!,
-                sql: sql,
-                queryType: QueryType.Select,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
-
-        public QueryResult<RESULT> Execute(IDatabase database,
-                                           QueryTimeout? timeout = null,
-                                           Parameters useParameters = Parameters.Default,
-                                           string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(database);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortSelect;
-            }
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = database.CreateParameters(initParams: 1);
-            }
-
-            string sql = database.QueryGenerator.GetSql(
-                template: this,
-                database: database,
-                forceAlias: false,
-                parameters: parameters
-            );
-
-            QueryResult<RESULT> result = QueryExecutor.Execute(
-                database: database,
-                transaction: null,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: SelectFunction!,
-                sql: sql,
-                queryType: QueryType.Select,
-                debugName: debugName
-            );
-            return result;
-        }
-
-        public RESULT? SingleOrDefault(Transaction transaction,
+    public QueryResult<RESULT> Execute(Transaction transaction,
                                        QueryTimeout? timeout = null,
                                        Parameters useParameters = Parameters.Default,
                                        string debugName = "") {
 
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortSelect;
-            }
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = transaction.Database.CreateParameters(initParams: 1);
-            }
-            string sql = transaction.Database.QueryGenerator.GetSql(
-                template: this,
-                database: transaction.Database,
-                forceAlias: false,
-                parameters: parameters
-            );
-
-            RESULT? result = QueryExecutor.SingleOrDefault(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: SelectFunction!,
-                sql: sql,
-                queryType: QueryType.Select,
-                debugName: debugName
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortSelect;
         }
 
-        public RESULT? SingleOrDefault(IDatabase database,
-                                       QueryTimeout? timeout = null,
-                                       Parameters useParameters = Parameters.Default,
-                                       string debugName = "") {
+        IParametersBuilder? parameters = null;
 
-            ArgumentNullException.ThrowIfNull(database);
-            ArgumentNullException.ThrowIfNull(debugName);
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortSelect;
-            }
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = database.CreateParameters(initParams: 1);
-            }
-            string sql = database.QueryGenerator.GetSql(
-                template: this,
-                database: database,
-                forceAlias: false,
-                parameters: parameters
-            );
-
-            RESULT? result = QueryExecutor.SingleOrDefault(
-                database: database,
-                transaction: null,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: SelectFunction!,
-                sql: sql,
-                queryType: QueryType.Select,
-                debugName: debugName
-            );
-            return result;
+        if(createParameters) {
+            parameters = transaction.Database.CreateParameters(initParams: 1);
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(Transaction transaction,
+        string sql = transaction.Database.QueryGenerator.GetSql(
+            template: this,
+            database: transaction.Database,
+            forceAlias: false,
+            parameters: parameters
+        );
+
+        QueryResult<RESULT> result = QueryExecutor.Execute(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: SelectFunction!,
+            sql: sql,
+            queryType: QueryType.Select,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public async Task<QueryResult<RESULT>> ExecuteAsync(Transaction transaction,
                                                         CancellationToken? ct = null,
                                                         QueryTimeout? timeout = null,
                                                         Parameters useParameters = Parameters.Default,
                                                         string debugName = "") {
 
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortSelect;
-            }
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = transaction.Database.CreateParameters(initParams: 1);
-            }
-            string sql = transaction.Database.QueryGenerator.GetSql(
-                template: this,
-                database: transaction.Database,
-                forceAlias: false,
-                parameters: parameters
-            );
-
-            RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
-                database: transaction.Database,
-                ct: ct ?? CancellationToken.None,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: SelectFunction!,
-                sql: sql,
-                queryType: QueryType.Select,
-                debugName: debugName
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortSelect;
         }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(IDatabase database,
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = transaction.Database.CreateParameters(initParams: 1);
+        }
+
+        string sql = transaction.Database.QueryGenerator.GetSql(
+            template: this,
+            database: transaction.Database,
+            forceAlias: false,
+            parameters: parameters
+        );
+
+        QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: SelectFunction!,
+            sql: sql,
+            queryType: QueryType.Select,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
+    }
+
+    public async Task<QueryResult<RESULT>> ExecuteAsync(IDatabase database,
                                                         CancellationToken? ct = null,
                                                         QueryTimeout? timeout = null,
                                                         Parameters useParameters = Parameters.Default,
                                                         string debugName = "") {
 
-            ArgumentNullException.ThrowIfNull(database);
-            ArgumentNullException.ThrowIfNull(debugName);
+        ArgumentNullException.ThrowIfNull(database);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortSelect;
-            }
-
-            IParametersBuilder? parameters = null;
-
-            bool createParameters = (useParameters == Parameters.On) ||
-                                    (useParameters == Parameters.Default && Settings.UseParameters);
-
-            if(createParameters) {
-                parameters = database.CreateParameters(initParams: 1);
-            }
-            string sql = database.QueryGenerator.GetSql(
-                template: this,
-                database: database,
-                forceAlias: false,
-                parameters: parameters
-            );
-
-            RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
-                database: database,
-                ct: ct ?? CancellationToken.None,
-                transaction: null,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: SelectFunction!,
-                sql: sql,
-                queryType: QueryType.Select,
-                debugName: debugName
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortSelect;
         }
 
-        public IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
+        IParametersBuilder? parameters = null;
 
-            ArgumentNullException.ThrowIfNull(selectFunc);
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
 
-            SelectQueryTemplate<RESULT> template = new(selectFunc) {
-                Extras = new TemplateExtra<RESULT> {
-                    ParentUnion = this
-                }
-            };
-
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.ChildUnion = template;
-            Extras.ChildUnionType = UnionType.Union;
-            return template;
+        if(createParameters) {
+            parameters = database.CreateParameters(initParams: 1);
         }
 
-        public IDistinct<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
+        string sql = database.QueryGenerator.GetSql(
+            template: this,
+            database: database,
+            forceAlias: false,
+            parameters: parameters
+        );
 
-            ArgumentNullException.ThrowIfNull(selectFunc);
+        QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
+            database: database,
+            transaction: null,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: SelectFunction!,
+            sql: sql,
+            queryType: QueryType.Select,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
+    }
 
-            SelectQueryTemplate<RESULT> template = new(selectFunc) {
-                Extras = new TemplateExtra<RESULT> {
-                    ParentUnion = this
-                }
-            };
+    public QueryResult<RESULT> Execute(IDatabase database,
+                                       QueryTimeout? timeout = null,
+                                       Parameters useParameters = Parameters.Default,
+                                       string debugName = "") {
 
-            if(Extras == null) {
-                Extras = new TemplateExtra<RESULT>();
-            }
-            Extras.ChildUnion = template;
-            Extras.ChildUnionType = UnionType.UnionAll;
-            return template;
+        ArgumentNullException.ThrowIfNull(database);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortSelect;
         }
+
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = database.CreateParameters(initParams: 1);
+        }
+
+        string sql = database.QueryGenerator.GetSql(
+            template: this,
+            database: database,
+            forceAlias: false,
+            parameters: parameters
+        );
+
+        QueryResult<RESULT> result = QueryExecutor.Execute(
+            database: database,
+            transaction: null,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: SelectFunction!,
+            sql: sql,
+            queryType: QueryType.Select,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public RESULT? SingleOrDefault(Transaction transaction,
+                                   QueryTimeout? timeout = null,
+                                   Parameters useParameters = Parameters.Default,
+                                   string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortSelect;
+        }
+
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = transaction.Database.CreateParameters(initParams: 1);
+        }
+        string sql = transaction.Database.QueryGenerator.GetSql(
+            template: this,
+            database: transaction.Database,
+            forceAlias: false,
+            parameters: parameters
+        );
+
+        RESULT? result = QueryExecutor.SingleOrDefault(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: SelectFunction!,
+            sql: sql,
+            queryType: QueryType.Select,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public RESULT? SingleOrDefault(IDatabase database,
+                                   QueryTimeout? timeout = null,
+                                   Parameters useParameters = Parameters.Default,
+                                   string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(database);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortSelect;
+        }
+
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = database.CreateParameters(initParams: 1);
+        }
+        string sql = database.QueryGenerator.GetSql(
+            template: this,
+            database: database,
+            forceAlias: false,
+            parameters: parameters
+        );
+
+        RESULT? result = QueryExecutor.SingleOrDefault(
+            database: database,
+            transaction: null,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: SelectFunction!,
+            sql: sql,
+            queryType: QueryType.Select,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public async Task<RESULT?> SingleOrDefaultAsync(Transaction transaction,
+                                                    CancellationToken? ct = null,
+                                                    QueryTimeout? timeout = null,
+                                                    Parameters useParameters = Parameters.Default,
+                                                    string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortSelect;
+        }
+
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = transaction.Database.CreateParameters(initParams: 1);
+        }
+        string sql = transaction.Database.QueryGenerator.GetSql(
+            template: this,
+            database: transaction.Database,
+            forceAlias: false,
+            parameters: parameters
+        );
+
+        RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
+            database: transaction.Database,
+            ct: ct ?? CancellationToken.None,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: SelectFunction!,
+            sql: sql,
+            queryType: QueryType.Select,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public async Task<RESULT?> SingleOrDefaultAsync(IDatabase database,
+                                                    CancellationToken? ct = null,
+                                                    QueryTimeout? timeout = null,
+                                                    Parameters useParameters = Parameters.Default,
+                                                    string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(database);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortSelect;
+        }
+
+        IParametersBuilder? parameters = null;
+
+        bool createParameters = (useParameters == Parameters.On) ||
+                                (useParameters == Parameters.Default && Settings.UseParameters);
+
+        if(createParameters) {
+            parameters = database.CreateParameters(initParams: 1);
+        }
+        string sql = database.QueryGenerator.GetSql(
+            template: this,
+            database: database,
+            forceAlias: false,
+            parameters: parameters
+        );
+
+        RESULT? result = await QueryExecutor.SingleOrDefaultAsync(
+            database: database,
+            ct: ct ?? CancellationToken.None,
+            transaction: null,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: SelectFunction!,
+            sql: sql,
+            queryType: QueryType.Select,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public IDistinct<RESULT> UnionSelect(Func<IResultRow, RESULT> selectFunc) {
+
+        ArgumentNullException.ThrowIfNull(selectFunc);
+
+        SelectQueryTemplate<RESULT> template = new(selectFunc) {
+            Extras = new TemplateExtra<RESULT> {
+                ParentUnion = this
+            }
+        };
+
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
+        }
+        Extras.ChildUnion = template;
+        Extras.ChildUnionType = UnionType.Union;
+        return template;
+    }
+
+    public IDistinct<RESULT> UnionAllSelect(Func<IResultRow, RESULT> selectFunc) {
+
+        ArgumentNullException.ThrowIfNull(selectFunc);
+
+        SelectQueryTemplate<RESULT> template = new(selectFunc) {
+            Extras = new TemplateExtra<RESULT> {
+                ParentUnion = this
+            }
+        };
+
+        if(Extras == null) {
+            Extras = new TemplateExtra<RESULT>();
+        }
+        Extras.ChildUnion = template;
+        Extras.ChildUnionType = UnionType.UnionAll;
+        return template;
     }
 }

@@ -21,33 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.DbSchema.Tables.SqlServer {
+namespace QueryLite.DbSchema.Tables.SqlServer; 
 
-    public sealed class ReferentialConstraintsTable : ATable {
+public sealed class ReferentialConstraintsTable : ATable {
 
-        public static readonly ReferentialConstraintsTable Instance = new();
+    public static readonly ReferentialConstraintsTable Instance = new();
 
-        public NColumn<string> CONSTRAINT_CATALOG { get; }
-        public NColumn<SchemaName, string> CONSTRAINT_SCHEMA { get; }
-        public Column<string> CONSTRAINT_NAME { get; }
-        public NColumn<string> UNIQUE_CONSTRAINT_CATALOG { get; }
-        public NColumn<SchemaName, string> UNIQUE_CONSTRAINT_SCHEMA { get; }
-        public NColumn<string> UNIQUE_CONSTRAINT_NAME { get; }
-        public NColumn<string> MATCH_OPTION { get; }
-        public NColumn<string> UPDATE_RULE { get; }
-        public NColumn<string> DELETE_RULE { get; }
+    public NColumn<string> CONSTRAINT_CATALOG { get; }
+    public NColumn<SchemaName, string> CONSTRAINT_SCHEMA { get; }
+    public Column<string> CONSTRAINT_NAME { get; }
+    public NColumn<string> UNIQUE_CONSTRAINT_CATALOG { get; }
+    public NColumn<SchemaName, string> UNIQUE_CONSTRAINT_SCHEMA { get; }
+    public NColumn<string> UNIQUE_CONSTRAINT_NAME { get; }
+    public NColumn<string> MATCH_OPTION { get; }
+    public NColumn<string> UPDATE_RULE { get; }
+    public NColumn<string> DELETE_RULE { get; }
 
-        public ReferentialConstraintsTable() : base(name: "REFERENTIAL_CONSTRAINTS", schemaName: "information_schema") {
+    public ReferentialConstraintsTable() : base(name: "REFERENTIAL_CONSTRAINTS", schemaName: "information_schema") {
 
-            CONSTRAINT_CATALOG = new NColumn<string>(this, name: "CONSTRAINT_CATALOG", length: new(128));
-            CONSTRAINT_SCHEMA = new NColumn<SchemaName, string>(this, name: "CONSTRAINT_SCHEMA", length: new(128));
-            CONSTRAINT_NAME = new Column<string>(this, name: "CONSTRAINT_NAME", length: new(128));
-            UNIQUE_CONSTRAINT_CATALOG = new NColumn<string>(this, name: "UNIQUE_CONSTRAINT_CATALOG", length: new(128));
-            UNIQUE_CONSTRAINT_SCHEMA = new NColumn<SchemaName, string>(this, name: "UNIQUE_CONSTRAINT_SCHEMA", length: new(128));
-            UNIQUE_CONSTRAINT_NAME = new NColumn<string>(this, name: "UNIQUE_CONSTRAINT_NAME", length: new(128));
-            MATCH_OPTION = new NColumn<string>(this, name: "MATCH_OPTION", length: new(7));
-            UPDATE_RULE = new NColumn<string>(this, name: "UPDATE_RULE", length: new(11));
-            DELETE_RULE = new NColumn<string>(this, name: "DELETE_RULE", length: new(11));
-        }
+        CONSTRAINT_CATALOG = new NColumn<string>(this, name: "CONSTRAINT_CATALOG", length: new(128));
+        CONSTRAINT_SCHEMA = new NColumn<SchemaName, string>(this, name: "CONSTRAINT_SCHEMA", length: new(128));
+        CONSTRAINT_NAME = new Column<string>(this, name: "CONSTRAINT_NAME", length: new(128));
+        UNIQUE_CONSTRAINT_CATALOG = new NColumn<string>(this, name: "UNIQUE_CONSTRAINT_CATALOG", length: new(128));
+        UNIQUE_CONSTRAINT_SCHEMA = new NColumn<SchemaName, string>(this, name: "UNIQUE_CONSTRAINT_SCHEMA", length: new(128));
+        UNIQUE_CONSTRAINT_NAME = new NColumn<string>(this, name: "UNIQUE_CONSTRAINT_NAME", length: new(128));
+        MATCH_OPTION = new NColumn<string>(this, name: "MATCH_OPTION", length: new(7));
+        UPDATE_RULE = new NColumn<string>(this, name: "UPDATE_RULE", length: new(11));
+        DELETE_RULE = new NColumn<string>(this, name: "DELETE_RULE", length: new(11));
     }
 }

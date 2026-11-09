@@ -24,55 +24,54 @@
 using System.Data.Common;
 using Microsoft.Data.SqlClient;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    public class SqlServerDatabase : IDatabase {
+public class SqlServerDatabase : IDatabase {
 
-        public string Name { get; }
-        string IDatabase.Name => Name;
-        public Func<string, string> SchemaMap { get; }
-        private string ConnectionString { get; }
+    public string Name { get; }
+    string IDatabase.Name => Name;
+    public Func<string, string> SchemaMap { get; }
+    private string ConnectionString { get; }
 
-        IQueryGenerator IInternalConnection.QueryGenerator { get; } = new SqlServerSelectQueryGenerator();
-        IInsertQueryGenerator IInternalConnection.InsertGenerator { get; } = new SqlServerInsertQueryGenerator();
-        IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new SqlServerUpdateQueryGenerator();
-        IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new SqlServerDeleteQueryGenerator();
-        ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new SqlServerTruncateQueryGenerator();
-        IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new SqlServerParameterMap();
+    IQueryGenerator IInternalConnection.QueryGenerator { get; } = new SqlServerSelectQueryGenerator();
+    IInsertQueryGenerator IInternalConnection.InsertGenerator { get; } = new SqlServerInsertQueryGenerator();
+    IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new SqlServerUpdateQueryGenerator();
+    IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new SqlServerDeleteQueryGenerator();
+    ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new SqlServerTruncateQueryGenerator();
+    IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new SqlServerParameterMap();
 
-        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerPreparedSelectQueryGenerator();
-        IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new SqlServerPreparedInsertQueryGenerator();
-        IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator => new SqlServerPreparedUpdateQueryGenerator();
-        IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new PreparedDeleteQueryGenerator();
+    IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlServerPreparedSelectQueryGenerator();
+    IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new SqlServerPreparedInsertQueryGenerator();
+    IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator => new SqlServerPreparedUpdateQueryGenerator();
+    IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new PreparedDeleteQueryGenerator();
 
-        ILikeSqlConditionGenerator IInternalConnection.LikeSqlConditionGenerator { get; } = new SqlServerLikeSqlConditionGenerator() ;
+    ILikeSqlConditionGenerator IInternalConnection.LikeSqlConditionGenerator { get; } = new SqlServerLikeSqlConditionGenerator() ;
 
-        public DatabaseType DatabaseType => DatabaseType.SqlServer;
+    public DatabaseType DatabaseType => DatabaseType.SqlServer;
 
-        public EncloseWith EncloseWith => EncloseWith.SquareBracket;
+    public EncloseWith EncloseWith => EncloseWith.SquareBracket;
 
-        public UtfType DefaultUtfType { get; } = UtfType.UTF16;
+    public UtfType DefaultUtfType { get; } = UtfType.UTF16;
 
-        public SqlServerDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
+    public SqlServerDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 
-            ArgumentException.ThrowIfNullOrEmpty(connectionString);
+        ArgumentException.ThrowIfNullOrEmpty(connectionString);
 
-            Name = name ?? "";
-            SchemaMap = schemaMap ?? ((schema) => schema);
+        Name = name ?? "";
+        SchemaMap = schemaMap ?? ((schema) => schema);
 
-            ConnectionString = connectionString;
-        }
+        ConnectionString = connectionString;
+    }
 
-        public DbConnection GetNewConnection() => new SqlConnection(ConnectionString);
+    public DbConnection GetNewConnection() => new SqlConnection(ConnectionString);
 
-        public string ConvertToSql(object value) {
-            return SqlServerSqlTypeMappings.ToSqlStringFunctions.ConvertToSql(value);
-        }
-        public IParametersBuilder CreateParameters(int initParams) {
-            return new SqlServerParameters(initParams);
-        }
-        public string? GetCSharpCodeSet(Type dotNetType) {
-            return SqlServerSqlTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
-        }
+    public string ConvertToSql(object value) {
+        return SqlServerSqlTypeMappings.ToSqlStringFunctions.ConvertToSql(value);
+    }
+    public IParametersBuilder CreateParameters(int initParams) {
+        return new SqlServerParameters(initParams);
+    }
+    public string? GetCSharpCodeSet(Type dotNetType) {
+        return SqlServerSqlTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
     }
 }

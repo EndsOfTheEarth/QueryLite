@@ -24,74 +24,73 @@
 using QueryLite.Databases.PostgreSql.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql; 
 
-    internal sealed class PostgreSqlPreparedDeleteQueryGenerator : IPreparedDeleteQueryGenerator {
+internal sealed class PostgreSqlPreparedDeleteQueryGenerator : IPreparedDeleteQueryGenerator {
 
-        string IPreparedDeleteQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template,
-                                                                        IDatabase database,
-                                                                        out PreparedParameterList<PARAMETERS> parameters,
-                                                                        Func<IResultRow, RESULT>? outputFunc) {
+    string IPreparedDeleteQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template,
+                                                                    IDatabase database,
+                                                                    out PreparedParameterList<PARAMETERS> parameters,
+                                                                    Func<IResultRow, RESULT>? outputFunc) {
 
-            parameters = new PreparedParameterList<PARAMETERS>();
+        parameters = new PreparedParameterList<PARAMETERS>();
 
-            StringBuilder sql = StringBuilderCache.Acquire();
+        StringBuilder sql = StringBuilderCache.Acquire();
 
-            sql.Append("DELETE FROM ");
+        sql.Append("DELETE FROM ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
-                sql.Append('.');
-            }
-
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
-            sql.Append(" AS ").Append(template.Table.Alias);
-
-            bool useAliases = template.FromTables != null;
-
-            if(template.FromTables != null) {
-
-                sql.Append(" USING ");
-
-                for(int index = 0; index < template.FromTables.Count; index++) {
-
-                    if(index > 0) {
-                        sql.Append(',');
-                    }
-                    ITable usingTable = template.FromTables[index];
-
-                    string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
-
-                    if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName, EncloseWith.DoubleQuote);
-                        sql.Append('.');
-                    }
-
-                    SqlHelper.AppendEncloseTableName(sql, usingTable, EncloseWith.DoubleQuote);
-
-                    sql.Append(' ');
-
-                    SqlHelper.AppendEncloseAlias(sql, usingTable.Alias, EncloseWith.DoubleQuote);
-                }
-            }
-
-            if(template.WhereCondition != null) {
-                sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, parameters, useAlias: useAliases);
-            }
-            if(outputFunc != null) {
-
-                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: true);
-
-                sql.Append(" RETURNING ");
-
-                outputFunc(collector);
-
-                PostgreSqlReturningCollectorCache.Release(collector);
-            }
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
+            sql.Append('.');
         }
+
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
+        sql.Append(" AS ").Append(template.Table.Alias);
+
+        bool useAliases = template.FromTables != null;
+
+        if(template.FromTables != null) {
+
+            sql.Append(" USING ");
+
+            for(int index = 0; index < template.FromTables.Count; index++) {
+
+                if(index > 0) {
+                    sql.Append(',');
+                }
+                ITable usingTable = template.FromTables[index];
+
+                string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
+
+                if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName, EncloseWith.DoubleQuote);
+                    sql.Append('.');
+                }
+
+                SqlHelper.AppendEncloseTableName(sql, usingTable, EncloseWith.DoubleQuote);
+
+                sql.Append(' ');
+
+                SqlHelper.AppendEncloseAlias(sql, usingTable.Alias, EncloseWith.DoubleQuote);
+            }
+        }
+
+        if(template.WhereCondition != null) {
+            sql.Append(" WHERE ");
+            template.WhereCondition.GetSql(sql, database, parameters, useAlias: useAliases);
+        }
+        if(outputFunc != null) {
+
+            PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: true);
+
+            sql.Append(" RETURNING ");
+
+            outputFunc(collector);
+
+            PostgreSqlReturningCollectorCache.Release(collector);
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

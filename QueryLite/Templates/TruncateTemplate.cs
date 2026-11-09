@@ -21,75 +21,74 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    internal sealed class TruncateQueryTemplate : ITruncate {
+internal sealed class TruncateQueryTemplate : ITruncate {
 
-        public ITable Table { get; }
+    public ITable Table { get; }
 
-        public TruncateQueryTemplate(ITable table) {
+    public TruncateQueryTemplate(ITable table) {
 
-            ArgumentNullException.ThrowIfNull(table);
+        ArgumentNullException.ThrowIfNull(table);
 
-            Table = table;
+        Table = table;
+    }
+
+    public NonQueryResult Execute(Transaction transaction,
+                                  QueryTimeout? timeout = null,
+                                  string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortDelete;
         }
 
-        public NonQueryResult Execute(Transaction transaction,
-                                      QueryTimeout? timeout = null,
-                                      string debugName = "") {
+        string sql = transaction.Database.TruncateGenerator.GetSql(
+            template: this,
+            database: transaction.Database,
+            parameters: null
+        );
+        return QueryExecutor.ExecuteNonQuery(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: null,
+            sql: sql,
+            queryType: QueryType.Truncate,
+            debugName: debugName
+        );
+    }
 
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+    public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
+                                                   CancellationToken? ct = null,
+                                                   QueryTimeout? timeout = null,
+                                                   string debugName = "") {
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortDelete;
-            }
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            string sql = transaction.Database.TruncateGenerator.GetSql(
-                template: this,
-                database: transaction.Database,
-                parameters: null
-            );
-            return QueryExecutor.ExecuteNonQuery(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: null,
-                sql: sql,
-                queryType: QueryType.Truncate,
-                debugName: debugName
-            );
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortDelete;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
-                                                       CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null,
-                                                       string debugName = "") {
+        string sql = transaction.Database.TruncateGenerator.GetSql(
+            template: this,
+            database: transaction.Database,
+            parameters: null
+        );
 
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortDelete;
-            }
-
-            string sql = transaction.Database.TruncateGenerator.GetSql(
-                template: this,
-                database: transaction.Database,
-                parameters: null
-            );
-
-            NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: null,
-                sql: sql,
-                queryType: QueryType.Truncate,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
+        NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: null,
+            sql: sql,
+            queryType: QueryType.Truncate,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
     }
 }

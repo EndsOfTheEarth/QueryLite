@@ -7,189 +7,188 @@ using QueryLiteTest.Tables;
 using System;
 using System.Collections.Generic;
 
-namespace QueryLiteTest.Tests {
+namespace QueryLiteTest.Tests; 
 
-    [TestClass]
-    public class TypeMappingTests {
+[TestClass]
+public class TypeMappingTests {
 
-        [TestMethod]
-        public void SqlServerCreateParameterDelegateTypes() {
+    [TestMethod]
+    public void SqlServerCreateParameterDelegateTypes() {
 
-            TestCreateParameterDelegateTypes(new SqlServerParameterMap());
+        TestCreateParameterDelegateTypes(new SqlServerParameterMap());
+    }
+
+    [TestMethod]
+    public void PostgreSqlCreateParameterDelegateTypes() {
+
+        TestCreateParameterDelegateTypes(new PostgreSqlParameterMap());
+    }
+
+    private static void TestCreateParameterDelegateTypes(IPreparedParameterMapper mapper) {
+
+        List<Type> types = GetTypes();
+
+        foreach(Type type in types) {
+            Assert.IsNotNull(mapper.GetCreateParameterDelegate(type));
         }
+    }
 
-        [TestMethod]
-        public void PostgreSqlCreateParameterDelegateTypes() {
+    [TestMethod]
+    public void TestSqlServerTypeMappings() {
 
-            TestCreateParameterDelegateTypes(new PostgreSqlParameterMap());
+        List<Type> types = GetTypes();
+
+        foreach(Type type in types) {
+            SqlServerSqlTypeMappings.TypeMapper.GetDbType(type);
         }
+    }
 
-        private static void TestCreateParameterDelegateTypes(IPreparedParameterMapper mapper) {
+    [TestMethod]
+    public void TestPostgreSqlTypeMappings() {
 
-            List<Type> types = GetTypes();
+        List<Type> types = GetTypes();
 
-            foreach(Type type in types) {
-                Assert.IsNotNull(mapper.GetCreateParameterDelegate(type));
-            }
+        foreach(Type type in types) {
+            PostgreSqlTypeMappings.TypeMapper.GetDbType(type);
         }
+    }
 
-        [TestMethod]
-        public void TestSqlServerTypeMappings() {
+    private static List<Type> GetTypes() {
 
-            List<Type> types = GetTypes();
+        List<Type> list = new List<Type>() {
+            typeof(Guid),
+            typeof(Guid?),
 
-            foreach(Type type in types) {
-                SqlServerSqlTypeMappings.TypeMapper.GetDbType(type);
-            }
-        }
+            typeof(short),
+            typeof(short?),
 
-        [TestMethod]
-        public void TestPostgreSqlTypeMappings() {
+            typeof(int),
+            typeof(int?),
 
-            List<Type> types = GetTypes();
+            typeof(long),
+            typeof(long?),
 
-            foreach(Type type in types) {
-                PostgreSqlTypeMappings.TypeMapper.GetDbType(type);
-            }
-        }
+            typeof(string),
 
-        private static List<Type> GetTypes() {
+            typeof(bool),
+            typeof(bool?),
 
-            List<Type> list = new List<Type>() {
-                typeof(Guid),
-                typeof(Guid?),
+            typeof(decimal),
+            typeof(decimal?),
 
-                typeof(short),
-                typeof(short?),
+            typeof(DateTime),
+            typeof(DateTime?),
 
-                typeof(int),
-                typeof(int?),
+            typeof(DateTimeOffset),
+            typeof(DateTimeOffset?),
 
-                typeof(long),
-                typeof(long?),
+            typeof(DateOnly),
+            typeof(DateOnly?),
 
-                typeof(string),
+            typeof(TimeOnly),
+            typeof(TimeOnly?),
 
-                typeof(bool),
-                typeof(bool?),
+            typeof(float),
+            typeof(float?),
 
-                typeof(decimal),
-                typeof(decimal?),
+            typeof(double),
+            typeof(double?),
 
-                typeof(DateTime),
-                typeof(DateTime?),
+            typeof(Bit),
+            typeof(Bit?),
 
-                typeof(DateTimeOffset),
-                typeof(DateTimeOffset?),
+            typeof(CustomGuid),
+            typeof(CustomGuid?),
 
-                typeof(DateOnly),
-                typeof(DateOnly?),
+            typeof(CustomShort),
+            typeof(CustomShort?),
 
-                typeof(TimeOnly),
-                typeof(TimeOnly?),
+            typeof(CustomInt),
+            typeof(CustomInt?),
 
-                typeof(float),
-                typeof(float?),
+            typeof(CustomLong),
+            typeof(CustomLong?),
 
-                typeof(double),
-                typeof(double?),
+            typeof(CustomString),
+            typeof(CustomString?),
 
-                typeof(Bit),
-                typeof(Bit?),
+            typeof(CustomBool),
+            typeof(CustomBool?),
 
-                typeof(CustomGuid),
-                typeof(CustomGuid?),
+            typeof(CustomDecimal),
+            typeof(CustomDecimal?),
 
-                typeof(CustomShort),
-                typeof(CustomShort?),
+            typeof(CustomDateTime),
+            typeof(CustomDateTime?),
 
-                typeof(CustomInt),
-                typeof(CustomInt?),
+            typeof(CustomDateTimeOffset),
+            typeof(CustomDateTimeOffset?),
 
-                typeof(CustomLong),
-                typeof(CustomLong?),
+            typeof(CustomDateOnly),
+            typeof(CustomDateOnly?),
 
-                typeof(CustomString),
-                typeof(CustomString?),
+            typeof(CustomTimeOnly),
+            typeof(CustomTimeOnly?),
 
-                typeof(CustomBool),
-                typeof(CustomBool?),
+            typeof(CustomFloat),
+            typeof(CustomFloat?),
 
-                typeof(CustomDecimal),
-                typeof(CustomDecimal?),
+            typeof(CustomDouble),
+            typeof(CustomDouble?),
 
-                typeof(CustomDateTime),
-                typeof(CustomDateTime?),
+            typeof(Bit),
+            typeof(Bit?),
 
-                typeof(CustomDateTimeOffset),
-                typeof(CustomDateTimeOffset?),
+            typeof(UShortEnum),
+            typeof(UShortEnum?),
 
-                typeof(CustomDateOnly),
-                typeof(CustomDateOnly?),
+            typeof(ShortEnum),
+            typeof(ShortEnum?),
 
-                typeof(CustomTimeOnly),
-                typeof(CustomTimeOnly?),
+            typeof(UIntEnum),
+            typeof(UIntEnum?),
 
-                typeof(CustomFloat),
-                typeof(CustomFloat?),
+            typeof(IntEnum),
+            typeof(IntEnum?),
 
-                typeof(CustomDouble),
-                typeof(CustomDouble?),
+            typeof(ULongEnum),
+            typeof(ULongEnum?),
 
-                typeof(Bit),
-                typeof(Bit?),
+            typeof(LongEnum),
+            typeof(LongEnum?),
 
-                typeof(UShortEnum),
-                typeof(UShortEnum?),
+            typeof(SByteEnum),
+            typeof(SByteEnum?),
 
-                typeof(ShortEnum),
-                typeof(ShortEnum?),
+            typeof(ByteEnum),
+            typeof(ByteEnum?)
+        };
+        return list;
+    }
 
-                typeof(UIntEnum),
-                typeof(UIntEnum?),
+    private enum UShortEnum : ushort {
+        A, B, C
+    }
+    private enum ShortEnum : short {
+        A, B, C
+    }
+    private enum UIntEnum : uint {
+        A, B, C
+    }
+    private enum IntEnum : int {
+        A, B, C
+    }
+    private enum ULongEnum : ulong {
+        A, B, C
+    }
+    private enum LongEnum : long {
+        A, B, C
+    }
 
-                typeof(IntEnum),
-                typeof(IntEnum?),
-
-                typeof(ULongEnum),
-                typeof(ULongEnum?),
-
-                typeof(LongEnum),
-                typeof(LongEnum?),
-
-                typeof(SByteEnum),
-                typeof(SByteEnum?),
-
-                typeof(ByteEnum),
-                typeof(ByteEnum?)
-            };
-            return list;
-        }
-
-        private enum UShortEnum : ushort {
-            A, B, C
-        }
-        private enum ShortEnum : short {
-            A, B, C
-        }
-        private enum UIntEnum : uint {
-            A, B, C
-        }
-        private enum IntEnum : int {
-            A, B, C
-        }
-        private enum ULongEnum : ulong {
-            A, B, C
-        }
-        private enum LongEnum : long {
-            A, B, C
-        }
-
-        private enum SByteEnum : sbyte {
-            A, B, C
-        }
-        private enum ByteEnum : byte {
-            A, B, C
-        }
+    private enum SByteEnum : sbyte {
+        A, B, C
+    }
+    private enum ByteEnum : byte {
+        A, B, C
     }
 }

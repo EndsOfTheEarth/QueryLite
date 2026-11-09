@@ -24,85 +24,84 @@
 using QueryLite.Utility;
 using System.Data;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    public static class SqlServerSqlTypeMappings {
+public static class SqlServerSqlTypeMappings {
 
-        public readonly static SqlServerTypeMap TypeMapper = new SqlServerTypeMap();
+    public readonly static SqlServerTypeMap TypeMapper = new SqlServerTypeMap();
 
-        public static SqlServerToStringFunctions ToSqlStringFunctions { get; } = new SqlServerToStringFunctions();
-    }
+    public static SqlServerToStringFunctions ToSqlStringFunctions { get; } = new SqlServerToStringFunctions();
+}
 
-    public sealed class SqlServerToStringFunctions : AToSqlStringFunctions {
+public sealed class SqlServerToStringFunctions : AToSqlStringFunctions {
 
-        public override string ToSqlString(bool value) => value ? "1" : "0";
+    public override string ToSqlString(bool value) => value ? "1" : "0";
 
-        public override string ToSqlString(Bit value) => value.Value ? "1" : "0";
+    public override string ToSqlString(Bit value) => value.Value ? "1" : "0";
 
-        public override string ToSqlString(byte[] value) => $"0x{Convert.ToHexString(value)}";
+    public override string ToSqlString(byte[] value) => $"0x{Convert.ToHexString(value)}";
 
-        public override string ToSqlString(byte value) => value.ToString();
+    public override string ToSqlString(byte value) => value.ToString();
 
-        public override string ToSqlString(DateTimeOffset value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz"))}'";
+    public override string ToSqlString(DateTimeOffset value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz"))}'";
 
-        public override string ToSqlString(DateTime value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'";
+    public override string ToSqlString(DateTime value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd HH:mm:ss.fff"))}'";
 
-        public override string ToSqlString(TimeOnly value) => $"'{Helpers.EscapeForSql(value.ToString("HH:mm:ss.fffffff"))}'";
+    public override string ToSqlString(TimeOnly value) => $"'{Helpers.EscapeForSql(value.ToString("HH:mm:ss.fffffff"))}'";
 
-        public override string ToSqlString(DateOnly value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd"))}'";
+    public override string ToSqlString(DateOnly value) => $"'{Helpers.EscapeForSql(value.ToString("yyyy-MM-dd"))}'";
 
-        public override string ToSqlString(decimal value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
+    public override string ToSqlString(decimal value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
 
-        public override string ToSqlString(double value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
+    public override string ToSqlString(double value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
 
-        public override string ToSqlString(float value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
+    public override string ToSqlString(float value) => value != 0 ? $"{Helpers.EscapeForSql(value.ToString())}" : "0";
 
-        public override string ToSqlString(Guid value) => $"'{Helpers.EscapeForSql(value.ToString())}'";
+    public override string ToSqlString(Guid value) => $"'{Helpers.EscapeForSql(value.ToString())}'";
 
-        public override string ToSqlString(short value) => value != 0 ? value.ToString() : "0";
+    public override string ToSqlString(short value) => value != 0 ? value.ToString() : "0";
 
-        public override string ToSqlString(int value) => value != 0 ? value.ToString() : "0";
+    public override string ToSqlString(int value) => value != 0 ? value.ToString() : "0";
 
-        public override string ToSqlString(long value) => value != 0 ? value.ToString() : "0";
+    public override string ToSqlString(long value) => value != 0 ? value.ToString() : "0";
 
-        public override string ToSqlString(string value) => value.Length > 0 ? $"N'{Helpers.EscapeForSql(value)}'" : "''";
+    public override string ToSqlString(string value) => value.Length > 0 ? $"N'{Helpers.EscapeForSql(value)}'" : "''";
 
-        public override string ToSqlString(Json value) => $"N'{Helpers.EscapeForSql(value.Value)}'";
+    public override string ToSqlString(Json value) => $"N'{Helpers.EscapeForSql(value.Value)}'";
 
-        public override string ToSqlString(Jsonb value) => $"N'{Helpers.EscapeForSql(value.Value)}'";
+    public override string ToSqlString(Jsonb value) => $"N'{Helpers.EscapeForSql(value.Value)}'";
 
-        public override string? GetCSharpCodeSet(Type dotNetType) {
+    public override string? GetCSharpCodeSet(Type dotNetType) {
 
-            if(dotNetType == typeof(string)) {
-                return "\"\"";
-            }
-            return null;
+        if(dotNetType == typeof(string)) {
+            return "\"\"";
         }
+        return null;
     }
+}
 
-    /// <summary>
-    /// Map of csharp types to their SQL Server SqlDbType value.
-    /// </summary>
-    public class SqlServerTypeMap : ATypeMap<SqlDbType> {
+/// <summary>
+/// Map of csharp types to their SQL Server SqlDbType value.
+/// </summary>
+public class SqlServerTypeMap : ATypeMap<SqlDbType> {
 
-        public override SqlDbType Guid => SqlDbType.UniqueIdentifier;
-        public override SqlDbType String => SqlDbType.NVarChar;
-        public override SqlDbType Boolean => SqlDbType.Bit;
-        public override SqlDbType ByteArray => SqlDbType.Binary;
-        public override SqlDbType SByte => SqlDbType.SmallInt;
-        public override SqlDbType Byte => SqlDbType.SmallInt;
-        public override SqlDbType DateTimeOffset => SqlDbType.DateTimeOffset;
-        public override SqlDbType DateTime => SqlDbType.DateTime;
-        public override SqlDbType TimeOnly => SqlDbType.Time;
-        public override SqlDbType DateOnly => SqlDbType.Date;
-        public override SqlDbType Decimal => SqlDbType.Decimal;
-        public override SqlDbType Double => SqlDbType.Float;
-        public override SqlDbType Float => SqlDbType.Real;
-        public override SqlDbType Short => SqlDbType.SmallInt;
-        public override SqlDbType Integer => SqlDbType.Int;
-        public override SqlDbType Long => SqlDbType.BigInt;
-        public override SqlDbType Bit => SqlDbType.Bit;
-        public override SqlDbType Json => SqlDbType.Json;
-        public override SqlDbType JsonB => SqlDbType.Json;
-    }
+    public override SqlDbType Guid => SqlDbType.UniqueIdentifier;
+    public override SqlDbType String => SqlDbType.NVarChar;
+    public override SqlDbType Boolean => SqlDbType.Bit;
+    public override SqlDbType ByteArray => SqlDbType.Binary;
+    public override SqlDbType SByte => SqlDbType.SmallInt;
+    public override SqlDbType Byte => SqlDbType.SmallInt;
+    public override SqlDbType DateTimeOffset => SqlDbType.DateTimeOffset;
+    public override SqlDbType DateTime => SqlDbType.DateTime;
+    public override SqlDbType TimeOnly => SqlDbType.Time;
+    public override SqlDbType DateOnly => SqlDbType.Date;
+    public override SqlDbType Decimal => SqlDbType.Decimal;
+    public override SqlDbType Double => SqlDbType.Float;
+    public override SqlDbType Float => SqlDbType.Real;
+    public override SqlDbType Short => SqlDbType.SmallInt;
+    public override SqlDbType Integer => SqlDbType.Int;
+    public override SqlDbType Long => SqlDbType.BigInt;
+    public override SqlDbType Bit => SqlDbType.Bit;
+    public override SqlDbType Json => SqlDbType.Json;
+    public override SqlDbType JsonB => SqlDbType.Json;
 }

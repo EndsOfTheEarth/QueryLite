@@ -24,366 +24,365 @@
 using QueryLite.Databases;
 using QueryLite.PreparedQuery;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>,
-                                                               IPreparedUpdateFrom<PARAMETERS>,
-                                                               IPreparedUpdateWhere<PARAMETERS>,
-                                                               IPreparedUpdateBuild<PARAMETERS> {
+internal sealed class PreparedUpdateTemplate<PARAMETERS> : IPreparedUpdateSet<PARAMETERS>,
+                                                           IPreparedUpdateFrom<PARAMETERS>,
+                                                           IPreparedUpdateWhere<PARAMETERS>,
+                                                           IPreparedUpdateBuild<PARAMETERS> {
 
-        public ITable Table { get; }
+    public ITable Table { get; }
 
-        public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
+    public Action<IPreparedSetValuesCollector<PARAMETERS>>? SetValues { get; private set; }
 
-        public List<ITable>? FromTables { get; private set; }
+    public List<ITable>? FromTables { get; private set; }
 
-        public APreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
+    public APreparedCondition<PARAMETERS>? WhereCondition { get; private set; }
 
-        public PreparedUpdateTemplate(ITable table) {
+    public PreparedUpdateTemplate(ITable table) {
 
-            ArgumentNullException.ThrowIfNull(table);
+        ArgumentNullException.ThrowIfNull(table);
 
-            Table = table;
-        }
-
-        public IPreparedUpdateFrom<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values) {
-
-            ArgumentNullException.ThrowIfNull(values);
-            SetValues = values;
-            return this;
-        }
-
-        public IPreparedUpdateWhere<PARAMETERS> From(ITable table, params ITable[] tables) {
-
-            ArgumentNullException.ThrowIfNull(table);
-
-            FromTables = new(tables.Length + 1) {
-                table
-            };
-
-            if(tables.Length > 0) {
-                FromTables.AddRange(tables);
-            }
-            return this;
-        }
-
-        public IPreparedUpdateBuild<PARAMETERS> Where(
-                        Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {
-
-            ArgumentNullException.ThrowIfNull(condition);
-
-            WhereCondition = condition(new EmptyPreparedCondition<PARAMETERS>());
-            return this;
-        }
-
-        public IPreparedUpdateBuild<PARAMETERS> NoWhereCondition() {
-
-            WhereCondition = null;
-            return this;
-        }
-
-        public IPreparedUpdateQuery<PARAMETERS> Build() {
-            return new PreparedUpdateQuery<PARAMETERS>(this);
-        }
-
-        public IPreparedUpdateQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc) {
-            return new PreparedUpdateQuery<PARAMETERS, RESULT>(this, returningFunc);
-        }
+        Table = table;
     }
 
-    internal sealed class PreparedSqlAndParameters<PARAMETERS> {
+    public IPreparedUpdateFrom<PARAMETERS> Values(Action<IPreparedSetValuesCollector<PARAMETERS>> values) {
 
-        public PreparedSqlAndParameters(string sql,
-                                        PreparedParameterList<PARAMETERS> setParameters) {
-            Sql = sql;
-            SetParameters = setParameters;
-        }
-        public string Sql { get; }
-        public PreparedParameterList<PARAMETERS> SetParameters { get; }
+        ArgumentNullException.ThrowIfNull(values);
+        SetValues = values;
+        return this;
     }
 
-    internal sealed class PreparedUpdateQuery<PARAMETERS> : IPreparedUpdateQuery<PARAMETERS> {
+    public IPreparedUpdateWhere<PARAMETERS> From(ITable table, params ITable[] tables) {
 
-        private readonly PreparedUpdateTemplate<PARAMETERS> _template;
+        ArgumentNullException.ThrowIfNull(table);
 
-        //Store the sql for each database type in an array that is indexed by
-        //the database type integer value (For performance)
-        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
+        FromTables = new(tables.Length + 1) {
+            table
+        };
 
-        public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template) {
-
-            _template = template;
-
-            DatabaseType[] values = Enum.GetValues<DatabaseType>();
-
-            int max = 0;
-
-            foreach(DatabaseType value in values) {
-
-                int valueAsInt = (int)value;
-
-                if(valueAsInt > max) {
-                    max = valueAsInt;
-                }
-            }
-            _updateDetails = new PreparedSqlAndParameters<PARAMETERS>?[max + 1];
+        if(tables.Length > 0) {
+            FromTables.AddRange(tables);
         }
-
-        public void Initialize(IDatabase database) {
-            _ = GetUpdateQuery(database);
-        }
-
-        private PreparedSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {
-
-            int dbTypeIndex = (int)database.DatabaseType;
-
-            PreparedSqlAndParameters<PARAMETERS> updateDetail;
-
-            if(_updateDetails[dbTypeIndex] == null) {
-
-                string sql = database.PreparedUpdateGenerator.GetSql<PARAMETERS, bool>(
-                    template: _template,
-                    database: database,
-                    parameters: out PreparedParameterList<PARAMETERS> parameters,
-                    outputFunc: null
-                );
-                updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, parameters);
-                _updateDetails[dbTypeIndex] = updateDetail;
-            }
-            else {
-                updateDetail = _updateDetails[dbTypeIndex]!;
-            }
-            return updateDetail;
-        }
-
-        public NonQueryResult Execute(PARAMETERS parameters,
-                                      Transaction transaction,
-                                      QueryTimeout? timeout = null,
-                                      string debugName = "") {
-
-            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
-
-            NonQueryResult result = PreparedQueryExecutor.ExecuteNonQuery(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout ?? TimeoutLevel.ShortUpdate,
-                parameters: parameters,
-                setParameters: UpdateDetail.SetParameters,
-                sql: UpdateDetail.Sql,
-                queryType: QueryType.Update,
-                debugName: debugName
-            );
-            return result;
-        }
-
-        public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters,
-                                                       Transaction transaction,
-                                                       CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null,
-                                                       string debugName = "") {
-
-            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
-
-            NonQueryResult result = await PreparedQueryExecutor.ExecuteNonQueryAsync(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout ?? TimeoutLevel.ShortUpdate,
-                parameters: parameters,
-                setParameters: UpdateDetail.SetParameters,
-                sql: UpdateDetail.Sql,
-                queryType: QueryType.Update,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
+        return this;
     }
 
-    internal sealed class PreparedUpdateQuery<PARAMETERS, RESULT> : IPreparedUpdateQuery<PARAMETERS, RESULT> {
+    public IPreparedUpdateBuild<PARAMETERS> Where(
+                    Func<APreparedCondition<PARAMETERS>, APreparedCondition<PARAMETERS>> condition) {
 
-        private readonly PreparedUpdateTemplate<PARAMETERS> _template;
+        ArgumentNullException.ThrowIfNull(condition);
 
-        //Store the sql for each database type in an array that is indexed by
-        //the database type integer value (For performance)
-        private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
+        WhereCondition = condition(new EmptyPreparedCondition<PARAMETERS>());
+        return this;
+    }
 
-        private Func<IResultRow, RESULT> _outputFunc;
+    public IPreparedUpdateBuild<PARAMETERS> NoWhereCondition() {
 
-        public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template,
-                                   Func<IResultRow, RESULT> outputFunc) {
+        WhereCondition = null;
+        return this;
+    }
 
-            _template = template;
-            _outputFunc = outputFunc;
+    public IPreparedUpdateQuery<PARAMETERS> Build() {
+        return new PreparedUpdateQuery<PARAMETERS>(this);
+    }
 
-            DatabaseType[] values = Enum.GetValues<DatabaseType>();
+    public IPreparedUpdateQuery<PARAMETERS, RESULT> Build<RESULT>(Func<IResultRow, RESULT> returningFunc) {
+        return new PreparedUpdateQuery<PARAMETERS, RESULT>(this, returningFunc);
+    }
+}
 
-            int max = 0;
+internal sealed class PreparedSqlAndParameters<PARAMETERS> {
 
-            foreach(DatabaseType value in values) {
+    public PreparedSqlAndParameters(string sql,
+                                    PreparedParameterList<PARAMETERS> setParameters) {
+        Sql = sql;
+        SetParameters = setParameters;
+    }
+    public string Sql { get; }
+    public PreparedParameterList<PARAMETERS> SetParameters { get; }
+}
 
-                int valueAsInt = (int)value;
+internal sealed class PreparedUpdateQuery<PARAMETERS> : IPreparedUpdateQuery<PARAMETERS> {
 
-                if(valueAsInt > max) {
-                    max = valueAsInt;
-                }
+    private readonly PreparedUpdateTemplate<PARAMETERS> _template;
+
+    //Store the sql for each database type in an array that is indexed by
+    //the database type integer value (For performance)
+    private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
+
+    public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template) {
+
+        _template = template;
+
+        DatabaseType[] values = Enum.GetValues<DatabaseType>();
+
+        int max = 0;
+
+        foreach(DatabaseType value in values) {
+
+            int valueAsInt = (int)value;
+
+            if(valueAsInt > max) {
+                max = valueAsInt;
             }
-            _updateDetails = new PreparedSqlAndParameters<PARAMETERS>?[max + 1];
         }
+        _updateDetails = new PreparedSqlAndParameters<PARAMETERS>?[max + 1];
+    }
 
-        public void Initialize(IDatabase database) {
-            _ = GetUpdateQuery(database);
-        }
-        private PreparedSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {
+    public void Initialize(IDatabase database) {
+        _ = GetUpdateQuery(database);
+    }
 
-            int dbTypeIndex = (int)database.DatabaseType;
+    private PreparedSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {
 
-            PreparedSqlAndParameters<PARAMETERS> updateDetail;
+        int dbTypeIndex = (int)database.DatabaseType;
 
-            if(_updateDetails[dbTypeIndex] == null) {
+        PreparedSqlAndParameters<PARAMETERS> updateDetail;
 
-                string sql = database.PreparedUpdateGenerator.GetSql(
-                    template: _template,
-                    database: database,
-                    parameters: out PreparedParameterList<PARAMETERS> UpdateParameters,
-                    outputFunc: _outputFunc
-                );
-                updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, UpdateParameters);
-                _updateDetails[dbTypeIndex] = updateDetail;
-            }
-            else {
-                updateDetail = _updateDetails[dbTypeIndex]!;
-            }
-            return updateDetail;
-        }
+        if(_updateDetails[dbTypeIndex] == null) {
 
-        public QueryResult<RESULT> Execute(PARAMETERS parameters,
-                                           Transaction transaction,
-                                           QueryTimeout? timeout = null,
-                                           string debugName = "") {
-
-            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
-
-            QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout ?? TimeoutLevel.ShortUpdate,
-                parameters: parameters,
-                setParameters: UpdateDetail.SetParameters,
-                outputFunc: _outputFunc,
-                sql: UpdateDetail.Sql,
-                queryType: QueryType.Update,
-                debugName: debugName
+            string sql = database.PreparedUpdateGenerator.GetSql<PARAMETERS, bool>(
+                template: _template,
+                database: database,
+                parameters: out PreparedParameterList<PARAMETERS> parameters,
+                outputFunc: null
             );
-            return result;
+            updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, parameters);
+            _updateDetails[dbTypeIndex] = updateDetail;
         }
+        else {
+            updateDetail = _updateDetails[dbTypeIndex]!;
+        }
+        return updateDetail;
+    }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters,
-                                                            Transaction transaction,
-                                                            CancellationToken? ct = null,
-                                                            QueryTimeout? timeout = null,
-                                                            string debugName = "") {
+    public NonQueryResult Execute(PARAMETERS parameters,
+                                  Transaction transaction,
+                                  QueryTimeout? timeout = null,
+                                  string debugName = "") {
 
-            PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
+        PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
-            QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout ?? TimeoutLevel.ShortUpdate,
-                parameters: parameters,
-                setParameters: UpdateDetail.SetParameters,
-                outputFunc: _outputFunc,
-                sql: UpdateDetail.Sql,
-                queryType: QueryType.Update,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
+        NonQueryResult result = PreparedQueryExecutor.ExecuteNonQuery(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout ?? TimeoutLevel.ShortUpdate,
+            parameters: parameters,
+            setParameters: UpdateDetail.SetParameters,
+            sql: UpdateDetail.Sql,
+            queryType: QueryType.Update,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public async Task<NonQueryResult> ExecuteAsync(PARAMETERS parameters,
+                                                   Transaction transaction,
+                                                   CancellationToken? ct = null,
+                                                   QueryTimeout? timeout = null,
+                                                   string debugName = "") {
+
+        PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
+
+        NonQueryResult result = await PreparedQueryExecutor.ExecuteNonQueryAsync(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout ?? TimeoutLevel.ShortUpdate,
+            parameters: parameters,
+            setParameters: UpdateDetail.SetParameters,
+            sql: UpdateDetail.Sql,
+            queryType: QueryType.Update,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
+    }
+}
+
+internal sealed class PreparedUpdateQuery<PARAMETERS, RESULT> : IPreparedUpdateQuery<PARAMETERS, RESULT> {
+
+    private readonly PreparedUpdateTemplate<PARAMETERS> _template;
+
+    //Store the sql for each database type in an array that is indexed by
+    //the database type integer value (For performance)
+    private readonly PreparedSqlAndParameters<PARAMETERS>?[] _updateDetails;
+
+    private Func<IResultRow, RESULT> _outputFunc;
+
+    public PreparedUpdateQuery(PreparedUpdateTemplate<PARAMETERS> template,
+                               Func<IResultRow, RESULT> outputFunc) {
+
+        _template = template;
+        _outputFunc = outputFunc;
+
+        DatabaseType[] values = Enum.GetValues<DatabaseType>();
+
+        int max = 0;
+
+        foreach(DatabaseType value in values) {
+
+            int valueAsInt = (int)value;
+
+            if(valueAsInt > max) {
+                max = valueAsInt;
+            }
+        }
+        _updateDetails = new PreparedSqlAndParameters<PARAMETERS>?[max + 1];
+    }
+
+    public void Initialize(IDatabase database) {
+        _ = GetUpdateQuery(database);
+    }
+    private PreparedSqlAndParameters<PARAMETERS> GetUpdateQuery(IDatabase database) {
+
+        int dbTypeIndex = (int)database.DatabaseType;
+
+        PreparedSqlAndParameters<PARAMETERS> updateDetail;
+
+        if(_updateDetails[dbTypeIndex] == null) {
+
+            string sql = database.PreparedUpdateGenerator.GetSql(
+                template: _template,
+                database: database,
+                parameters: out PreparedParameterList<PARAMETERS> UpdateParameters,
+                outputFunc: _outputFunc
             );
-            return result;
+            updateDetail = new PreparedSqlAndParameters<PARAMETERS>(sql, UpdateParameters);
+            _updateDetails[dbTypeIndex] = updateDetail;
         }
+        else {
+            updateDetail = _updateDetails[dbTypeIndex]!;
+        }
+        return updateDetail;
+    }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameters,
+    public QueryResult<RESULT> Execute(PARAMETERS parameters,
                                        Transaction transaction,
                                        QueryTimeout? timeout = null,
                                        string debugName = "") {
 
-            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
+        PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
-            return PreparedQueryExecutor.SingleOrDefault(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout ?? TimeoutLevel.ShortInsert,
-                parameters: parameters,
-                setParameters: insertDetail.SetParameters,
-                outputFunc: _outputFunc,
-                sql: insertDetail.Sql,
-                queryType: QueryType.Insert,
-                debugName: debugName
-            );
-        }
+        QueryResult<RESULT> result = PreparedQueryExecutor.Execute(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout ?? TimeoutLevel.ShortUpdate,
+            parameters: parameters,
+            setParameters: UpdateDetail.SetParameters,
+            outputFunc: _outputFunc,
+            sql: UpdateDetail.Sql,
+            queryType: QueryType.Update,
+            debugName: debugName
+        );
+        return result;
+    }
 
-        public RESULT? SingleOrDefault(PARAMETERS parameters,
-                                       IDatabase database,
-                                       QueryTimeout? timeout = null,
-                                       string debugName = "") {
-
-            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
-
-            return PreparedQueryExecutor.SingleOrDefault(
-                database: database,
-                transaction: null,
-                timeout: timeout ?? TimeoutLevel.ShortInsert,
-                parameters: parameters,
-                setParameters: insertDetail.SetParameters,
-                outputFunc: _outputFunc,
-                sql: insertDetail.Sql,
-                queryType: QueryType.Insert,
-                debugName: debugName
-            );
-        }
-
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+    public async Task<QueryResult<RESULT>> ExecuteAsync(PARAMETERS parameters,
                                                         Transaction transaction,
                                                         CancellationToken? ct = null,
                                                         QueryTimeout? timeout = null,
                                                         string debugName = "") {
 
-            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
+        PreparedSqlAndParameters<PARAMETERS> UpdateDetail = GetUpdateQuery(transaction.Database);
 
-            RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout ?? TimeoutLevel.ShortInsert,
-                parameters: parameters,
-                setParameters: insertDetail.SetParameters,
-                outputFunc: _outputFunc,
-                sql: insertDetail.Sql,
-                queryType: QueryType.Insert,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
+        QueryResult<RESULT> result = await PreparedQueryExecutor.ExecuteAsync(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout ?? TimeoutLevel.ShortUpdate,
+            parameters: parameters,
+            setParameters: UpdateDetail.SetParameters,
+            outputFunc: _outputFunc,
+            sql: UpdateDetail.Sql,
+            queryType: QueryType.Update,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
+    }
 
-        public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
-                                                        IDatabase database,
-                                                        CancellationToken? ct = null,
-                                                        QueryTimeout? timeout = null,
-                                                        string debugName = "") {
+    public RESULT? SingleOrDefault(PARAMETERS parameters,
+                                   Transaction transaction,
+                                   QueryTimeout? timeout = null,
+                                   string debugName = "") {
 
-            PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
+        PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
 
-            RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
-                database: database,
-                transaction: null,
-                timeout: timeout ?? TimeoutLevel.ShortInsert,
-                parameters: parameters,
-                setParameters: insertDetail.SetParameters,
-                outputFunc: _outputFunc,
-                sql: insertDetail.Sql,
-                queryType: QueryType.Insert,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
+        return PreparedQueryExecutor.SingleOrDefault(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout ?? TimeoutLevel.ShortInsert,
+            parameters: parameters,
+            setParameters: insertDetail.SetParameters,
+            outputFunc: _outputFunc,
+            sql: insertDetail.Sql,
+            queryType: QueryType.Insert,
+            debugName: debugName
+        );
+    }
+
+    public RESULT? SingleOrDefault(PARAMETERS parameters,
+                                   IDatabase database,
+                                   QueryTimeout? timeout = null,
+                                   string debugName = "") {
+
+        PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
+
+        return PreparedQueryExecutor.SingleOrDefault(
+            database: database,
+            transaction: null,
+            timeout: timeout ?? TimeoutLevel.ShortInsert,
+            parameters: parameters,
+            setParameters: insertDetail.SetParameters,
+            outputFunc: _outputFunc,
+            sql: insertDetail.Sql,
+            queryType: QueryType.Insert,
+            debugName: debugName
+        );
+    }
+
+    public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+                                                    Transaction transaction,
+                                                    CancellationToken? ct = null,
+                                                    QueryTimeout? timeout = null,
+                                                    string debugName = "") {
+
+        PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(transaction.Database);
+
+        RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout ?? TimeoutLevel.ShortInsert,
+            parameters: parameters,
+            setParameters: insertDetail.SetParameters,
+            outputFunc: _outputFunc,
+            sql: insertDetail.Sql,
+            queryType: QueryType.Insert,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
+    }
+
+    public async Task<RESULT?> SingleOrDefaultAsync(PARAMETERS parameters,
+                                                    IDatabase database,
+                                                    CancellationToken? ct = null,
+                                                    QueryTimeout? timeout = null,
+                                                    string debugName = "") {
+
+        PreparedSqlAndParameters<PARAMETERS> insertDetail = GetUpdateQuery(database);
+
+        RESULT? result = await PreparedQueryExecutor.SingleOrDefaultAsync(
+            database: database,
+            transaction: null,
+            timeout: timeout ?? TimeoutLevel.ShortInsert,
+            parameters: parameters,
+            setParameters: insertDetail.SetParameters,
+            outputFunc: _outputFunc,
+            sql: insertDetail.Sql,
+            queryType: QueryType.Insert,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
     }
 }

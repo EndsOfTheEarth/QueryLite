@@ -24,194 +24,193 @@
 using System;
 using System.Collections.Generic;
 
-namespace QueryLite.DbSchema.CodeGeneration {
+namespace QueryLite.DbSchema.CodeGeneration; 
 
-    public static class FluentValidationGenerator {
+public static class FluentValidationGenerator {
 
-        public static CodeBuilder Generate(List<DatabaseTable> tables, CodeGeneratorSettings settings) {
+    public static CodeBuilder Generate(List<DatabaseTable> tables, CodeGeneratorSettings settings) {
 
-            CodeBuilder code = new();
+        CodeBuilder code = new();
 
-            code.Append("using FluentValidation;").EndLine();
+        code.Append("using FluentValidation;").EndLine();
 
-            List<SchemaName> schemaNames = [];
+        List<SchemaName> schemaNames = [];
+
+        foreach(DatabaseTable table in tables) {
+
+            if(!table.IsView && !schemaNames.Contains(table.Schema)) {
+                schemaNames.Add(table.Schema);
+            }
+        }
+
+        schemaNames.Sort((a, b) => a.Value.CompareTo(b.Value));
+
+        int count = 0;
+
+        foreach(SchemaName schema in schemaNames) {
+
+            if(count > 0) {
+                code.EndLine();
+            }
+            count++;
+            code.EndLine().Append($"namespace {settings.Namespaces.GetTableNamespace(schema)} {{").EndLine();
 
             foreach(DatabaseTable table in tables) {
 
-                if(!table.IsView && !schemaNames.Contains(table.Schema)) {
-                    schemaNames.Add(table.Schema);
+                if(!table.IsView && string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
+                    TablePrefix prefix = new TablePrefix(table);
+                    code.Append(GenerateFluentValidationCode(table, prefix, settings, includeUsings: false).ToString());
                 }
             }
+            code.Append("}");
+        }
+        return code;
+    }
 
-            schemaNames.Sort((a, b) => a.Value.CompareTo(b.Value));
+    public static CodeBuilder GenerateFluentValidationCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
 
-            int count = 0;
+        CodeBuilder classCode = new CodeBuilder();
 
-            foreach(SchemaName schema in schemaNames) {
+        if(includeUsings) {
 
-                if(count > 0) {
-                    code.EndLine();
-                }
-                count++;
-                code.EndLine().Append($"namespace {settings.Namespaces.GetTableNamespace(schema)} {{").EndLine();
+            classCode.Append($"namespace {settings.Namespaces.GetClassesNamespace(table.Schema)} {{").EndLine().EndLine();
 
-                foreach(DatabaseTable table in tables) {
+            classCode.Indent(1).Append("using FluentValidation;").EndLine();
 
-                    if(!table.IsView && string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
-                        TablePrefix prefix = new TablePrefix(table);
-                        code.Append(GenerateFluentValidationCode(table, prefix, settings, includeUsings: false).ToString());
-                    }
-                }
-                code.Append("}");
+            classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
+
+            string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
+
+            if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
+                classCode.Indent(1).Append($"using {tableNamespace};").EndLine();
             }
-            return code;
         }
 
-        public static CodeBuilder GenerateFluentValidationCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings, bool includeUsings) {
+        string className = CodeHelper.GetTableName(table, includePostFix: false);
 
-            CodeBuilder classCode = new CodeBuilder();
+        classCode.EndLine();
 
-            if(includeUsings) {
+        CodeBuilder validateCode = new CodeBuilder();
 
-                classCode.Append($"namespace {settings.Namespaces.GetClassesNamespace(table.Schema)} {{").EndLine().EndLine();
+        string validateClassName = className + "Validator";
 
-                classCode.Indent(1).Append("using FluentValidation;").EndLine();
+        validateCode.Indent(1).Append($"public sealed class {validateClassName} : AbstractValidator<{className}> {{").EndLine();
+        validateCode.EndLine();
 
-                classCode.Indent(1).Append($"using {settings.Namespaces.TableNamespace};").EndLine();
+        bool includeIsNew = false;
 
-                string tableNamespace = settings.Namespaces.GetTableNamespace(table.Schema);
+        foreach(DatabaseColumn column in table.Columns) {
 
-                if(settings.Namespaces.TableNamespace != tableNamespace) {  //If this table exist in a non default schema it will have a different namespace
-                    classCode.Indent(1).Append($"using {tableNamespace};").EndLine();
-                }
+            if(column.IsAutoGenerated) {
+                includeIsNew = true;
+                break;
+            }
+        }
+
+        validateCode.Indent(2).Append($"public {validateClassName}({(includeIsNew ? "bool isNew" : "")}) {{").EndLine();
+        validateCode.EndLine();
+
+        foreach(DatabaseColumn column in table.Columns) {
+
+            if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType)) || column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
+                continue;
             }
 
-            string className = CodeHelper.GetTableName(table, includePostFix: false);
+            CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
-            classCode.EndLine();
+            string columnName = prefix.GetColumnName(column.ColumnName.Value, className: null);
 
-            CodeBuilder validateCode = new CodeBuilder();
+            string columnNameFirstLetterLowerCase = columnName.Length > 1 ? string.Concat(columnName[0].ToString().ToLower(), columnName.AsSpan(1)) : columnName;
 
-            string validateClassName = className + "Validator";
+            bool isCustomIdentifier = columnInfo.IdentifierType == IdentifierType.Custom;
 
-            validateCode.Indent(1).Append($"public sealed class {validateClassName} : AbstractValidator<{className}> {{").EndLine();
-            validateCode.EndLine();
+            if(!column.IsNullable) {
 
-            bool includeIsNew = false;
-
-            foreach(DatabaseColumn column in table.Columns) {
-
-                if(column.IsAutoGenerated) {
-                    includeIsNew = true;
-                    break;
-                }
-            }
-
-            validateCode.Indent(2).Append($"public {validateClassName}({(includeIsNew ? "bool isNew" : "")}) {{").EndLine();
-            validateCode.EndLine();
-
-            foreach(DatabaseColumn column in table.Columns) {
-
-                if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType)) || column.DataType.DotNetType.IsAssignableTo(typeof(IGeography))) {
-                    continue;
+                if(!column.DataType.DotNetType.IsValueType) {
+                    validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).NotNull();").EndLine();
                 }
 
-                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
+                if(isCustomIdentifier) {
 
-                string columnName = prefix.GetColumnName(column.ColumnName.Value, className: null);
-
-                string columnNameFirstLetterLowerCase = columnName.Length > 1 ? string.Concat(columnName[0].ToString().ToLower(), columnName.AsSpan(1)) : columnName;
-
-                bool isCustomIdentifier = columnInfo.IdentifierType == IdentifierType.Custom;
-
-                if(!column.IsNullable) {
-
-                    if(!column.DataType.DotNetType.IsValueType) {
-                        validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).NotNull();").EndLine();
-                    }
-
-                    if(isCustomIdentifier) {
-
-                        if(column.IsAutoGenerated) {
-                            validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).Must({columnNameFirstLetterLowerCase} => !{columnNameFirstLetterLowerCase}.IsValid).When(_x => isNew).WithMessage(\"{columnName} must not be valid when creating a record as it is auto generated\");").EndLine();
-                            validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).Must({columnNameFirstLetterLowerCase} => {columnNameFirstLetterLowerCase}.IsValid).When(_x => !isNew).WithMessage(\"{columnName} must be valid\");").EndLine().EndLine();
-                        }
-                        else {
-                            validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).Must({columnNameFirstLetterLowerCase} => {columnNameFirstLetterLowerCase}.IsValid).WithMessage(\"{columnName} must be valid\");").EndLine();
-                        }
-                    }
-                }
-                else if(column.IsNullable && isCustomIdentifier) {
-                    validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).Must({columnNameFirstLetterLowerCase} => {columnNameFirstLetterLowerCase}!.Value.IsValid).When(_x => _x.{columnName} != null).WithMessage(\"{columnName} must be valid\");").EndLine();
-                }
-
-                CodeBuilder rule = new CodeBuilder();
-                rule.Indent(3).Append($"RuleFor(_x => _x.{columnName})");
-
-                bool hasRule = false;
-
-                bool addBeginAndEndLine = false;
-
-                if(column.Length != null) {
-
-                    if(columnInfo.DotNetType == typeof(string) && !isCustomIdentifier) {
-                        rule.Append($".Length(min:0, max: {CodeHelper.GetTableName(table, includePostFix: true)}.Instance.{columnName}.Length!.Value)");
+                    if(column.IsAutoGenerated) {
+                        validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).Must({columnNameFirstLetterLowerCase} => !{columnNameFirstLetterLowerCase}.IsValid).When(_x => isNew).WithMessage(\"{columnName} must not be valid when creating a record as it is auto generated\");").EndLine();
+                        validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).Must({columnNameFirstLetterLowerCase} => {columnNameFirstLetterLowerCase}.IsValid).When(_x => !isNew).WithMessage(\"{columnName} must be valid\");").EndLine().EndLine();
                     }
                     else {
-
-                        rule.EndLine().Indent(4);
-                        rule.Append($".Must({columnNameFirstLetterLowerCase} => ");
-
-                        string maxLength = $"{CodeHelper.GetTableName(table, includePostFix: true)}.Instance.{columnName}.Length!.Value";
-
-                        if(column.IsNullable) {
-
-                            addBeginAndEndLine = true;
-
-                            string valueType = "";
-
-                            if(columnInfo.DotNetType.IsValueType) {
-                                valueType = ".Value";
-                            }
-                            if(isCustomIdentifier) {
-                                valueType = ".Value.Value";
-                            }
-                            rule.Append($"{columnNameFirstLetterLowerCase}!{valueType}.Length >= 0 && {columnNameFirstLetterLowerCase}{valueType}.Length <= {maxLength})");
-                            rule.EndLine().Indent(4);
-                            rule.Append($".When(_x => _x.{columnName} != null)");
-                        }
-                        else {
-                            string valueType = isCustomIdentifier ? ".Value" : "";
-                            rule.Append($"{columnNameFirstLetterLowerCase}{valueType}.Length >= 0 && {columnNameFirstLetterLowerCase}{valueType}.Length <= {maxLength})");
-                        }
-                        rule.EndLine().Indent(4);
-                        rule.Append($".WithMessage($\"{columnName} length must be between 0 and {{ {maxLength} }}\")");
-                    }
-                    hasRule = true;
-                }
-
-                rule.Append(";");
-
-                if(hasRule) {
-                    if(addBeginAndEndLine) {
-                        validateCode.EndLine();
-                    }
-                    validateCode.Append(rule.ToString()).EndLine();
-                    if(addBeginAndEndLine) {
-                        validateCode.EndLine();
+                        validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).Must({columnNameFirstLetterLowerCase} => {columnNameFirstLetterLowerCase}.IsValid).WithMessage(\"{columnName} must be valid\");").EndLine();
                     }
                 }
             }
-
-            validateCode.Indent(2).Append("}").EndLine();
-            validateCode.Indent(1).Append("}").EndLine();
-
-            classCode.Append(validateCode.ToString());
-
-            if(includeUsings) {
-                classCode.Append("}");
+            else if(column.IsNullable && isCustomIdentifier) {
+                validateCode.Indent(3).Append($"RuleFor(_x => _x.{columnName}).Must({columnNameFirstLetterLowerCase} => {columnNameFirstLetterLowerCase}!.Value.IsValid).When(_x => _x.{columnName} != null).WithMessage(\"{columnName} must be valid\");").EndLine();
             }
-            return classCode;
+
+            CodeBuilder rule = new CodeBuilder();
+            rule.Indent(3).Append($"RuleFor(_x => _x.{columnName})");
+
+            bool hasRule = false;
+
+            bool addBeginAndEndLine = false;
+
+            if(column.Length != null) {
+
+                if(columnInfo.DotNetType == typeof(string) && !isCustomIdentifier) {
+                    rule.Append($".Length(min:0, max: {CodeHelper.GetTableName(table, includePostFix: true)}.Instance.{columnName}.Length!.Value)");
+                }
+                else {
+
+                    rule.EndLine().Indent(4);
+                    rule.Append($".Must({columnNameFirstLetterLowerCase} => ");
+
+                    string maxLength = $"{CodeHelper.GetTableName(table, includePostFix: true)}.Instance.{columnName}.Length!.Value";
+
+                    if(column.IsNullable) {
+
+                        addBeginAndEndLine = true;
+
+                        string valueType = "";
+
+                        if(columnInfo.DotNetType.IsValueType) {
+                            valueType = ".Value";
+                        }
+                        if(isCustomIdentifier) {
+                            valueType = ".Value.Value";
+                        }
+                        rule.Append($"{columnNameFirstLetterLowerCase}!{valueType}.Length >= 0 && {columnNameFirstLetterLowerCase}{valueType}.Length <= {maxLength})");
+                        rule.EndLine().Indent(4);
+                        rule.Append($".When(_x => _x.{columnName} != null)");
+                    }
+                    else {
+                        string valueType = isCustomIdentifier ? ".Value" : "";
+                        rule.Append($"{columnNameFirstLetterLowerCase}{valueType}.Length >= 0 && {columnNameFirstLetterLowerCase}{valueType}.Length <= {maxLength})");
+                    }
+                    rule.EndLine().Indent(4);
+                    rule.Append($".WithMessage($\"{columnName} length must be between 0 and {{ {maxLength} }}\")");
+                }
+                hasRule = true;
+            }
+
+            rule.Append(";");
+
+            if(hasRule) {
+                if(addBeginAndEndLine) {
+                    validateCode.EndLine();
+                }
+                validateCode.Append(rule.ToString()).EndLine();
+                if(addBeginAndEndLine) {
+                    validateCode.EndLine();
+                }
+            }
         }
+
+        validateCode.Indent(2).Append("}").EndLine();
+        validateCode.Indent(1).Append("}").EndLine();
+
+        classCode.Append(validateCode.ToString());
+
+        if(includeUsings) {
+            classCode.Append("}");
+        }
+        return classCode;
     }
 }

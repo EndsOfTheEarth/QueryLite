@@ -24,58 +24,57 @@
 using System.Data.Common;
 using Microsoft.Data.Sqlite;
 
-namespace QueryLite.Databases.Sqlite {
+namespace QueryLite.Databases.Sqlite; 
 
-    public class SqliteDatabase : IDatabase {
+public class SqliteDatabase : IDatabase {
 
-        public string Name { get; }
-        string IDatabase.Name => Name;
-        public Func<string, string> SchemaMap { get; }
-        private string ConnectionString { get; }
+    public string Name { get; }
+    string IDatabase.Name => Name;
+    public Func<string, string> SchemaMap { get; }
+    private string ConnectionString { get; }
 
-        IQueryGenerator IInternalConnection.QueryGenerator { get; } = new SqliteSelectQueryGenerator();
-        IInsertQueryGenerator IInternalConnection.InsertGenerator { get; } = new SqliteInsertQueryGenerator();
-        IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new SqliteUpdateQueryGenerator();
+    IQueryGenerator IInternalConnection.QueryGenerator { get; } = new SqliteSelectQueryGenerator();
+    IInsertQueryGenerator IInternalConnection.InsertGenerator { get; } = new SqliteInsertQueryGenerator();
+    IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new SqliteUpdateQueryGenerator();
 
-        IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new SqliteDeleteQueryGenerator();
-        ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new SqliteTruncateQueryGenerator();
+    IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new SqliteDeleteQueryGenerator();
+    ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new SqliteTruncateQueryGenerator();
 
-        IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new SqliteParameterMap();
+    IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new SqliteParameterMap();
 
-        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlitePreparedSelectQueryGenerator();
-        IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator { get; } = new SqlitePreparedUpdateQueryGenerator();
-        IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new SqlitePreparedInsertQueryGenerator();
-        IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new SqlitePreparedDeleteQueryGenerator();
+    IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new SqlitePreparedSelectQueryGenerator();
+    IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator { get; } = new SqlitePreparedUpdateQueryGenerator();
+    IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new SqlitePreparedInsertQueryGenerator();
+    IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new SqlitePreparedDeleteQueryGenerator();
 
-        ILikeSqlConditionGenerator IInternalConnection.LikeSqlConditionGenerator { get; } = new SqliteLikeSqlConditionGenerator();
+    ILikeSqlConditionGenerator IInternalConnection.LikeSqlConditionGenerator { get; } = new SqliteLikeSqlConditionGenerator();
 
-        public DatabaseType DatabaseType => DatabaseType.Sqlite;
+    public DatabaseType DatabaseType => DatabaseType.Sqlite;
 
-        public EncloseWith EncloseWith => EncloseWith.SquareBracket;
+    public EncloseWith EncloseWith => EncloseWith.SquareBracket;
 
-        public UtfType DefaultUtfType { get; } = UtfType.UTF8;
+    public UtfType DefaultUtfType { get; } = UtfType.UTF8;
 
-        public SqliteDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
+    public SqliteDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 
-            ArgumentException.ThrowIfNullOrEmpty(connectionString);
+        ArgumentException.ThrowIfNullOrEmpty(connectionString);
 
-            Name = name ?? "";
-            SchemaMap = schemaMap ?? ((schema) => schema);
+        Name = name ?? "";
+        SchemaMap = schemaMap ?? ((schema) => schema);
 
-            ConnectionString = connectionString;
-        }
+        ConnectionString = connectionString;
+    }
 
-        public DbConnection GetNewConnection()  => new SqliteConnection(ConnectionString);
+    public DbConnection GetNewConnection()  => new SqliteConnection(ConnectionString);
 
-        public string ConvertToSql(object value) {
-            return SqliteTypeMappings.ToSqlStringFunctions.ConvertToSql(value);
-        }
-        public IParametersBuilder CreateParameters(int initParams) {
-            return new SqliteParameters(initParams);
-        }
+    public string ConvertToSql(object value) {
+        return SqliteTypeMappings.ToSqlStringFunctions.ConvertToSql(value);
+    }
+    public IParametersBuilder CreateParameters(int initParams) {
+        return new SqliteParameters(initParams);
+    }
 
-        public string? GetCSharpCodeSet(Type dotNetType) {
-            return SqliteTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
-        }
+    public string? GetCSharpCodeSet(Type dotNetType) {
+        return SqliteTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
     }
 }

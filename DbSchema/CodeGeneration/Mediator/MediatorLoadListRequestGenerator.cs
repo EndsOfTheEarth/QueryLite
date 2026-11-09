@@ -24,47 +24,47 @@
 using QueryLite.DbSchema;
 using QueryLite.DbSchema.CodeGeneration;
 
-namespace DbSchema.CodeGeneration {
+namespace DbSchema.CodeGeneration; 
 
-    public static class MediatorLoadListRequestGenerator {
+public static class MediatorLoadListRequestGenerator {
 
-        public static string GetLoadListRequest(DatabaseTable table) {
+    public static string GetLoadListRequest(DatabaseTable table) {
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-            string code = $@"
+        string code = $@"
     public sealed class {GetLoadListRequestName(table, name)} : IRequest<IList<{name}>> {{
 
     }}
 ";
-            return code;
+        return code;
+    }
+
+    private static string GetLoadListRequestName(DatabaseTable table, string name) {
+        return $"Load{name}ListRequest";
+    }
+    private static string GetLoadListHandlerName(DatabaseTable table, string name) {
+        return $"Load{name}ListHandler";
+    }
+
+    public static string GetLoadListHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
+
+        if(settings.UsePreparedQueries) {
+            return GetLoadListHandlerCodeWithCompiledQuery(table);
         }
-
-        private static string GetLoadListRequestName(DatabaseTable table, string name) {
-            return $"Load{name}ListRequest";
+        else {
+            return GetLoadListHandlerCodeNonCompiledQuery(table);
         }
-        private static string GetLoadListHandlerName(DatabaseTable table, string name) {
-            return $"Load{name}ListHandler";
-        }
+    }
 
-        public static string GetLoadListHandlerCode(DatabaseTable table, CodeGeneratorSettings settings) {
+    private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table) {
 
-            if(settings.UsePreparedQueries) {
-                return GetLoadListHandlerCodeWithCompiledQuery(table);
-            }
-            else {
-                return GetLoadListHandlerCodeNonCompiledQuery(table);
-            }
-        }
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-        private static string GetLoadListHandlerCodeWithCompiledQuery(DatabaseTable table) {
+        string requestName = GetLoadListRequestName(table, name);
+        string handlerName = GetLoadListHandlerName(table, name);
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
-
-            string requestName = GetLoadListRequestName(table, name);
-            string handlerName = GetLoadListHandlerName(table, name);
-
-            string code = $@"
+        string code = $@"
     public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
 
         private readonly static IPreparedQueryExecute<{requestName}, {name}> _query;
@@ -94,17 +94,17 @@ namespace DbSchema.CodeGeneration {
         }}
     }}
 ";
-            return code;
-        }
+        return code;
+    }
 
-        private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table) {
+    private static string GetLoadListHandlerCodeNonCompiledQuery(DatabaseTable table) {
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-            string requestName = GetLoadListRequestName(table, name);
-            string handlerName = GetLoadListHandlerName(table, name);
+        string requestName = GetLoadListRequestName(table, name);
+        string handlerName = GetLoadListHandlerName(table, name);
 
-            string code = $@"
+        string code = $@"
     public sealed class {handlerName}: IRequestHandler<{requestName}, IList<{name}>> {{
 
         private readonly IMyDatabase _database;
@@ -128,7 +128,6 @@ namespace DbSchema.CodeGeneration {
         }}
     }}
 ";
-            return code;
-        }
+        return code;
     }
 }

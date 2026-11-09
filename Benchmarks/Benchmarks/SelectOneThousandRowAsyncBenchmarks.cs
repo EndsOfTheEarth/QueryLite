@@ -6,244 +6,243 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using QueryLite;
 
-namespace Benchmarks {
+namespace Benchmarks; 
 
-    [MemoryDiagnoser]
-    public class SelectOneThousandRowAsyncBenchmarks {
+[MemoryDiagnoser]
+public class SelectOneThousandRowAsyncBenchmarks {
 
-        private readonly string _message = "this is my new message";
-        private readonly DateTime _date = DateTime.Now;
+    private readonly string _message = "this is my new message";
+    private readonly DateTime _date = DateTime.Now;
 
-        private readonly IPreparedQueryExecute<SelectOneThousandRowAsyncBenchmarks, Test01> _preparedSelectQuery;
+    private readonly IPreparedQueryExecute<SelectOneThousandRowAsyncBenchmarks, Test01> _preparedSelectQuery;
 
-        public SelectOneThousandRowAsyncBenchmarks() {
+    public SelectOneThousandRowAsyncBenchmarks() {
 
-            Test01Table table = Test01Table.Instance;
+        Test01Table table = Test01Table.Instance;
 
-            _preparedSelectQuery = Query
-                .Prepare<SelectOneThousandRowAsyncBenchmarks>()
-                .Select(
-                    row => new Test01(table, row)
-                )
-                .From(table)
-                .Build();
+        _preparedSelectQuery = Query
+            .Prepare<SelectOneThousandRowAsyncBenchmarks>()
+            .Select(
+                row => new Test01(table, row)
+            )
+            .From(table)
+            .Build();
 
-            _preparedSelectQuery.Initialize(Databases.TestDatabase);
-        }
+        _preparedSelectQuery.Initialize(Databases.TestDatabase);
+    }
 
-        [IterationSetup]
-        public void Setup() {
+    [IterationSetup]
+    public void Setup() {
 
-            Databases.ResetTable();
+        Databases.ResetTable();
 
-            Test01Table table = Test01Table.Instance;
+        Test01Table table = Test01Table.Instance;
 
-            using(Transaction transaction = new(Databases.TestDatabase)) {
+        using(Transaction transaction = new(Databases.TestDatabase)) {
 
-                Query.Truncate(table).Execute(transaction);
+            Query.Truncate(table).Execute(transaction);
 
-                for(int index = 0; index < 1000; index++) {
+            for(int index = 0; index < 1000; index++) {
 
-                    NonQueryResult result = Query
-                        .Insert(table)
-                        .Values(values => values
-                            .Set(table.RowGuid, Guid.NewGuid())
-                            .Set(table.Message, _message)
-                            .Set(table.Date, _date)
-                        )
-                        .Execute(transaction);
-                }
-                transaction.Commit();
+                NonQueryResult result = Query
+                    .Insert(table)
+                    .Values(values => values
+                        .Set(table.RowGuid, Guid.NewGuid())
+                        .Set(table.Message, _message)
+                        .Set(table.Date, _date)
+                    )
+                    .Execute(transaction);
             }
+            transaction.Commit();
         }
+    }
 
-        private const int _iterations = 2000;
+    private const int _iterations = 2000;
 
 #pragma warning disable IDISP006 // Implement IDisposable
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(initialCount: 70);   //Limit the number of queries as PostgreSQL has a limit
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(initialCount: 70);   //Limit the number of queries as PostgreSQL has a limit
 #pragma warning restore IDISP006 // Implement IDisposable
 
-        [Benchmark]
-        public async Task Ado_One_Thousand_Row_SelectAsync() {
+    [Benchmark]
+    public async Task Ado_One_Thousand_Row_SelectAsync() {
 
-            List<Task> tasks = new(_iterations);
+        List<Task> tasks = new(_iterations);
 
-            for(int index = 0; index < _iterations; index++) {
+        for(int index = 0; index < _iterations; index++) {
 
-                Task task = Task.Run(async () => {
+            Task task = Task.Run(async () => {
 
-                    await _semaphore.WaitAsync();
+                await _semaphore.WaitAsync();
 
-                    await using NpgsqlConnection connection = new(Databases.ConnectionString);
+                await using NpgsqlConnection connection = new(Databases.ConnectionString);
 
-                    await connection.OpenAsync();
+                await connection.OpenAsync();
 
-                    using NpgsqlCommand command = connection.CreateCommand();
+                using NpgsqlCommand command = connection.CreateCommand();
 
-                    command.CommandText = "SELECT id,row_guid,message,date FROM Test01";
+                command.CommandText = "SELECT id,row_guid,message,date FROM Test01";
 
-                    await using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                await using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
-                    List<Test01> list = [];
+                List<Test01> list = [];
 
-                    while(await reader.ReadAsync()) {
+                while(await reader.ReadAsync()) {
 
-                        list.Add(
-                            new Test01(
-                                id: reader.GetInt32(0),
-                                row_guid: reader.GetGuid(1),
-                                message: reader.GetString(2),
-                                date: reader.GetDateTime(3)
-                            )
-                        );
-                    }
-                    await connection.CloseAsync();
-                    _semaphore.Release();
-                });
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
-        }
-
-        [Benchmark]
-        public async Task Dapper_One_Thousand_Row_SelectAsync() {
-
-            List<Task> tasks = new(_iterations);
-
-            for(int index = 0; index < _iterations; index++) {
-
-                Task task = Task.Run(async () => {
-
-                    await _semaphore.WaitAsync();
-
-                    await using NpgsqlConnection connection = new(Databases.ConnectionString);
-
-                    await connection.OpenAsync();
-
-                    IEnumerable<Test01> result = await connection.QueryAsync<Test01>(
-                        sql: "SELECT id,row_guid,message,date FROM Test01"
-                    );
-                    await connection.CloseAsync();
-                    _semaphore.Release();
-                });
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
-        }
-
-        [Benchmark]
-        public async Task QueryLite_One_Thousand_Row_Prepared_SelectAsync() {
-
-            List<Task> tasks = new(_iterations);
-
-            for(int index = 0; index < _iterations; index++) {
-
-                Task task = Task.Run(async () => {
-
-                    await _semaphore.WaitAsync();
-
-                    QueryResult<Test01> result = await _preparedSelectQuery.ExecuteAsync(parameters: this, Databases.TestDatabase);
-
-                    _semaphore.Release();
-                });
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
-        }
-
-        [Benchmark]
-        public async Task QueryLite_One_Thousand_Row_Dynamic_SelectAsync() {
-
-            List<Task> tasks = new(_iterations);
-
-            for(int index = 0; index < _iterations; index++) {
-
-                Task task = Task.Run(async () => {
-
-                    await _semaphore.WaitAsync();
-
-                    Test01Table table = Test01Table.Instance;
-
-                    QueryResult<Test01> result = await Query
-                        .Select(
-                            row => new Test01(table, row)
+                    list.Add(
+                        new Test01(
+                            id: reader.GetInt32(0),
+                            row_guid: reader.GetGuid(1),
+                            message: reader.GetString(2),
+                            date: reader.GetDateTime(3)
                         )
-                        .From(table)
-                        .ExecuteAsync(Databases.TestDatabase);
-
-                    _semaphore.Release();
-                });
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
+                    );
+                }
+                await connection.CloseAsync();
+                _semaphore.Release();
+            });
+            tasks.Add(task);
         }
+        await Task.WhenAll(tasks);
+    }
 
-        [Benchmark]
-        public async Task QueryLite_One_Thousand_Row_Repository_SelectAsync() {
+    [Benchmark]
+    public async Task Dapper_One_Thousand_Row_SelectAsync() {
 
-            List<Task> tasks = new(_iterations);
+        List<Task> tasks = new(_iterations);
 
-            for(int index = 0; index < _iterations; index++) {
+        for(int index = 0; index < _iterations; index++) {
 
-                Task task = Task.Run(async () => {
+            Task task = Task.Run(async () => {
 
-                    await _semaphore.WaitAsync();
+                await _semaphore.WaitAsync();
 
-                    Test01RowRepository repository = new();
+                await using NpgsqlConnection connection = new(Databases.ConnectionString);
 
-                    await repository.SelectRows.ExecuteAsync(Databases.TestDatabase, CancellationToken.None);
+                await connection.OpenAsync();
 
-                    _semaphore.Release();
-                });
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
+                IEnumerable<Test01> result = await connection.QueryAsync<Test01>(
+                    sql: "SELECT id,row_guid,message,date FROM Test01"
+                );
+                await connection.CloseAsync();
+                _semaphore.Release();
+            });
+            tasks.Add(task);
         }
+        await Task.WhenAll(tasks);
+    }
 
-        [Benchmark]
-        public async Task EF_Core_One_Thousand_Row_Select_No_Change_Tracking_Async() {
+    [Benchmark]
+    public async Task QueryLite_One_Thousand_Row_Prepared_SelectAsync() {
 
-            List<Task> tasks = new(_iterations);
+        List<Task> tasks = new(_iterations);
 
-            for(int index = 0; index < _iterations; index++) {
+        for(int index = 0; index < _iterations; index++) {
 
-                Task task = Task.Run(async () => {
+            Task task = Task.Run(async () => {
 
-                    await _semaphore.WaitAsync();
+                await _semaphore.WaitAsync();
 
-                    using TestContext context = Databases.ContextFactory.CreateDbContext();
+                QueryResult<Test01> result = await _preparedSelectQuery.ExecuteAsync(parameters: this, Databases.TestDatabase);
 
-                    List<Test01Row_EfCore> list = await context
-                        .TestRows.AsNoTracking()
-                        .ToListAsync(CancellationToken.None);
-
-                    _semaphore.Release();
-                });
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
+                _semaphore.Release();
+            });
+            tasks.Add(task);
         }
+        await Task.WhenAll(tasks);
+    }
 
-        [Benchmark]
-        public async Task EF_Core_One_Thousand_Row_SelectAsync() {
+    [Benchmark]
+    public async Task QueryLite_One_Thousand_Row_Dynamic_SelectAsync() {
 
-            List<Task> tasks = new(_iterations);
+        List<Task> tasks = new(_iterations);
 
-            for(int index = 0; index < _iterations; index++) {
+        for(int index = 0; index < _iterations; index++) {
 
-                Task task = Task.Run(async () => {
+            Task task = Task.Run(async () => {
 
-                    await _semaphore.WaitAsync();
+                await _semaphore.WaitAsync();
 
-                    using TestContext context = Databases.ContextFactory.CreateDbContext();
+                Test01Table table = Test01Table.Instance;
 
-                    List<Test01Row_EfCore> list = await context.TestRows.ToListAsync(CancellationToken.None);
+                QueryResult<Test01> result = await Query
+                    .Select(
+                        row => new Test01(table, row)
+                    )
+                    .From(table)
+                    .ExecuteAsync(Databases.TestDatabase);
 
-                    _semaphore.Release();
-                });
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
+                _semaphore.Release();
+            });
+            tasks.Add(task);
         }
+        await Task.WhenAll(tasks);
+    }
+
+    [Benchmark]
+    public async Task QueryLite_One_Thousand_Row_Repository_SelectAsync() {
+
+        List<Task> tasks = new(_iterations);
+
+        for(int index = 0; index < _iterations; index++) {
+
+            Task task = Task.Run(async () => {
+
+                await _semaphore.WaitAsync();
+
+                Test01RowRepository repository = new();
+
+                await repository.SelectRows.ExecuteAsync(Databases.TestDatabase, CancellationToken.None);
+
+                _semaphore.Release();
+            });
+            tasks.Add(task);
+        }
+        await Task.WhenAll(tasks);
+    }
+
+    [Benchmark]
+    public async Task EF_Core_One_Thousand_Row_Select_No_Change_Tracking_Async() {
+
+        List<Task> tasks = new(_iterations);
+
+        for(int index = 0; index < _iterations; index++) {
+
+            Task task = Task.Run(async () => {
+
+                await _semaphore.WaitAsync();
+
+                using TestContext context = Databases.ContextFactory.CreateDbContext();
+
+                List<Test01Row_EfCore> list = await context
+                    .TestRows.AsNoTracking()
+                    .ToListAsync(CancellationToken.None);
+
+                _semaphore.Release();
+            });
+            tasks.Add(task);
+        }
+        await Task.WhenAll(tasks);
+    }
+
+    [Benchmark]
+    public async Task EF_Core_One_Thousand_Row_SelectAsync() {
+
+        List<Task> tasks = new(_iterations);
+
+        for(int index = 0; index < _iterations; index++) {
+
+            Task task = Task.Run(async () => {
+
+                await _semaphore.WaitAsync();
+
+                using TestContext context = Databases.ContextFactory.CreateDbContext();
+
+                List<Test01Row_EfCore> list = await context.TestRows.ToListAsync(CancellationToken.None);
+
+                _semaphore.Release();
+            });
+            tasks.Add(task);
+        }
+        await Task.WhenAll(tasks);
     }
 }

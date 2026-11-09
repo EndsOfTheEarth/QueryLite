@@ -21,23 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.DbSchema.Tables.SqlServer {
+namespace QueryLite.DbSchema.Tables.SqlServer; 
 
-    public sealed class TablesTable : ATable {
+public sealed class TablesTable : ATable {
 
-        public static readonly TablesTable Instance = new();
+    public static readonly TablesTable Instance = new();
 
-        public Column<string> TABLE_CATALOG { get; }
-        public Column<SchemaName, string> TABLE_SCHEMA { get; }
-        public Column<TableName, string> TABLE_NAME { get; }
-        public Column<string> TABLE_TYPE { get; }
+    public Column<string> TABLE_CATALOG { get; }
+    public Column<SchemaName, string> TABLE_SCHEMA { get; }
+    public Column<TableName, string> TABLE_NAME { get; }
+    public Column<string> TABLE_TYPE { get; }
 
-        public TablesTable() : base(name: "tables", schemaName: "information_schema") {
+    public TablesTable() : base(name: "tables", schemaName: "information_schema") {
 
-            TABLE_CATALOG = new Column<string>(table: this, name: "table_catalog");
-            TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");
-            TABLE_NAME = new Column<TableName, string>(table: this, name: "table_name");
-            TABLE_TYPE = new Column<string>(table: this, name: "table_type");
-        }
+        TABLE_CATALOG = new Column<string>(table: this, name: "table_catalog");
+        TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");
+        TABLE_NAME = new Column<TableName, string>(table: this, name: "table_name");
+        TABLE_TYPE = new Column<string>(table: this, name: "table_type");
     }
 }

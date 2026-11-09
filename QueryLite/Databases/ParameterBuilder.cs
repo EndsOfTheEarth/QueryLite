@@ -23,14 +23,13 @@
  **/
 using System.Data.Common;
 
-namespace QueryLite.Databases {
+namespace QueryLite.Databases; 
 
-    public interface IPreparedParameterMapper {
-        CreateParameterDelegate GetCreateParameterDelegate(Type type);
-    }
-
-    /// <summary>
-    /// Creates a query parameter using name and type.
-    /// </summary>
-    public delegate DbParameter CreateParameterDelegate(string name, object? value);
+public interface IPreparedParameterMapper {
+    CreateParameterDelegate GetCreateParameterDelegate(Type type);
 }
+
+/// <summary>
+/// Creates a query parameter using name and type.
+/// </summary>
+public delegate DbParameter CreateParameterDelegate(string name, object? value);

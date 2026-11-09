@@ -23,33 +23,32 @@
  **/
 using System.Text;
 
-namespace QueryLite.Databases.Sqlite.Collectors {
+namespace QueryLite.Databases.Sqlite.Collectors; 
 
-    internal static class SqliteReturningCollectorCache {
+internal static class SqliteReturningCollectorCache {
 
-        [ThreadStatic]
-        private static SqliteReturningFieldCollector? Instance;
+    [ThreadStatic]
+    private static SqliteReturningFieldCollector? Instance;
 
-        public static SqliteReturningFieldCollector Acquire(StringBuilder sql, bool useAlias) {
+    public static SqliteReturningFieldCollector Acquire(StringBuilder sql, bool useAlias) {
 
-            if(Settings.EnableCollectorCaching) {
+        if(Settings.EnableCollectorCaching) {
 
-                SqliteReturningFieldCollector? instance = Instance;
+            SqliteReturningFieldCollector? instance = Instance;
 
-                if(instance != null) {
-                    Instance = null;
-                    instance.Reset(sql, useAlias: useAlias);
-                    return instance;
-                }
+            if(instance != null) {
+                Instance = null;
+                instance.Reset(sql, useAlias: useAlias);
+                return instance;
             }
-            return new SqliteReturningFieldCollector(sql, useAlias: useAlias);
         }
+        return new SqliteReturningFieldCollector(sql, useAlias: useAlias);
+    }
 
-        public static void Release(SqliteReturningFieldCollector instance) {
+    public static void Release(SqliteReturningFieldCollector instance) {
 
-            if(Settings.EnableCollectorCaching) {
-                Instance = instance;
-            }
+        if(Settings.EnableCollectorCaching) {
+            Instance = instance;
         }
     }
 }

@@ -23,82 +23,81 @@
  **/
 using System.Diagnostics.CodeAnalysis;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    public static class Sequence {
+public static class Sequence {
 
-        /// <summary>
-        /// Create a sequence with at least one item.
-        /// </summary>
-        public static Sequence<ITEM> From<ITEM>(ITEM item, params ITEM[] items) {
-            ArgumentNullException.ThrowIfNull(item);
-            return new Sequence<ITEM>([item, .. items]);
-        }
-
-        /// <summary>
-        /// Create a sequence with at least one item.
-        /// Returns null if there are no items.
-        /// </summary>
-        public static Sequence<ITEM>? From<ITEM>(IEnumerable<ITEM> items) {
-
-            ArgumentNullException.ThrowIfNull(items);
-
-            if(!items.Any()) {
-                return null;
-            }
-            return new Sequence<ITEM>([.. items]);
-        }
-
-        /// <summary>
-        /// Create a sequence with at least one item.
-        /// Returns null if there are no items.
-        /// </summary>
-        public static Sequence<ITEM>? From<ITEM>(params ITEM[] items) {
-
-            ArgumentNullException.ThrowIfNull(items);
-
-            if(items.Length == 0) {
-                return null;
-            }
-            return new Sequence<ITEM>([.. items]);
-        }
-
-        /// <summary>
-        /// Create a sequence from the list of items if it contains at least one item.
-        /// If items is empty this method returns false.
-        /// </summary>
-        public static bool TryFrom<ITEM>(IEnumerable<ITEM> items, [MaybeNullWhen(false)] out Sequence<ITEM> sequence) {
-
-            ArgumentNullException.ThrowIfNull(items);
-
-            if(items.Any()) {
-                sequence = new Sequence<ITEM>([.. items]);
-                return true;
-            }
-            sequence = null;
-            return false;
-        }
-
-        /// <summary>
-        /// Create a sequence with at least one item.
-        /// Returns null if there are no items.
-        /// </summary>
-        public static Sequence<ITEM>? ToSequence<ITEM>(this IEnumerable<ITEM> items) => From(items);
-    }
     /// <summary>
-    /// A sequence is a collection that must contain at least one item. This is used to
-    /// help avoid sql syntax bugs when an 'IN(...)' condition is created using a list with
-    /// no items in it.
+    /// Create a sequence with at least one item.
     /// </summary>
-    public sealed class Sequence<ITEM> {
+    public static Sequence<ITEM> From<ITEM>(ITEM item, params ITEM[] items) {
+        ArgumentNullException.ThrowIfNull(item);
+        return new Sequence<ITEM>([item, .. items]);
+    }
 
-        public ITEM[] Items { get; }
+    /// <summary>
+    /// Create a sequence with at least one item.
+    /// Returns null if there are no items.
+    /// </summary>
+    public static Sequence<ITEM>? From<ITEM>(IEnumerable<ITEM> items) {
 
-        internal Sequence(ITEM[] items) {
-            if(items.Length == 0) {
-                throw new Exception($"{nameof(items)} cannot be empty.");
-            }
-            Items = items;
+        ArgumentNullException.ThrowIfNull(items);
+
+        if(!items.Any()) {
+            return null;
         }
+        return new Sequence<ITEM>([.. items]);
+    }
+
+    /// <summary>
+    /// Create a sequence with at least one item.
+    /// Returns null if there are no items.
+    /// </summary>
+    public static Sequence<ITEM>? From<ITEM>(params ITEM[] items) {
+
+        ArgumentNullException.ThrowIfNull(items);
+
+        if(items.Length == 0) {
+            return null;
+        }
+        return new Sequence<ITEM>([.. items]);
+    }
+
+    /// <summary>
+    /// Create a sequence from the list of items if it contains at least one item.
+    /// If items is empty this method returns false.
+    /// </summary>
+    public static bool TryFrom<ITEM>(IEnumerable<ITEM> items, [MaybeNullWhen(false)] out Sequence<ITEM> sequence) {
+
+        ArgumentNullException.ThrowIfNull(items);
+
+        if(items.Any()) {
+            sequence = new Sequence<ITEM>([.. items]);
+            return true;
+        }
+        sequence = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Create a sequence with at least one item.
+    /// Returns null if there are no items.
+    /// </summary>
+    public static Sequence<ITEM>? ToSequence<ITEM>(this IEnumerable<ITEM> items) => From(items);
+}
+/// <summary>
+/// A sequence is a collection that must contain at least one item. This is used to
+/// help avoid sql syntax bugs when an 'IN(...)' condition is created using a list with
+/// no items in it.
+/// </summary>
+public sealed class Sequence<ITEM> {
+
+    public ITEM[] Items { get; }
+
+    internal Sequence(ITEM[] items) {
+        if(items.Length == 0) {
+            throw new Exception($"{nameof(items)} cannot be empty.");
+        }
+        Items = items;
     }
 }

@@ -25,280 +25,279 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    public enum TransactionState {
+public enum TransactionState {
 
-    }
+}
+/// <summary>
+/// Database transaction
+/// </summary>
+public sealed class Transaction : IDisposable, IAsyncDisposable {
+
     /// <summary>
-    /// Database transaction
+    /// Identifier for transaction. Used for debugging.
     /// </summary>
-    public sealed class Transaction : IDisposable, IAsyncDisposable {
+    public ulong TransactionId { get; }
 
-        /// <summary>
-        /// Identifier for transaction. Used for debugging.
-        /// </summary>
-        public ulong TransactionId { get; }
+    public IDatabase Database { get; }
 
-        public IDatabase Database { get; }
+    /// <summary>
+    /// Isolation level of transaction
+    /// </summary>
+    public IsolationLevel IsolationLevel { get; private set; }
 
-        /// <summary>
-        /// Isolation level of transaction
-        /// </summary>
-        public IsolationLevel IsolationLevel { get; private set; }
+    public Transaction(IDatabase database, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted) {
 
-        public Transaction(IDatabase database, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted) {
+        ArgumentNullException.ThrowIfNull(database, paramName: nameof(database));
 
-            ArgumentNullException.ThrowIfNull(database, paramName: nameof(database));
+        Database = database;
+        IsolationLevel = isolationLevel;
+        TransactionId = GetNextId();
+    }
 
-            Database = database;
-            IsolationLevel = isolationLevel;
-            TransactionId = GetNextId();
+    private DbTransaction? DbTransaction { get; set; }
+
+    internal DbTransaction? GetTransaction(IDatabase database) {
+
+        ArgumentNullException.ThrowIfNull(database);
+
+        if(Database != database) {
+            throw new Exception("Transaction is being used to query two different connections");
         }
+        return DbTransaction;
+    }
 
-        private DbTransaction? DbTransaction { get; set; }
+    internal void BeginTransaction(DbConnection connection) {
 
-        internal DbTransaction? GetTransaction(IDatabase database) {
+        ArgumentNullException.ThrowIfNull(connection);
 
-            ArgumentNullException.ThrowIfNull(database);
-
-            if(Database != database) {
-                throw new Exception("Transaction is being used to query two different connections");
-            }
-            return DbTransaction;
+        if(DbTransaction != null) {
+            throw new Exception($"Cannot set {nameof(DbTransaction)} twice");
         }
+        DbTransaction?.Dispose();   //Just to keep analyzer happy - Will always be null here
+        DbTransaction = connection.BeginTransaction(IsolationLevel);
+    }
 
-        internal void BeginTransaction(DbConnection connection) {
+    internal async Task BeginTransactionAsync(DbConnection connection, CancellationToken ct) {
 
-            ArgumentNullException.ThrowIfNull(connection);
+        ArgumentNullException.ThrowIfNull(connection);
 
-            if(DbTransaction != null) {
-                throw new Exception($"Cannot set {nameof(DbTransaction)} twice");
-            }
-            DbTransaction?.Dispose();   //Just to keep analyzer happy - Will always be null here
-            DbTransaction = connection.BeginTransaction(IsolationLevel);
+        if(DbTransaction != null) {
+            throw new Exception($"Cannot set {nameof(DbTransaction)} twice");
         }
+        DbTransaction?.Dispose();   //Just to keep analyzer happy - Will always be null here
+        DbTransaction = await connection.BeginTransactionAsync(IsolationLevel, ct);
+    }
 
-        internal async Task BeginTransactionAsync(DbConnection connection, CancellationToken ct) {
+    /// <summary>
+    /// Creates a new ado command from the transactions connection.
+    /// Please note you will need to correctly dispose of this command object.
+    /// </summary>
+    /// <returns></returns>
+    public DbCommand CreateCommand(QueryTimeout timeout) {
 
-            ArgumentNullException.ThrowIfNull(connection);
+        DbTransaction? dbTransaction = GetTransaction(Database);
 
-            if(DbTransaction != null) {
-                throw new Exception($"Cannot set {nameof(DbTransaction)} twice");
-            }
-            DbTransaction?.Dispose();   //Just to keep analyzer happy - Will always be null here
-            DbTransaction = await connection.BeginTransactionAsync(IsolationLevel, ct);
+        DbConnection dbConnection;
+
+        if(dbTransaction == null) {
+            dbConnection = Database.GetNewConnection();
+            dbConnection.Open();
+            BeginTransaction(dbConnection);
+            dbTransaction = DbTransaction;
         }
-
-        /// <summary>
-        /// Creates a new ado command from the transactions connection.
-        /// Please note you will need to correctly dispose of this command object.
-        /// </summary>
-        /// <returns></returns>
-        public DbCommand CreateCommand(QueryTimeout timeout) {
-
-            DbTransaction? dbTransaction = GetTransaction(Database);
-
-            DbConnection dbConnection;
-
-            if(dbTransaction == null) {
-                dbConnection = Database.GetNewConnection();
-                dbConnection.Open();
-                BeginTransaction(dbConnection);
-                dbTransaction = DbTransaction;
-            }
-            else {
-                dbConnection = dbTransaction.Connection!;
-            }
-            DbCommand command = dbConnection.CreateCommand();
-            command.Transaction = dbTransaction!;
-            command.CommandTimeout = timeout.Seconds;
-            return command;
+        else {
+            dbConnection = dbTransaction.Connection!;
         }
+        DbCommand command = dbConnection.CreateCommand();
+        command.Transaction = dbTransaction!;
+        command.CommandTimeout = timeout.Seconds;
+        return command;
+    }
 
-        public async Task<DbCommand> CreateCommandAsync(QueryTimeout timeout, CancellationToken ct) {
+    public async Task<DbCommand> CreateCommandAsync(QueryTimeout timeout, CancellationToken ct) {
 
-            DbTransaction? dbTransaction = GetTransaction(Database);
+        DbTransaction? dbTransaction = GetTransaction(Database);
 
-            DbConnection dbConnection;
+        DbConnection dbConnection;
 
-            if(dbTransaction == null) {
-                dbConnection = Database.GetNewConnection();
-                await dbConnection.OpenAsync(ct);
-                await BeginTransactionAsync(dbConnection, ct);
-                dbTransaction = DbTransaction;
-            }
-            else {
-                dbConnection = dbTransaction.Connection!;
-            }
-            DbCommand command = dbConnection.CreateCommand();
-            command.Transaction = dbTransaction!;
-            command.CommandTimeout = timeout.Seconds;
-            return command;
+        if(dbTransaction == null) {
+            dbConnection = Database.GetNewConnection();
+            await dbConnection.OpenAsync(ct);
+            await BeginTransactionAsync(dbConnection, ct);
+            dbTransaction = DbTransaction;
         }
-
-        /// <summary>
-        /// Counter used to give each transaction a unique id mainly for debugging purposes
-        /// </summary>
-        private static volatile uint sCounter = 0;
-
-        private static ulong GetNextId() {
-            return sCounter++;
+        else {
+            dbConnection = dbTransaction.Connection!;
         }
+        DbCommand command = dbConnection.CreateCommand();
+        command.Transaction = dbTransaction!;
+        command.CommandTimeout = timeout.Seconds;
+        return command;
+    }
 
-        /// <summary>
-        /// Dispose transaction. Will roll back transaction if it is not yet committed.
-        /// </summary>
-        public void Dispose() {
+    /// <summary>
+    /// Counter used to give each transaction a unique id mainly for debugging purposes
+    /// </summary>
+    private static volatile uint sCounter = 0;
 
-            using(DbConnection? connection = DbTransaction?.Connection) {
-                Rollback();
+    private static ulong GetNextId() {
+        return sCounter++;
+    }
+
+    /// <summary>
+    /// Dispose transaction. Will roll back transaction if it is not yet committed.
+    /// </summary>
+    public void Dispose() {
+
+        using(DbConnection? connection = DbTransaction?.Connection) {
+            Rollback();
+        }
+    }
+
+    public async ValueTask DisposeAsync() {
+
+        using(DbConnection? connection = DbTransaction?.Connection) {
+            await RollbackAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Commit transaction in database
+    /// </summary>
+    public void Commit() {
+
+        if(DbTransaction == null) {
+            return;
+        }
+        try {
+
+            using(DbConnection? connection = DbTransaction.Connection) {
+
+                using(DbTransaction) {
+                    DbTransaction.Commit();
+                    ResetIsolationLevel(connection);
+                }
             }
         }
+        finally {
+            DbTransaction?.Dispose();
+            DbTransaction = null;
+        }
+    }
 
-        public async ValueTask DisposeAsync() {
+    /// <summary>
+    /// Commit transaction in database
+    /// </summary>
+    public async Task CommitAsync(CancellationToken ct = default) {
 
-            using(DbConnection? connection = DbTransaction?.Connection) {
-                await RollbackAsync().ConfigureAwait(false);
+        if(DbTransaction == null) {
+            return;
+        }
+        try {
+
+            await using(DbConnection? connection = DbTransaction.Connection) {
+
+                await using(DbTransaction) {
+                    await DbTransaction.CommitAsync(ct);
+                    await ResetIsolationLevelAsync(connection);
+                }
             }
         }
+        finally {
+            DbTransaction.Dispose();
+            DbTransaction = null;
+        }
+    }
 
-        /// <summary>
-        /// Commit transaction in database
-        /// </summary>
-        public void Commit() {
+    /// <summary>
+    /// Rollback transaction in database
+    /// </summary>
+    public void Rollback() {
 
-            if(DbTransaction == null) {
-                return;
-            }
-            try {
+        if(DbTransaction == null) {
+            return;
+        }
+        try {
 
-                using(DbConnection? connection = DbTransaction.Connection) {
+            using(DbConnection? connection = DbTransaction.Connection) {
 
-                    using(DbTransaction) {
-                        DbTransaction.Commit();
+                using(DbTransaction) {
+
+                    if(connection != null) {
+
+                        bool rollback = connection.State != ConnectionState.Closed &&
+                                        connection.State != ConnectionState.Broken;
+
+                        if(rollback) {
+                            DbTransaction.Rollback();
+                        }
                         ResetIsolationLevel(connection);
                     }
                 }
             }
-            finally {
-                DbTransaction?.Dispose();
-                DbTransaction = null;
-            }
         }
+        finally {
+            DbTransaction.Dispose();
+            DbTransaction = null;
+        }
+    }
 
-        /// <summary>
-        /// Commit transaction in database
-        /// </summary>
-        public async Task CommitAsync(CancellationToken ct = default) {
+    /// <summary>
+    /// Rollback transaction in database
+    /// </summary>
+    public async Task RollbackAsync(CancellationToken ct = default) {
 
-            if(DbTransaction == null) {
-                return;
-            }
-            try {
+        if(DbTransaction == null) {
+            return;
+        }
+        try {
+            await using(DbConnection? connection = DbTransaction.Connection) {
 
-                await using(DbConnection? connection = DbTransaction.Connection) {
+                await using(DbTransaction) {
 
-                    await using(DbTransaction) {
-                        await DbTransaction.CommitAsync(ct);
+                    if(connection != null) {
+
+                        bool rollback = connection.State != ConnectionState.Closed &&
+                                        connection.State != ConnectionState.Broken;
+
+                        if(rollback) {
+                            await DbTransaction.RollbackAsync(ct);
+                        }
                         await ResetIsolationLevelAsync(connection);
+
                     }
                 }
             }
-            finally {
-                DbTransaction.Dispose();
-                DbTransaction = null;
+        }
+        finally {
+            DbTransaction.Dispose();
+            DbTransaction = null;
+        }
+    }
+
+    private static void ResetIsolationLevel(DbConnection? connection) {
+        //
+        //  For Sql Server we need to reset the isolation level
+        //
+        if(connection is SqlConnection) {
+
+            using(DbCommand command = connection.CreateCommand()) {
+                command.CommandText = "SET TRANSACTION ISOLATION LEVEL READ COMMITTED";
+                command.ExecuteNonQuery();
             }
         }
+    }
+    private static async Task ResetIsolationLevelAsync(DbConnection? connection) {
+        //
+        //  For Sql Server we need to reset the isolation level
+        //
+        if(connection is SqlConnection) {
 
-        /// <summary>
-        /// Rollback transaction in database
-        /// </summary>
-        public void Rollback() {
-
-            if(DbTransaction == null) {
-                return;
-            }
-            try {
-
-                using(DbConnection? connection = DbTransaction.Connection) {
-
-                    using(DbTransaction) {
-
-                        if(connection != null) {
-
-                            bool rollback = connection.State != ConnectionState.Closed &&
-                                            connection.State != ConnectionState.Broken;
-
-                            if(rollback) {
-                                DbTransaction.Rollback();
-                            }
-                            ResetIsolationLevel(connection);
-                        }
-                    }
-                }
-            }
-            finally {
-                DbTransaction.Dispose();
-                DbTransaction = null;
-            }
-        }
-
-        /// <summary>
-        /// Rollback transaction in database
-        /// </summary>
-        public async Task RollbackAsync(CancellationToken ct = default) {
-
-            if(DbTransaction == null) {
-                return;
-            }
-            try {
-                await using(DbConnection? connection = DbTransaction.Connection) {
-
-                    await using(DbTransaction) {
-
-                        if(connection != null) {
-
-                            bool rollback = connection.State != ConnectionState.Closed &&
-                                            connection.State != ConnectionState.Broken;
-
-                            if(rollback) {
-                                await DbTransaction.RollbackAsync(ct);
-                            }
-                            await ResetIsolationLevelAsync(connection);
-
-                        }
-                    }
-                }
-            }
-            finally {
-                DbTransaction.Dispose();
-                DbTransaction = null;
-            }
-        }
-
-        private static void ResetIsolationLevel(DbConnection? connection) {
-            //
-            //  For Sql Server we need to reset the isolation level
-            //
-            if(connection is SqlConnection) {
-
-                using(DbCommand command = connection.CreateCommand()) {
-                    command.CommandText = "SET TRANSACTION ISOLATION LEVEL READ COMMITTED";
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-        private static async Task ResetIsolationLevelAsync(DbConnection? connection) {
-            //
-            //  For Sql Server we need to reset the isolation level
-            //
-            if(connection is SqlConnection) {
-
-                using(DbCommand command = connection.CreateCommand()) {
-                    command.CommandText = "SET TRANSACTION ISOLATION LEVEL READ COMMITTED";
-                    await command.ExecuteNonQueryAsync();
-                }
+            using(DbCommand command = connection.CreateCommand()) {
+                command.CommandText = "SET TRANSACTION ISOLATION LEVEL READ COMMITTED";
+                await command.ExecuteNonQueryAsync();
             }
         }
     }

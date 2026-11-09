@@ -23,227 +23,226 @@
  **/
 using QueryLite.Utility;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    public interface IInsertSet {
+public interface IInsertSet {
 
-        IInsertExecute Values(Action<ISetValuesCollector> values);
-    }
+    IInsertExecute Values(Action<ISetValuesCollector> values);
+}
 
-    public interface IInsertExecute {
+public interface IInsertExecute {
 
-        string GetSql(IDatabase database);
+    string GetSql(IDatabase database);
 
-        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+    NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
 
-        QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null,
-                                            Parameters useParameters = Parameters.Default, string debugName = "");
+    QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, QueryTimeout? timeout = null,
+                                        Parameters useParameters = Parameters.Default, string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null, QueryTimeout? timeout = null,
-                                          Parameters useParameters = Parameters.Default, string debugName = "");
+    Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null, QueryTimeout? timeout = null,
+                                      Parameters useParameters = Parameters.Default, string debugName = "");
 
-        Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
-    }
+    Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction, CancellationToken? ct = null,
+                                                   QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default, string debugName = "");
+}
 
-    internal enum CollectorMode {
-        Insert,
-        Update
-    }
+internal enum CollectorMode {
+    Insert,
+    Update
+}
 
-    public interface ISetValuesCollector {
+public interface ISetValuesCollector {
 
-        public ISetValuesCollector Set(Column<string> column, string value);
-        public ISetValuesCollector Set(NColumn<string> column, string? value);
+    public ISetValuesCollector Set(Column<string> column, string value);
+    public ISetValuesCollector Set(NColumn<string> column, string? value);
 
-        public ISetValuesCollector Set(Column<Guid> column, Guid value);
-        public ISetValuesCollector Set(NColumn<Guid> column, Guid? value);
+    public ISetValuesCollector Set(Column<Guid> column, Guid value);
+    public ISetValuesCollector Set(NColumn<Guid> column, Guid? value);
 
-        public ISetValuesCollector Set(Column<bool> column, bool value);
-        public ISetValuesCollector Set(NColumn<bool> column, bool? value);
+    public ISetValuesCollector Set(Column<bool> column, bool value);
+    public ISetValuesCollector Set(NColumn<bool> column, bool? value);
 
-        public ISetValuesCollector Set(Column<Bit> column, Bit value);
-        public ISetValuesCollector Set(NColumn<Bit> column, Bit? value);
+    public ISetValuesCollector Set(Column<Bit> column, Bit value);
+    public ISetValuesCollector Set(NColumn<Bit> column, Bit? value);
 
-        public ISetValuesCollector Set(Column<decimal> column, decimal value);
-        public ISetValuesCollector Set(NColumn<decimal> column, decimal? value);
+    public ISetValuesCollector Set(Column<decimal> column, decimal value);
+    public ISetValuesCollector Set(NColumn<decimal> column, decimal? value);
 
-        public ISetValuesCollector Set(Column<short> column, short value);
-        public ISetValuesCollector Set(NColumn<short> column, short? value);
+    public ISetValuesCollector Set(Column<short> column, short value);
+    public ISetValuesCollector Set(NColumn<short> column, short? value);
 
-        public ISetValuesCollector Set(Column<int> column, int value);
-        public ISetValuesCollector Set(NColumn<int> column, int? value);
+    public ISetValuesCollector Set(Column<int> column, int value);
+    public ISetValuesCollector Set(NColumn<int> column, int? value);
 
-        public ISetValuesCollector Set(Column<long> column, long value);
-        public ISetValuesCollector Set(NColumn<long> column, long? value);
+    public ISetValuesCollector Set(Column<long> column, long value);
+    public ISetValuesCollector Set(NColumn<long> column, long? value);
 
-        public ISetValuesCollector Set(Column<float> column, float value);
-        public ISetValuesCollector Set(NColumn<float> column, float? value);
+    public ISetValuesCollector Set(Column<float> column, float value);
+    public ISetValuesCollector Set(NColumn<float> column, float? value);
 
-        public ISetValuesCollector Set(Column<double> column, double value);
-        public ISetValuesCollector Set(NColumn<double> column, double? value);
+    public ISetValuesCollector Set(Column<double> column, double value);
+    public ISetValuesCollector Set(NColumn<double> column, double? value);
 
-        public ISetValuesCollector Set(Column<TimeOnly> column, TimeOnly value);
-        public ISetValuesCollector Set(NColumn<TimeOnly> column, TimeOnly? value);
+    public ISetValuesCollector Set(Column<TimeOnly> column, TimeOnly value);
+    public ISetValuesCollector Set(NColumn<TimeOnly> column, TimeOnly? value);
 
-        public ISetValuesCollector Set(Column<DateTime> column, DateTime value);
-        public ISetValuesCollector Set(NColumn<DateTime> column, DateTime? value);
+    public ISetValuesCollector Set(Column<DateTime> column, DateTime value);
+    public ISetValuesCollector Set(NColumn<DateTime> column, DateTime? value);
 
-        public ISetValuesCollector Set(Column<DateOnly> column, DateOnly value);
-        public ISetValuesCollector Set(NColumn<DateOnly> column, DateOnly? value);
+    public ISetValuesCollector Set(Column<DateOnly> column, DateOnly value);
+    public ISetValuesCollector Set(NColumn<DateOnly> column, DateOnly? value);
 
-        public ISetValuesCollector Set(Column<DateTimeOffset> column, DateTimeOffset value);
-        public ISetValuesCollector Set(NColumn<DateTimeOffset> column, DateTimeOffset? value);
+    public ISetValuesCollector Set(Column<DateTimeOffset> column, DateTimeOffset value);
+    public ISetValuesCollector Set(NColumn<DateTimeOffset> column, DateTimeOffset? value);
 
-        public ISetValuesCollector Set(Column<byte> column, byte value);
-        public ISetValuesCollector Set(NColumn<byte> column, byte? value);
+    public ISetValuesCollector Set(Column<byte> column, byte value);
+    public ISetValuesCollector Set(NColumn<byte> column, byte? value);
 
-        public ISetValuesCollector Set(Column<byte[]> column, byte[] value);
-        public ISetValuesCollector Set(NColumn<byte[]> column, byte[]? value);
+    public ISetValuesCollector Set(Column<byte[]> column, byte[] value);
+    public ISetValuesCollector Set(NColumn<byte[]> column, byte[]? value);
 
-        public ISetValuesCollector Set(Column<Json> column, Json value);
-        public ISetValuesCollector Set(NColumn<Json> column, Json? value);
+    public ISetValuesCollector Set(Column<Json> column, Json value);
+    public ISetValuesCollector Set(NColumn<Json> column, Json? value);
 
-        public ISetValuesCollector Set(Column<Jsonb> column, Jsonb value);
-        public ISetValuesCollector Set(NColumn<Jsonb> column, Jsonb? value);
+    public ISetValuesCollector Set(Column<Jsonb> column, Jsonb value);
+    public ISetValuesCollector Set(NColumn<Jsonb> column, Jsonb? value);
 
-        public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum;
-        public ISetValuesCollector Set<ENUM>(NColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum;
+    public ISetValuesCollector Set<ENUM>(Column<ENUM> column, ENUM value) where ENUM : notnull, Enum;
+    public ISetValuesCollector Set<ENUM>(NColumn<ENUM> column, ENUM? value) where ENUM : struct, Enum;
 
-        public ISetValuesCollector Set(AColumn<string> column, AFunction<string> value);
+    public ISetValuesCollector Set(AColumn<string> column, AFunction<string> value);
 
-        public ISetValuesCollector Set(AColumn<Guid> column, AFunction<Guid> value);
+    public ISetValuesCollector Set(AColumn<Guid> column, AFunction<Guid> value);
 
-        public ISetValuesCollector Set(AColumn<bool> column, AFunction<bool> value);
+    public ISetValuesCollector Set(AColumn<bool> column, AFunction<bool> value);
 
-        public ISetValuesCollector Set(AColumn<Bit> column, AFunction<Bit> value);
+    public ISetValuesCollector Set(AColumn<Bit> column, AFunction<Bit> value);
 
-        public ISetValuesCollector Set(AColumn<decimal> column, AFunction<decimal> value);
+    public ISetValuesCollector Set(AColumn<decimal> column, AFunction<decimal> value);
 
-        public ISetValuesCollector Set(AColumn<short> column, AFunction<short> value);
+    public ISetValuesCollector Set(AColumn<short> column, AFunction<short> value);
 
-        public ISetValuesCollector Set(AColumn<int> column, AFunction<int> value);
+    public ISetValuesCollector Set(AColumn<int> column, AFunction<int> value);
 
-        public ISetValuesCollector Set(AColumn<long> column, AFunction<long> value);
+    public ISetValuesCollector Set(AColumn<long> column, AFunction<long> value);
 
-        public ISetValuesCollector Set(AColumn<float> column, AFunction<float> value);
+    public ISetValuesCollector Set(AColumn<float> column, AFunction<float> value);
 
-        public ISetValuesCollector Set(AColumn<double> column, AFunction<double> value);
+    public ISetValuesCollector Set(AColumn<double> column, AFunction<double> value);
 
-        public ISetValuesCollector Set(AColumn<TimeOnly> column, AFunction<TimeOnly> value);
+    public ISetValuesCollector Set(AColumn<TimeOnly> column, AFunction<TimeOnly> value);
 
-        public ISetValuesCollector Set(AColumn<DateTime> column, AFunction<DateTime> value);
+    public ISetValuesCollector Set(AColumn<DateTime> column, AFunction<DateTime> value);
 
-        public ISetValuesCollector Set(AColumn<DateOnly> column, AFunction<DateOnly> value);
+    public ISetValuesCollector Set(AColumn<DateOnly> column, AFunction<DateOnly> value);
 
-        public ISetValuesCollector Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value);
+    public ISetValuesCollector Set(AColumn<DateTimeOffset> column, AFunction<DateTimeOffset> value);
 
-        public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value);
+    public ISetValuesCollector Set(AColumn<IGeography> column, AFunction<IGeography> value);
 
-        public ISetValuesCollector Set(AColumn<byte> column, AFunction<byte> value);
+    public ISetValuesCollector Set(AColumn<byte> column, AFunction<byte> value);
 
-        public ISetValuesCollector Set(AColumn<byte[]> column, AFunction<byte[]> value);
+    public ISetValuesCollector Set(AColumn<byte[]> column, AFunction<byte[]> value);
 
-        /*
-         * Function Setters
-         */
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
+    /*
+     * Function Setters
+     */
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, AFunction<CUSTOM_TYPE> value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
 
-        /*
-         * Column Setters
-         */
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
+    /*
+     * Column Setters
+     */
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Guid> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Guid, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, short> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, short> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<short, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, int> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, int> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<int, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, long> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, long> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<long, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, string> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, string> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<string, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, bool> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, bool> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<bool, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, decimal> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<decimal, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTime> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTime, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateTimeOffset> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateTimeOffset, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, DateOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<DateOnly, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, TimeOnly> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<TimeOnly, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, float> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, float> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<float, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, double> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, double> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<double, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Bit> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Bit, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Json> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Json> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Json, CUSTOM_TYPE>;
 
-        public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
-        public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
-    }
+    public ISetValuesCollector Set<CUSTOM_TYPE>(Column<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
+    public ISetValuesCollector Set<CUSTOM_TYPE>(NColumn<CUSTOM_TYPE, Jsonb> column, CUSTOM_TYPE? value) where CUSTOM_TYPE : struct, ICustomType<Jsonb, CUSTOM_TYPE>;
 }

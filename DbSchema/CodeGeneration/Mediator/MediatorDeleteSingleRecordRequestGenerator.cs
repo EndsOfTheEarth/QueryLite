@@ -26,56 +26,56 @@ using QueryLite.DbSchema.CodeGeneration;
 using System;
 using System.Text;
 
-namespace DbSchema.CodeGeneration {
+namespace DbSchema.CodeGeneration; 
 
-    public static class MediatorDeleteSingleRecordRequestGenerator {
+public static class MediatorDeleteSingleRecordRequestGenerator {
 
-        public static string GetDeleteRequest(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
+    public static string GetDeleteRequest(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-            string requestName = GetDeleteRequestName(name);
+        string requestName = GetDeleteRequestName(name);
 
-            StringBuilder parametersText = new();
-            StringBuilder settersText = new();
-            StringBuilder propertiesText = new();
+        StringBuilder parametersText = new();
+        StringBuilder settersText = new();
+        StringBuilder propertiesText = new();
 
-            foreach(DatabaseColumn column in table.Columns) {
+        foreach(DatabaseColumn column in table.Columns) {
 
-                if(column.IsPrimaryKey) {
+            if(column.IsPrimaryKey) {
 
-                    CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
+                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(table, column, useIdentifiers: settings.UseIdentifiers);
 
-                    if(parametersText.Length > 0) {
-                        parametersText.Append(", ");
-                    }
-
-                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
-
-                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
-                    string parameterName = propertyName.FirstLetterLowerCase();
-
-                    parametersText.Append($"{columnInfo.ColumnTypeName} {parameterName}");
-
-                    if(settersText.Length > 0) {
-                        settersText.Append(Environment.NewLine);
-                    }
-
-                    if(propertyName != parameterName) {
-                        settersText.Append($"            {propertyName} = {parameterName};");
-                    }
-                    else {
-                        settersText.Append($"            this.{propertyName} = {parameterName};");
-                    }
-
-                    if(propertiesText.Length > 0) {
-                        propertiesText.Append(Environment.NewLine);
-                    }
-                    propertiesText.Append($"        public {columnInfo.ColumnTypeName} {propertyName} {{ get; set; }}");
+                if(parametersText.Length > 0) {
+                    parametersText.Append(", ");
                 }
-            }
 
-            string code = $@"
+                string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+
+                string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
+                string parameterName = propertyName.FirstLetterLowerCase();
+
+                parametersText.Append($"{columnInfo.ColumnTypeName} {parameterName}");
+
+                if(settersText.Length > 0) {
+                    settersText.Append(Environment.NewLine);
+                }
+
+                if(propertyName != parameterName) {
+                    settersText.Append($"            {propertyName} = {parameterName};");
+                }
+                else {
+                    settersText.Append($"            this.{propertyName} = {parameterName};");
+                }
+
+                if(propertiesText.Length > 0) {
+                    propertiesText.Append(Environment.NewLine);
+                }
+                propertiesText.Append($"        public {columnInfo.ColumnTypeName} {propertyName} {{ get; set; }}");
+            }
+        }
+
+        string code = $@"
     public sealed class {requestName} : IRequest<Response> {{
 
         public {requestName}({parametersText}) {{
@@ -84,54 +84,54 @@ namespace DbSchema.CodeGeneration {
 {propertiesText}
     }}
 ";
-            return code;
+        return code;
+    }
+
+    private static string GetDeleteRequestName(string name) {
+        return $"Delete{name}Request";
+    }
+    private static string GetDeleteHandlerName(string name) {
+        return $"Delete{name}Handler";
+    }
+
+    public static string GetDeleteHandlerCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
+
+        if(settings.UsePreparedQueries) {
+            return GetDeleteHandlerCodeWithCompiledQuery(table, prefix);
         }
-
-        private static string GetDeleteRequestName(string name) {
-            return $"Delete{name}Request";
+        else {
+            return GetDeleteHandlerCodeNonCompiledQuery(table, prefix);
         }
-        private static string GetDeleteHandlerName(string name) {
-            return $"Delete{name}Handler";
-        }
+    }
 
-        public static string GetDeleteHandlerCode(DatabaseTable table, TablePrefix prefix, CodeGeneratorSettings settings) {
+    private static string GetDeleteHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix) {
 
-            if(settings.UsePreparedQueries) {
-                return GetDeleteHandlerCodeWithCompiledQuery(table, prefix);
-            }
-            else {
-                return GetDeleteHandlerCodeNonCompiledQuery(table, prefix);
-            }
-        }
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
 
-        private static string GetDeleteHandlerCodeWithCompiledQuery(DatabaseTable table, TablePrefix prefix) {
+        string requestName = GetDeleteRequestName(name);
+        string handlerName = GetDeleteHandlerName(name);
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
+        StringBuilder whereClause = new();
 
-            string requestName = GetDeleteRequestName(name);
-            string handlerName = GetDeleteHandlerName(name);
+        foreach(DatabaseColumn column in table.Columns) {
 
-            StringBuilder whereClause = new();
+            if(column.IsPrimaryKey) {
 
-            foreach(DatabaseColumn column in table.Columns) {
+                string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+                string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
 
-                if(column.IsPrimaryKey) {
-
-                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
-                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
-
-                    if(whereClause.Length > 0) {
-                        whereClause.Append(" & ");
-                    }
-                    whereClause.Append($"where.EQUALS(table.{propertyName}, request => request.{propertyName})");
+                if(whereClause.Length > 0) {
+                    whereClause.Append(" & ");
                 }
+                whereClause.Append($"where.EQUALS(table.{propertyName}, request => request.{propertyName})");
             }
+        }
 
-            if(whereClause.Length == 0) {
-                whereClause.Append("??? No Primary Key Columns Exist ???");
-            }
+        if(whereClause.Length == 0) {
+            whereClause.Append("??? No Primary Key Columns Exist ???");
+        }
 
-            string code = $@"
+        string code = $@"
     public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
         private readonly static IPreparedDeleteQuery<{requestName}> _query;
@@ -167,37 +167,37 @@ namespace DbSchema.CodeGeneration {
         }}
     }}
 ";
-            return code;
+        return code;
+    }
+
+    private static string GetDeleteHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
+
+        string name = CodeHelper.FormatNameForClass(table.TableName.Value);
+
+        string requestName = GetDeleteRequestName(name);
+        string handlerName = GetDeleteHandlerName(name);
+
+        StringBuilder whereClause = new();
+
+        foreach(DatabaseColumn column in table.Columns) {
+
+            if(column.IsPrimaryKey) {
+
+                string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
+                string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
+
+                if(whereClause.Length > 0) {
+                    whereClause.Append(" & ");
+                }
+                whereClause.Append($"table.{propertyName} == request.{propertyName}");
+            }
         }
 
-        private static string GetDeleteHandlerCodeNonCompiledQuery(DatabaseTable table, TablePrefix prefix) {
+        if(whereClause.Length == 0) {
+            whereClause.Append("??? No Primary Key Columns Exist ???");
+        }
 
-            string name = CodeHelper.FormatNameForClass(table.TableName.Value);
-
-            string requestName = GetDeleteRequestName(name);
-            string handlerName = GetDeleteHandlerName(name);
-
-            StringBuilder whereClause = new();
-
-            foreach(DatabaseColumn column in table.Columns) {
-
-                if(column.IsPrimaryKey) {
-
-                    string tableClassName = CodeHelper.GetTableName(table, includePostFix: true);
-                    string propertyName = prefix.GetColumnName(column.ColumnName.Value, className: tableClassName);
-
-                    if(whereClause.Length > 0) {
-                        whereClause.Append(" & ");
-                    }
-                    whereClause.Append($"table.{propertyName} == request.{propertyName}");
-                }
-            }
-
-            if(whereClause.Length == 0) {
-                whereClause.Append("??? No Primary Key Columns Exist ???");
-            }
-
-            string code = $@"
+        string code = $@"
     public sealed class {handlerName}: IRequestHandler<{requestName}, Response> {{
 
         private readonly IMyDatabase _database;
@@ -225,7 +225,6 @@ namespace DbSchema.CodeGeneration {
         }}
     }}
 ";
-            return code;
-        }
+        return code;
     }
 }

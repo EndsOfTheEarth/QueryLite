@@ -21,93 +21,92 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
+
+/// <summary>
+/// Query timeout period measured in seconds
+/// </summary>
+public readonly struct QueryTimeout { //Note: Decided to not call it Timeout as there is a Timeout class in the System.Threading namespace
 
     /// <summary>
-    /// Query timeout period measured in seconds
+    /// Number of seconds until query is timed out
     /// </summary>
-    public readonly struct QueryTimeout { //Note: Decided to not call it Timeout as there is a Timeout class in the System.Threading namespace
+    public int Seconds { get; private init; }
 
-        /// <summary>
-        /// Number of seconds until query is timed out
-        /// </summary>
-        public int Seconds { get; private init; }
-
-        public QueryTimeout() {
-            Seconds = 60;
-        }
-        public QueryTimeout(int seconds) {
-
-            if(seconds <= 0) {
-                throw new ArgumentException($"{nameof(seconds)} must be > 0");
-            }
-            Seconds = seconds;
-        }
-        public override string ToString() {
-            return $"{Seconds} seconds";
-        }
+    public QueryTimeout() {
+        Seconds = 60;
     }
+    public QueryTimeout(int seconds) {
 
-    public static class TimeoutLevel {
-
-        /// <summary>
-        /// Short select query timeout defaults to 60 seconds
-        /// </summary>
-        public static QueryTimeout ShortSelect { get; set; } = new(seconds: 60);
-
-        /// <summary>
-        /// Short insert query timeout defaults to 60 seconds
-        /// </summary>
-        public static QueryTimeout ShortInsert { get; set; } = new(seconds: 60);
-
-        /// <summary>
-        /// Short update query timeout defaults to 60 seconds
-        /// </summary>
-        public static QueryTimeout ShortUpdate { get; set; } = new(seconds: 60);
-
-        /// <summary>
-        /// Short delete query timeout defaults to 60 seconds
-        /// </summary>
-        public static QueryTimeout ShortDelete { get; set; } = new(seconds: 60);
-
-        /// <summary>
-        /// Medium select query timeout defaults to 300 seconds
-        /// </summary>
-        public static QueryTimeout MediumSelect { get; set; } = new(seconds: 300);
-
-        /// <summary>
-        /// Medium insert query timeout defaults to 300 seconds
-        /// </summary>
-        public static QueryTimeout MediumInsert { get; set; } = new(seconds: 300);
-
-        /// <summary>
-        /// Medium update query timeout defaults to 300 seconds
-        /// </summary>
-        public static QueryTimeout MediumUpdate { get; set; } = new(seconds: 300);
-
-        /// <summary>
-        /// Medium delete query timeout defaults to 300 seconds
-        /// </summary>
-        public static QueryTimeout MediumDelete { get; set; } = new(seconds: 300);
-
-        /// <summary>
-        /// Long select query timeout defaults to 1800 seconds
-        /// </summary>
-        public static QueryTimeout LongSelect { get; set; } = new(seconds: 1800);
-
-        /// <summary>
-        /// Long insert query timeout defaults to 1800 seconds
-        /// </summary>
-        public static QueryTimeout LongInsert { get; set; } = new(seconds: 1800);
-
-        /// <summary>
-        /// Long update query timeout defaults to 1800 seconds
-        /// </summary>
-        public static QueryTimeout LongUpdate { get; set; } = new(seconds: 1800);
-
-        /// <summary>
-        /// Long delete query timeout defaults to 1800 seconds
-        /// </summary>
-        public static QueryTimeout LongDelete { get; set; } = new(seconds: 1800);
+        if(seconds <= 0) {
+            throw new ArgumentException($"{nameof(seconds)} must be > 0");
+        }
+        Seconds = seconds;
     }
+    public override string ToString() {
+        return $"{Seconds} seconds";
+    }
+}
+
+public static class TimeoutLevel {
+
+    /// <summary>
+    /// Short select query timeout defaults to 60 seconds
+    /// </summary>
+    public static QueryTimeout ShortSelect { get; set; } = new(seconds: 60);
+
+    /// <summary>
+    /// Short insert query timeout defaults to 60 seconds
+    /// </summary>
+    public static QueryTimeout ShortInsert { get; set; } = new(seconds: 60);
+
+    /// <summary>
+    /// Short update query timeout defaults to 60 seconds
+    /// </summary>
+    public static QueryTimeout ShortUpdate { get; set; } = new(seconds: 60);
+
+    /// <summary>
+    /// Short delete query timeout defaults to 60 seconds
+    /// </summary>
+    public static QueryTimeout ShortDelete { get; set; } = new(seconds: 60);
+
+    /// <summary>
+    /// Medium select query timeout defaults to 300 seconds
+    /// </summary>
+    public static QueryTimeout MediumSelect { get; set; } = new(seconds: 300);
+
+    /// <summary>
+    /// Medium insert query timeout defaults to 300 seconds
+    /// </summary>
+    public static QueryTimeout MediumInsert { get; set; } = new(seconds: 300);
+
+    /// <summary>
+    /// Medium update query timeout defaults to 300 seconds
+    /// </summary>
+    public static QueryTimeout MediumUpdate { get; set; } = new(seconds: 300);
+
+    /// <summary>
+    /// Medium delete query timeout defaults to 300 seconds
+    /// </summary>
+    public static QueryTimeout MediumDelete { get; set; } = new(seconds: 300);
+
+    /// <summary>
+    /// Long select query timeout defaults to 1800 seconds
+    /// </summary>
+    public static QueryTimeout LongSelect { get; set; } = new(seconds: 1800);
+
+    /// <summary>
+    /// Long insert query timeout defaults to 1800 seconds
+    /// </summary>
+    public static QueryTimeout LongInsert { get; set; } = new(seconds: 1800);
+
+    /// <summary>
+    /// Long update query timeout defaults to 1800 seconds
+    /// </summary>
+    public static QueryTimeout LongUpdate { get; set; } = new(seconds: 1800);
+
+    /// <summary>
+    /// Long delete query timeout defaults to 1800 seconds
+    /// </summary>
+    public static QueryTimeout LongDelete { get; set; } = new(seconds: 1800);
 }

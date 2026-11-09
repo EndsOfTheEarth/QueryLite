@@ -23,33 +23,32 @@
  **/
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer.Collectors {
+namespace QueryLite.Databases.SqlServer.Collectors; 
 
-    internal static class SqlServerReturningCollectorCache {
+internal static class SqlServerReturningCollectorCache {
 
-        [ThreadStatic]
-        private static SqlServerReturningFieldCollector? Instance;
+    [ThreadStatic]
+    private static SqlServerReturningFieldCollector? Instance;
 
-        public static SqlServerReturningFieldCollector Acquire(bool isDelete, StringBuilder sql) {
+    public static SqlServerReturningFieldCollector Acquire(bool isDelete, StringBuilder sql) {
 
-            if(Settings.EnableCollectorCaching) {
+        if(Settings.EnableCollectorCaching) {
 
-                SqlServerReturningFieldCollector? resultRow = Instance;
+            SqlServerReturningFieldCollector? resultRow = Instance;
 
-                if(resultRow != null) {
-                    Instance = null;
-                    resultRow.Reset(isDelete, sql);
-                    return resultRow;
-                }
+            if(resultRow != null) {
+                Instance = null;
+                resultRow.Reset(isDelete, sql);
+                return resultRow;
             }
-            return new SqlServerReturningFieldCollector(isDelete, sql);
         }
+        return new SqlServerReturningFieldCollector(isDelete, sql);
+    }
 
-        public static void Release(SqlServerReturningFieldCollector instance) {
+    public static void Release(SqlServerReturningFieldCollector instance) {
 
-            if(Settings.EnableCollectorCaching) {
-                Instance = instance;
-            }
+        if(Settings.EnableCollectorCaching) {
+            Instance = instance;
         }
     }
 }

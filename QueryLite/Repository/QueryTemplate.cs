@@ -22,171 +22,170 @@
  * SOFTWARE.
  **/
 
-namespace QueryLite.Repository {
+namespace QueryLite.Repository; 
 
-    internal class RepositoryQueryTemplate<TABLE, ROW> : IRepositoryWith,
-                                                         IRepositoryJoin, IRepositoryWhere,
-                                                         IRepositoryOrderBy,
-                                                         IRepositoryFor, IRepositoryExecute
-                                                         where TABLE : ATable
-                                                         where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
+internal class RepositoryQueryTemplate<TABLE, ROW> : IRepositoryWith,
+                                                     IRepositoryJoin, IRepositoryWhere,
+                                                     IRepositoryOrderBy,
+                                                     IRepositoryFor, IRepositoryExecute
+                                                     where TABLE : ATable
+                                                     where ROW : class, IRow<TABLE, ROW>, IEquatable<ROW> {
 
-        private ARepository<TABLE, ROW> Repository { get; }
-        private TABLE Table { get; }
+    private ARepository<TABLE, ROW> Repository { get; }
+    private TABLE Table { get; }
 
-        private SelectQueryTemplate<RowState<ROW>> QueryTemplate { get; }
+    private SelectQueryTemplate<RowState<ROW>> QueryTemplate { get; }
 
-        public RepositoryQueryTemplate(ARepository<TABLE, ROW> repository, TABLE table) {
+    public RepositoryQueryTemplate(ARepository<TABLE, ROW> repository, TABLE table) {
 
-            Repository = repository;
+        Repository = repository;
 
-            Table = table;
+        Table = table;
 
-            QueryTemplate = new SelectQueryTemplate<RowState<ROW>>(
-                row => {
+        QueryTemplate = new SelectQueryTemplate<RowState<ROW>>(
+            row => {
 
-                    ROW r = ROW.LoadRow(Table, row);
+                ROW r = ROW.LoadRow(Table, row);
 
-                    return new RowState<ROW>(
-                        state: RowUpdateState.Existing,
-                        oldRow: ROW.CloneRow(r),
-                        newRow: r
-                    );
-                }
-            );
-            QueryTemplate.Distinct.From(table);
-        }
-
-        public IRepositoryJoin With(params SqlServerTableHint[] hints) {
-            QueryTemplate.With(hints);
-            return this;
-        }
-
-        public IRepositoryJoinOn Join(ITable table) {
-            return new RepositoryQueryJoinOn<RowState<ROW>>(this, QueryTemplate.Join(table));
-        }
-
-        public IRepositoryJoinOn LeftJoin(ITable table) {
-            return new RepositoryQueryJoinOn<RowState<ROW>>(this, QueryTemplate.LeftJoin(table));
-        }
-
-        public IRepositoryExecute FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
-            QueryTemplate.FOR(forType, ofTables, waitType);
-            return this;
-        }
-
-        public IRepositoryOrderBy Where(ICondition? condition) {
-            QueryTemplate.Where(condition);
-            return this;
-        }
-
-        public IRepositoryFor OrderBy(params IOrderByColumn[] columns) {
-            QueryTemplate.OrderBy(columns);
-            return this;
-        }
-
-        public void Execute(IDatabase database) {
-            Execute(database, TimeoutLevel.ShortSelect, debugName: "");
-        }
-
-        public void Execute(IDatabase database, QueryTimeout timeout) {
-            Execute(database, timeout, debugName: "");
-        }
-
-        public void Execute(IDatabase database, QueryTimeout timeout, string debugName) {
-
-            ArgumentNullException.ThrowIfNull(database);
-
-            Repository.ClearRows();
-
-            QueryResult<RowState<ROW>> result = QueryTemplate.Execute(
-                database: database,
-                timeout: timeout,
-                debugName: debugName
-            );
-            Repository.PopulateWithExistingRows(result.Rows);
-        }
-
-        public void Execute(Transaction transaction) {
-            Execute(transaction, TimeoutLevel.ShortSelect, debugName: "");
-        }
-
-        public void Execute(Transaction transaction, QueryTimeout timeout) {
-            Execute(transaction, timeout, debugName: "");
-        }
-
-        public void Execute(Transaction transaction, QueryTimeout timeout, string debugName) {
-
-            ArgumentNullException.ThrowIfNull(transaction);
-
-            Repository.ClearRows();
-
-            QueryResult<RowState<ROW>> result = QueryTemplate.Execute(
-                transaction: transaction,
-                timeout: timeout,
-                debugName: debugName
-            );
-            Repository.PopulateWithExistingRows(result.Rows);
-        }
-
-        public async Task ExecuteAsync(IDatabase database, CancellationToken ct) {
-            await ExecuteAsync(database, TimeoutLevel.ShortSelect, debugName: "", ct);
-        }
-
-        public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken ct) {
-            await ExecuteAsync(database, timeout, debugName: "", ct);
-        }
-
-        public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName,
-                                       CancellationToken ct) {
-
-            ArgumentNullException.ThrowIfNull(database);
-
-            Repository.ClearRows();
-
-            QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(
-                database: database,
-                ct: ct,
-                timeout: timeout,
-                debugName: debugName
-            );
-            Repository.PopulateWithExistingRows(result.Rows);
-        }
-
-        public async Task ExecuteAsync(Transaction transaction, CancellationToken ct) {
-            await ExecuteAsync(transaction, TimeoutLevel.ShortSelect, debugName: "", ct);
-        }
-
-        public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct) {
-            await ExecuteAsync(transaction, timeout, debugName: "", ct);
-        }
-
-        public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName,
-                                       CancellationToken ct) {
-
-            ArgumentNullException.ThrowIfNull(transaction);
-
-            Repository.ClearRows();
-
-            QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(
-                transaction: transaction,
-                ct: ct,
-                timeout: timeout,
-                debugName: debugName
-            );
-            Repository.PopulateWithExistingRows(result.Rows);
-        }
+                return new RowState<ROW>(
+                    state: RowUpdateState.Existing,
+                    oldRow: ROW.CloneRow(r),
+                    newRow: r
+                );
+            }
+        );
+        QueryTemplate.Distinct.From(table);
     }
 
-    internal class RepositoryQueryJoinOn<RESULT>(IRepositoryJoin template,
-                                                 IJoinOn<RESULT> joinOn) : IRepositoryJoinOn {
+    public IRepositoryJoin With(params SqlServerTableHint[] hints) {
+        QueryTemplate.With(hints);
+        return this;
+    }
 
-        private IRepositoryJoin Template { get; } = template;
-        private IJoinOn<RESULT> JoinOn { get; } = joinOn;
+    public IRepositoryJoinOn Join(ITable table) {
+        return new RepositoryQueryJoinOn<RowState<ROW>>(this, QueryTemplate.Join(table));
+    }
 
-        public IRepositoryJoin On(ICondition on) {
-            JoinOn.On(on);
-            return Template;
-        }
+    public IRepositoryJoinOn LeftJoin(ITable table) {
+        return new RepositoryQueryJoinOn<RowState<ROW>>(this, QueryTemplate.LeftJoin(table));
+    }
+
+    public IRepositoryExecute FOR(ForType forType, ITable[] ofTables, WaitType waitType) {
+        QueryTemplate.FOR(forType, ofTables, waitType);
+        return this;
+    }
+
+    public IRepositoryOrderBy Where(ICondition? condition) {
+        QueryTemplate.Where(condition);
+        return this;
+    }
+
+    public IRepositoryFor OrderBy(params IOrderByColumn[] columns) {
+        QueryTemplate.OrderBy(columns);
+        return this;
+    }
+
+    public void Execute(IDatabase database) {
+        Execute(database, TimeoutLevel.ShortSelect, debugName: "");
+    }
+
+    public void Execute(IDatabase database, QueryTimeout timeout) {
+        Execute(database, timeout, debugName: "");
+    }
+
+    public void Execute(IDatabase database, QueryTimeout timeout, string debugName) {
+
+        ArgumentNullException.ThrowIfNull(database);
+
+        Repository.ClearRows();
+
+        QueryResult<RowState<ROW>> result = QueryTemplate.Execute(
+            database: database,
+            timeout: timeout,
+            debugName: debugName
+        );
+        Repository.PopulateWithExistingRows(result.Rows);
+    }
+
+    public void Execute(Transaction transaction) {
+        Execute(transaction, TimeoutLevel.ShortSelect, debugName: "");
+    }
+
+    public void Execute(Transaction transaction, QueryTimeout timeout) {
+        Execute(transaction, timeout, debugName: "");
+    }
+
+    public void Execute(Transaction transaction, QueryTimeout timeout, string debugName) {
+
+        ArgumentNullException.ThrowIfNull(transaction);
+
+        Repository.ClearRows();
+
+        QueryResult<RowState<ROW>> result = QueryTemplate.Execute(
+            transaction: transaction,
+            timeout: timeout,
+            debugName: debugName
+        );
+        Repository.PopulateWithExistingRows(result.Rows);
+    }
+
+    public async Task ExecuteAsync(IDatabase database, CancellationToken ct) {
+        await ExecuteAsync(database, TimeoutLevel.ShortSelect, debugName: "", ct);
+    }
+
+    public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, CancellationToken ct) {
+        await ExecuteAsync(database, timeout, debugName: "", ct);
+    }
+
+    public async Task ExecuteAsync(IDatabase database, QueryTimeout timeout, string debugName,
+                                   CancellationToken ct) {
+
+        ArgumentNullException.ThrowIfNull(database);
+
+        Repository.ClearRows();
+
+        QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(
+            database: database,
+            ct: ct,
+            timeout: timeout,
+            debugName: debugName
+        );
+        Repository.PopulateWithExistingRows(result.Rows);
+    }
+
+    public async Task ExecuteAsync(Transaction transaction, CancellationToken ct) {
+        await ExecuteAsync(transaction, TimeoutLevel.ShortSelect, debugName: "", ct);
+    }
+
+    public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, CancellationToken ct) {
+        await ExecuteAsync(transaction, timeout, debugName: "", ct);
+    }
+
+    public async Task ExecuteAsync(Transaction transaction, QueryTimeout timeout, string debugName,
+                                   CancellationToken ct) {
+
+        ArgumentNullException.ThrowIfNull(transaction);
+
+        Repository.ClearRows();
+
+        QueryResult<RowState<ROW>> result = await QueryTemplate.ExecuteAsync(
+            transaction: transaction,
+            ct: ct,
+            timeout: timeout,
+            debugName: debugName
+        );
+        Repository.PopulateWithExistingRows(result.Rows);
+    }
+}
+
+internal class RepositoryQueryJoinOn<RESULT>(IRepositoryJoin template,
+                                             IJoinOn<RESULT> joinOn) : IRepositoryJoinOn {
+
+    private IRepositoryJoin Template { get; } = template;
+    private IJoinOn<RESULT> JoinOn { get; } = joinOn;
+
+    public IRepositoryJoin On(ICondition on) {
+        JoinOn.On(on);
+        return Template;
     }
 }

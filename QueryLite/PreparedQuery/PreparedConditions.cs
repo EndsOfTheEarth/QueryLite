@@ -25,224 +25,223 @@ using QueryLite.Databases;
 using System.ComponentModel;
 using System.Text;
 
-namespace QueryLite.PreparedQuery {
+namespace QueryLite.PreparedQuery; 
 
-    public abstract class APreparedCondition<PARAMETERS> {
+public abstract class APreparedCondition<PARAMETERS> {
 
-        public APreparedCondition<PARAMETERS> EQUALS<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
-            return new PreparedCondition<PARAMETERS>(columnA, Operator.EQUALS, columnB);
-        }
-        public APreparedCondition<PARAMETERS> EQUALS<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
-            return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.EQUALS, func);
-        }
-
-        public APreparedCondition<PARAMETERS> NOT_EQUALS<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
-            return new PreparedCondition<PARAMETERS>(columnA, Operator.NOT_EQUALS, columnB);
-        }
-        public APreparedCondition<PARAMETERS> NOT_EQUALS<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
-            return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.NOT_EQUALS, func);
-        }
-
-        public APreparedCondition<PARAMETERS> EQUALS_NON_TYPE_SAFE<TYPE>(AColumn<TYPE> columnA, IColumn columnB) where TYPE : notnull {
-            return new PreparedCondition<PARAMETERS>(columnA, Operator.EQUALS, columnB);
-        }
-        public APreparedCondition<PARAMETERS> NOT_EQUALS_NON_TYPE_SAFE<TYPE>(AColumn<TYPE> columnA, IColumn columnB) where TYPE : notnull {
-            return new PreparedCondition<PARAMETERS>(columnA, Operator.NOT_EQUALS, columnB);
-        }
-
-        public APreparedCondition<PARAMETERS> LESS_THAN<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
-            return new PreparedCondition<PARAMETERS>(columnA, Operator.LESS_THAN, columnB);
-        }
-        public APreparedCondition<PARAMETERS> LESS_THAN<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
-            return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.LESS_THAN, func);
-        }
-
-        public APreparedCondition<PARAMETERS> LESS_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
-            return new PreparedCondition<PARAMETERS>(columnA, Operator.LESS_THAN_OR_EQUAL, columnB);
-        }
-        public APreparedCondition<PARAMETERS> LESS_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
-            return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.LESS_THAN_OR_EQUAL, func);
-        }
-
-        public APreparedCondition<PARAMETERS> GREATER_THAN<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
-            return new PreparedCondition<PARAMETERS>(columnA, Operator.GREATER_THAN, columnB);
-        }
-        public APreparedCondition<PARAMETERS> GREATER_THAN<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
-            return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.GREATER_THAN, func);
-        }
-
-        public APreparedCondition<PARAMETERS> GREATER_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
-            return new PreparedCondition<PARAMETERS>(columnA, Operator.GREATER_THAN_OR_EQUAL, columnB);
-        }
-
-        public APreparedCondition<PARAMETERS> GREATER_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
-            return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.GREATER_THAN_OR_EQUAL, func);
-        }
-
-        public APreparedCondition<PARAMETERS> IS_NULL<TYPE>(AColumn<TYPE> column) where TYPE : notnull {
-            return new PreparedNullCondition<PARAMETERS>(column, isNull: true);
-        }
-        public APreparedCondition<PARAMETERS> IS_NOT_NULL<TYPE>(AColumn<TYPE> column) where TYPE : notnull {
-            return new PreparedNullCondition<PARAMETERS>(column, isNull: false);
-        }
-
-        public static APreparedCondition<PARAMETERS> operator &(APreparedCondition<PARAMETERS> conditionA, APreparedCondition<PARAMETERS> conditionB) {
-            return new PreparedAndOrCondition<PARAMETERS>(conditionA, isAnd: true, conditionB);
-        }
-        public static APreparedCondition<PARAMETERS> operator |(APreparedCondition<PARAMETERS> conditionA, APreparedCondition<PARAMETERS> conditionB) {
-            return new PreparedAndOrCondition<PARAMETERS>(conditionA, isAnd: false, conditionB);
-        }
-
-        internal abstract void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias);
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) {
-            return base.Equals(obj);
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() {
-            return base.GetHashCode();
-        }
+    public APreparedCondition<PARAMETERS> EQUALS<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+        return new PreparedCondition<PARAMETERS>(columnA, Operator.EQUALS, columnB);
+    }
+    public APreparedCondition<PARAMETERS> EQUALS<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+        return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.EQUALS, func);
     }
 
-    internal sealed class EmptyPreparedCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
-
-        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
-            throw new InvalidOperationException("An empty condition cannot be used in a query");
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) {
-            return base.Equals(obj);
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() {
-            return base.GetHashCode();
-        }
+    public APreparedCondition<PARAMETERS> NOT_EQUALS<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+        return new PreparedCondition<PARAMETERS>(columnA, Operator.NOT_EQUALS, columnB);
+    }
+    public APreparedCondition<PARAMETERS> NOT_EQUALS<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+        return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.NOT_EQUALS, func);
     }
 
-    internal sealed class PreparedAndOrCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
-
-        private readonly APreparedCondition<PARAMETERS> _conditionA;
-        private readonly bool _isAnd;
-        private readonly APreparedCondition<PARAMETERS> _conditionB;
-
-        public PreparedAndOrCondition(APreparedCondition<PARAMETERS> conditionA, bool isAnd, APreparedCondition<PARAMETERS> conditionB) {
-            _conditionA = conditionA;
-            _isAnd = isAnd;
-            _conditionB = conditionB;
-        }
-
-        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
-
-            _conditionA.GetSql(sql, database, parameters, useAlias: useAlias);
-
-            sql.Append(_isAnd ? " AND " : " OR ");
-
-            _conditionB.GetSql(sql, database, parameters, useAlias: useAlias);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) {
-            return base.Equals(obj);
-        }
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() {
-            return base.GetHashCode();
-        }
+    public APreparedCondition<PARAMETERS> EQUALS_NON_TYPE_SAFE<TYPE>(AColumn<TYPE> columnA, IColumn columnB) where TYPE : notnull {
+        return new PreparedCondition<PARAMETERS>(columnA, Operator.EQUALS, columnB);
+    }
+    public APreparedCondition<PARAMETERS> NOT_EQUALS_NON_TYPE_SAFE<TYPE>(AColumn<TYPE> columnA, IColumn columnB) where TYPE : notnull {
+        return new PreparedCondition<PARAMETERS>(columnA, Operator.NOT_EQUALS, columnB);
     }
 
-    internal sealed class PreparedCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
-
-        private readonly IColumn _columnA;
-        private readonly Operator _operator;
-        private readonly IColumn _columnB;
-
-        public PreparedCondition(IColumn columnA, Operator @operator, IColumn columnB) {
-            _columnA = columnA;
-            _operator = @operator;
-            _columnB = columnB;
-        }
-
-        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
-
-            if(useAlias) {
-                sql.Append(_columnA.Table.Alias).Append('.');
-            }
-            sql.Append(_columnA.ColumnName);
-
-            sql.Append(_operator switch {
-                Operator.EQUALS => " = ",
-                Operator.NOT_EQUALS => " != ",
-                Operator.GREATER_THAN => " > ",
-                Operator.GREATER_THAN_OR_EQUAL => " >= ",
-                Operator.LESS_THAN => " < ",
-                Operator.LESS_THAN_OR_EQUAL => " <= ",
-                _ => throw new Exception($"Unsupported join operator. {nameof(Operator)} == {_operator}")
-            });
-
-            if(useAlias) {
-                sql.Append(_columnB.Table.Alias).Append('.');
-            }
-            sql.Append(_columnB.ColumnName);
-        }
+    public APreparedCondition<PARAMETERS> LESS_THAN<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+        return new PreparedCondition<PARAMETERS>(columnA, Operator.LESS_THAN, columnB);
+    }
+    public APreparedCondition<PARAMETERS> LESS_THAN<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+        return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.LESS_THAN, func);
     }
 
-    internal sealed class PreparedValueCondition<PARAMETERS, TYPE> : APreparedCondition<PARAMETERS> {
-
-        private readonly IColumn _column;
-        private readonly Operator _operator;
-        private readonly Func<PARAMETERS, TYPE> _func;
-
-        public PreparedValueCondition(IColumn column, Operator @operator, Func<PARAMETERS, TYPE> func) {
-            _column = column;
-            _operator = @operator;
-            _func = func;
-        }
-
-        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
-
-            if(useAlias) {
-                SqlHelper.AppendEncloseAlias(sql, _column.Table.Alias, database.EncloseWith);
-                sql.Append('.');
-            }
-            SqlHelper.AppendEncloseColumnName(sql, _column, database.EncloseWith);
-
-            sql.Append(_operator switch {
-                Operator.EQUALS => "=",
-                Operator.NOT_EQUALS => "!=",
-                Operator.GREATER_THAN => ">",
-                Operator.GREATER_THAN_OR_EQUAL => ">=",
-                Operator.LESS_THAN => "<",
-                Operator.LESS_THAN_OR_EQUAL => "<=",
-                _ => throw new Exception($"Unsupported join operator. {nameof(Operator)} == {_operator}")
-            });
-
-            string paramName = parameters.GetNextParameterName();
-
-            parameters.Add(new PreparedParameter<PARAMETERS, TYPE>(name: paramName, _func, database.ParameterMapper.GetCreateParameterDelegate(_column.Type)));
-
-            sql.Append(paramName);
-        }
+    public APreparedCondition<PARAMETERS> LESS_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+        return new PreparedCondition<PARAMETERS>(columnA, Operator.LESS_THAN_OR_EQUAL, columnB);
+    }
+    public APreparedCondition<PARAMETERS> LESS_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+        return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.LESS_THAN_OR_EQUAL, func);
     }
 
-    internal sealed class PreparedNullCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
+    public APreparedCondition<PARAMETERS> GREATER_THAN<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+        return new PreparedCondition<PARAMETERS>(columnA, Operator.GREATER_THAN, columnB);
+    }
+    public APreparedCondition<PARAMETERS> GREATER_THAN<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+        return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.GREATER_THAN, func);
+    }
 
-        private readonly IColumn _column;
-        private readonly bool _isNull;
+    public APreparedCondition<PARAMETERS> GREATER_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> columnA, AColumn<TYPE> columnB) where TYPE : notnull {
+        return new PreparedCondition<PARAMETERS>(columnA, Operator.GREATER_THAN_OR_EQUAL, columnB);
+    }
 
-        public PreparedNullCondition(IColumn column, bool isNull) {
-            _column = column;
-            _isNull = isNull;
+    public APreparedCondition<PARAMETERS> GREATER_THAN_OR_EQUAL<TYPE>(AColumn<TYPE> column, Func<PARAMETERS, TYPE> func) where TYPE : notnull {
+        return new PreparedValueCondition<PARAMETERS, TYPE>(column, Operator.GREATER_THAN_OR_EQUAL, func);
+    }
+
+    public APreparedCondition<PARAMETERS> IS_NULL<TYPE>(AColumn<TYPE> column) where TYPE : notnull {
+        return new PreparedNullCondition<PARAMETERS>(column, isNull: true);
+    }
+    public APreparedCondition<PARAMETERS> IS_NOT_NULL<TYPE>(AColumn<TYPE> column) where TYPE : notnull {
+        return new PreparedNullCondition<PARAMETERS>(column, isNull: false);
+    }
+
+    public static APreparedCondition<PARAMETERS> operator &(APreparedCondition<PARAMETERS> conditionA, APreparedCondition<PARAMETERS> conditionB) {
+        return new PreparedAndOrCondition<PARAMETERS>(conditionA, isAnd: true, conditionB);
+    }
+    public static APreparedCondition<PARAMETERS> operator |(APreparedCondition<PARAMETERS> conditionA, APreparedCondition<PARAMETERS> conditionB) {
+        return new PreparedAndOrCondition<PARAMETERS>(conditionA, isAnd: false, conditionB);
+    }
+
+    internal abstract void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias);
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public override bool Equals(object? obj) {
+        return base.Equals(obj);
+    }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public override int GetHashCode() {
+        return base.GetHashCode();
+    }
+}
+
+internal sealed class EmptyPreparedCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
+
+    internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
+        throw new InvalidOperationException("An empty condition cannot be used in a query");
+    }
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public override bool Equals(object? obj) {
+        return base.Equals(obj);
+    }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public override int GetHashCode() {
+        return base.GetHashCode();
+    }
+}
+
+internal sealed class PreparedAndOrCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
+
+    private readonly APreparedCondition<PARAMETERS> _conditionA;
+    private readonly bool _isAnd;
+    private readonly APreparedCondition<PARAMETERS> _conditionB;
+
+    public PreparedAndOrCondition(APreparedCondition<PARAMETERS> conditionA, bool isAnd, APreparedCondition<PARAMETERS> conditionB) {
+        _conditionA = conditionA;
+        _isAnd = isAnd;
+        _conditionB = conditionB;
+    }
+
+    internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
+
+        _conditionA.GetSql(sql, database, parameters, useAlias: useAlias);
+
+        sql.Append(_isAnd ? " AND " : " OR ");
+
+        _conditionB.GetSql(sql, database, parameters, useAlias: useAlias);
+    }
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public override bool Equals(object? obj) {
+        return base.Equals(obj);
+    }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public override int GetHashCode() {
+        return base.GetHashCode();
+    }
+}
+
+internal sealed class PreparedCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
+
+    private readonly IColumn _columnA;
+    private readonly Operator _operator;
+    private readonly IColumn _columnB;
+
+    public PreparedCondition(IColumn columnA, Operator @operator, IColumn columnB) {
+        _columnA = columnA;
+        _operator = @operator;
+        _columnB = columnB;
+    }
+
+    internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
+
+        if(useAlias) {
+            sql.Append(_columnA.Table.Alias).Append('.');
         }
+        sql.Append(_columnA.ColumnName);
 
-        internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
+        sql.Append(_operator switch {
+            Operator.EQUALS => " = ",
+            Operator.NOT_EQUALS => " != ",
+            Operator.GREATER_THAN => " > ",
+            Operator.GREATER_THAN_OR_EQUAL => " >= ",
+            Operator.LESS_THAN => " < ",
+            Operator.LESS_THAN_OR_EQUAL => " <= ",
+            _ => throw new Exception($"Unsupported join operator. {nameof(Operator)} == {_operator}")
+        });
 
-            if(useAlias) {
-                sql.Append(_column.Table.Alias).Append('.');
-            }
-            sql.Append(_column.ColumnName);
-            sql.Append(_isNull ? " IS NULL" : " IS NOT NULL");
+        if(useAlias) {
+            sql.Append(_columnB.Table.Alias).Append('.');
         }
+        sql.Append(_columnB.ColumnName);
+    }
+}
+
+internal sealed class PreparedValueCondition<PARAMETERS, TYPE> : APreparedCondition<PARAMETERS> {
+
+    private readonly IColumn _column;
+    private readonly Operator _operator;
+    private readonly Func<PARAMETERS, TYPE> _func;
+
+    public PreparedValueCondition(IColumn column, Operator @operator, Func<PARAMETERS, TYPE> func) {
+        _column = column;
+        _operator = @operator;
+        _func = func;
+    }
+
+    internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
+
+        if(useAlias) {
+            SqlHelper.AppendEncloseAlias(sql, _column.Table.Alias, database.EncloseWith);
+            sql.Append('.');
+        }
+        SqlHelper.AppendEncloseColumnName(sql, _column, database.EncloseWith);
+
+        sql.Append(_operator switch {
+            Operator.EQUALS => "=",
+            Operator.NOT_EQUALS => "!=",
+            Operator.GREATER_THAN => ">",
+            Operator.GREATER_THAN_OR_EQUAL => ">=",
+            Operator.LESS_THAN => "<",
+            Operator.LESS_THAN_OR_EQUAL => "<=",
+            _ => throw new Exception($"Unsupported join operator. {nameof(Operator)} == {_operator}")
+        });
+
+        string paramName = parameters.GetNextParameterName();
+
+        parameters.Add(new PreparedParameter<PARAMETERS, TYPE>(name: paramName, _func, database.ParameterMapper.GetCreateParameterDelegate(_column.Type)));
+
+        sql.Append(paramName);
+    }
+}
+
+internal sealed class PreparedNullCondition<PARAMETERS> : APreparedCondition<PARAMETERS> {
+
+    private readonly IColumn _column;
+    private readonly bool _isNull;
+
+    public PreparedNullCondition(IColumn column, bool isNull) {
+        _column = column;
+        _isNull = isNull;
+    }
+
+    internal override void GetSql(StringBuilder sql, IDatabase database, PreparedParameterList<PARAMETERS> parameters, bool useAlias) {
+
+        if(useAlias) {
+            sql.Append(_column.Table.Alias).Append('.');
+        }
+        sql.Append(_column.ColumnName);
+        sql.Append(_isNull ? " IS NULL" : " IS NOT NULL");
     }
 }

@@ -23,9 +23,8 @@
  **/
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace QueryLite.CodeGeneratorUI.ViewModels {
-    
-    public class ViewModelBase : ObservableObject {
+namespace QueryLite.CodeGeneratorUI.ViewModels; 
 
-    }
+public class ViewModelBase : ObservableObject {
+
 }

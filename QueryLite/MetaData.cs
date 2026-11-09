@@ -23,159 +23,158 @@
  **/
 using System.Text.Json;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    /// <summary>
-    /// This attribute stops an error appearing in the schema validator when this column
-    /// type does not map correctly to the database.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class SuppressColumnTypeValidationAttribute : Attribute {
+/// <summary>
+/// This attribute stops an error appearing in the schema validator when this column
+/// type does not map correctly to the database.
+/// </summary>
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class SuppressColumnTypeValidationAttribute : Attribute {
 
-    }
+}
 
-    /// <summary>
-    /// Interface that can be used for Columns that have an unsupported type.
-    /// e.g. public Column<IUnsupportedType> ColumnName { get; }
-    /// </summary>
-    public interface IUnsupportedType { }
+/// <summary>
+/// Interface that can be used for Columns that have an unsupported type.
+/// e.g. public Column<IUnsupportedType> ColumnName { get; }
+/// </summary>
+public interface IUnsupportedType { }
 
-    /// <summary>
-    /// Geography type. Note: This cannot be queried directly but can be used
-    ///                       with geography sql functions.
-    /// </summary>
-    public interface IGeography { }
+/// <summary>
+/// Geography type. Note: This cannot be queried directly but can be used
+///                       with geography sql functions.
+/// </summary>
+public interface IGeography { }
 
-    public sealed class PrimaryKey {
+public sealed class PrimaryKey {
 
-        public PrimaryKey(ITable table, string name, params IColumn[] columns) {
+    public PrimaryKey(ITable table, string name, params IColumn[] columns) {
 
-            ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
-            if(columns.Length == 0) {
-                throw new ArgumentException($"{nameof(columns)} must contain at least one column");
+        if(columns.Length == 0) {
+            throw new ArgumentException($"{nameof(columns)} must contain at least one column");
+        }
+
+        foreach(IColumn column in columns) {
+
+            if(column.Table != table) {
+                throw new Exception($"{nameof(column)} parent table must be the same " +
+                                    $"table object as the {nameof(table)} parameter");
             }
+        }
+        Table = table;
+        Name = name;
+        Columns = columns;
+    }
+    public ITable Table { get; }
+    public string Name { get; }
+    public IColumn[] Columns { get; }
+}
 
-            foreach(IColumn column in columns) {
+public sealed class ForeignKey {
 
-                if(column.Table != table) {
-                    throw new Exception($"{nameof(column)} parent table must be the same " +
-                                        $"table object as the {nameof(table)} parameter");
-                }
+    public ForeignKey(ITable table, string name) {
+
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        Table = table;
+        Name = name;
+    }
+    public ITable Table { get; }
+    public string Name { get; }
+    public List<ForeignKeyReference> ColumnReferences { get; } = [];
+
+    public ForeignKey References<TYPE>(AColumn<TYPE> foreignKeyColumn,
+                                       AColumn<TYPE> primaryKeyColumn) where TYPE : notnull {
+
+        ColumnReferences.Add(
+            new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn)
+        );
+        return this;
+    }
+    public ForeignKey ReferencesNonMatching<TYPE_A, TYPE_B>(AColumn<TYPE_A> foreignKeyColumn,
+                                                            AColumn<TYPE_B> primaryKeyColumn)
+                                                            where TYPE_A : notnull where TYPE_B : notnull {
+
+        ColumnReferences.Add(
+            new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn)
+        );
+        return this;
+    }
+}
+
+public sealed class ForeignKeyReference(IColumn foreignKeyColumn, IColumn primaryKeyColumn) {
+
+    public IColumn ForeignKeyColumn { get; } = foreignKeyColumn;
+    public IColumn PrimaryKeyColumn { get; } = primaryKeyColumn;
+}
+
+public sealed class UniqueConstraint {
+
+    public UniqueConstraint(ITable table, string name, params IColumn[] columns) {
+
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        if(columns.Length == 0) {
+            throw new ArgumentException($"{nameof(columns)} must contain at least one column");
+        }
+
+        foreach(IColumn column in columns) {
+
+            if(column.Table != table) {
+                throw new Exception($"{nameof(column)} parent table must be the same " +
+                                    $"table object as the {nameof(table)} parameter");
             }
-            Table = table;
-            Name = name;
-            Columns = columns;
         }
-        public ITable Table { get; }
-        public string Name { get; }
-        public IColumn[] Columns { get; }
+        Table = table;
+        Name = name;
+        Columns = columns;
     }
+    public ITable Table { get; }
+    public string Name { get; }
+    public IColumn[] Columns { get; }
+}
 
-    public sealed class ForeignKey {
+public sealed class CheckConstraint {
 
-        public ForeignKey(ITable table, string name) {
-
-            ArgumentException.ThrowIfNullOrEmpty(name);
-            Table = table;
-            Name = name;
-        }
-        public ITable Table { get; }
-        public string Name { get; }
-        public List<ForeignKeyReference> ColumnReferences { get; } = [];
-
-        public ForeignKey References<TYPE>(AColumn<TYPE> foreignKeyColumn,
-                                           AColumn<TYPE> primaryKeyColumn) where TYPE : notnull {
-
-            ColumnReferences.Add(
-                new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn)
-            );
-            return this;
-        }
-        public ForeignKey ReferencesNonMatching<TYPE_A, TYPE_B>(AColumn<TYPE_A> foreignKeyColumn,
-                                                                AColumn<TYPE_B> primaryKeyColumn)
-                                                                where TYPE_A : notnull where TYPE_B : notnull {
-
-            ColumnReferences.Add(
-                new ForeignKeyReference(foreignKeyColumn, primaryKeyColumn)
-            );
-            return this;
-        }
+    public CheckConstraint(string name, ICondition? condition = null) {
+        Name = name;
+        Condition = condition;
     }
+    public string Name { get; }
+    public ICondition? Condition { get; }
+}
 
-    public sealed class ForeignKeyReference(IColumn foreignKeyColumn, IColumn primaryKeyColumn) {
+public readonly struct Json {
 
-        public IColumn ForeignKeyColumn { get; } = foreignKeyColumn;
-        public IColumn PrimaryKeyColumn { get; } = primaryKeyColumn;
+    public static Json Empty { get; } = new("");
+
+    public static Json ValueOf(string value) => new(value);
+
+    public static Jsonb AsJson(object value) => new(JsonSerializer.Serialize(value));
+
+    private readonly string _value;
+
+    public string Value => _value ?? "";
+
+    public Json(string value) {
+        _value = value;
     }
+}
 
-    public sealed class UniqueConstraint {
+public readonly struct Jsonb {
 
-        public UniqueConstraint(ITable table, string name, params IColumn[] columns) {
+    public static Jsonb Empty { get; } = new("");
 
-            ArgumentException.ThrowIfNullOrEmpty(name);
+    public static Jsonb ValueOf(string value) => new(value);
 
-            if(columns.Length == 0) {
-                throw new ArgumentException($"{nameof(columns)} must contain at least one column");
-            }
+    public static Jsonb AsJson(object value) => new(JsonSerializer.Serialize(value));
 
-            foreach(IColumn column in columns) {
+    private readonly string _value;
 
-                if(column.Table != table) {
-                    throw new Exception($"{nameof(column)} parent table must be the same " +
-                                        $"table object as the {nameof(table)} parameter");
-                }
-            }
-            Table = table;
-            Name = name;
-            Columns = columns;
-        }
-        public ITable Table { get; }
-        public string Name { get; }
-        public IColumn[] Columns { get; }
-    }
+    public string Value => _value ?? "";
 
-    public sealed class CheckConstraint {
-
-        public CheckConstraint(string name, ICondition? condition = null) {
-            Name = name;
-            Condition = condition;
-        }
-        public string Name { get; }
-        public ICondition? Condition { get; }
-    }
-
-    public readonly struct Json {
-
-        public static Json Empty { get; } = new("");
-
-        public static Json ValueOf(string value) => new(value);
-
-        public static Jsonb AsJson(object value) => new(JsonSerializer.Serialize(value));
-
-        private readonly string _value;
-
-        public string Value => _value ?? "";
-
-        public Json(string value) {
-            _value = value;
-        }
-    }
-
-    public readonly struct Jsonb {
-
-        public static Jsonb Empty { get; } = new("");
-
-        public static Jsonb ValueOf(string value) => new(value);
-
-        public static Jsonb AsJson(object value) => new(JsonSerializer.Serialize(value));
-
-        private readonly string _value;
-
-        public string Value => _value ?? "";
-
-        public Jsonb(string value) {
-            _value = value;
-        }
+    public Jsonb(string value) {
+        _value = value;
     }
 }

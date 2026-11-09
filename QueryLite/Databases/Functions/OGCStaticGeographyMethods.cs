@@ -21,378 +21,377 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.Databases.Functions {
+namespace QueryLite.Databases.Functions; 
 
-    public interface IGeographySqlType {
+public interface IGeographySqlType {
 
-        internal string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters);
+    internal string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters);
+}
+
+public sealed class STGeomFromText : NFunction<IGeography>, IGeographySqlType {
+
+    private string KwText { get; }
+    public int SRID { get; }
+
+    public STGeomFromText(string kwText, int srid = 4326) : base(name: "STGeomFromText") {
+        KwText = kwText;
+        SRID = srid;
     }
 
-    public sealed class STGeomFromText : NFunction<IGeography>, IGeographySqlType {
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-        private string KwText { get; }
-        public int SRID { get; }
-
-        public STGeomFromText(string kwText, int srid = 4326) : base(name: "STGeomFromText") {
-            KwText = kwText;
-            SRID = srid;
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STGeomFromText({kwtParam},{sridParam})";
         }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STGeomFromText({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STGeomFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
-            }
+        else {
+            return $"geography::STGeomFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
+}
 
-    public sealed class STPointFromText : NFunction<IGeography>, IGeographySqlType {
+public sealed class STPointFromText : NFunction<IGeography>, IGeographySqlType {
 
-        private string KwText { get; }
-        public int SRID { get; }
+    private string KwText { get; }
+    public int SRID { get; }
 
-        public STPointFromText(string kwText, int srid = 4326) : base(name: "STPointFromText") {
-            KwText = kwText;
-            SRID = srid;
-        }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STPointFromText({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
-            }
-        }
+    public STPointFromText(string kwText, int srid = 4326) : base(name: "STPointFromText") {
+        KwText = kwText;
+        SRID = srid;
     }
 
-    public sealed class STLineFromText : NFunction<IGeography>, IGeographySqlType {
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-        private string KwText { get; }
-        public int SRID { get; }
-
-        public STLineFromText(string kwText, int srid = 4326) : base(name: "STLineFromText") {
-            KwText = kwText;
-            SRID = srid;
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STPointFromText({kwtParam},{sridParam})";
         }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STLineFromText({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
-            }
+        else {
+            return $"geography::STPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
+}
 
-    public sealed class STPolyFromText : NFunction<IGeography>, IGeographySqlType {
+public sealed class STLineFromText : NFunction<IGeography>, IGeographySqlType {
 
-        private string KwText { get; }
-        public int SRID { get; }
+    private string KwText { get; }
+    public int SRID { get; }
 
-        public STPolyFromText(string kwText, int srid = 4326) : base(name: "STPolyFromText") {
-            KwText = kwText;
-            SRID = srid;
-        }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STPolyFromText({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
-            }
-        }
+    public STLineFromText(string kwText, int srid = 4326) : base(name: "STLineFromText") {
+        KwText = kwText;
+        SRID = srid;
     }
 
-    public sealed class STMPointFromText : NFunction<IGeography>, IGeographySqlType {
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-        private string KwText { get; }
-        public int SRID { get; }
-
-        public STMPointFromText(string kwText, int srid = 4326) : base(name: "STMPointFromText") {
-            KwText = kwText;
-            SRID = srid;
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STLineFromText({kwtParam},{sridParam})";
         }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STMPointFromText({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STMPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
-            }
+        else {
+            return $"geography::STLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
+}
 
-    public sealed class STMLineFromText : NFunction<IGeography>, IGeographySqlType {
+public sealed class STPolyFromText : NFunction<IGeography>, IGeographySqlType {
 
-        private string KwText { get; }
-        public int SRID { get; }
+    private string KwText { get; }
+    public int SRID { get; }
 
-        public STMLineFromText(string kwText, int srid = 4326) : base(name: "STMLineFromText") {
-            KwText = kwText;
-            SRID = srid;
-        }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STMLineFromText({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STMLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
-            }
-        }
+    public STPolyFromText(string kwText, int srid = 4326) : base(name: "STPolyFromText") {
+        KwText = kwText;
+        SRID = srid;
     }
 
-    public sealed class STMPolyFromText : NFunction<IGeography>, IGeographySqlType {
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-        private string KwText { get; }
-        public int SRID { get; }
-
-        public STMPolyFromText(string kwText, int srid = 4326) : base(name: "STMPolyFromText") {
-            KwText = kwText;
-            SRID = srid;
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STPolyFromText({kwtParam},{sridParam})";
         }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STMPolyFromText({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STMPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
-            }
+        else {
+            return $"geography::STPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
+}
 
-    public sealed class STGeomCollFromText : NFunction<IGeography>, IGeographySqlType {
+public sealed class STMPointFromText : NFunction<IGeography>, IGeographySqlType {
 
-        private string KwText { get; }
-        public int SRID { get; }
+    private string KwText { get; }
+    public int SRID { get; }
 
-        public STGeomCollFromText(string kwText, int srid = 4326) : base(name: "STGeomCollFromText") {
-            KwText = kwText;
-            SRID = srid;
-        }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STGeomCollFromText({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STGeomCollFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
-            }
-        }
+    public STMPointFromText(string kwText, int srid = 4326) : base(name: "STMPointFromText") {
+        KwText = kwText;
+        SRID = srid;
     }
 
-    public sealed class STGeomCollFromWKB : NFunction<IGeography>, IGeographySqlType {
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-        private string KwBinary { get; }
-        public int SRID { get; }
-
-        public STGeomCollFromWKB(string kwBinary, int srid = 4326) : base(name: "STGeomCollFromWKB") {
-            KwBinary = kwBinary;
-            SRID = srid;
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STMPointFromText({kwtParam},{sridParam})";
         }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STGeomCollFromWKB({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STGeomCollFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
-            }
+        else {
+            return $"geography::STMPointFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
+}
 
-    public sealed class STGeomFromWKB : NFunction<IGeography>, IGeographySqlType {
+public sealed class STMLineFromText : NFunction<IGeography>, IGeographySqlType {
 
-        private string KwBinary { get; }
-        public int SRID { get; }
+    private string KwText { get; }
+    public int SRID { get; }
 
-        public STGeomFromWKB(string kwBinary, int srid = 4326) : base(name: "STGeomFromWKB") {
-            KwBinary = kwBinary;
-            SRID = srid;
-        }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STGeomFromWKB({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STGeomFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
-            }
-        }
+    public STMLineFromText(string kwText, int srid = 4326) : base(name: "STMLineFromText") {
+        KwText = kwText;
+        SRID = srid;
     }
 
-    public sealed class STPointFromWKB : NFunction<IGeography>, IGeographySqlType {
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-        private string KwBinary { get; }
-        public int SRID { get; }
-
-        public STPointFromWKB(string kwBinary, int srid = 4326) : base(name: "STPointFromWKB") {
-            KwBinary = kwBinary;
-            SRID = srid;
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STMLineFromText({kwtParam},{sridParam})";
         }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STPointFromWKB({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
-            }
+        else {
+            return $"geography::STMLineFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
+}
 
-    public sealed class STLineFromWKB : NFunction<IGeography>, IGeographySqlType {
+public sealed class STMPolyFromText : NFunction<IGeography>, IGeographySqlType {
 
-        private string KwBinary { get; }
-        public int SRID { get; }
+    private string KwText { get; }
+    public int SRID { get; }
 
-        public STLineFromWKB(string kwBinary, int srid = 4326) : base(name: "STLineFromWKB") {
-            KwBinary = kwBinary;
-            SRID = srid;
-        }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STLineFromWKB({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
-            }
-        }
+    public STMPolyFromText(string kwText, int srid = 4326) : base(name: "STMPolyFromText") {
+        KwText = kwText;
+        SRID = srid;
     }
 
-    public sealed class STPolyFromWKB : NFunction<IGeography>, IGeographySqlType {
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-        private string KwBinary { get; }
-        public int SRID { get; }
-
-        public STPolyFromWKB(string kwBinary, int srid = 4326) : base(name: "STPolyFromWKB") {
-            KwBinary = kwBinary;
-            SRID = srid;
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STMPolyFromText({kwtParam},{sridParam})";
         }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STPolyFromWKB({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
-            }
+        else {
+            return $"geography::STMPolyFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
+}
 
-    public sealed class STMPointFromWKB : NFunction<IGeography>, IGeographySqlType {
+public sealed class STGeomCollFromText : NFunction<IGeography>, IGeographySqlType {
 
-        private string KwBinary { get; }
-        public int SRID { get; }
+    private string KwText { get; }
+    public int SRID { get; }
 
-        public STMPointFromWKB(string kwBinary, int srid = 4326) : base(name: "STMPointFromWKB") {
-            KwBinary = kwBinary;
-            SRID = srid;
-        }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STMPointFromWKB({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STMPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
-            }
-        }
+    public STGeomCollFromText(string kwText, int srid = 4326) : base(name: "STGeomCollFromText") {
+        KwText = kwText;
+        SRID = srid;
     }
 
-    public sealed class STMLineFromWKB : NFunction<IGeography>, IGeographySqlType {
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
 
-        private string KwBinary { get; }
-        public int SRID { get; }
-
-        public STMLineFromWKB(string kwBinary, int srid = 4326) : base(name: "STMLineFromWKB") {
-            KwBinary = kwBinary;
-            SRID = srid;
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STGeomCollFromText({kwtParam},{sridParam})";
         }
-
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STMLineFromWKB({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STMLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
-            }
+        else {
+            return $"geography::STGeomCollFromText('{Helpers.EscapeForSql(KwText)}', {SRID})";
         }
     }
+}
 
-    public sealed class STMPolyFromWKB : NFunction<IGeography>, IGeographySqlType {
+public sealed class STGeomCollFromWKB : NFunction<IGeography>, IGeographySqlType {
 
-        private string KwBinary { get; }
-        public int SRID { get; }
+    private string KwBinary { get; }
+    public int SRID { get; }
 
-        public STMPolyFromWKB(string kwBinary, int srid = 4326) : base(name: "STMPolyFromWKB") {
-            KwBinary = kwBinary;
-            SRID = srid;
+    public STGeomCollFromWKB(string kwBinary, int srid = 4326) : base(name: "STGeomCollFromWKB") {
+        KwBinary = kwBinary;
+        SRID = srid;
+    }
+
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STGeomCollFromWKB({kwtParam},{sridParam})";
         }
+        else {
+            return $"geography::STGeomCollFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+        }
+    }
+}
 
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+public sealed class STGeomFromWKB : NFunction<IGeography>, IGeographySqlType {
 
-            if(parameters != null) {
-                parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
-                parameters.Add(database, typeof(int), SRID, out string sridParam);
-                return $"geography::STMPolyFromWKB({kwtParam},{sridParam})";
-            }
-            else {
-                return $"geography::STMPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
-            }
+    private string KwBinary { get; }
+    public int SRID { get; }
+
+    public STGeomFromWKB(string kwBinary, int srid = 4326) : base(name: "STGeomFromWKB") {
+        KwBinary = kwBinary;
+        SRID = srid;
+    }
+
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STGeomFromWKB({kwtParam},{sridParam})";
+        }
+        else {
+            return $"geography::STGeomFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+        }
+    }
+}
+
+public sealed class STPointFromWKB : NFunction<IGeography>, IGeographySqlType {
+
+    private string KwBinary { get; }
+    public int SRID { get; }
+
+    public STPointFromWKB(string kwBinary, int srid = 4326) : base(name: "STPointFromWKB") {
+        KwBinary = kwBinary;
+        SRID = srid;
+    }
+
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STPointFromWKB({kwtParam},{sridParam})";
+        }
+        else {
+            return $"geography::STPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+        }
+    }
+}
+
+public sealed class STLineFromWKB : NFunction<IGeography>, IGeographySqlType {
+
+    private string KwBinary { get; }
+    public int SRID { get; }
+
+    public STLineFromWKB(string kwBinary, int srid = 4326) : base(name: "STLineFromWKB") {
+        KwBinary = kwBinary;
+        SRID = srid;
+    }
+
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STLineFromWKB({kwtParam},{sridParam})";
+        }
+        else {
+            return $"geography::STLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+        }
+    }
+}
+
+public sealed class STPolyFromWKB : NFunction<IGeography>, IGeographySqlType {
+
+    private string KwBinary { get; }
+    public int SRID { get; }
+
+    public STPolyFromWKB(string kwBinary, int srid = 4326) : base(name: "STPolyFromWKB") {
+        KwBinary = kwBinary;
+        SRID = srid;
+    }
+
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STPolyFromWKB({kwtParam},{sridParam})";
+        }
+        else {
+            return $"geography::STPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+        }
+    }
+}
+
+public sealed class STMPointFromWKB : NFunction<IGeography>, IGeographySqlType {
+
+    private string KwBinary { get; }
+    public int SRID { get; }
+
+    public STMPointFromWKB(string kwBinary, int srid = 4326) : base(name: "STMPointFromWKB") {
+        KwBinary = kwBinary;
+        SRID = srid;
+    }
+
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STMPointFromWKB({kwtParam},{sridParam})";
+        }
+        else {
+            return $"geography::STMPointFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+        }
+    }
+}
+
+public sealed class STMLineFromWKB : NFunction<IGeography>, IGeographySqlType {
+
+    private string KwBinary { get; }
+    public int SRID { get; }
+
+    public STMLineFromWKB(string kwBinary, int srid = 4326) : base(name: "STMLineFromWKB") {
+        KwBinary = kwBinary;
+        SRID = srid;
+    }
+
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STMLineFromWKB({kwtParam},{sridParam})";
+        }
+        else {
+            return $"geography::STMLineFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
+        }
+    }
+}
+
+public sealed class STMPolyFromWKB : NFunction<IGeography>, IGeographySqlType {
+
+    private string KwBinary { get; }
+    public int SRID { get; }
+
+    public STMPolyFromWKB(string kwBinary, int srid = 4326) : base(name: "STMPolyFromWKB") {
+        KwBinary = kwBinary;
+        SRID = srid;
+    }
+
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(byte[]), KwBinary, out string kwtParam);
+            parameters.Add(database, typeof(int), SRID, out string sridParam);
+            return $"geography::STMPolyFromWKB({kwtParam},{sridParam})";
+        }
+        else {
+            return $"geography::STMPolyFromWKB({Helpers.EscapeForSql(KwBinary)}, {SRID})";
         }
     }
 }

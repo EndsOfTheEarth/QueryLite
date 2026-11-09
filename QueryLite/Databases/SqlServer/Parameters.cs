@@ -24,39 +24,38 @@
 using Microsoft.Data.SqlClient;
 using System.Data.Common;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    public sealed class SqlServerParameters : IParametersBuilder {
+public sealed class SqlServerParameters : IParametersBuilder {
 
-        public IList<DbParameter> ParameterList { get; }
+    public IList<DbParameter> ParameterList { get; }
 
-        public SqlServerParameters(int initParams) {
-            ParameterList = new List<DbParameter>(initParams);
+    public SqlServerParameters(int initParams) {
+        ParameterList = new List<DbParameter>(initParams);
+    }
+
+    public string GetNextParameterName() {
+
+        if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
+            return ParamNameCache.ParamNames[ParameterList.Count];
         }
+        return $"@{ParameterList.Count}";
+    }
 
-        public string GetNextParameterName() {
+    public void Add(IDatabase database, Type type, object? value, out string paramName) {
 
-            if(ParamNameCache.ParamNames.Length < ParameterList.Count) {
-                return ParamNameCache.ParamNames[ParameterList.Count];
-            }
-            return $"@{ParameterList.Count}";
+        paramName = GetNextParameterName();
+
+        if(value != null) {
+            CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
+            ParameterList.Add(createParameter(name: paramName, value));
         }
-
-        public void Add(IDatabase database, Type type, object? value, out string paramName) {
-
-            paramName = GetNextParameterName();
-
-            if(value != null) {
-                CreateParameterDelegate createParameter = database.ParameterMapper.GetCreateParameterDelegate(type);
-                ParameterList.Add(createParameter(name: paramName, value));
-            }
-            else {
-                ParameterList.Add(
-                    new SqlParameter(parameterName: paramName, value: DBNull.Value) {
-                        SqlDbType = SqlServerSqlTypeMappings.TypeMapper.GetDbType(type)
-                    }
-                );
-            }
+        else {
+            ParameterList.Add(
+                new SqlParameter(parameterName: paramName, value: DBNull.Value) {
+                    SqlDbType = SqlServerSqlTypeMappings.TypeMapper.GetDbType(type)
+                }
+            );
         }
     }
 }

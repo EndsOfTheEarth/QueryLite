@@ -21,50 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.Databases.SqlServer.Functions {
+namespace QueryLite.Databases.SqlServer.Functions; 
 
-    //.ShortestLineTo ( geography_other ) 
+//.ShortestLineTo ( geography_other ) 
 
-    public sealed class Longitude : NFunction<double> {
+public sealed class Longitude : NFunction<double> {
 
-        public AColumn<IGeography> Column { get; }
+    public AColumn<IGeography> Column { get; }
 
-        public Longitude(AColumn<IGeography> column) : base(name: "Longitude") {
-            Column = column;
-        }
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.Long" : $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.Long";
-        }
+    public Longitude(AColumn<IGeography> column) : base(name: "Longitude") {
+        Column = column;
     }
-
-    public sealed class Latitude : NFunction<double> {
-
-        public AColumn<IGeography> Column { get; }
-
-        public Latitude(AColumn<IGeography> column) : base(name: "Latitude") {
-            Column = column;
-        }
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.Lat" : $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.Lat";
-        }
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.Long" : $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.Long";
     }
+}
 
-    public sealed class GeographyParse : NFunction<IGeography> {
+public sealed class Latitude : NFunction<double> {
 
-        public string KwText { get; }
+    public AColumn<IGeography> Column { get; }
 
-        public GeographyParse(string kwtText) : base(name: "geography::Parse") {
-            KwText = kwtText;
+    public Latitude(AColumn<IGeography> column) : base(name: "Latitude") {
+        Column = column;
+    }
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        return useAlias ? $"{Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.Lat" : $"{SqlHelper.EncloseColumnName(Column, database.EncloseWith)}.Lat";
+    }
+}
+
+public sealed class GeographyParse : NFunction<IGeography> {
+
+    public string KwText { get; }
+
+    public GeographyParse(string kwtText) : base(name: "geography::Parse") {
+        KwText = kwtText;
+    }
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(parameters != null) {
+            parameters.Add(database, typeof(string), KwText, out string kwtParam);
+            return $"geography::Parse({kwtParam})";
         }
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(parameters != null) {
-                parameters.Add(database, typeof(string), KwText, out string kwtParam);
-                return $"geography::Parse({kwtParam})";
-            }
-            else {
-                return $"geography::Parse('{Helpers.EscapeForSql(KwText)}')";
-            }
+        else {
+            return $"geography::Parse('{Helpers.EscapeForSql(KwText)}')";
         }
     }
 }

@@ -7,286 +7,285 @@ using QueryLiteTestLogic;
 using System;
 using System.Threading;
 
-namespace QueryLiteTest.Tests {
+namespace QueryLiteTest.Tests; 
 
-    [TestClass]
-    public sealed class FunctionPreparedTests {
+[TestClass]
+public sealed class FunctionPreparedTests {
 
-        [TestInitialize]
-        public void ClearTable() {
+    [TestInitialize]
+    public void ClearTable() {
 
-            AllTypesTable allTypesTable = AllTypesTable.Instance;
+        AllTypesTable allTypesTable = AllTypesTable.Instance;
 
-            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+        using(Transaction transaction = new Transaction(TestDatabase.Database)) {
 
-                Query.Delete(allTypesTable)
-                    .NoWhereCondition()
-                    .Execute(transaction, TimeoutLevel.ShortDelete);
+            Query.Delete(allTypesTable)
+                .NoWhereCondition()
+                .Execute(transaction, TimeoutLevel.ShortDelete);
 
-                Count count = new();
+            Count count = new();
 
-                IPreparedQueryExecute<bool, int> query = Query
-                    .Prepare<bool>()
-                    .Select(
-                        row => row.Get(count)
-                    )
-                    .From(allTypesTable)
-                    .Build();
+            IPreparedQueryExecute<bool, int> query = Query
+                .Prepare<bool>()
+                .Select(
+                    row => row.Get(count)
+                )
+                .From(allTypesTable)
+                .Build();
 
-                QueryResult<int> result = query.Execute(parameters: true, transaction);
+            QueryResult<int> result = query.Execute(parameters: true, transaction);
 
-                Assert.AreEqual(1, result.Rows.Count);
-                Assert.AreEqual(0, result.RowsEffected);
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
 
-                int? countValue = result.Rows[0];
+            int? countValue = result.Rows[0];
 
-                Assert.IsNotNull(countValue);
-                Assert.AreEqual(0, countValue);
+            Assert.IsNotNull(countValue);
+            Assert.AreEqual(0, countValue);
 
-                transaction.Commit();
-            }
+            transaction.Commit();
+        }
+    }
+
+    [TestCleanup]
+    public void CleanUp() {
+        Settings.UseParameters = false;
+    }
+
+    [TestMethod]
+    public void InsertWithSetFunctions_NoParameters() {
+
+        Settings.UseParameters = false;
+        InsertWithSetFunctions();
+    }
+
+    [TestMethod]
+    public void InsertWithSetFunctions_Parameters() {
+
+        Settings.UseParameters = true;
+        InsertWithSetFunctions();
+    }
+
+    private static void InsertWithSetFunctions() {
+
+        if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
+            return;
         }
 
-        [TestCleanup]
-        public void CleanUp() {
-            Settings.UseParameters = false;
+        AllTypesTable table = AllTypesTable.Instance;
+
+        AllTypes info = GetAllTypes1();
+
+        using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+            QueryResult<AllTypesId> result = Query
+                .Insert(table)
+                .Values(values => values
+                    .Set(table.Guid, NEWID.Instance)
+                    .Set(table.String, info.String)
+                    .Set(table.SmallInt, info.SmallInt)
+                    .Set(table.Int, info.Int)
+                    .Set(table.BigInt, info.BigInt)
+                    .Set(table.Decimal, info.Decimal)
+                    .Set(table.Float, info.Float)
+                    .Set(table.Double, info.Double)
+                    .Set(table.Boolean, info.Boolean)
+                    .Set(table.Bytes, info.Bytes)
+                    .Set(table.DateTime, GETDATE.Instance)
+                    .Set(table.DateTimeOffset, SYSDATETIMEOFFSET.Instance)
+                    .Set(table.Enum, info.Enum)
+                    .Set(table.DateOnly, info.DateOnly)
+                    .Set(table.TimeOnly, info.TimeOnly)
+                )
+                .Execute(
+                    inserted => inserted.Get(table.Id),
+                    transaction,
+                    TimeoutLevel.ShortInsert
+                );
+
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(1, result.RowsEffected);
+
+            info.Id = result.Rows[0];
+            transaction.Commit();
         }
 
-        [TestMethod]
-        public void InsertWithSetFunctions_NoParameters() {
+        Guid guid;
+        DateTime dateTime;
+        DateTimeOffset dateTimeOffset;
 
-            Settings.UseParameters = false;
-            InsertWithSetFunctions();
-        }
+        {
+            IPreparedQueryExecute<bool, AllTypesInfo> query = Query
+                .Prepare<bool>()
+                .Select(
+                    row => new AllTypesInfo(row, table)
+                )
+                .From(table)
+                .OrderBy(table.Id.ASC)
+                .Build();
 
-        [TestMethod]
-        public void InsertWithSetFunctions_Parameters() {
+            QueryResult<AllTypesInfo> result = query.Execute(parameters: true, TestDatabase.Database);
 
-            Settings.UseParameters = true;
-            InsertWithSetFunctions();
-        }
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
 
-        private static void InsertWithSetFunctions() {
+            AllTypesInfo row = result.Rows[0];
 
-            if(TestDatabase.Database.DatabaseType != DatabaseType.SqlServer) {
-                return;
-            }
+            guid = row.Guid;
+            dateTime = row.DateTime;
+            dateTimeOffset = row.DateTimeOffset;
 
-            AllTypesTable table = AllTypesTable.Instance;
-
-            AllTypes info = GetAllTypes1();
-
-            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-                QueryResult<AllTypesId> result = Query
-                    .Insert(table)
-                    .Values(values => values
-                        .Set(table.Guid, NEWID.Instance)
-                        .Set(table.String, info.String)
-                        .Set(table.SmallInt, info.SmallInt)
-                        .Set(table.Int, info.Int)
-                        .Set(table.BigInt, info.BigInt)
-                        .Set(table.Decimal, info.Decimal)
-                        .Set(table.Float, info.Float)
-                        .Set(table.Double, info.Double)
-                        .Set(table.Boolean, info.Boolean)
-                        .Set(table.Bytes, info.Bytes)
-                        .Set(table.DateTime, GETDATE.Instance)
-                        .Set(table.DateTimeOffset, SYSDATETIMEOFFSET.Instance)
-                        .Set(table.Enum, info.Enum)
-                        .Set(table.DateOnly, info.DateOnly)
-                        .Set(table.TimeOnly, info.TimeOnly)
-                    )
-                    .Execute(
-                        inserted => inserted.Get(table.Id),
-                        transaction,
-                        TimeoutLevel.ShortInsert
-                    );
-
-                Assert.AreEqual(1, result.Rows.Count);
-                Assert.AreEqual(1, result.RowsEffected);
-
-                info.Id = result.Rows[0];
-                transaction.Commit();
-            }
-
-            Guid guid;
-            DateTime dateTime;
-            DateTimeOffset dateTimeOffset;
-
-            {
-                IPreparedQueryExecute<bool, AllTypesInfo> query = Query
-                    .Prepare<bool>()
-                    .Select(
-                        row => new AllTypesInfo(row, table)
-                    )
-                    .From(table)
-                    .OrderBy(table.Id.ASC)
-                    .Build();
-
-                QueryResult<AllTypesInfo> result = query.Execute(parameters: true, TestDatabase.Database);
-
-                Assert.AreEqual(1, result.Rows.Count);
-                Assert.AreEqual(0, result.RowsEffected);
-
-                AllTypesInfo row = result.Rows[0];
-
-                guid = row.Guid;
-                dateTime = row.DateTime;
-                dateTimeOffset = row.DateTimeOffset;
-
-                Assert.AreEqual(row.Id, info.Id);
-                //Assert.AreEqual(row.Guid, allTypes.Guid);
-                Assert.AreEqual(row.String, info.String);
-                Assert.AreEqual(row.SmallInt, info.SmallInt);
-                Assert.AreEqual(row.Int, info.Int);
-                Assert.AreEqual(row.BigInt, info.BigInt);
-                Assert.AreEqual(row.Decimal, info.Decimal);
-                Assert.AreEqual(row.Float, info.Float);
-                Assert.AreEqual(row.Double, info.Double);
-                Assert.AreEqual(row.Boolean, info.Boolean);
-                Assert.AreEqual(row.Bytes.Length, info.Bytes.Length);
-
-                for(int index = 0; index < row.Bytes.Length; index++) {
-                    Assert.AreEqual(row.Bytes[index], info.Bytes[index]);
-                }
-                //Assert.AreEqual(row.DateTime, allTypes.DateTime);
-                //Assert.AreEqual(row.DateTimeOffset, allTypes.DateTimeOffset);
-                Assert.AreEqual(row.Enum, info.Enum);
-                Assert.AreEqual(row.DateOnly, info.DateOnly);
-                Assert.AreEqual(row.TimeOnly, info.TimeOnly);
-            }
-
-            Thread.Sleep(10);  //Add a delay so the date fields are populated with a different value
-
-            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-                var result = Query.Update(table)
-                    .Values(values => values
-                        .Set(table.Guid, NEWID.Instance)
-                        .Set(table.DateTime, GETDATE.Instance)
-                        .Set(table.DateTimeOffset, SYSDATETIMEOFFSET.Instance)
-                    )
-                    .Where(table.Id == info.Id)
-                    .Execute(
-                        result => new {
-                            Guid = result.Get(table.Guid),
-                            DateTime = result.Get(table.DateTime),
-                            DateTimeOffset = result.Get(table.DateTimeOffset)
-                        },
-                        transaction,
-                        TimeoutLevel.ShortInsert
-                    );
-
-                Assert.AreEqual(1, result.Rows.Count);
-                Assert.AreEqual(1, result.RowsEffected);
-
-                var row = result.Rows[0];
-
-                Assert.AreNotEqual(row.Guid, guid);
-                Assert.AreNotEqual(row.DateTime, dateTime);
-                Assert.AreNotEqual(row.DateTimeOffset, dateTimeOffset);
-
-                guid = row.Guid;
-                dateTime = row.DateTime;
-                dateTimeOffset = row.DateTimeOffset;
-
-                transaction.Commit();
-            }
-
-            Thread.Sleep(10);  //Add a delay so the date fields are populated with a different value
-
-            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-                var result = Query
-                    .Delete(table)
-                    .Where(table.Guid == NEWID.Instance | table.DateTime == GETDATE.Instance | table.DateTimeOffset == SYSDATETIMEOFFSET.Instance)
-                    .Execute(
-                        result => new {
-                            Guid = result.Get(table.Guid),
-                            DateTime = result.Get(table.DateTime),
-                            DateTimeOffset = result.Get(table.DateTimeOffset)
-                        },
-                        transaction,
-                        TimeoutLevel.ShortInsert
-                    );
-
-                Assert.AreEqual(0, result.Rows.Count);
-                Assert.AreEqual(0, result.RowsEffected);
-
-                transaction.Commit();
-            }
-
-            using(Transaction transaction = new Transaction(TestDatabase.Database)) {
-
-                var result = Query
-                    .Delete(table)
-                    .Where(table.Guid != NEWID.Instance)
-                    .Execute(
-                        result => new {
-                            Guid = result.Get(table.Guid),
-                            DateTime = result.Get(table.DateTime),
-                            DateTimeOffset = result.Get(table.DateTimeOffset)
-                        },
-                        transaction,
-                        TimeoutLevel.ShortInsert
-                    );
-
-                Assert.AreEqual(1, result.Rows.Count);
-                Assert.AreEqual(1, result.RowsEffected);
-
-                var row = result.Rows[0];
-
-                Assert.AreEqual(row.Guid, guid);
-                Assert.AreEqual(row.DateTime, dateTime);
-                Assert.AreEqual(row.DateTimeOffset, dateTimeOffset);
-
-                transaction.Commit();
-            }
-        }
-
-        private static AllTypes GetAllTypes1() {
-            return new AllTypes(
-                id: AllTypesId.NotSet,
-                guid: Guid.NewGuid(),
-                @string: Guid.NewGuid().ToString(),
-                smallInt: 7261,
-                @int: 846218432,
-                bigInt: 94377682378523423,
-                @decimal: 743.534234m,
-                @float: 7324.2521342f,
-                @double: 93234.487213123d,
-                boolean: true,
-                bytes: [1, 2, 3],
-                dateTime: new DateTime(year: 1800, month: 12, day: 01, hour: 23, minute: 59, second: 59),
-                dateTimeOffset: new DateTimeOffset(year: 1800, month: 11, day: 02, hour: 20, minute: 55, second: 57, new TimeSpan(hours: 5, minutes: 0, seconds: 0)),
-                @enum: AllTypesEnum.A,
-                dateOnly: new DateOnly(year: 1925, month: 12, day: 21),
-                timeOnly: new TimeOnly(hour: 23, minute: 57, second: 0, millisecond: 1, microsecond: 777)
-            );
-        }
-        private static void AssertRow(AllTypesInfo row, AllTypes allTypes) {
-
-            Assert.AreEqual(row.Id, allTypes.Id);
-            Assert.AreEqual(row.Guid, allTypes.Guid);
-            Assert.AreEqual(row.String, allTypes.String);
-            Assert.AreEqual(row.SmallInt, allTypes.SmallInt);
-            Assert.AreEqual(row.Int, allTypes.Int);
-            Assert.AreEqual(row.BigInt, allTypes.BigInt);
-            Assert.AreEqual(row.Decimal, allTypes.Decimal);
-            Assert.AreEqual(row.Float, allTypes.Float);
-            Assert.AreEqual(row.Double, allTypes.Double);
-            Assert.AreEqual(row.Boolean, allTypes.Boolean);
-            Assert.AreEqual(row.Bytes.Length, allTypes.Bytes.Length);
+            Assert.AreEqual(row.Id, info.Id);
+            //Assert.AreEqual(row.Guid, allTypes.Guid);
+            Assert.AreEqual(row.String, info.String);
+            Assert.AreEqual(row.SmallInt, info.SmallInt);
+            Assert.AreEqual(row.Int, info.Int);
+            Assert.AreEqual(row.BigInt, info.BigInt);
+            Assert.AreEqual(row.Decimal, info.Decimal);
+            Assert.AreEqual(row.Float, info.Float);
+            Assert.AreEqual(row.Double, info.Double);
+            Assert.AreEqual(row.Boolean, info.Boolean);
+            Assert.AreEqual(row.Bytes.Length, info.Bytes.Length);
 
             for(int index = 0; index < row.Bytes.Length; index++) {
-                Assert.AreEqual(row.Bytes[index], allTypes.Bytes[index]);
+                Assert.AreEqual(row.Bytes[index], info.Bytes[index]);
             }
-            Assert.AreEqual(row.DateTime, allTypes.DateTime);
-            Assert.AreEqual(row.DateTimeOffset, allTypes.DateTimeOffset);
-            Assert.AreEqual(row.Enum, allTypes.Enum);
-            Assert.AreEqual(row.DateOnly, allTypes.DateOnly);
-            Assert.AreEqual(row.TimeOnly, allTypes.TimeOnly);
+            //Assert.AreEqual(row.DateTime, allTypes.DateTime);
+            //Assert.AreEqual(row.DateTimeOffset, allTypes.DateTimeOffset);
+            Assert.AreEqual(row.Enum, info.Enum);
+            Assert.AreEqual(row.DateOnly, info.DateOnly);
+            Assert.AreEqual(row.TimeOnly, info.TimeOnly);
         }
+
+        Thread.Sleep(10);  //Add a delay so the date fields are populated with a different value
+
+        using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+            var result = Query.Update(table)
+                .Values(values => values
+                    .Set(table.Guid, NEWID.Instance)
+                    .Set(table.DateTime, GETDATE.Instance)
+                    .Set(table.DateTimeOffset, SYSDATETIMEOFFSET.Instance)
+                )
+                .Where(table.Id == info.Id)
+                .Execute(
+                    result => new {
+                        Guid = result.Get(table.Guid),
+                        DateTime = result.Get(table.DateTime),
+                        DateTimeOffset = result.Get(table.DateTimeOffset)
+                    },
+                    transaction,
+                    TimeoutLevel.ShortInsert
+                );
+
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(1, result.RowsEffected);
+
+            var row = result.Rows[0];
+
+            Assert.AreNotEqual(row.Guid, guid);
+            Assert.AreNotEqual(row.DateTime, dateTime);
+            Assert.AreNotEqual(row.DateTimeOffset, dateTimeOffset);
+
+            guid = row.Guid;
+            dateTime = row.DateTime;
+            dateTimeOffset = row.DateTimeOffset;
+
+            transaction.Commit();
+        }
+
+        Thread.Sleep(10);  //Add a delay so the date fields are populated with a different value
+
+        using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+            var result = Query
+                .Delete(table)
+                .Where(table.Guid == NEWID.Instance | table.DateTime == GETDATE.Instance | table.DateTimeOffset == SYSDATETIMEOFFSET.Instance)
+                .Execute(
+                    result => new {
+                        Guid = result.Get(table.Guid),
+                        DateTime = result.Get(table.DateTime),
+                        DateTimeOffset = result.Get(table.DateTimeOffset)
+                    },
+                    transaction,
+                    TimeoutLevel.ShortInsert
+                );
+
+            Assert.AreEqual(0, result.Rows.Count);
+            Assert.AreEqual(0, result.RowsEffected);
+
+            transaction.Commit();
+        }
+
+        using(Transaction transaction = new Transaction(TestDatabase.Database)) {
+
+            var result = Query
+                .Delete(table)
+                .Where(table.Guid != NEWID.Instance)
+                .Execute(
+                    result => new {
+                        Guid = result.Get(table.Guid),
+                        DateTime = result.Get(table.DateTime),
+                        DateTimeOffset = result.Get(table.DateTimeOffset)
+                    },
+                    transaction,
+                    TimeoutLevel.ShortInsert
+                );
+
+            Assert.AreEqual(1, result.Rows.Count);
+            Assert.AreEqual(1, result.RowsEffected);
+
+            var row = result.Rows[0];
+
+            Assert.AreEqual(row.Guid, guid);
+            Assert.AreEqual(row.DateTime, dateTime);
+            Assert.AreEqual(row.DateTimeOffset, dateTimeOffset);
+
+            transaction.Commit();
+        }
+    }
+
+    private static AllTypes GetAllTypes1() {
+        return new AllTypes(
+            id: AllTypesId.NotSet,
+            guid: Guid.NewGuid(),
+            @string: Guid.NewGuid().ToString(),
+            smallInt: 7261,
+            @int: 846218432,
+            bigInt: 94377682378523423,
+            @decimal: 743.534234m,
+            @float: 7324.2521342f,
+            @double: 93234.487213123d,
+            boolean: true,
+            bytes: [1, 2, 3],
+            dateTime: new DateTime(year: 1800, month: 12, day: 01, hour: 23, minute: 59, second: 59),
+            dateTimeOffset: new DateTimeOffset(year: 1800, month: 11, day: 02, hour: 20, minute: 55, second: 57, new TimeSpan(hours: 5, minutes: 0, seconds: 0)),
+            @enum: AllTypesEnum.A,
+            dateOnly: new DateOnly(year: 1925, month: 12, day: 21),
+            timeOnly: new TimeOnly(hour: 23, minute: 57, second: 0, millisecond: 1, microsecond: 777)
+        );
+    }
+    private static void AssertRow(AllTypesInfo row, AllTypes allTypes) {
+
+        Assert.AreEqual(row.Id, allTypes.Id);
+        Assert.AreEqual(row.Guid, allTypes.Guid);
+        Assert.AreEqual(row.String, allTypes.String);
+        Assert.AreEqual(row.SmallInt, allTypes.SmallInt);
+        Assert.AreEqual(row.Int, allTypes.Int);
+        Assert.AreEqual(row.BigInt, allTypes.BigInt);
+        Assert.AreEqual(row.Decimal, allTypes.Decimal);
+        Assert.AreEqual(row.Float, allTypes.Float);
+        Assert.AreEqual(row.Double, allTypes.Double);
+        Assert.AreEqual(row.Boolean, allTypes.Boolean);
+        Assert.AreEqual(row.Bytes.Length, allTypes.Bytes.Length);
+
+        for(int index = 0; index < row.Bytes.Length; index++) {
+            Assert.AreEqual(row.Bytes[index], allTypes.Bytes[index]);
+        }
+        Assert.AreEqual(row.DateTime, allTypes.DateTime);
+        Assert.AreEqual(row.DateTimeOffset, allTypes.DateTimeOffset);
+        Assert.AreEqual(row.Enum, allTypes.Enum);
+        Assert.AreEqual(row.DateOnly, allTypes.DateOnly);
+        Assert.AreEqual(row.TimeOnly, allTypes.TimeOnly);
     }
 }

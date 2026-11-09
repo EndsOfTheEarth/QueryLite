@@ -23,287 +23,286 @@
  **/
 using System.Data;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    public static class Settings {
+public static class Settings {
 
-        /// <summary>
-        /// Turns query parameters on or off. ie. False = use plain sql text instead of parameter in sql query.
-        /// This is good for debugging purposes.
-        /// </summary>
-        public static bool UseParameters { get; set; } = true;
+    /// <summary>
+    /// Turns query parameters on or off. ie. False = use plain sql text instead of parameter in sql query.
+    /// This is good for debugging purposes.
+    /// </summary>
+    public static bool UseParameters { get; set; } = true;
 
-        /// <summary>
-        /// If true this causes code to stop on a break point when a select query is executed in debug mode.
-        /// This is a debugging feature.
-        /// </summary>
-        public static bool BreakOnSelectQuery { get; set; }
+    /// <summary>
+    /// If true this causes code to stop on a break point when a select query is executed in debug mode.
+    /// This is a debugging feature.
+    /// </summary>
+    public static bool BreakOnSelectQuery { get; set; }
 
-        /// <summary>
-        /// If true this causes code to stop on a break point when a insert query is executed in debug mode.
-        /// This is a debugging feature.
-        /// </summary>
-        public static bool BreakOnInsertQuery { get; set; }
+    /// <summary>
+    /// If true this causes code to stop on a break point when a insert query is executed in debug mode.
+    /// This is a debugging feature.
+    /// </summary>
+    public static bool BreakOnInsertQuery { get; set; }
 
-        /// <summary>
-        /// If true this causes code to stop on a break point when a update query is executed in debug mode.
-        /// This is a debugging feature.
-        /// </summary>
-        public static bool BreakOnUpdateQuery { get; set; }
+    /// <summary>
+    /// If true this causes code to stop on a break point when a update query is executed in debug mode.
+    /// This is a debugging feature.
+    /// </summary>
+    public static bool BreakOnUpdateQuery { get; set; }
 
-        /// <summary>
-        /// If true this causes code to stop on a break point when a delete query is executed in debug mode.
-        /// This is a debugging feature.
-        /// </summary>
-        public static bool BreakOnDeleteQuery { get; set; }
+    /// <summary>
+    /// If true this causes code to stop on a break point when a delete query is executed in debug mode.
+    /// This is a debugging feature.
+    /// </summary>
+    public static bool BreakOnDeleteQuery { get; set; }
 
-        /// <summary>
-        /// If true this causes code to stop on a break point when a truncate query is executed in debug mode.
-        /// This is a debugging feature.
-        /// </summary>
-        public static bool BreakOnTruncateQuery { get; set; }
+    /// <summary>
+    /// If true this causes code to stop on a break point when a truncate query is executed in debug mode.
+    /// This is a debugging feature.
+    /// </summary>
+    public static bool BreakOnTruncateQuery { get; set; }
 
-        internal static bool HasEvents => QueryExecuting != null || QueryPerformed != null;
+    internal static bool HasEvents => QueryExecuting != null || QueryPerformed != null;
 
-        /// <summary>
-        /// Enable caching of StringBuilder objects to help reduce memory allocation when generating SQL queries.
-        /// </summary>
-        public static bool EnableStringBuilderCaching { get; set; } = true;
+    /// <summary>
+    /// Enable caching of StringBuilder objects to help reduce memory allocation when generating SQL queries.
+    /// </summary>
+    public static bool EnableStringBuilderCaching { get; set; } = true;
 
-        /// <summary>
-        /// When the StringBuilder cache is turned on, any StringBuilders that have a capacity greater than this value will not be cached.
-        /// This setting is used to limit a StringBuilder from holding on to a large amount of memory.
-        /// </summary>
-        public static int StringBuilderCacheMaxCharacters { get; set; } = 20000;
+    /// <summary>
+    /// When the StringBuilder cache is turned on, any StringBuilders that have a capacity greater than this value will not be cached.
+    /// This setting is used to limit a StringBuilder from holding on to a large amount of memory.
+    /// </summary>
+    public static int StringBuilderCacheMaxCharacters { get; set; } = 20000;
 
-        /// <summary>
-        /// Enable caching of collector objects to help reduce memory allocation when generating SQL queries.
-        /// </summary>
-        public static bool EnableCollectorCaching { get; set; } = true;
+    /// <summary>
+    /// Enable caching of collector objects to help reduce memory allocation when generating SQL queries.
+    /// </summary>
+    public static bool EnableCollectorCaching { get; set; } = true;
 
-        public delegate void QueryExecutingDelegate(QueryExecutingDetail queryDetail);
+    public delegate void QueryExecutingDelegate(QueryExecutingDetail queryDetail);
 
-        /// <summary>
-        /// Event fired when a query begins execution
-        /// </summary>
-        public static event QueryExecutingDelegate? QueryExecuting;
+    /// <summary>
+    /// Event fired when a query begins execution
+    /// </summary>
+    public static event QueryExecutingDelegate? QueryExecuting;
 
-        internal static void FireQueryExecutingEvent(IDatabase database, string sql, QueryType queryType,
-                                                     DateTimeOffset? start, IsolationLevel isolationLevel,
-                                                     ulong? transactionId, QueryTimeout timeout, string debugName) {
-            try {
+    internal static void FireQueryExecutingEvent(IDatabase database, string sql, QueryType queryType,
+                                                 DateTimeOffset? start, IsolationLevel isolationLevel,
+                                                 ulong? transactionId, QueryTimeout timeout, string debugName) {
+        try {
 
-                QueryExecuting?.Invoke(
-                    new QueryExecutingDetail(
-                        database: database,
-                        sql: sql,
-                        queryType: queryType,
-                        start: start,
-                        isolationLevel: isolationLevel,
-                        transactionId: transactionId,
-                        timeout: timeout,
-                        debugName: debugName
-                    )
-                );
-            }
-            catch { }
+            QueryExecuting?.Invoke(
+                new QueryExecutingDetail(
+                    database: database,
+                    sql: sql,
+                    queryType: queryType,
+                    start: start,
+                    isolationLevel: isolationLevel,
+                    transactionId: transactionId,
+                    timeout: timeout,
+                    debugName: debugName
+                )
+            );
         }
-
-        public delegate void QueryPerformedDelegate(QueryDetail queryDetail);
-
-        /// <summary>
-        /// Event fired when a query completes execution or throws an exception
-        /// </summary>
-        public static event QueryPerformedDelegate? QueryPerformed;
-
-        internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected,
-                                                     QueryType queryType, IQueryResult? result, DateTimeOffset? start,
-                                                     DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception,
-                                                     IsolationLevel isolationLevel, ulong? transactionId,
-                                                     QueryTimeout timeout, bool isAsync, string debugName) {
-            
-            try {
-
-                QueryPerformed?.Invoke(
-                    new QueryDetail(
-                        database: database,
-                        sql: sql,
-                        rows: rows,
-                        rowsEffected: rowsEffected,
-                        queryType: queryType,
-                        result: result,
-                        start: start,
-                        end: end,
-                        elapsedTime: elapsedTime,
-                        exception: exception,
-                        isolationLevel: isolationLevel,
-                        transactionId: transactionId,
-                        timeout: timeout,
-                        isAsync: isAsync,
-                        debugName: debugName
-                    )
-                );
-            }
-            catch { }
-        }
+        catch { }
     }
 
-    public class QueryExecutingDetail {
+    public delegate void QueryPerformedDelegate(QueryDetail queryDetail);
 
-        public QueryExecutingDetail(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start,
-                                    IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout,
-                                    string debugName) {
-            Database = database;
-            Sql = sql;
-            QueryType = queryType;
-            Start = start;
-            IsolationLevel = isolationLevel;
-            TransactionId = transactionId;
-            Timeout = timeout;
-            DebugName = debugName;
+    /// <summary>
+    /// Event fired when a query completes execution or throws an exception
+    /// </summary>
+    public static event QueryPerformedDelegate? QueryPerformed;
+
+    internal static void FireQueryPerformedEvent(IDatabase database, string sql, int rows, int rowsEffected,
+                                                 QueryType queryType, IQueryResult? result, DateTimeOffset? start,
+                                                 DateTimeOffset? end, TimeSpan? elapsedTime, Exception? exception,
+                                                 IsolationLevel isolationLevel, ulong? transactionId,
+                                                 QueryTimeout timeout, bool isAsync, string debugName) {
+        
+        try {
+
+            QueryPerformed?.Invoke(
+                new QueryDetail(
+                    database: database,
+                    sql: sql,
+                    rows: rows,
+                    rowsEffected: rowsEffected,
+                    queryType: queryType,
+                    result: result,
+                    start: start,
+                    end: end,
+                    elapsedTime: elapsedTime,
+                    exception: exception,
+                    isolationLevel: isolationLevel,
+                    transactionId: transactionId,
+                    timeout: timeout,
+                    isAsync: isAsync,
+                    debugName: debugName
+                )
+            );
         }
+        catch { }
+    }
+}
 
-        /// <summary>
-        /// Database the query is being executed against
-        /// </summary>
-        public IDatabase Database { get; }
+public class QueryExecutingDetail {
 
-        /// <summary>
-        /// Sql query being executed
-        /// </summary>
-        public string Sql { get; }
-
-        /// <summary>
-        /// Type of sql query. e.g. Select, Insert, Update, Delete and Truncate
-        /// </summary>
-        public QueryType QueryType { get; }
-
-        /// <summary>
-        /// Date time query began executing
-        /// </summary>
-        public DateTimeOffset? Start { get; }
-
-        /// <summary>
-        /// Isolation level being used
-        /// </summary>
-        public IsolationLevel IsolationLevel { get; }
-
-        /// <summary>
-        /// Transaction id
-        /// </summary>
-        public ulong? TransactionId { get; }
-
-        /// <summary>
-        /// Query timeout
-        /// </summary>
-        public QueryTimeout Timeout { get; set; }
-
-        /// <summary>
-        /// Debugging name given to query. This is useful for identifying particular queries.
-        /// This name is passed as a parameter in query execute methods.
-        /// </summary>
-        public string DebugName { get; }
+    public QueryExecutingDetail(IDatabase database, string sql, QueryType queryType, DateTimeOffset? start,
+                                IsolationLevel isolationLevel, ulong? transactionId, QueryTimeout timeout,
+                                string debugName) {
+        Database = database;
+        Sql = sql;
+        QueryType = queryType;
+        Start = start;
+        IsolationLevel = isolationLevel;
+        TransactionId = transactionId;
+        Timeout = timeout;
+        DebugName = debugName;
     }
 
-    public class QueryDetail {
+    /// <summary>
+    /// Database the query is being executed against
+    /// </summary>
+    public IDatabase Database { get; }
 
-        public QueryDetail(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType,
-                           IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime,
-                           Exception? exception, IsolationLevel isolationLevel, ulong? transactionId,
-                           QueryTimeout timeout, bool isAsync, string debugName) {
+    /// <summary>
+    /// Sql query being executed
+    /// </summary>
+    public string Sql { get; }
 
-            Database = database;
-            Sql = sql;
-            Rows = rows;
-            RowsEffected = rowsEffected;
-            QueryType = queryType;
-            Result = result;
-            Start = start;
-            End = end;
-            ElapsedTime = elapsedTime;
-            Exception = exception;
-            IsolationLevel = isolationLevel;
-            TransactionId = transactionId;
-            Timeout = timeout;
-            IsAsync = isAsync;
-            DebugName = debugName;
-        }
+    /// <summary>
+    /// Type of sql query. e.g. Select, Insert, Update, Delete and Truncate
+    /// </summary>
+    public QueryType QueryType { get; }
 
-        /// <summary>
-        /// Database the query is being executed against
-        /// </summary>
-        public IDatabase Database { get; }
+    /// <summary>
+    /// Date time query began executing
+    /// </summary>
+    public DateTimeOffset? Start { get; }
 
-        /// <summary>
-        /// Sql query being executed
-        /// </summary>
-        public string Sql { get; }
+    /// <summary>
+    /// Isolation level being used
+    /// </summary>
+    public IsolationLevel IsolationLevel { get; }
 
-        /// <summary>
-        /// Rows returned by query
-        /// </summary>
-        public int Rows { get; }
+    /// <summary>
+    /// Transaction id
+    /// </summary>
+    public ulong? TransactionId { get; }
 
-        /// <summary>
-        /// Rows inserted, updated or deleted by query
-        /// </summary>
-        public int RowsEffected { get; }
+    /// <summary>
+    /// Query timeout
+    /// </summary>
+    public QueryTimeout Timeout { get; set; }
 
-        /// <summary>
-        /// Type of sql query. e.g. Select, Insert, Update, Delete and Truncate
-        /// </summary>
-        public QueryType QueryType { get; }
+    /// <summary>
+    /// Debugging name given to query. This is useful for identifying particular queries.
+    /// This name is passed as a parameter in query execute methods.
+    /// </summary>
+    public string DebugName { get; }
+}
 
-        /// <summary>
-        /// Query result
-        /// </summary>
-        public IQueryResult? Result { get; }
+public class QueryDetail {
 
-        /// <summary>
-        /// Date time query began executing
-        /// </summary>
-        public DateTimeOffset? Start { get; }
+    public QueryDetail(IDatabase database, string sql, int rows, int rowsEffected, QueryType queryType,
+                       IQueryResult? result, DateTimeOffset? start, DateTimeOffset? end, TimeSpan? elapsedTime,
+                       Exception? exception, IsolationLevel isolationLevel, ulong? transactionId,
+                       QueryTimeout timeout, bool isAsync, string debugName) {
 
-        /// <summary>
-        /// Date time query finished executing
-        /// </summary>
-        public DateTimeOffset? End { get; }
-
-        /// <summary>
-        /// Time taken for query to execute. Note: the elapsed time is more accurate than using start
-        /// and end times to calculate the elapsed time.
-        /// </summary>
-        public TimeSpan? ElapsedTime { get; }
-
-        /// <summary>
-        /// Exception if the query failed to execute
-        /// </summary>
-        public Exception? Exception { get; }
-
-        /// <summary>
-        /// Isolation level being used
-        /// </summary>
-        public IsolationLevel IsolationLevel { get; }
-
-        /// <summary>
-        /// Transaction id
-        /// </summary>
-        public ulong? TransactionId { get; }
-
-        /// <summary>
-        /// Query timeout
-        /// </summary>
-        public QueryTimeout Timeout { get; set; }
-
-        /// <summary>
-        /// Is this query running asynchronously
-        /// </summary>
-        public bool IsAsync { get; set; }
-
-        /// <summary>
-        /// Debugging name given to query. This is useful for identifying particular queries.
-        /// This name is passed as a parameter in query execute methods.
-        /// </summary>
-        public string DebugName { get; }
+        Database = database;
+        Sql = sql;
+        Rows = rows;
+        RowsEffected = rowsEffected;
+        QueryType = queryType;
+        Result = result;
+        Start = start;
+        End = end;
+        ElapsedTime = elapsedTime;
+        Exception = exception;
+        IsolationLevel = isolationLevel;
+        TransactionId = transactionId;
+        Timeout = timeout;
+        IsAsync = isAsync;
+        DebugName = debugName;
     }
+
+    /// <summary>
+    /// Database the query is being executed against
+    /// </summary>
+    public IDatabase Database { get; }
+
+    /// <summary>
+    /// Sql query being executed
+    /// </summary>
+    public string Sql { get; }
+
+    /// <summary>
+    /// Rows returned by query
+    /// </summary>
+    public int Rows { get; }
+
+    /// <summary>
+    /// Rows inserted, updated or deleted by query
+    /// </summary>
+    public int RowsEffected { get; }
+
+    /// <summary>
+    /// Type of sql query. e.g. Select, Insert, Update, Delete and Truncate
+    /// </summary>
+    public QueryType QueryType { get; }
+
+    /// <summary>
+    /// Query result
+    /// </summary>
+    public IQueryResult? Result { get; }
+
+    /// <summary>
+    /// Date time query began executing
+    /// </summary>
+    public DateTimeOffset? Start { get; }
+
+    /// <summary>
+    /// Date time query finished executing
+    /// </summary>
+    public DateTimeOffset? End { get; }
+
+    /// <summary>
+    /// Time taken for query to execute. Note: the elapsed time is more accurate than using start
+    /// and end times to calculate the elapsed time.
+    /// </summary>
+    public TimeSpan? ElapsedTime { get; }
+
+    /// <summary>
+    /// Exception if the query failed to execute
+    /// </summary>
+    public Exception? Exception { get; }
+
+    /// <summary>
+    /// Isolation level being used
+    /// </summary>
+    public IsolationLevel IsolationLevel { get; }
+
+    /// <summary>
+    /// Transaction id
+    /// </summary>
+    public ulong? TransactionId { get; }
+
+    /// <summary>
+    /// Query timeout
+    /// </summary>
+    public QueryTimeout Timeout { get; set; }
+
+    /// <summary>
+    /// Is this query running asynchronously
+    /// </summary>
+    public bool IsAsync { get; set; }
+
+    /// <summary>
+    /// Debugging name given to query. This is useful for identifying particular queries.
+    /// This name is passed as a parameter in query execute methods.
+    /// </summary>
+    public string DebugName { get; }
 }

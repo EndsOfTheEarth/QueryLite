@@ -24,72 +24,71 @@
 using QueryLite.Databases.Sqlite.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.Sqlite {
+namespace QueryLite.Databases.Sqlite; 
 
-    internal sealed class SqliteDeleteQueryGenerator : IDeleteQueryGenerator {
+internal sealed class SqliteDeleteQueryGenerator : IDeleteQueryGenerator {
 
-        string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template,
-                                                    IDatabase database,
-                                                    IParametersBuilder? parameters,
-                                                    Func<IResultRow, RESULT>? outputFunc) {
+    string IDeleteQueryGenerator.GetSql<RESULT>(DeleteQueryTemplate template,
+                                                IDatabase database,
+                                                IParametersBuilder? parameters,
+                                                Func<IResultRow, RESULT>? outputFunc) {
 
-            StringBuilder sql = StringBuilderCache.Acquire();
+        StringBuilder sql = StringBuilderCache.Acquire();
 
-            sql.Append("DELETE FROM ");
+        sql.Append("DELETE FROM ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                sql.Append('.');
-            }
-
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-            sql.Append(" AS ").Append(template.Table.Alias);
-
-            bool useAliases = template.FromTables != null;
-
-            if(template.FromTables != null) {
-
-                sql.Append(" USING ");
-
-                for(int index = 0; index < template.FromTables.Count; index++) {
-
-                    if(index > 0) {
-                        sql.Append(',');
-                    }
-                    ITable usingTable = template.FromTables[index];
-
-                    string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
-
-                    if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName, EncloseWith.SquareBracket);
-                        sql.Append('.');
-                    }
-
-                    SqlHelper.AppendEncloseTableName(sql, usingTable, EncloseWith.SquareBracket);
-
-                    sql.Append(' ');
-
-                    SqlHelper.AppendEncloseAlias(sql, usingTable.Alias, EncloseWith.SquareBracket);
-                }
-            }
-
-            if(template.WhereCondition != null) {
-                sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, useAlias: useAliases, parameters);
-            }
-            if(outputFunc != null) {
-
-                SqliteReturningFieldCollector collector = SqliteReturningCollectorCache.Acquire(sql, useAlias: false);
-
-                sql.Append(" RETURNING ");
-
-                outputFunc(collector);
-
-                SqliteReturningCollectorCache.Release(collector);
-            }
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+            sql.Append('.');
         }
+
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
+        sql.Append(" AS ").Append(template.Table.Alias);
+
+        bool useAliases = template.FromTables != null;
+
+        if(template.FromTables != null) {
+
+            sql.Append(" USING ");
+
+            for(int index = 0; index < template.FromTables.Count; index++) {
+
+                if(index > 0) {
+                    sql.Append(',');
+                }
+                ITable usingTable = template.FromTables[index];
+
+                string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
+
+                if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName, EncloseWith.SquareBracket);
+                    sql.Append('.');
+                }
+
+                SqlHelper.AppendEncloseTableName(sql, usingTable, EncloseWith.SquareBracket);
+
+                sql.Append(' ');
+
+                SqlHelper.AppendEncloseAlias(sql, usingTable.Alias, EncloseWith.SquareBracket);
+            }
+        }
+
+        if(template.WhereCondition != null) {
+            sql.Append(" WHERE ");
+            template.WhereCondition.GetSql(sql, database, useAlias: useAliases, parameters);
+        }
+        if(outputFunc != null) {
+
+            SqliteReturningFieldCollector collector = SqliteReturningCollectorCache.Acquire(sql, useAlias: false);
+
+            sql.Append(" RETURNING ");
+
+            outputFunc(collector);
+
+            SqliteReturningCollectorCache.Release(collector);
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

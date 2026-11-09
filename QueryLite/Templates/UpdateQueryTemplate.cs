@@ -21,214 +21,213 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    internal sealed class UpdateQueryTemplate : IUpdateSet, IUpdateFrom, IUpdateWhere, IUpdateExecute {
+internal sealed class UpdateQueryTemplate : IUpdateSet, IUpdateFrom, IUpdateWhere, IUpdateExecute {
 
-        public ITable Table { get; }
-        public Action<ISetValuesCollector>? ValuesCollector;
-        public List<ITable>? FromTables { get; private set; }
-        public ICondition? JoinCondition { get; private set; }
-        public ICondition? WhereCondition { get; private set; }
+    public ITable Table { get; }
+    public Action<ISetValuesCollector>? ValuesCollector;
+    public List<ITable>? FromTables { get; private set; }
+    public ICondition? JoinCondition { get; private set; }
+    public ICondition? WhereCondition { get; private set; }
 
-        public UpdateQueryTemplate(ITable table) {
+    public UpdateQueryTemplate(ITable table) {
 
-            ArgumentNullException.ThrowIfNull(table);
+        ArgumentNullException.ThrowIfNull(table);
 
-            Table = table;
+        Table = table;
+    }
+
+    public IUpdateFrom Values(Action<ISetValuesCollector> values) {
+        ValuesCollector = values;
+        return this;
+    }
+
+    public IUpdateWhere From(ITable table, params ITable[] tables) {
+
+        ArgumentNullException.ThrowIfNull(table);
+
+        FromTables = new List<ITable>(tables.Length + 1) {
+            table
+        };
+
+        if(tables.Length > 0) {
+            FromTables.AddRange(tables);
+        }
+        return this;
+    }
+
+    public IUpdateExecute NoWhereCondition() {
+        WhereCondition = null;
+        return this;
+    }
+    public IUpdateExecute Where(ICondition condition) {
+
+        ArgumentNullException.ThrowIfNull(condition);
+
+        if(WhereCondition != null) {
+            throw new Exception($"Where condition has already been set");
+        }
+        WhereCondition = condition;
+        return this;
+    }
+
+    public string GetSql(IDatabase database) {
+
+        ArgumentNullException.ThrowIfNull(database);
+
+        return database.UpdateGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            useParameters: Parameters.Off,
+            parameters: out _,
+            outputFunc: null
+        );
+    }
+
+    public NonQueryResult Execute(Transaction transaction,
+                                  QueryTimeout? timeout = null,
+                                  Parameters useParameters = Parameters.Default,
+                                  string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortUpdate;
         }
 
-        public IUpdateFrom Values(Action<ISetValuesCollector> values) {
-            ValuesCollector = values;
-            return this;
+        IDatabase database = transaction.Database;
+
+        string sql = database.UpdateGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            useParameters: useParameters,
+            parameters: out IParametersBuilder? parameters,
+            outputFunc: null
+        );
+
+        NonQueryResult result = QueryExecutor.ExecuteNonQuery(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            sql: sql,
+            queryType: QueryType.Update,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func,
+                                               Transaction transaction,
+                                               QueryTimeout? timeout = null,
+                                               Parameters useParameters = Parameters.Default,
+                                               string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(func);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortUpdate;
         }
 
-        public IUpdateWhere From(ITable table, params ITable[] tables) {
+        IDatabase database = transaction.Database;
 
-            ArgumentNullException.ThrowIfNull(table);
+        string sql = database.UpdateGenerator.GetSql(
+            template: this,
+            database: database,
+            useParameters: useParameters,
+            parameters: out IParametersBuilder? parameters,
+            outputFunc: func
+        );
 
-            FromTables = new List<ITable>(tables.Length + 1) {
-                table
-            };
+        QueryResult<RESULT> result = QueryExecutor.Execute(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: func,
+            sql: sql,
+            queryType: QueryType.Update,
+            debugName: debugName
+        );
+        return result;
+    }
 
-            if(tables.Length > 0) {
-                FromTables.AddRange(tables);
-            }
-            return this;
-        }
-
-        public IUpdateExecute NoWhereCondition() {
-            WhereCondition = null;
-            return this;
-        }
-        public IUpdateExecute Where(ICondition condition) {
-
-            ArgumentNullException.ThrowIfNull(condition);
-
-            if(WhereCondition != null) {
-                throw new Exception($"Where condition has already been set");
-            }
-            WhereCondition = condition;
-            return this;
-        }
-
-        public string GetSql(IDatabase database) {
-
-            ArgumentNullException.ThrowIfNull(database);
-
-            return database.UpdateGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                useParameters: Parameters.Off,
-                parameters: out _,
-                outputFunc: null
-            );
-        }
-
-        public NonQueryResult Execute(Transaction transaction,
-                                      QueryTimeout? timeout = null,
-                                      Parameters useParameters = Parameters.Default,
-                                      string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortUpdate;
-            }
-
-            IDatabase database = transaction.Database;
-
-            string sql = database.UpdateGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                useParameters: useParameters,
-                parameters: out IParametersBuilder? parameters,
-                outputFunc: null
-            );
-
-            NonQueryResult result = QueryExecutor.ExecuteNonQuery(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                sql: sql,
-                queryType: QueryType.Update,
-                debugName: debugName
-            );
-            return result;
-        }
-
-        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func,
-                                                   Transaction transaction,
+    public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
+                                                   CancellationToken? ct = null,
                                                    QueryTimeout? timeout = null,
                                                    Parameters useParameters = Parameters.Default,
                                                    string debugName = "") {
 
-            ArgumentNullException.ThrowIfNull(func);
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortUpdate;
-            }
-
-            IDatabase database = transaction.Database;
-
-            string sql = database.UpdateGenerator.GetSql(
-                template: this,
-                database: database,
-                useParameters: useParameters,
-                parameters: out IParametersBuilder? parameters,
-                outputFunc: func
-            );
-
-            QueryResult<RESULT> result = QueryExecutor.Execute(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: func,
-                sql: sql,
-                queryType: QueryType.Update,
-                debugName: debugName
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortUpdate;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
-                                                       CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null,
-                                                       Parameters useParameters = Parameters.Default,
-                                                       string debugName = "") {
+        IDatabase database = transaction.Database;
 
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        string sql = database.UpdateGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            useParameters: useParameters,
+            parameters: out IParametersBuilder? parameters,
+            outputFunc: null
+        );
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortUpdate;
-            }
+        NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            sql: sql,
+            queryType: QueryType.Update,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
+    }
 
-            IDatabase database = transaction.Database;
+    public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func,
+                                                                Transaction transaction,
+                                                                CancellationToken? ct = null,
+                                                                QueryTimeout? timeout = null,
+                                                                Parameters useParameters = Parameters.Default,
+                                                                string debugName = "") {
 
-            string sql = database.UpdateGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                useParameters: useParameters,
-                parameters: out IParametersBuilder? parameters,
-                outputFunc: null
-            );
+        ArgumentNullException.ThrowIfNull(func);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                sql: sql,
-                queryType: QueryType.Update,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortUpdate;
         }
 
-        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func,
-                                                                    Transaction transaction,
-                                                                    CancellationToken? ct = null,
-                                                                    QueryTimeout? timeout = null,
-                                                                    Parameters useParameters = Parameters.Default,
-                                                                    string debugName = "") {
+        IDatabase database = transaction.Database;
 
-            ArgumentNullException.ThrowIfNull(func);
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        string sql = database.UpdateGenerator.GetSql(
+            template: this,
+            database: database,
+            useParameters: useParameters,
+            parameters: out IParametersBuilder? parameters,
+            outputFunc: func
+        );
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortUpdate;
-            }
-
-            IDatabase database = transaction.Database;
-
-            string sql = database.UpdateGenerator.GetSql(
-                template: this,
-                database: database,
-                useParameters: useParameters,
-                parameters: out IParametersBuilder? parameters,
-                outputFunc: func
-            );
-
-            QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: func,
-                sql: sql,
-                queryType: QueryType.Update,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
+        QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: func,
+            sql: sql,
+            queryType: QueryType.Update,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
     }
 }

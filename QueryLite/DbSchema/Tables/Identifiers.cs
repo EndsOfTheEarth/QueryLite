@@ -21,217 +21,216 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.DbSchema {
+namespace QueryLite.DbSchema; 
 
-    public interface IUnknownType { }
+public interface IUnknownType { }
 
-    public readonly partial struct SchemaName : ICustomType<string, SchemaName>, IEquatable<SchemaName>, IComparable<SchemaName> {
+public readonly partial struct SchemaName : ICustomType<string, SchemaName>, IEquatable<SchemaName>, IComparable<SchemaName> {
 
-        public static SchemaName Empty { get; } = new SchemaName("");
+    public static SchemaName Empty { get; } = new SchemaName("");
 
-        private readonly string _value = "";
+    private readonly string _value = "";
 
-        public string Value => _value ?? "";
+    public string Value => _value ?? "";
 
-        public SchemaName(string value) {
-            _value = value ?? "";
-        }
-        public static SchemaName ValueOf(string value) {
-            return new SchemaName(value);
-        }
-        public bool Equals(SchemaName other) {
-            return Value == other.Value;
-        }
-
-        public bool IsEmpty => Value != "";
-
-        public int Length => Value.Length;
-
-        public static bool operator ==(SchemaName? pA, SchemaName? pB) {
-
-            if(pA is null && pB is null) {
-                return true;
-            }
-            if(pA is not null) {
-                return pA.Equals(pB);
-            }
-            return false;
-        }
-        public static bool operator !=(SchemaName? pA, SchemaName? pB) {
-
-            if(pA is null && pB is null) {
-                return false;
-            }
-            if(pA is not null) {
-                return !pA.Equals(pB);
-            }
-            return true;
-        }
-
-        public int CompareTo(SchemaName other) {
-            return Value.CompareTo(other.Value);
-        }
-
-        public override bool Equals(object? obj) {
-
-            if(obj is SchemaName identifier) {
-                return Value.CompareTo(identifier.Value) == 0;
-            }
-            return false;
-        }
-
-        public static bool Equals(SchemaName a, SchemaName b, StringComparison comparison) {
-            return string.Equals(a.Value, b.Value, comparison);
-        }
-        public static int Compare(SchemaName a, SchemaName b, bool ignoreCase) {
-            return string.Compare(a.Value, b.Value, ignoreCase);
-        }
-
-        public override int GetHashCode() {
-            return Value.GetHashCode();
-        }
-        public override string ToString() {
-            return Value.ToString() ?? "";
-        }
+    public SchemaName(string value) {
+        _value = value ?? "";
+    }
+    public static SchemaName ValueOf(string value) {
+        return new SchemaName(value);
+    }
+    public bool Equals(SchemaName other) {
+        return Value == other.Value;
     }
 
-    public readonly partial struct TableName : ICustomType<string, TableName>, IEquatable<TableName>, IComparable<TableName> {
+    public bool IsEmpty => Value != "";
 
-        public static TableName Empty { get; } = new TableName("");
+    public int Length => Value.Length;
 
-        private readonly string _value = "";
+    public static bool operator ==(SchemaName? pA, SchemaName? pB) {
 
-        public string Value => _value ?? "";
-
-        public TableName(string value) {
-            _value = value ?? "";
-        }
-        public static TableName ValueOf(string value) {
-            return new TableName(value);
-        }
-        public bool Equals(TableName other) {
-            return Value == other.Value;
-        }
-
-        public bool IsEmpty => Value != "";
-
-        public int Length => Value.Length;
-
-        public static bool operator ==(TableName? pA, TableName? pB) {
-
-            if(pA is null && pB is null) {
-                return true;
-            }
-            if(pA is not null) {
-                return pA.Equals(pB);
-            }
-            return false;
-        }
-        public static bool operator !=(TableName? pA, TableName? pB) {
-
-            if(pA is null && pB is null) {
-                return false;
-            }
-            if(pA is not null) {
-                return !pA.Equals(pB);
-            }
+        if(pA is null && pB is null) {
             return true;
         }
-
-        public int CompareTo(TableName other) {
-            return Value.CompareTo(other.Value);
+        if(pA is not null) {
+            return pA.Equals(pB);
         }
+        return false;
+    }
+    public static bool operator !=(SchemaName? pA, SchemaName? pB) {
 
-        public override bool Equals(object? obj) {
-
-            if(obj is TableName identifier) {
-                return Value.CompareTo(identifier.Value) == 0;
-            }
+        if(pA is null && pB is null) {
             return false;
         }
-
-        public static bool Equals(TableName a, TableName b, StringComparison comparison) {
-            return string.Equals(a.Value, b.Value, comparison);
+        if(pA is not null) {
+            return !pA.Equals(pB);
         }
-        public static int Compare(TableName a, TableName b, bool ignoreCase) {
-            return string.Compare(a.Value, b.Value, ignoreCase);
-        }
-
-        public override int GetHashCode() {
-            return Value.GetHashCode();
-        }
-        public override string ToString() {
-            return Value.ToString() ?? "";
-        }
+        return true;
     }
 
-    public readonly partial struct ColumnName : ICustomType<string, ColumnName>, IEquatable<ColumnName>, IComparable<ColumnName> {
+    public int CompareTo(SchemaName other) {
+        return Value.CompareTo(other.Value);
+    }
 
-        public static ColumnName Empty { get; } = new ColumnName("");
+    public override bool Equals(object? obj) {
 
-        private readonly string _value = "";
-
-        public string Value => _value ?? "";
-
-        public ColumnName(string value) {
-            _value = value ?? "";
+        if(obj is SchemaName identifier) {
+            return Value.CompareTo(identifier.Value) == 0;
         }
-        public static ColumnName ValueOf(string value) {
-            return new ColumnName(value);
-        }
-        public bool Equals(ColumnName other) {
-            return Value == other.Value;
-        }
+        return false;
+    }
 
-        public bool IsEmpty => Value != "";
+    public static bool Equals(SchemaName a, SchemaName b, StringComparison comparison) {
+        return string.Equals(a.Value, b.Value, comparison);
+    }
+    public static int Compare(SchemaName a, SchemaName b, bool ignoreCase) {
+        return string.Compare(a.Value, b.Value, ignoreCase);
+    }
 
-        public int Length => Value.Length;
+    public override int GetHashCode() {
+        return Value.GetHashCode();
+    }
+    public override string ToString() {
+        return Value.ToString() ?? "";
+    }
+}
 
-        public static bool operator ==(ColumnName? pA, ColumnName? pB) {
+public readonly partial struct TableName : ICustomType<string, TableName>, IEquatable<TableName>, IComparable<TableName> {
 
-            if(pA is null && pB is null) {
-                return true;
-            }
-            if(pA is not null) {
-                return pA.Equals(pB);
-            }
-            return false;
-        }
-        public static bool operator !=(ColumnName? pA, ColumnName? pB) {
+    public static TableName Empty { get; } = new TableName("");
 
-            if(pA is null && pB is null) {
-                return false;
-            }
-            if(pA is not null) {
-                return !pA.Equals(pB);
-            }
+    private readonly string _value = "";
+
+    public string Value => _value ?? "";
+
+    public TableName(string value) {
+        _value = value ?? "";
+    }
+    public static TableName ValueOf(string value) {
+        return new TableName(value);
+    }
+    public bool Equals(TableName other) {
+        return Value == other.Value;
+    }
+
+    public bool IsEmpty => Value != "";
+
+    public int Length => Value.Length;
+
+    public static bool operator ==(TableName? pA, TableName? pB) {
+
+        if(pA is null && pB is null) {
             return true;
         }
-
-        public int CompareTo(ColumnName other) {
-            return Value.CompareTo(other.Value);
+        if(pA is not null) {
+            return pA.Equals(pB);
         }
+        return false;
+    }
+    public static bool operator !=(TableName? pA, TableName? pB) {
 
-        public override bool Equals(object? obj) {
-
-            if(obj is ColumnName identifier) {
-                return Value.CompareTo(identifier.Value) == 0;
-            }
+        if(pA is null && pB is null) {
             return false;
         }
+        if(pA is not null) {
+            return !pA.Equals(pB);
+        }
+        return true;
+    }
 
-        public static bool Equals(ColumnName a, ColumnName b, StringComparison comparison) {
-            return string.Equals(a.Value, b.Value, comparison);
-        }
-        public static int Compare(ColumnName a, ColumnName b, bool ignoreCase) {
-            return string.Compare(a.Value, b.Value, ignoreCase);
-        }
+    public int CompareTo(TableName other) {
+        return Value.CompareTo(other.Value);
+    }
 
-        public override int GetHashCode() {
-            return Value.GetHashCode();
+    public override bool Equals(object? obj) {
+
+        if(obj is TableName identifier) {
+            return Value.CompareTo(identifier.Value) == 0;
         }
-        public override string ToString() {
-            return Value.ToString() ?? "";
+        return false;
+    }
+
+    public static bool Equals(TableName a, TableName b, StringComparison comparison) {
+        return string.Equals(a.Value, b.Value, comparison);
+    }
+    public static int Compare(TableName a, TableName b, bool ignoreCase) {
+        return string.Compare(a.Value, b.Value, ignoreCase);
+    }
+
+    public override int GetHashCode() {
+        return Value.GetHashCode();
+    }
+    public override string ToString() {
+        return Value.ToString() ?? "";
+    }
+}
+
+public readonly partial struct ColumnName : ICustomType<string, ColumnName>, IEquatable<ColumnName>, IComparable<ColumnName> {
+
+    public static ColumnName Empty { get; } = new ColumnName("");
+
+    private readonly string _value = "";
+
+    public string Value => _value ?? "";
+
+    public ColumnName(string value) {
+        _value = value ?? "";
+    }
+    public static ColumnName ValueOf(string value) {
+        return new ColumnName(value);
+    }
+    public bool Equals(ColumnName other) {
+        return Value == other.Value;
+    }
+
+    public bool IsEmpty => Value != "";
+
+    public int Length => Value.Length;
+
+    public static bool operator ==(ColumnName? pA, ColumnName? pB) {
+
+        if(pA is null && pB is null) {
+            return true;
         }
+        if(pA is not null) {
+            return pA.Equals(pB);
+        }
+        return false;
+    }
+    public static bool operator !=(ColumnName? pA, ColumnName? pB) {
+
+        if(pA is null && pB is null) {
+            return false;
+        }
+        if(pA is not null) {
+            return !pA.Equals(pB);
+        }
+        return true;
+    }
+
+    public int CompareTo(ColumnName other) {
+        return Value.CompareTo(other.Value);
+    }
+
+    public override bool Equals(object? obj) {
+
+        if(obj is ColumnName identifier) {
+            return Value.CompareTo(identifier.Value) == 0;
+        }
+        return false;
+    }
+
+    public static bool Equals(ColumnName a, ColumnName b, StringComparison comparison) {
+        return string.Equals(a.Value, b.Value, comparison);
+    }
+    public static int Compare(ColumnName a, ColumnName b, bool ignoreCase) {
+        return string.Compare(a.Value, b.Value, ignoreCase);
+    }
+
+    public override int GetHashCode() {
+        return Value.GetHashCode();
+    }
+    public override string ToString() {
+        return Value.ToString() ?? "";
     }
 }

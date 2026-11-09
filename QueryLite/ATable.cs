@@ -23,108 +23,107 @@
  **/
 using System.Diagnostics;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    public interface ITable {
-
-        /// <summary>
-        /// Table sql alias used for query generation
-        /// </summary>
-        string Alias { get; }
-
-        /// <summary>
-        /// Schema table belongs to
-        /// </summary>
-        string SchemaName { get; }
-
-        /// <summary>
-        /// Name of table in database
-        /// </summary>
-        string TableName { get; }
-
-        /// <summary>
-        /// Table description.
-        /// </summary   >
-        string TableDescription { get; }
-
-        /// <summary>
-        /// Is this table class representing a view.
-        /// </summary>
-        bool IsView { get; }
-
-        /// <summary>
-        /// Enclose table name in sql query. For example enclose table name with [] (square brackets) in sql server queries.
-        /// </summary>
-        bool Enclose { get; }
-
-        PrimaryKey? PrimaryKey { get; }
-
-        UniqueConstraint[] UniqueConstraints { get; }
-
-        ForeignKey[] ForeignKeys { get; }
-
-        CheckConstraint[] CheckConstraints { get; }
-    }
+public interface ITable {
 
     /// <summary>
-    /// This class is used to generate an alias for each instance of a table class. This alias is used when generating sql queries.
+    /// Table sql alias used for query generation
     /// </summary>
-    internal static class AliasGenerator {
-
-        private static volatile uint _counter = 0;
-        private static readonly Lock _lock = new Lock();
-
-        public static string GetAlias() {
-
-            uint alias;
-
-            lock(_lock) {
-                alias = _counter++;
-            }
-            return alias.ToString("X");
-        }
-    }
+    string Alias { get; }
 
     /// <summary>
-    /// Represents a database table
+    /// Schema table belongs to
     /// </summary>
-    [DebuggerDisplay("Schema: {SchemaName}, Table Name: {TableName}, Alias: {Alias}")]
-    public abstract class ATable : ITable {
+    string SchemaName { get; }
 
-        public string SchemaName { get; }
-        public string TableName { get; }
-        public string TableDescription { get; }
-        public bool Enclose { get; }
-        public string Alias { get; }
-        public bool IsView { get; }
+    /// <summary>
+    /// Name of table in database
+    /// </summary>
+    string TableName { get; }
 
-        public virtual PrimaryKey? PrimaryKey => null;
-        public virtual UniqueConstraint[] UniqueConstraints => [];
-        public virtual ForeignKey[] ForeignKeys => [];
-        public virtual CheckConstraint[] CheckConstraints => [];
+    /// <summary>
+    /// Table description.
+    /// </summary   >
+    string TableDescription { get; }
 
-        /// <summary>
-        /// Abstract table
-        /// </summary>
-        /// <param name="name">Name of table in database</param>
-        /// <param name="schemaName">Schema table belongs to</param>
-        /// <param name="alias">Set table to a specific alias. Empty string sets no alias and null
-        /// causes a unique alias to be generated.</param>
-        /// <param name="enclose">Set to true if the table name is a sql keyword. This will stop the
-        /// key word from causing invalid sql from being created</param>
-        /// <param name="desc">Table description</param>
-        /// <exception cref="ArgumentException"></exception>
-        protected ATable(string name, string schemaName, string? alias = null, bool enclose = false,
-                         bool isView = false, string desc = "") {
+    /// <summary>
+    /// Is this table class representing a view.
+    /// </summary>
+    bool IsView { get; }
 
-            ArgumentException.ThrowIfNullOrEmpty(name);
+    /// <summary>
+    /// Enclose table name in sql query. For example enclose table name with [] (square brackets) in sql server queries.
+    /// </summary>
+    bool Enclose { get; }
 
-            SchemaName = schemaName ?? "";
-            TableName = name;
-            TableDescription = desc ?? "";
-            Enclose = enclose;
-            Alias = alias ?? "_" + AliasGenerator.GetAlias();
-            IsView = isView;
+    PrimaryKey? PrimaryKey { get; }
+
+    UniqueConstraint[] UniqueConstraints { get; }
+
+    ForeignKey[] ForeignKeys { get; }
+
+    CheckConstraint[] CheckConstraints { get; }
+}
+
+/// <summary>
+/// This class is used to generate an alias for each instance of a table class. This alias is used when generating sql queries.
+/// </summary>
+internal static class AliasGenerator {
+
+    private static volatile uint _counter = 0;
+    private static readonly Lock _lock = new Lock();
+
+    public static string GetAlias() {
+
+        uint alias;
+
+        lock(_lock) {
+            alias = _counter++;
         }
+        return alias.ToString("X");
+    }
+}
+
+/// <summary>
+/// Represents a database table
+/// </summary>
+[DebuggerDisplay("Schema: {SchemaName}, Table Name: {TableName}, Alias: {Alias}")]
+public abstract class ATable : ITable {
+
+    public string SchemaName { get; }
+    public string TableName { get; }
+    public string TableDescription { get; }
+    public bool Enclose { get; }
+    public string Alias { get; }
+    public bool IsView { get; }
+
+    public virtual PrimaryKey? PrimaryKey => null;
+    public virtual UniqueConstraint[] UniqueConstraints => [];
+    public virtual ForeignKey[] ForeignKeys => [];
+    public virtual CheckConstraint[] CheckConstraints => [];
+
+    /// <summary>
+    /// Abstract table
+    /// </summary>
+    /// <param name="name">Name of table in database</param>
+    /// <param name="schemaName">Schema table belongs to</param>
+    /// <param name="alias">Set table to a specific alias. Empty string sets no alias and null
+    /// causes a unique alias to be generated.</param>
+    /// <param name="enclose">Set to true if the table name is a sql keyword. This will stop the
+    /// key word from causing invalid sql from being created</param>
+    /// <param name="desc">Table description</param>
+    /// <exception cref="ArgumentException"></exception>
+    protected ATable(string name, string schemaName, string? alias = null, bool enclose = false,
+                     bool isView = false, string desc = "") {
+
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        SchemaName = schemaName ?? "";
+        TableName = name;
+        TableDescription = desc ?? "";
+        Enclose = enclose;
+        Alias = alias ?? "_" + AliasGenerator.GetAlias();
+        IsView = isView;
     }
 }

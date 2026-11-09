@@ -22,22 +22,21 @@
  * SOFTWARE.
  **/
 
-namespace QueryLite.DbSchema.Tables.SqlServer {
+namespace QueryLite.DbSchema.Tables.SqlServer; 
 
-    public sealed class CheckConstraintsTable : ATable {
+public sealed class CheckConstraintsTable : ATable {
 
-        public static readonly CheckConstraintsTable Instance = new();
+    public static readonly CheckConstraintsTable Instance = new();
 
-        public Column<string> ConstraintCatalog { get; }
-        public Column<SchemaName, string> ConstraintSchema { get; }
-        public Column<string> ConstraintName { get; }
-        public Column<string> CheckCaluse { get; }
+    public Column<string> ConstraintCatalog { get; }
+    public Column<SchemaName, string> ConstraintSchema { get; }
+    public Column<string> ConstraintName { get; }
+    public Column<string> CheckCaluse { get; }
 
-        public CheckConstraintsTable() : base(name: "check_constraints", schemaName: "information_schema") {
-            ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
-            ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
-            ConstraintName = new Column<string>(table: this, name: "constraint_name");
-            CheckCaluse = new Column<string>(table: this, name: "check_clause");
-        }
+    public CheckConstraintsTable() : base(name: "check_constraints", schemaName: "information_schema") {
+        ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
+        ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
+        ConstraintName = new Column<string>(table: this, name: "constraint_name");
+        CheckCaluse = new Column<string>(table: this, name: "check_clause");
     }
 }

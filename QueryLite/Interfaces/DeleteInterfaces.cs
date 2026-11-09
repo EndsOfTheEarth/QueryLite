@@ -21,66 +21,65 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    public interface IDeleteFrom : IDeleteNoWhere {
+public interface IDeleteFrom : IDeleteNoWhere {
 
-        /// <summary>
-        /// Use additional tables in the delete query. Note: The 'From' and 'Using' methods are just aliases for the same action.
-        /// </summary>
-        /// <param name="tables"></param>
-        /// <returns></returns>
-        IDeleteWhere From(ITable table, params ITable[] tables);
+    /// <summary>
+    /// Use additional tables in the delete query. Note: The 'From' and 'Using' methods are just aliases for the same action.
+    /// </summary>
+    /// <param name="tables"></param>
+    /// <returns></returns>
+    IDeleteWhere From(ITable table, params ITable[] tables);
 
-        /// <summary>
-        /// Use additional tables in the delete query. Note: The 'From' and 'Using' methods are just aliases for the same action.
-        /// </summary>
-        /// <param name="tables"></param>
-        /// <returns></returns>
-        IDeleteWhere Using(ITable table, params ITable[] tables);
-    }
+    /// <summary>
+    /// Use additional tables in the delete query. Note: The 'From' and 'Using' methods are just aliases for the same action.
+    /// </summary>
+    /// <param name="tables"></param>
+    /// <returns></returns>
+    IDeleteWhere Using(ITable table, params ITable[] tables);
+}
 
-    public interface IDeleteNoWhere : IDeleteWhere {
+public interface IDeleteNoWhere : IDeleteWhere {
 
-        /// <summary>
-        /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used when there is no where clause on a delete query.
-        /// </summary>
-        /// <returns></returns>
-        public IDeleteExecute NoWhereCondition();
-    }
+    /// <summary>
+    /// Explicitly state that there is no where clause. For code safety purposes the 'NoWhereCondition()' method must be used when there is no where clause on a delete query.
+    /// </summary>
+    /// <returns></returns>
+    public IDeleteExecute NoWhereCondition();
+}
 
-    public interface IDeleteWhere {
+public interface IDeleteWhere {
 
-        /// <summary>
-        /// Where clause
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        public IDeleteExecute Where(ICondition condition);
-    }
+    /// <summary>
+    /// Where clause
+    /// </summary>
+    /// <param name="condition"></param>
+    /// <returns></returns>
+    public IDeleteExecute Where(ICondition condition);
+}
 
-    public interface IDeleteExecute {
+public interface IDeleteExecute {
 
-        /// <summary>
-        /// Get delete sql
-        /// </summary>
-        /// <param name="database"></param>
-        /// <returns></returns>
-        string GetSql(IDatabase database);
+    /// <summary>
+    /// Get delete sql
+    /// </summary>
+    /// <param name="database"></param>
+    /// <returns></returns>
+    string GetSql(IDatabase database);
 
-        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
-                               string debugName = "");
+    NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                           string debugName = "");
 
-        QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
-                                            QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
-                                            string debugName = "");
+    QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
+                                        QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                        string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
-                                          QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
-                                          string debugName = "");
+    Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
+                                      QueryTimeout? timeout = null, Parameters useParameters = Parameters.Default,
+                                      string debugName = "");
 
-        Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
-                                                       CancellationToken? ct = null, QueryTimeout? timeout = null,
-                                                       Parameters useParameters = Parameters.Default, string debugName = "");
-    }
+    Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func, Transaction transaction,
+                                                   CancellationToken? ct = null, QueryTimeout? timeout = null,
+                                                   Parameters useParameters = Parameters.Default, string debugName = "");
 }

@@ -24,99 +24,98 @@
 using QueryLite.Databases.SqlServer.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    internal sealed class SqlServerUpdateQueryGenerator : IUpdateQueryGenerator {
+internal sealed class SqlServerUpdateQueryGenerator : IUpdateQueryGenerator {
 
-        string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+    string IUpdateQueryGenerator.GetSql<RESULT>(UpdateQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
-            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
+        StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
-            sql.Append("UPDATE ");
+        sql.Append("UPDATE ");
 
-            bool useAlias = template.FromTables != null;
+        bool useAlias = template.FromTables != null;
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!useAlias) {                
+        if(!useAlias) {                
 
-                if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                    sql.Append('.');
-                }
-                SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
+            if(!string.IsNullOrWhiteSpace(schemaName)) {
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+                sql.Append('.');
             }
-            else {
-                sql.Append(template.Table.Alias);
-            }
-
-            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
-
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql: null, database, CollectorMode.Update, useAlias: useAlias);
-
-                sql.Append(" SET ");
-                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
-
-                parameters = valuesCollector.Parameters;
-            }
-            else {
-
-                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(sql, database, CollectorMode.Update, useAlias: useAlias);
-
-                sql.Append(" SET ");
-                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
-
-                parameters = null;
-            }
-
-            if(outputFunc != null) {
-
-                SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
-
-                sql.Append(" OUTPUT ");
-
-                outputFunc(collector);
-
-                SqlServerReturningCollectorCache.Release(collector);
-            }
-
-            if(template.FromTables != null) {
-
-                sql.Append(" FROM ");
-
-                if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                    sql.Append('.');
-                }
-                SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-                sql.Append(" as ").Append(template.Table.Alias);
-
-                for(int index = 0; index < template.FromTables.Count; index++) {
-
-                    ITable fromTable = template.FromTables[index];
-
-                    if(fromTable == template.Table) {
-                        throw new Exception("The update table must not be included in the 'FROM' table list");
-                    }
-
-                    sql.Append(',');
-
-                    string fromSchemaName = database.SchemaMap(fromTable.SchemaName);
-
-                    if(!string.IsNullOrWhiteSpace(fromSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName, EncloseWith.SquareBracket);
-                        sql.Append('.');
-                    }
-                    SqlHelper.AppendEncloseTableName(sql, fromTable, EncloseWith.SquareBracket);
-                    sql.Append(" as ").Append(fromTable.Alias);
-                }
-            }
-
-            if(template.WhereCondition != null) {
-                sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, useAlias: useAlias, parameters);
-            }
-            return StringBuilderCache.ToStringAndRelease(sql);
+            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
         }
+        else {
+            sql.Append(template.Table.Alias);
+        }
+
+        if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
+
+            SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql: null, database, CollectorMode.Update, useAlias: useAlias);
+
+            sql.Append(" SET ");
+            template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
+
+            parameters = valuesCollector.Parameters;
+        }
+        else {
+
+            SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(sql, database, CollectorMode.Update, useAlias: useAlias);
+
+            sql.Append(" SET ");
+            template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
+
+            parameters = null;
+        }
+
+        if(outputFunc != null) {
+
+            SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
+
+            sql.Append(" OUTPUT ");
+
+            outputFunc(collector);
+
+            SqlServerReturningCollectorCache.Release(collector);
+        }
+
+        if(template.FromTables != null) {
+
+            sql.Append(" FROM ");
+
+            if(!string.IsNullOrWhiteSpace(schemaName)) {
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+                sql.Append('.');
+            }
+            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
+            sql.Append(" as ").Append(template.Table.Alias);
+
+            for(int index = 0; index < template.FromTables.Count; index++) {
+
+                ITable fromTable = template.FromTables[index];
+
+                if(fromTable == template.Table) {
+                    throw new Exception("The update table must not be included in the 'FROM' table list");
+                }
+
+                sql.Append(',');
+
+                string fromSchemaName = database.SchemaMap(fromTable.SchemaName);
+
+                if(!string.IsNullOrWhiteSpace(fromSchemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, fromSchemaName, EncloseWith.SquareBracket);
+                    sql.Append('.');
+                }
+                SqlHelper.AppendEncloseTableName(sql, fromTable, EncloseWith.SquareBracket);
+                sql.Append(" as ").Append(fromTable.Alias);
+            }
+        }
+
+        if(template.WhereCondition != null) {
+            sql.Append(" WHERE ");
+            template.WhereCondition.GetSql(sql, database, useAlias: useAlias, parameters);
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

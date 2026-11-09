@@ -26,162 +26,161 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace QueryLite.DbSchema.CodeGeneration {
+namespace QueryLite.DbSchema.CodeGeneration; 
 
-    public static class OutputToFolder {
+public static class OutputToFolder {
 
-        public static void Output(List<DatabaseTable> tables, CodeGeneratorSettings settings,
-                                  string folder, bool singleFiles, IDatabase database) {
+    public static void Output(List<DatabaseTable> tables, CodeGeneratorSettings settings,
+                              string folder, bool singleFiles, IDatabase database) {
 
-            if(string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder)) {
-                throw new ArgumentException($"{nameof(folder)} = '{folder}' does not exist");
-            }
+        if(string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder)) {
+            throw new ArgumentException($"{nameof(folder)} = '{folder}' does not exist");
+        }
 
-            if(singleFiles) {
+        if(singleFiles) {
 
-                foreach(DatabaseTable table in tables) {
+            foreach(DatabaseTable table in tables) {
 
-                    string tablesFolder = Path.Combine(folder, "Tables");
-                    //string validationFolder = Path.Combine(folder, "Validation");
-                    string requestsFolder = Path.Combine(folder, "Requests");
-                    string classesFolder = Path.Combine(folder, "Classes");
-                    string handlersFolder = Path.Combine(folder, "Handlers");
+                string tablesFolder = Path.Combine(folder, "Tables");
+                //string validationFolder = Path.Combine(folder, "Validation");
+                string requestsFolder = Path.Combine(folder, "Requests");
+                string classesFolder = Path.Combine(folder, "Classes");
+                string handlersFolder = Path.Combine(folder, "Handlers");
 
-                    Directory.CreateDirectory(tablesFolder);
-                    Directory.CreateDirectory(classesFolder);
-                    //Directory.CreateDirectory(validationFolder);
-                    Directory.CreateDirectory(requestsFolder);
-                    Directory.CreateDirectory(handlersFolder);
+                Directory.CreateDirectory(tablesFolder);
+                Directory.CreateDirectory(classesFolder);
+                //Directory.CreateDirectory(validationFolder);
+                Directory.CreateDirectory(requestsFolder);
+                Directory.CreateDirectory(handlersFolder);
 
-                    TablePrefix prefix = new(table);
+                TablePrefix prefix = new(table);
 
-                    OutputTableFile(settings, tablesFolder, table);
-                    OutputClassCodeFile(settings, database, classesFolder, table, prefix);
+                OutputTableFile(settings, tablesFolder, table);
+                OutputClassCodeFile(settings, database, classesFolder, table, prefix);
 
-                    if(!table.IsView) {
+                if(!table.IsView) {
 
-                        //OutputValidationFile(settings, validationFolder, table, prefix);
-                        OutputRequestFile(settings, requestsFolder, table, prefix);
-                        OutputHandlersAndValidationToFile(settings, handlersFolder, table, prefix);
-                    }
+                    //OutputValidationFile(settings, validationFolder, table, prefix);
+                    OutputRequestFile(settings, requestsFolder, table, prefix);
+                    OutputHandlersAndValidationToFile(settings, handlersFolder, table, prefix);
                 }
             }
-            else {
+        }
+        else {
 
-                CodeBuilder tableCode = TableCodeGenerator.Generate(tables, settings);
-                CodeBuilder classCode = ClassCodeGenerator.Generate(database, tables, settings);
-                CodeBuilder validationCode = FluentValidationGenerator.Generate(tables, settings);
-                CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(tables, settings);
-                CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(tables, settings);
+            CodeBuilder tableCode = TableCodeGenerator.Generate(tables, settings);
+            CodeBuilder classCode = ClassCodeGenerator.Generate(database, tables, settings);
+            CodeBuilder validationCode = FluentValidationGenerator.Generate(tables, settings);
+            CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(tables, settings);
+            CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(tables, settings);
 
-                File.WriteAllText(Path.Combine(folder, "Tables.cs"), tableCode.ToString());
-                File.WriteAllText(Path.Combine(folder, "Classes.cs"), classCode.ToString());
-                File.WriteAllText(Path.Combine(folder, "Validation.cs"), validationCode.ToString());
-                File.WriteAllText(Path.Combine(folder, "Requests.cs"), requestsCode.ToString());
-                File.WriteAllText(Path.Combine(folder, "Handlers.cs"), handlersCode.ToString());
-            }
+            File.WriteAllText(Path.Combine(folder, "Tables.cs"), tableCode.ToString());
+            File.WriteAllText(Path.Combine(folder, "Classes.cs"), classCode.ToString());
+            File.WriteAllText(Path.Combine(folder, "Validation.cs"), validationCode.ToString());
+            File.WriteAllText(Path.Combine(folder, "Requests.cs"), requestsCode.ToString());
+            File.WriteAllText(Path.Combine(folder, "Handlers.cs"), handlersCode.ToString());
+        }
+    }
+
+    private static void OutputHandlersAndValidationToFile(CodeGeneratorSettings settings, string handlersFolder,
+                                                          DatabaseTable table, TablePrefix prefix) {
+
+        string handlersAndSchemaFolder = Path.Combine(handlersFolder, (table.Schema.Value ?? ""));
+
+        if(!Directory.Exists(handlersAndSchemaFolder)) {
+            Directory.CreateDirectory(handlersAndSchemaFolder);
         }
 
-        private static void OutputHandlersAndValidationToFile(CodeGeneratorSettings settings, string handlersFolder,
-                                                              DatabaseTable table, TablePrefix prefix) {
+        CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(
+            table: table,
+            prefix: prefix,
+            settings: settings,
+            includeUsings: true
+        );
+        CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(
+            table: table,
+            prefix: prefix,
+            settings: settings,
+            includeUsings: true
+        );
 
-            string handlersAndSchemaFolder = Path.Combine(handlersFolder, (table.Schema.Value ?? ""));
+        handlersCode.EndLine().EndLine();
+        handlersCode.Append(validationCode.ToString()); //Add the validation code to the handlers code
 
-            if(!Directory.Exists(handlersAndSchemaFolder)) {
-                Directory.CreateDirectory(handlersAndSchemaFolder);
-            }
+        string handlersFileName = Path.Combine(handlersAndSchemaFolder, CodeHelper.GetTableName(
+            table: table,
+            includePostFix: false) + "Handlers.cs"
+        );
 
-            CodeBuilder handlersCode = MediatorCodeGenerator.GenerateMediatorHandlersCode(
-                table: table,
-                prefix: prefix,
-                settings: settings,
-                includeUsings: true
-            );
-            CodeBuilder validationCode = FluentValidationGenerator.GenerateFluentValidationCode(
-                table: table,
-                prefix: prefix,
-                settings: settings,
-                includeUsings: true
-            );
+        File.WriteAllText(handlersFileName, handlersCode.ToString());
+    }
 
-            handlersCode.EndLine().EndLine();
-            handlersCode.Append(validationCode.ToString()); //Add the validation code to the handlers code
+    private static void OutputRequestFile(CodeGeneratorSettings settings, string requestsFolder,
+                                          DatabaseTable table, TablePrefix prefix) {
 
-            string handlersFileName = Path.Combine(handlersAndSchemaFolder, CodeHelper.GetTableName(
-                table: table,
-                includePostFix: false) + "Handlers.cs"
-            );
+        string requestsAndSchemaFolder = Path.Combine(requestsFolder, (table.Schema.Value ?? ""));
 
-            File.WriteAllText(handlersFileName, handlersCode.ToString());
+        if(!Directory.Exists(requestsAndSchemaFolder)) {
+            Directory.CreateDirectory(requestsAndSchemaFolder);
         }
 
-        private static void OutputRequestFile(CodeGeneratorSettings settings, string requestsFolder,
-                                              DatabaseTable table, TablePrefix prefix) {
+        CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(
+            table: table,
+            prefix: prefix,
+            settings: settings,
+            includeUsings: true
+        );
+        string requestsFileName = Path.Combine(
+            path1: requestsAndSchemaFolder,
+            path2: CodeHelper.GetTableName(table, includePostFix: false) + "Requests.cs"
+        );
+        File.WriteAllText(requestsFileName, requestsCode.ToString());
+    }
 
-            string requestsAndSchemaFolder = Path.Combine(requestsFolder, (table.Schema.Value ?? ""));
+    private static void OutputClassCodeFile(CodeGeneratorSettings settings, IDatabase database,
+                                            string classesFolder, DatabaseTable table, TablePrefix prefix) {
 
-            if(!Directory.Exists(requestsAndSchemaFolder)) {
-                Directory.CreateDirectory(requestsAndSchemaFolder);
-            }
+        string classesAndSchemaFolder = Path.Combine(
+            path1: classesFolder,
+            path2: table.Schema.Value ?? ""
+        );
 
-            CodeBuilder requestsCode = MediatorCodeGenerator.GenerateMediatorRequestsCode(
-                table: table,
-                prefix: prefix,
-                settings: settings,
-                includeUsings: true
-            );
-            string requestsFileName = Path.Combine(
-                path1: requestsAndSchemaFolder,
-                path2: CodeHelper.GetTableName(table, includePostFix: false) + "Requests.cs"
-            );
-            File.WriteAllText(requestsFileName, requestsCode.ToString());
+        if(!Directory.Exists(classesAndSchemaFolder)) {
+            Directory.CreateDirectory(classesAndSchemaFolder);
         }
 
-        private static void OutputClassCodeFile(CodeGeneratorSettings settings, IDatabase database,
-                                                string classesFolder, DatabaseTable table, TablePrefix prefix) {
+        CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(
+            database: database,
+            table: table,
+            prefix: prefix,
+            settings: settings,
+            includeUsings: true
+        );
 
-            string classesAndSchemaFolder = Path.Combine(
-                path1: classesFolder,
-                path2: table.Schema.Value ?? ""
-            );
+        string classesFileName = Path.Combine(
+            path1: classesAndSchemaFolder,
+            path2: $"{CodeHelper.GetTableName(table, includePostFix: false)}{(table.IsView ? "View" : "")}.cs"
+        );
+        File.WriteAllText(classesFileName, classCode.ToString());
+    }
 
-            if(!Directory.Exists(classesAndSchemaFolder)) {
-                Directory.CreateDirectory(classesAndSchemaFolder);
-            }
+    private static void OutputTableFile(CodeGeneratorSettings settings, string tablesFolder, DatabaseTable table) {
 
-            CodeBuilder classCode = ClassCodeGenerator.GenerateClassCode(
-                database: database,
-                table: table,
-                prefix: prefix,
-                settings: settings,
-                includeUsings: true
-            );
+        string tablesAndSchemaFolder = Path.Combine(
+            path1: tablesFolder,
+            path2: table.Schema.Value ?? ""
+        );
 
-            string classesFileName = Path.Combine(
-                path1: classesAndSchemaFolder,
-                path2: $"{CodeHelper.GetTableName(table, includePostFix: false)}{(table.IsView ? "View" : "")}.cs"
-            );
-            File.WriteAllText(classesFileName, classCode.ToString());
+        if(!Directory.Exists(tablesAndSchemaFolder)) {
+            Directory.CreateDirectory(tablesAndSchemaFolder);
         }
 
-        private static void OutputTableFile(CodeGeneratorSettings settings, string tablesFolder, DatabaseTable table) {
+        CodeBuilder tableCode = TableCodeGenerator.Generate([table], settings);
 
-            string tablesAndSchemaFolder = Path.Combine(
-                path1: tablesFolder,
-                path2: table.Schema.Value ?? ""
-            );
-
-            if(!Directory.Exists(tablesAndSchemaFolder)) {
-                Directory.CreateDirectory(tablesAndSchemaFolder);
-            }
-
-            CodeBuilder tableCode = TableCodeGenerator.Generate([table], settings);
-
-            string tableFileName = Path.Combine(
-                path1: tablesAndSchemaFolder,
-                path2: $"{CodeHelper.GetTableName(table, includePostFix: true)}.cs"
-            );
-            File.WriteAllText(tableFileName, tableCode.ToString());
-        }
+        string tableFileName = Path.Combine(
+            path1: tablesAndSchemaFolder,
+            path2: $"{CodeHelper.GetTableName(table, includePostFix: true)}.cs"
+        );
+        File.WriteAllText(tableFileName, tableCode.ToString());
     }
 }

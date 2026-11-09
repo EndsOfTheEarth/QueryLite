@@ -21,148 +21,147 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    public static class Query {
+public static class Query {
 
-        /// <summary>
-        /// Nested query
-        /// </summary>
-        public static IDistinct<FIELD> NestedSelect<FIELD>(FIELD field) where FIELD : IField {
-            return new SelectQueryTemplate<FIELD>([field]);
+    /// <summary>
+    /// Nested query
+    /// </summary>
+    public static IDistinct<FIELD> NestedSelect<FIELD>(FIELD field) where FIELD : IField {
+        return new SelectQueryTemplate<FIELD>([field]);
+    }
+
+    /// <summary>
+    /// Sql select query
+    /// </summary>
+    public static IDistinct<RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new SelectQueryTemplate<RESULT>(selectFunc);
+
+    /// <summary>
+    /// Create a prepared query
+    /// </summary>
+    /// <typeparam name="PARAMETERS"></typeparam>
+    /// <returns></returns>
+    public static IPreparedOption<PARAMETERS> Prepare<PARAMETERS>() => new PreparedOption<PARAMETERS>();
+
+    public interface IPreparedOption<PARAMETERS> {
+
+        IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
+        IPreparedInsertSet<PARAMETERS> Insert(ITable table);
+        IPreparedUpdateSet<PARAMETERS> Update(ITable table);
+        IPreparedDeleteFrom<PARAMETERS> Delete(ITable table);
+    }
+
+    internal sealed class PreparedOption<PARAMETERS> : IPreparedOption<PARAMETERS> {
+
+        public IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) {
+            return new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc);
         }
 
-        /// <summary>
-        /// Sql select query
-        /// </summary>
-        public static IDistinct<RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) => new SelectQueryTemplate<RESULT>(selectFunc);
+        public IPreparedInsertSet<PARAMETERS> Insert(ITable table) => new PreparedInsertTemplate<PARAMETERS>(table);
 
-        /// <summary>
-        /// Create a prepared query
-        /// </summary>
-        /// <typeparam name="PARAMETERS"></typeparam>
-        /// <returns></returns>
-        public static IPreparedOption<PARAMETERS> Prepare<PARAMETERS>() => new PreparedOption<PARAMETERS>();
+        public IPreparedUpdateSet<PARAMETERS> Update(ITable table) => new PreparedUpdateTemplate<PARAMETERS>(table);
 
-        public interface IPreparedOption<PARAMETERS> {
+        public IPreparedDeleteFrom<PARAMETERS> Delete(ITable table) => new PreparedDeleteQueryTemplate<PARAMETERS>(table);
+    }
 
-            IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc);
-            IPreparedInsertSet<PARAMETERS> Insert(ITable table);
-            IPreparedUpdateSet<PARAMETERS> Update(ITable table);
-            IPreparedDeleteFrom<PARAMETERS> Delete(ITable table);
-        }
+    /// <summary>
+    /// Sql insert query
+    /// </summary>
+    public static IInsertSet Insert(ITable table) {
+        return new InsertQueryTemplate(table);
+    }
 
-        internal sealed class PreparedOption<PARAMETERS> : IPreparedOption<PARAMETERS> {
+    /// <summary>
+    /// Sql update query
+    /// </summary>
+    public static IUpdateSet Update(ITable table) {
+        return new UpdateQueryTemplate(table);
+    }
 
-            public IPreparedDistinct<PARAMETERS, RESULT> Select<RESULT>(Func<IResultRow, RESULT> selectFunc) {
-                return new PreparedQueryTemplate<PARAMETERS, RESULT>(selectFunc);
-            }
+    /// <summary>
+    /// Sql delete query
+    /// </summary>
+    public static IDeleteFrom Delete(ITable table) {
+        return new DeleteQueryTemplate(table);
+    }
 
-            public IPreparedInsertSet<PARAMETERS> Insert(ITable table) => new PreparedInsertTemplate<PARAMETERS>(table);
+    /// <summary>
+    /// Sql truncate query
+    /// </summary>
+    public static ITruncate Truncate(ITable table) {
+        return new TruncateQueryTemplate(table);
+    }
 
-            public IPreparedUpdateSet<PARAMETERS> Update(ITable table) => new PreparedUpdateTemplate<PARAMETERS>(table);
+    public static NonQueryResult ExecuteNonQuery(string sql, IDatabase database, QueryTimeout? timeout = null,
+                                                 string debugName = "") {
 
-            public IPreparedDeleteFrom<PARAMETERS> Delete(ITable table) => new PreparedDeleteQueryTemplate<PARAMETERS>(table);
-        }
+        ArgumentNullException.ThrowIfNull(sql);
+        ArgumentNullException.ThrowIfNull(database);
 
-        /// <summary>
-        /// Sql insert query
-        /// </summary>
-        public static IInsertSet Insert(ITable table) {
-            return new InsertQueryTemplate(table);
-        }
+        return QueryExecutor.ExecuteNonQuery(
+            database: database,
+            transaction: null,
+            timeout: timeout ?? TimeoutLevel.ShortSelect,
+            parameters: null,
+            sql: sql,
+            queryType: QueryType.Custom,
+            debugName: debugName
+        );
+    }
 
-        /// <summary>
-        /// Sql update query
-        /// </summary>
-        public static IUpdateSet Update(ITable table) {
-            return new UpdateQueryTemplate(table);
-        }
+    public static NonQueryResult ExecuteNonQuery(string sql, Transaction transaction, QueryTimeout? timeout = null,
+                                                 string debugName = "") {
 
-        /// <summary>
-        /// Sql delete query
-        /// </summary>
-        public static IDeleteFrom Delete(ITable table) {
-            return new DeleteQueryTemplate(table);
-        }
+        ArgumentNullException.ThrowIfNull(sql);
+        ArgumentNullException.ThrowIfNull(transaction);
 
-        /// <summary>
-        /// Sql truncate query
-        /// </summary>
-        public static ITruncate Truncate(ITable table) {
-            return new TruncateQueryTemplate(table);
-        }
+        return QueryExecutor.ExecuteNonQuery(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout ?? TimeoutLevel.ShortSelect,
+            parameters: null,
+            sql: sql,
+            queryType: QueryType.Custom,
+            debugName: debugName
+        );
+    }
 
-        public static NonQueryResult ExecuteNonQuery(string sql, IDatabase database, QueryTimeout? timeout = null,
-                                                     string debugName = "") {
+    public static async Task<NonQueryResult> ExecuteNonQueryAsync(string sql, IDatabase database,
+                                                                  CancellationToken ct, QueryTimeout? timeout = null,
+                                                                  string debugName = "") {
 
-            ArgumentNullException.ThrowIfNull(sql);
-            ArgumentNullException.ThrowIfNull(database);
+        ArgumentNullException.ThrowIfNull(sql);
+        ArgumentNullException.ThrowIfNull(database);
 
-            return QueryExecutor.ExecuteNonQuery(
-                database: database,
-                transaction: null,
-                timeout: timeout ?? TimeoutLevel.ShortSelect,
-                parameters: null,
-                sql: sql,
-                queryType: QueryType.Custom,
-                debugName: debugName
-            );
-        }
+        return await QueryExecutor.ExecuteNonQueryAsync(
+            database: database,
+            transaction: null,
+            timeout: timeout ?? TimeoutLevel.ShortSelect,
+            parameters: null,
+            sql: sql,
+            queryType: QueryType.Custom,
+            debugName: debugName,
+            ct: ct
+        );
+    }
 
-        public static NonQueryResult ExecuteNonQuery(string sql, Transaction transaction, QueryTimeout? timeout = null,
-                                                     string debugName = "") {
+    public static async Task<NonQueryResult> ExecuteNonQueryAsync(string sql, Transaction transaction,
+                                                                  CancellationToken ct, QueryTimeout? timeout = null,
+                                                                  string debugName = "") {
 
-            ArgumentNullException.ThrowIfNull(sql);
-            ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(sql);
+        ArgumentNullException.ThrowIfNull(transaction);
 
-            return QueryExecutor.ExecuteNonQuery(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout ?? TimeoutLevel.ShortSelect,
-                parameters: null,
-                sql: sql,
-                queryType: QueryType.Custom,
-                debugName: debugName
-            );
-        }
-
-        public static async Task<NonQueryResult> ExecuteNonQueryAsync(string sql, IDatabase database,
-                                                                      CancellationToken ct, QueryTimeout? timeout = null,
-                                                                      string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(sql);
-            ArgumentNullException.ThrowIfNull(database);
-
-            return await QueryExecutor.ExecuteNonQueryAsync(
-                database: database,
-                transaction: null,
-                timeout: timeout ?? TimeoutLevel.ShortSelect,
-                parameters: null,
-                sql: sql,
-                queryType: QueryType.Custom,
-                debugName: debugName,
-                ct: ct
-            );
-        }
-
-        public static async Task<NonQueryResult> ExecuteNonQueryAsync(string sql, Transaction transaction,
-                                                                      CancellationToken ct, QueryTimeout? timeout = null,
-                                                                      string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(sql);
-            ArgumentNullException.ThrowIfNull(transaction);
-
-            return await QueryExecutor.ExecuteNonQueryAsync(
-                database: transaction.Database,
-                transaction: transaction,
-                timeout: timeout ?? TimeoutLevel.ShortSelect,
-                parameters: null,
-                sql: sql,
-                queryType: QueryType.Custom,
-                debugName: debugName,
-                ct: ct
-            );
-        }
+        return await QueryExecutor.ExecuteNonQueryAsync(
+            database: transaction.Database,
+            transaction: transaction,
+            timeout: timeout ?? TimeoutLevel.ShortSelect,
+            parameters: null,
+            sql: sql,
+            queryType: QueryType.Custom,
+            debugName: debugName,
+            ct: ct
+        );
     }
 }

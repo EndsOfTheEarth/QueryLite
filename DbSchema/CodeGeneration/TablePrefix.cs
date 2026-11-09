@@ -24,103 +24,102 @@
 using System;
 using System.Text;
 
-namespace QueryLite.DbSchema.CodeGeneration {
+namespace QueryLite.DbSchema.CodeGeneration; 
 
-    /// <summary>
-    /// This class determines if all the columns of a particular table share a common prefix
-    /// </summary>
-    public sealed class TablePrefix {
+/// <summary>
+/// This class determines if all the columns of a particular table share a common prefix
+/// </summary>
+public sealed class TablePrefix {
 
-        public string Prefix { get; private set; }
+    public string Prefix { get; private set; }
 
-        public TablePrefix(string prefix) {
-            Prefix = prefix;
+    public TablePrefix(string prefix) {
+        Prefix = prefix;
+    }
+
+    public TablePrefix(DatabaseTable table) {
+
+        if(table.Columns.Count <= 1) {
+            Prefix = "";
+            return;
         }
 
-        public TablePrefix(DatabaseTable table) {
+        bool stop = false;
 
-            if(table.Columns.Count <= 1) {
-                Prefix = "";
-                return;
-            }
+        StringBuilder prefix = new();
 
-            bool stop = false;
+        for(int index = 0; index < 10; index++) {   // Limit prefix up to 10 characters
 
-            StringBuilder prefix = new();
+            char? c = null;
 
-            for(int index = 0; index < 10; index++) {   // Limit prefix up to 10 characters
+            foreach(DatabaseColumn column in table.Columns) {
 
-                char? c = null;
+                bool endOfPrefix = index >= (column.ColumnName.Value.Length - 1) ||
+                              (c != null && column.ColumnName.Value[index] != c);
 
-                foreach(DatabaseColumn column in table.Columns) {
-
-                    bool endOfPrefix = index >= (column.ColumnName.Value.Length - 1) ||
-                                  (c != null && column.ColumnName.Value[index] != c);
-
-                    if(endOfPrefix) {
-                        stop = true;
-                        break;
-                    }
-                    else {
-                        c = column.ColumnName.Value[index];
-                    }
-                }
-                if(!stop && c != null) {
-                    prefix.Append(c.Value);
-                }
-                else {
+                if(endOfPrefix) {
+                    stop = true;
                     break;
                 }
-            }
-            Prefix = prefix.Length > 1 ? prefix.ToString() : "";
-        }
-
-        public string GetColumnName(string columnName, string? className) {
-
-            string name = columnName;
-
-            name = name.Replace('.', '_').Replace(' ', '_');
-
-            bool nameClash = CodeHelper.IsCSharpKeyword(columnName) ||
-                             string.Equals(name, className ?? "", StringComparison.OrdinalIgnoreCase);
-
-            if(nameClash) {
-                name = name + "_";
-            }
-
-            bool isNumber = name.Length > 0 &&
-                            char.IsNumber(name[0]);
-
-            if(isNumber) {
-                name = "_" + name;
-            }
-
-            bool hasPrefix = Prefix.Length > 0 &&
-                             columnName.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase);
-
-            if(hasPrefix) {
-                name = columnName[Prefix.Length..];
-            }
-
-            StringBuilder nameText = new(name);
-
-            nameText[0] = char.ToUpper(name[0]);
-
-            char previous = nameText[0];
-
-            //Replace underscores and make next character uppercase
-            for(int index = 1; index < nameText.Length; index++) {
-
-                char current = nameText[index];
-
-                if(previous == '_' && !char.IsUpper(current)) {
-                    nameText[index] = char.ToUpper(current);
+                else {
+                    c = column.ColumnName.Value[index];
                 }
-                previous = current;
             }
-            nameText.Replace("_", "");
-
-            return nameText.ToString();
+            if(!stop && c != null) {
+                prefix.Append(c.Value);
+            }
+            else {
+                break;
+            }
         }
+        Prefix = prefix.Length > 1 ? prefix.ToString() : "";
+    }
+
+    public string GetColumnName(string columnName, string? className) {
+
+        string name = columnName;
+
+        name = name.Replace('.', '_').Replace(' ', '_');
+
+        bool nameClash = CodeHelper.IsCSharpKeyword(columnName) ||
+                         string.Equals(name, className ?? "", StringComparison.OrdinalIgnoreCase);
+
+        if(nameClash) {
+            name = name + "_";
+        }
+
+        bool isNumber = name.Length > 0 &&
+                        char.IsNumber(name[0]);
+
+        if(isNumber) {
+            name = "_" + name;
+        }
+
+        bool hasPrefix = Prefix.Length > 0 &&
+                         columnName.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase);
+
+        if(hasPrefix) {
+            name = columnName[Prefix.Length..];
+        }
+
+        StringBuilder nameText = new(name);
+
+        nameText[0] = char.ToUpper(name[0]);
+
+        char previous = nameText[0];
+
+        //Replace underscores and make next character uppercase
+        for(int index = 1; index < nameText.Length; index++) {
+
+            char current = nameText[index];
+
+            if(previous == '_' && !char.IsUpper(current)) {
+                nameText[index] = char.ToUpper(current);
+            }
+            previous = current;
+        }
+        nameText.Replace("_", "");
+
+        return nameText.ToString();
     }
 }

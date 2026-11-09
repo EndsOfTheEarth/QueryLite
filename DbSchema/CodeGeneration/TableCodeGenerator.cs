@@ -24,273 +24,272 @@
 using System;
 using System.Collections.Generic;
 
-namespace QueryLite.DbSchema.CodeGeneration {
+namespace QueryLite.DbSchema.CodeGeneration; 
 
-    public static class TableCodeGenerator {
+public static class TableCodeGenerator {
 
-        public static CodeBuilder Generate(List<DatabaseTable> tables, CodeGeneratorSettings settings) {
+    public static CodeBuilder Generate(List<DatabaseTable> tables, CodeGeneratorSettings settings) {
 
-            CodeBuilder code = new CodeBuilder();
+        CodeBuilder code = new CodeBuilder();
 
-            code.Append("using System;").EndLine();
-            code.Append("using QueryLite;").EndLine();
+        code.Append("using System;").EndLine();
+        code.Append("using QueryLite;").EndLine();
 
-            bool skipInterfaces = tables.Count == 1 && tables[0].IsView;
+        bool skipInterfaces = tables.Count == 1 && tables[0].IsView;
 
-            List<SchemaName> schemaNames = [];
+        List<SchemaName> schemaNames = [];
+
+        foreach(DatabaseTable table in tables) {
+
+            if(!schemaNames.Contains(table.Schema)) {
+                schemaNames.Add(table.Schema);
+            }
+        }
+
+        schemaNames.Sort((a, b) => a.Value.CompareTo(b.Value));
+
+        int count = 0;
+
+        foreach(SchemaName schema in schemaNames) {
+
+            if(count > 0) {
+                code.EndLine();
+            }
+            count++;
+            code.EndLine().Append($"namespace {settings.Namespaces.GetTableNamespace(schema)} {{").EndLine();
 
             foreach(DatabaseTable table in tables) {
 
-                if(!schemaNames.Contains(table.Schema)) {
-                    schemaNames.Add(table.Schema);
+                if(string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
+                    TablePrefix prefix = new TablePrefix(table);
+                    code.Append(Generate(table, prefix, settings, includeUsings: false).ToString());
                 }
             }
+            code.Append("}");
+        }
+        return code;
+    }
 
-            schemaNames.Sort((a, b) => a.Value.CompareTo(b.Value));
+    public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix,
+                                       CodeGeneratorSettings settings, bool includeUsings) {
 
-            int count = 0;
+        CodeBuilder code = new();
 
-            foreach(SchemaName schema in schemaNames) {
+        if(includeUsings) {
 
-                if(count > 0) {
-                    code.EndLine();
-                }
-                count++;
-                code.EndLine().Append($"namespace {settings.Namespaces.GetTableNamespace(schema)} {{").EndLine();
+            code.Append($"namespace {settings.Namespaces.GetTableNamespace(table.Schema)} {{").EndLine().EndLine();
 
-                foreach(DatabaseTable table in tables) {
-
-                    if(string.Equals(table.Schema.Value, schema.Value, StringComparison.OrdinalIgnoreCase)) {
-                        TablePrefix prefix = new TablePrefix(table);
-                        code.Append(Generate(table, prefix, settings, includeUsings: false).ToString());
-                    }
-                }
-                code.Append("}");
-            }
-            return code;
+            code.Indent(1).Append("using System;").EndLine();
+            code.Indent(1).Append("using QueryLite;").EndLine();
         }
 
-        public static CodeBuilder Generate(DatabaseTable table, TablePrefix prefix,
-                                           CodeGeneratorSettings settings, bool includeUsings) {
+        code.EndLine();
 
-            CodeBuilder code = new();
+        string tableClassName = CodeHelper.GetTableName(table: table, includePostFix: true);
 
-            if(includeUsings) {
+        code.Indent(1).Append($"public sealed class {tableClassName} : ATable {{").EndLine().EndLine();
 
-                code.Append($"namespace {settings.Namespaces.GetTableNamespace(table.Schema)} {{").EndLine().EndLine();
+        code.Indent(2).Append($"public static readonly {tableClassName} Instance = new();").EndLine();
 
-                code.Indent(1).Append("using System;").EndLine();
-                code.Indent(1).Append("using QueryLite;").EndLine();
+        for(int index = 1; index < settings.NumberOfInstanceProperties; index++) {
+            code.Indent(2).Append($"public static readonly {tableClassName} Instance{index + 1} = new();").EndLine();
+        }
+
+        List<string> lines = [];
+
+        code.EndLine();
+
+        int count = 0;
+
+        foreach(DatabaseColumn column in table.Columns) {
+
+            CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(
+                table: table,
+                column: column,
+                useIdentifiers: settings.UseIdentifiers
+            );
+
+            string columnClass = !column.IsNullable ? "Column" : "NColumn";
+
+            string columnName = prefix.GetColumnName(
+                columnName: column.ColumnName.Value,
+                className: tableClassName
+            );
+
+            bool addSuppressAttribute = false;
+
+            if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType))) {    //Ignore unsupported types
+                addSuppressAttribute = true;
+                code.EndLine();
+                code.Indent(2).Append("[SuppressColumnTypeValidation] --> ***PLEASE_CHECK_UNSUPPORTED_TYPE***").EndLine();
             }
+            count++;
+
+            string underlyingTypeText = "";
+
+            if(columnInfo.IdentifierType == IdentifierType.Custom) {
+                underlyingTypeText = $", {columnInfo.UnderlyingTypeName}";
+            }
+
+            code.Indent(2).Append($"public {columnClass}<{columnInfo.ColumnTypeName}{underlyingTypeText}> {columnName} {{ get; }}").EndLine();
+
+            if(addSuppressAttribute) {
+                code.EndLine();
+            }
+
+            string columnLengthParameter = "";
+
+            if(column.Length?.LengthType == LengthType.Max || columnInfo.DotNetType == typeof(byte[])) {
+                columnLengthParameter = $", length: {nameof(ColumnLength)}.MAX";
+            }
+            else if(column.Length != null) {
+                columnLengthParameter = $", length: new({column.Length?.Length})";
+            }
+
+            string encloseParameter = SqlKeyWordLookup.IsKeyWord(column.ColumnName.Value) ? ", enclose: true" : "";
+
+            string columnDescription = settings.IncludeDescriptions ? $", desc: \"{CodeHelper.EscapeCSharpString(column.Description)}\"" : "";
+
+            lines.Add($"{columnName} = new {columnClass}<{columnInfo.ColumnTypeName}{underlyingTypeText}>(this, name: \"{column.ColumnName.Value}\"{(column.IsAutoGenerated ? ", isAutoGenerated: true" : "")}{columnLengthParameter}{encloseParameter}{columnDescription});");
+        }
+
+        if(table.PrimaryKey != null && settings.IncludeConstraints) {
+
+            code.EndLine();
+            code.Indent(2).Append($"public override PrimaryKey? PrimaryKey => new(table: this, name: \"{table.PrimaryKey.ConstraintName}\"");
+
+            foreach(string columnName in table.PrimaryKey.ColumnNames) {
+
+                foreach(DatabaseColumn column in table.Columns) {
+
+                    if(string.Compare(columnName, column.ColumnName.Value, ignoreCase: true) == 0) {
+                        code.Append(", ").Append(prefix.GetColumnName(column.ColumnName.Value, className: tableClassName));
+                        break;
+                    }
+                }
+            }
+            code.Append(");").EndLine();
+        }
+
+        bool includeConstraints = table.UniqueConstraints.Count > 0 && settings.IncludeConstraints;
+
+        if(includeConstraints) {
 
             code.EndLine();
 
-            string tableClassName = CodeHelper.GetTableName(table: table, includePostFix: true);
+            code.Indent(2).Append("public override UniqueConstraint[] UniqueConstraints => [").EndLine();
 
-            code.Indent(1).Append($"public sealed class {tableClassName} : ATable {{").EndLine().EndLine();
+            for(int index = 0; index < table.UniqueConstraints.Count; index++) {
 
-            code.Indent(2).Append($"public static readonly {tableClassName} Instance = new();").EndLine();
+                DatabaseUniqueConstraint uniqueConstraint = table.UniqueConstraints[index];
 
-            for(int index = 1; index < settings.NumberOfInstanceProperties; index++) {
-                code.Indent(2).Append($"public static readonly {tableClassName} Instance{index + 1} = new();").EndLine();
+                if(index > 0) {
+                    code.Append(",").EndLine();
+                }
+                code.Indent(3).Append($"new(this, name: \"{uniqueConstraint.ConstraintName}\"");
+
+                foreach(ColumnName columnName in uniqueConstraint.ColumnNames) {
+                    code.Append(", ").Append(prefix.GetColumnName(columnName.Value, className: tableClassName));
+                }
+                code.Append(")");
             }
+            code.EndLine();
+            code.Indent(2).Append("];").EndLine();
+        }
 
-            List<string> lines = [];
+        bool includeForeignKeys = table.ForeignKeys.Count > 0 && settings.IncludeConstraints;
+
+        if(includeForeignKeys) {
 
             code.EndLine();
 
-            int count = 0;
+            code.Indent(2).Append("public override ForeignKey[] ForeignKeys => [").EndLine();
 
-            foreach(DatabaseColumn column in table.Columns) {
+            for(int index = 0; index < table.ForeignKeys.Count; index++) {
 
-                CodeHelper.ColumnInfo columnInfo = CodeHelper.GetColumnInfo(
-                    table: table,
-                    column: column,
-                    useIdentifiers: settings.UseIdentifiers
-                );
+                DatabaseForeignKey foreignKey = table.ForeignKeys[index];
 
-                string columnClass = !column.IsNullable ? "Column" : "NColumn";
-
-                string columnName = prefix.GetColumnName(
-                    columnName: column.ColumnName.Value,
-                    className: tableClassName
-                );
-
-                bool addSuppressAttribute = false;
-
-                if(column.DataType.DotNetType.IsAssignableTo(typeof(IUnsupportedType))) {    //Ignore unsupported types
-                    addSuppressAttribute = true;
-                    code.EndLine();
-                    code.Indent(2).Append("[SuppressColumnTypeValidation] --> ***PLEASE_CHECK_UNSUPPORTED_TYPE***").EndLine();
+                if(index > 0) {
+                    code.Append(",").EndLine();
                 }
-                count++;
+                code.Indent(3).Append($"new ForeignKey(this, name: \"{foreignKey.ConstraintName}\")");
 
-                string underlyingTypeText = "";
+                foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
 
-                if(columnInfo.IdentifierType == IdentifierType.Custom) {
-                    underlyingTypeText = $", {columnInfo.UnderlyingTypeName}";
+                    string foreignKeyColumnName = prefix.GetColumnName(
+                        columnName: reference.ForeignKeyColumn.ColumnName.Value,
+                        className: tableClassName
+                    );
+
+                    TablePrefix primaryKeyTablePrefix = new(reference.PrimaryKeyColumn.Table);
+
+                    string primaryKeyTable = CodeHelper.GetTableName(
+                        table: reference.PrimaryKeyColumn.Table,
+                        includePostFix: true
+                    );
+                    string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(
+                        columnName: reference.PrimaryKeyColumn.ColumnName.Value,
+                        className: null
+                    );
+
+                    string primaryKeyTableSchemaName = !Namespaces.IsDefaultSchema(schema: reference.PrimaryKeyColumn.Table.Schema) ? $"{reference.PrimaryKeyColumn.Table.Schema.Value}." : "";
+
+                    code.Append($".References({foreignKeyColumnName}, {primaryKeyTableSchemaName}{primaryKeyTable}.Instance.{primaryKeyColumnName})");
                 }
-
-                code.Indent(2).Append($"public {columnClass}<{columnInfo.ColumnTypeName}{underlyingTypeText}> {columnName} {{ get; }}").EndLine();
-
-                if(addSuppressAttribute) {
-                    code.EndLine();
-                }
-
-                string columnLengthParameter = "";
-
-                if(column.Length?.LengthType == LengthType.Max || columnInfo.DotNetType == typeof(byte[])) {
-                    columnLengthParameter = $", length: {nameof(ColumnLength)}.MAX";
-                }
-                else if(column.Length != null) {
-                    columnLengthParameter = $", length: new({column.Length?.Length})";
-                }
-
-                string encloseParameter = SqlKeyWordLookup.IsKeyWord(column.ColumnName.Value) ? ", enclose: true" : "";
-
-                string columnDescription = settings.IncludeDescriptions ? $", desc: \"{CodeHelper.EscapeCSharpString(column.Description)}\"" : "";
-
-                lines.Add($"{columnName} = new {columnClass}<{columnInfo.ColumnTypeName}{underlyingTypeText}>(this, name: \"{column.ColumnName.Value}\"{(column.IsAutoGenerated ? ", isAutoGenerated: true" : "")}{columnLengthParameter}{encloseParameter}{columnDescription});");
             }
+            code.EndLine();
+            code.Indent(2).Append("];").EndLine();
+        }
 
-            if(table.PrimaryKey != null && settings.IncludeConstraints) {
-
-                code.EndLine();
-                code.Indent(2).Append($"public override PrimaryKey? PrimaryKey => new(table: this, name: \"{table.PrimaryKey.ConstraintName}\"");
-
-                foreach(string columnName in table.PrimaryKey.ColumnNames) {
-
-                    foreach(DatabaseColumn column in table.Columns) {
-
-                        if(string.Compare(columnName, column.ColumnName.Value, ignoreCase: true) == 0) {
-                            code.Append(", ").Append(prefix.GetColumnName(column.ColumnName.Value, className: tableClassName));
-                            break;
-                        }
-                    }
-                }
-                code.Append(");").EndLine();
-            }
-
-            bool includeConstraints = table.UniqueConstraints.Count > 0 && settings.IncludeConstraints;
-
-            if(includeConstraints) {
-
-                code.EndLine();
-
-                code.Indent(2).Append("public override UniqueConstraint[] UniqueConstraints => [").EndLine();
-
-                for(int index = 0; index < table.UniqueConstraints.Count; index++) {
-
-                    DatabaseUniqueConstraint uniqueConstraint = table.UniqueConstraints[index];
-
-                    if(index > 0) {
-                        code.Append(",").EndLine();
-                    }
-                    code.Indent(3).Append($"new(this, name: \"{uniqueConstraint.ConstraintName}\"");
-
-                    foreach(ColumnName columnName in uniqueConstraint.ColumnNames) {
-                        code.Append(", ").Append(prefix.GetColumnName(columnName.Value, className: tableClassName));
-                    }
-                    code.Append(")");
-                }
-                code.EndLine();
-                code.Indent(2).Append("];").EndLine();
-            }
-
-            bool includeForeignKeys = table.ForeignKeys.Count > 0 && settings.IncludeConstraints;
-
-            if(includeForeignKeys) {
-
-                code.EndLine();
-
-                code.Indent(2).Append("public override ForeignKey[] ForeignKeys => [").EndLine();
-
-                for(int index = 0; index < table.ForeignKeys.Count; index++) {
-
-                    DatabaseForeignKey foreignKey = table.ForeignKeys[index];
-
-                    if(index > 0) {
-                        code.Append(",").EndLine();
-                    }
-                    code.Indent(3).Append($"new ForeignKey(this, name: \"{foreignKey.ConstraintName}\")");
-
-                    foreach(DatabaseForeignKeyReference reference in foreignKey.References) {
-
-                        string foreignKeyColumnName = prefix.GetColumnName(
-                            columnName: reference.ForeignKeyColumn.ColumnName.Value,
-                            className: tableClassName
-                        );
-
-                        TablePrefix primaryKeyTablePrefix = new(reference.PrimaryKeyColumn.Table);
-
-                        string primaryKeyTable = CodeHelper.GetTableName(
-                            table: reference.PrimaryKeyColumn.Table,
-                            includePostFix: true
-                        );
-                        string primaryKeyColumnName = primaryKeyTablePrefix.GetColumnName(
-                            columnName: reference.PrimaryKeyColumn.ColumnName.Value,
-                            className: null
-                        );
-
-                        string primaryKeyTableSchemaName = !Namespaces.IsDefaultSchema(schema: reference.PrimaryKeyColumn.Table.Schema) ? $"{reference.PrimaryKeyColumn.Table.Schema.Value}." : "";
-
-                        code.Append($".References({foreignKeyColumnName}, {primaryKeyTableSchemaName}{primaryKeyTable}.Instance.{primaryKeyColumnName})");
-                    }
-                }
-                code.EndLine();
-                code.Indent(2).Append("];").EndLine();
-            }
-
-            if(table.CheckConstraints.Count > 0 && settings.IncludeConstraints) {
-
-                code.EndLine();
-
-                code.Indent(2).Append("public override CheckConstraint[] CheckConstraints => [").EndLine();
-
-                for(int index = 0; index < table.CheckConstraints.Count; index++) {
-
-                    DatabaseCheckConstraint checkConstraint = table.CheckConstraints[index];
-
-                    if(index > 0) {
-                        code.Append(",").EndLine();
-                    }
-                    code.Indent(3).Append($"new(name: \"{checkConstraint.ConstraintName}\")");
-                }
-                code.EndLine();
-                code.Indent(2).Append("];").EndLine();
-            }
+        if(table.CheckConstraints.Count > 0 && settings.IncludeConstraints) {
 
             code.EndLine();
 
-            string encloseTableName = SqlKeyWordLookup.IsKeyWord(table.TableName.Value) ? ", enclose: true" : "";
+            code.Indent(2).Append("public override CheckConstraint[] CheckConstraints => [").EndLine();
 
-            string isViewCode = table.IsView ? ", isView: true" : "";
+            for(int index = 0; index < table.CheckConstraints.Count; index++) {
 
-            string tableDescription = settings.IncludeDescriptions ? $", desc: \"{CodeHelper.EscapeCSharpString(table.Description)}\"" : "";
+                DatabaseCheckConstraint checkConstraint = table.CheckConstraints[index];
 
-            code.Indent(2).Append($"private {tableClassName}() : base(name: \"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}{isViewCode}{tableDescription}) {{").EndLine().EndLine();
-
-            foreach(string line in lines) {
-                code.Indent(3).Append(line).EndLine();
+                if(index > 0) {
+                    code.Append(",").EndLine();
+                }
+                code.Indent(3).Append($"new(name: \"{checkConstraint.ConstraintName}\")");
             }
-            code.Indent(2).Append("}").EndLine();
+            code.EndLine();
+            code.Indent(2).Append("];").EndLine();
+        }
+
+        code.EndLine();
+
+        string encloseTableName = SqlKeyWordLookup.IsKeyWord(table.TableName.Value) ? ", enclose: true" : "";
+
+        string isViewCode = table.IsView ? ", isView: true" : "";
+
+        string tableDescription = settings.IncludeDescriptions ? $", desc: \"{CodeHelper.EscapeCSharpString(table.Description)}\"" : "";
+
+        code.Indent(2).Append($"private {tableClassName}() : base(name: \"{table.TableName.Value}\", schemaName: \"{table.Schema}\"{encloseTableName}{isViewCode}{tableDescription}) {{").EndLine().EndLine();
+
+        foreach(string line in lines) {
+            code.Indent(3).Append(line).EndLine();
+        }
+        code.Indent(2).Append("}").EndLine();
+        code.Indent(1).Append("}").EndLine();
+
+        if(settings.UseRepositoryPattern) {
+
+            string tableName = CodeHelper.GetTableName(table: table, includePostFix: false);
+
+            code.EndLine();
+            code.Indent(1).Append(@$"[Repository<{tableClassName}>(MatchOn.AllColumns, repositoryName: ""{tableName}Repository"")]").EndLine();
+            code.Indent(1).Append($"public partial record {tableName}Row {{").EndLine();
+            code.EndLine();
             code.Indent(1).Append("}").EndLine();
-
-            if(settings.UseRepositoryPattern) {
-
-                string tableName = CodeHelper.GetTableName(table: table, includePostFix: false);
-
-                code.EndLine();
-                code.Indent(1).Append(@$"[Repository<{tableClassName}>(MatchOn.AllColumns, repositoryName: ""{tableName}Repository"")]").EndLine();
-                code.Indent(1).Append($"public partial record {tableName}Row {{").EndLine();
-                code.EndLine();
-                code.Indent(1).Append("}").EndLine();
-            }
-
-            if(includeUsings) {
-                code.Append("}");
-            }
-            return code;
         }
+
+        if(includeUsings) {
+            code.Append("}");
+        }
+        return code;
     }
 }

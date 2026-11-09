@@ -21,13 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    public interface ITruncate {
+public interface ITruncate {
 
-        NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
+    NonQueryResult Execute(Transaction transaction, QueryTimeout? timeout = null, string debugName = "");
 
-        Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
-                                          QueryTimeout? timeout = null, string debugName = "");
-    }
+    Task<NonQueryResult> ExecuteAsync(Transaction transaction, CancellationToken? ct = null,
+                                      QueryTimeout? timeout = null, string debugName = "");
 }

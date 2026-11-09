@@ -23,27 +23,26 @@
  **/
 using System.Text;
 
-namespace QueryLite.Databases.Sqlite {
+namespace QueryLite.Databases.Sqlite; 
 
-    internal sealed class SqliteTruncateQueryGenerator : ITruncateQueryGenerator {
+internal sealed class SqliteTruncateQueryGenerator : ITruncateQueryGenerator {
 
-        string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template,
-                                              IDatabase database,
-                                              IParametersBuilder? parameters) {
+    string ITruncateQueryGenerator.GetSql(TruncateQueryTemplate template,
+                                          IDatabase database,
+                                          IParametersBuilder? parameters) {
 
-            StringBuilder sql = StringBuilderCache.Acquire();
+        StringBuilder sql = StringBuilderCache.Acquire();
 
-            sql.Append("DELETE FROM ");   //Note: Sqlite does not support truncate
+        sql.Append("DELETE FROM ");   //Note: Sqlite does not support truncate
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                sql.Append('.');
-            }
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+            sql.Append('.');
         }
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
+
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

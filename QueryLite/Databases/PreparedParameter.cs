@@ -23,54 +23,53 @@
  **/
 using System.Data.Common;
 
-namespace QueryLite.Databases {
+namespace QueryLite.Databases; 
 
-    internal interface IPreparedParameter<PARAMETERS> {
+internal interface IPreparedParameter<PARAMETERS> {
 
-        DbParameter CreateParameter(PARAMETERS parameters);
+    DbParameter CreateParameter(PARAMETERS parameters);
+}
+
+internal sealed class PreparedParameterList<PARAMETERS> {
+
+    private readonly List<IPreparedParameter<PARAMETERS>> _list = [];
+
+    private int _paramCounter = 0;
+
+    public string GetNextParameterName() {
+
+        string paramName;
+
+        if(ParamNameCache.ParamNames.Length < _paramCounter) {
+            paramName = ParamNameCache.ParamNames[_paramCounter];
+        }
+        else {
+            paramName = $"@{_paramCounter}";
+        }
+        _paramCounter++;
+        return paramName;
     }
 
-    internal sealed class PreparedParameterList<PARAMETERS> {
+    public int Count => _list.Count;
 
-        private readonly List<IPreparedParameter<PARAMETERS>> _list = [];
+    public IPreparedParameter<PARAMETERS> this[int index] => _list[index];
 
-        private int _paramCounter = 0;
-
-        public string GetNextParameterName() {
-
-            string paramName;
-
-            if(ParamNameCache.ParamNames.Length < _paramCounter) {
-                paramName = ParamNameCache.ParamNames[_paramCounter];
-            }
-            else {
-                paramName = $"@{_paramCounter}";
-            }
-            _paramCounter++;
-            return paramName;
-        }
-
-        public int Count => _list.Count;
-
-        public IPreparedParameter<PARAMETERS> this[int index] => _list[index];
-
-        public void Add(IPreparedParameter<PARAMETERS> parameter) {
-            _list.Add(parameter);
-        }
+    public void Add(IPreparedParameter<PARAMETERS> parameter) {
+        _list.Add(parameter);
     }
-    internal sealed class PreparedParameter<PARAMETERS, TYPE> : IPreparedParameter<PARAMETERS> {
+}
+internal sealed class PreparedParameter<PARAMETERS, TYPE> : IPreparedParameter<PARAMETERS> {
 
-        public PreparedParameter(string name, Func<PARAMETERS, TYPE> getValueFunc, CreateParameterDelegate createParameter) {
-            Name = name;
-            GetValueFunc = getValueFunc;
-            CreateParameter = createParameter;
-        }
-        public string Name { get; }
-        public Func<PARAMETERS, TYPE> GetValueFunc { get; }
-        public CreateParameterDelegate CreateParameter { get; }
+    public PreparedParameter(string name, Func<PARAMETERS, TYPE> getValueFunc, CreateParameterDelegate createParameter) {
+        Name = name;
+        GetValueFunc = getValueFunc;
+        CreateParameter = createParameter;
+    }
+    public string Name { get; }
+    public Func<PARAMETERS, TYPE> GetValueFunc { get; }
+    public CreateParameterDelegate CreateParameter { get; }
 
-        DbParameter IPreparedParameter<PARAMETERS>.CreateParameter(PARAMETERS parameters) {
-            return CreateParameter(name: Name, value: GetValueFunc(parameters));
-        }
+    DbParameter IPreparedParameter<PARAMETERS>.CreateParameter(PARAMETERS parameters) {
+        return CreateParameter(name: Name, value: GetValueFunc(parameters));
     }
 }

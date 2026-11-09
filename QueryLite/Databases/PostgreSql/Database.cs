@@ -25,58 +25,57 @@ using Npgsql;
 using QueryLite.Databases.SqlServer;
 using System.Data.Common;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql; 
 
-    public class PostgreSqlDatabase : IDatabase {
+public class PostgreSqlDatabase : IDatabase {
 
-        public string Name { get; }
-        string IDatabase.Name => Name;
-        public Func<string, string> SchemaMap { get; }
-        private string ConnectionString { get; }
+    public string Name { get; }
+    string IDatabase.Name => Name;
+    public Func<string, string> SchemaMap { get; }
+    private string ConnectionString { get; }
 
-        IQueryGenerator IInternalConnection.QueryGenerator { get; } = new PostgreSqlSelectQueryGenerator();
-        IInsertQueryGenerator IInternalConnection.InsertGenerator { get; } = new PostgreSqlInsertQueryGenerator();
-        IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new PostgreSqlUpdateQueryGenerator();
+    IQueryGenerator IInternalConnection.QueryGenerator { get; } = new PostgreSqlSelectQueryGenerator();
+    IInsertQueryGenerator IInternalConnection.InsertGenerator { get; } = new PostgreSqlInsertQueryGenerator();
+    IUpdateQueryGenerator IInternalConnection.UpdateGenerator { get; } = new PostgreSqlUpdateQueryGenerator();
 
-        IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new PostgreSqlDeleteQueryGenerator();
-        ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
+    IDeleteQueryGenerator IInternalConnection.DeleteGenerator { get; } = new PostgreSqlDeleteQueryGenerator();
+    ITruncateQueryGenerator IInternalConnection.TruncateGenerator { get; } = new PostgreSqlTruncateQueryGenerator();
 
-        IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMap();
+    IPreparedParameterMapper IInternalConnection.ParameterMapper { get; } = new PostgreSqlParameterMap();
 
-        IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
-        IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator { get; } = new PostgreSqlPreparedUpdateQueryGenerator();
-        IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new PostgreSqlPreparedInsertQueryGenerator();
-        IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new PostgreSqlPreparedDeleteQueryGenerator();
+    IPreparedQueryGenerator IInternalConnection.PreparedQueryGenerator { get; } = new PostgreSqlPreparedSelectQueryGenerator();
+    IPreparedUpdateQueryGenerator IInternalConnection.PreparedUpdateGenerator { get; } = new PostgreSqlPreparedUpdateQueryGenerator();
+    IPreparedInsertQueryGenerator IInternalConnection.PreparedInsertGenerator { get; } = new PostgreSqlPreparedInsertQueryGenerator();
+    IPreparedDeleteQueryGenerator IInternalConnection.PreparedDeleteQueryGenerator { get; } = new PostgreSqlPreparedDeleteQueryGenerator();
 
-        ILikeSqlConditionGenerator IInternalConnection.LikeSqlConditionGenerator { get; } = new PostgreSqlLikeSqlConditionGenerator();
+    ILikeSqlConditionGenerator IInternalConnection.LikeSqlConditionGenerator { get; } = new PostgreSqlLikeSqlConditionGenerator();
 
-        public DatabaseType DatabaseType => DatabaseType.PostgreSql;
+    public DatabaseType DatabaseType => DatabaseType.PostgreSql;
 
-        public UtfType DefaultUtfType { get; } = UtfType.UTF8;
+    public UtfType DefaultUtfType { get; } = UtfType.UTF8;
 
-        public EncloseWith EncloseWith => EncloseWith.DoubleQuote;
+    public EncloseWith EncloseWith => EncloseWith.DoubleQuote;
 
-        public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
+    public PostgreSqlDatabase(string name, string connectionString, Func<string, string>? schemaMap = null) {
 
-            ArgumentException.ThrowIfNullOrEmpty(connectionString);
+        ArgumentException.ThrowIfNullOrEmpty(connectionString);
 
-            Name = name ?? "";
-            SchemaMap = schemaMap ?? ((schema) => schema);
+        Name = name ?? "";
+        SchemaMap = schemaMap ?? ((schema) => schema);
 
-            ConnectionString = connectionString;
-        }
+        ConnectionString = connectionString;
+    }
 
-        public DbConnection GetNewConnection()  => new NpgsqlConnection(ConnectionString);
+    public DbConnection GetNewConnection()  => new NpgsqlConnection(ConnectionString);
 
-        public string ConvertToSql(object value) {
-            return PostgreSqlTypeMappings.ToSqlStringFunctions.ConvertToSql(value);
-        }
-        public IParametersBuilder CreateParameters(int initParams) {
-            return new PostgreSqlParameters(initParams);
-        }
+    public string ConvertToSql(object value) {
+        return PostgreSqlTypeMappings.ToSqlStringFunctions.ConvertToSql(value);
+    }
+    public IParametersBuilder CreateParameters(int initParams) {
+        return new PostgreSqlParameters(initParams);
+    }
 
-        public string? GetCSharpCodeSet(Type dotNetType) {
-            return PostgreSqlTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
-        }
+    public string? GetCSharpCodeSet(Type dotNetType) {
+        return PostgreSqlTypeMappings.ToSqlStringFunctions.GetCSharpCodeSet(dotNetType);
     }
 }

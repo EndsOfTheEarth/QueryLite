@@ -25,77 +25,77 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 
-namespace QueryLite.DbSchema {
+namespace QueryLite.DbSchema; 
 
-    public static class DocumentationGenerator {
+public static class DocumentationGenerator {
 
-        public static string GenerateForAssembly(Assembly[] assemblies, string applicationName, string version) {
+    public static string GenerateForAssembly(Assembly[] assemblies, string applicationName, string version) {
 
-            List<Type> types = [];
+        List<Type> types = [];
 
-            foreach(Assembly assembly in assemblies) {
+        foreach(Assembly assembly in assemblies) {
 
-                List<Type> listOfTypes = [..
-                    assembly.GetTypes()
-                    .Select(type => type)
-                    .Where(
-                        type => typeof(ITable).IsAssignableFrom(type) &&
-                        type != typeof(ITable) &&
-                        type != typeof(ATable)
-                    )
-                ];
-                types.AddRange(listOfTypes);
+            List<Type> listOfTypes = [..
+                assembly.GetTypes()
+                .Select(type => type)
+                .Where(
+                    type => typeof(ITable).IsAssignableFrom(type) &&
+                    type != typeof(ITable) &&
+                    type != typeof(ATable)
+                )
+            ];
+            types.AddRange(listOfTypes);
+        }
+        return GenerateForTableTypes(types, applicationName, version);
+    }
+
+    public static string GenerateForTables(List<ITable> tables, string applicationName, string version) {
+
+        IEnumerable<Type> types = tables.Select(table => table.GetType());
+
+        return GenerateForTableTypes(types, applicationName, version);
+    }
+
+    public static string GenerateForTableTypes(IEnumerable<Type> types, string applicationName, string version) {
+
+        List<ValidationItem> validation = [];
+
+        List<Table> tables = [];
+
+        Dictionary<Type, Table> tableLookup = [];
+
+        foreach(Type type in types) {
+
+            Table table = new Table((ITable)Activator.CreateInstance(type, nonPublic: true)!);
+            tables.Add(table);
+
+            ValidationItem tableValidation = new ValidationItem(table.GetType());
+
+            List<IColumn> columns = LoadTableColumns(table.TableClass, tableValidation);
+
+            table.Columns.AddRange(columns);
+
+            tableLookup.Add(type, table);
+        }
+        tables.Sort((a, b) => {
+
+            int compare = a.TableClass.SchemaName.CompareTo(b.TableClass.SchemaName);
+
+            if(compare == 0) {
+                compare = a.TableClass.TableName.CompareTo(b.TableClass.TableName);
             }
-            return GenerateForTableTypes(types, applicationName, version);
-        }
+            return compare;
+        });
+        return GenerateForTables(tables, applicationName, version);
+    }
 
-        public static string GenerateForTables(List<ITable> tables, string applicationName, string version) {
+    private static string GenerateForTables(List<Table> tables, string applicationName, string version) {
 
-            IEnumerable<Type> types = tables.Select(table => table.GetType());
+        StringBuilder html = new();
 
-            return GenerateForTableTypes(types, applicationName, version);
-        }
+        html.Append("<html><header>");
 
-        public static string GenerateForTableTypes(IEnumerable<Type> types, string applicationName, string version) {
-
-            List<ValidationItem> validation = [];
-
-            List<Table> tables = [];
-
-            Dictionary<Type, Table> tableLookup = [];
-
-            foreach(Type type in types) {
-
-                Table table = new Table((ITable)Activator.CreateInstance(type, nonPublic: true)!);
-                tables.Add(table);
-
-                ValidationItem tableValidation = new ValidationItem(table.GetType());
-
-                List<IColumn> columns = LoadTableColumns(table.TableClass, tableValidation);
-
-                table.Columns.AddRange(columns);
-
-                tableLookup.Add(type, table);
-            }
-            tables.Sort((a, b) => {
-
-                int compare = a.TableClass.SchemaName.CompareTo(b.TableClass.SchemaName);
-
-                if(compare == 0) {
-                    compare = a.TableClass.TableName.CompareTo(b.TableClass.TableName);
-                }
-                return compare;
-            });
-            return GenerateForTables(tables, applicationName, version);
-        }
-
-        private static string GenerateForTables(List<Table> tables, string applicationName, string version) {
-
-            StringBuilder html = new();
-
-            html.Append("<html><header>");
-
-            html.Append(
+        html.Append(
 @"
 <style>
 body {
@@ -126,248 +126,247 @@ a, a:visited {
 }
 </style>"
 );
-            html.Append(" </header>");
+        html.Append(" </header>");
 
-            html.Append("<body>");
+        html.Append("<body>");
 
-            if(!string.IsNullOrWhiteSpace(applicationName) || !string.IsNullOrWhiteSpace(version)) {
+        if(!string.IsNullOrWhiteSpace(applicationName) || !string.IsNullOrWhiteSpace(version)) {
 
-                html.Append("<h1>");
+            html.Append("<h1>");
 
-                if(!string.IsNullOrWhiteSpace(applicationName)) {
-                    html.Append(WebUtility.HtmlEncode(applicationName)).Append(' ');
+            if(!string.IsNullOrWhiteSpace(applicationName)) {
+                html.Append(WebUtility.HtmlEncode(applicationName)).Append(' ');
+            }
+            if(!string.IsNullOrWhiteSpace(version)) {
+                html.Append('(').Append(WebUtility.HtmlEncode(version)).Append(')').Append(' ');
+            }
+            html.Append("</h1>");
+        }
+        html.Append("<h1>Schema Documentation</h1>");
+
+        html.Append("<h1>Index</h1>");
+
+        html.Append("<h2>Tables & Views</h2>");
+
+        html.Append("<ul>");
+
+        for(int index = 0; index < tables.Count; index++) {
+            Table table = tables[index];
+            html.Append("<li><a href=#").Append(index).Append('>').Append(WebUtility.HtmlEncode($"[{table.TableClass.SchemaName}].{table.TableClass.TableName}")).Append($"</a>{(table.TableClass.IsView ? "&nbsp;(View)" : "")}</li>");
+        }
+        html.Append("</ul>");
+
+        for(int index = 0; index < tables.Count; index++) {
+            Table table = tables[index];
+            html.AppendLine(GenerateForTable(table, id: index));
+            html.Append("<br/>");
+        }
+        html.Append("</body></html>");
+        return html.ToString();
+    }
+
+    private static string GenerateForTable(Table table, int id) {
+
+        StringBuilder html = new();
+
+        html.Append("<hr/>");
+        html.Append($"<h2 id={id}>{(table.TableClass.IsView ? "View" : "Table")}: ").Append(WebUtility.HtmlEncode($"[{table.TableClass.SchemaName}].{table.TableClass.TableName}")).Append("</h2>");
+        html.Append("<p>").Append(WebUtility.HtmlEncode(table.TableClass.TableDescription)).Append("</p>");
+
+        {
+            html.Append($"<h3>Columns({table.Columns.Count})</h3><p>");
+
+            html.Append("<table style=\"width:100%\">");
+
+            html.Append("<tr><th style=\"width:20%;text-align:left;\"> Column Name</th><th style=\"width:10%\">.net Type</th><th style=\"width:10%\">Nullable</th><th style=\"width:5%\">Auto</th><th style=\"width:55%;text-align:left;\">Description</th><tr>");
+
+            foreach(IColumn column in table.Columns) {
+
+                html.Append($"<tr>");
+                html.Append($"<td style=\"text-align:left;\">").Append(WebUtility.HtmlEncode(column.ColumnName)).Append("</td>");
+
+                string typeName = column.Type.Name;
+                string enumValuesHtml = "";
+
+                if(column.Type.IsEnum) {
+
+                    typeName += " (Enum)";
+
+                    Array values = Enum.GetValues(column.Type);
+
+                    foreach(object value in values) {
+                        enumValuesHtml += $"<li>{WebUtility.HtmlEncode(value.ToString())} = {Convert.ToInt64(value)}</li>";
+                    }
                 }
-                if(!string.IsNullOrWhiteSpace(version)) {
-                    html.Append('(').Append(WebUtility.HtmlEncode(version)).Append(')').Append(' ');
+                else {
+
+                    foreach(Type interfaceType in column.Type.GetInterfaces()) {
+
+                        if(interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(QueryLite.IValue<>)) {
+
+                            Type genericType = interfaceType.GetGenericArguments()[0];
+
+                            typeName += $" ({genericType.Name})";
+                        }
+                    }
                 }
-                html.Append("</h1>");
+
+                html.Append($"<td>").Append(WebUtility.HtmlEncode(typeName));
+
+                if(column.Length != null && column.Type != typeof(IGeography)) {
+                    html.Append('(').Append(column.Length.Value).Append(')');
+                }
+                html.Append("</td>");
+                html.Append($"<td>").Append(WebUtility.HtmlEncode(column.IsNullable ? "NULL" : "NOT NULL")).Append("</td>");
+                html.Append($"<td>").Append(WebUtility.HtmlEncode((column.IsAutoGenerated ? column.IsAutoGenerated.ToString() : ""))).Append("</td>");
+                html.Append($"<td style=\"text-align:left;\">");
+                html.Append(WebUtility.HtmlEncode(column.ColumnDescription));
+
+                if(!string.IsNullOrEmpty(enumValuesHtml)) {
+                    html.Append("<p>Enum Values: <br/><ul>").Append(enumValuesHtml).Append("</ul></p>");
+                }
+                html.Append("</td>");
+                html.Append("</tr>");
             }
-            html.Append("<h1>Schema Documentation</h1>");
-
-            html.Append("<h1>Index</h1>");
-
-            html.Append("<h2>Tables & Views</h2>");
-
-            html.Append("<ul>");
-
-            for(int index = 0; index < tables.Count; index++) {
-                Table table = tables[index];
-                html.Append("<li><a href=#").Append(index).Append('>').Append(WebUtility.HtmlEncode($"[{table.TableClass.SchemaName}].{table.TableClass.TableName}")).Append($"</a>{(table.TableClass.IsView ? "&nbsp;(View)" : "")}</li>");
-            }
-            html.Append("</ul>");
-
-            for(int index = 0; index < tables.Count; index++) {
-                Table table = tables[index];
-                html.AppendLine(GenerateForTable(table, id: index));
-                html.Append("<br/>");
-            }
-            html.Append("</body></html>");
-            return html.ToString();
+            html.Append("</table>");
         }
 
-        private static string GenerateForTable(Table table, int id) {
+        if(table.TableClass.PrimaryKey != null || table.TableClass.ForeignKeys.Length > 0) {
 
-            StringBuilder html = new();
+            int counter = 0;
 
-            html.Append("<hr/>");
-            html.Append($"<h2 id={id}>{(table.TableClass.IsView ? "View" : "Table")}: ").Append(WebUtility.HtmlEncode($"[{table.TableClass.SchemaName}].{table.TableClass.TableName}")).Append("</h2>");
-            html.Append("<p>").Append(WebUtility.HtmlEncode(table.TableClass.TableDescription)).Append("</p>");
+            PrimaryKey? primaryKey = table.TableClass.PrimaryKey;
 
-            {
-                html.Append($"<h3>Columns({table.Columns.Count})</h3><p>");
+            if(primaryKey != null) {
 
-                html.Append("<table style=\"width:100%\">");
+                html.Append("<h3>Primary Key</h3><p>");
+                html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th>");
 
-                html.Append("<tr><th style=\"width:20%;text-align:left;\"> Column Name</th><th style=\"width:10%\">.net Type</th><th style=\"width:10%\">Nullable</th><th style=\"width:5%\">Auto</th><th style=\"width:55%;text-align:left;\">Description</th><tr>");
+                html.Append("<tr><td>").Append(WebUtility.HtmlEncode(primaryKey.Name)).Append("</td>");
+                html.Append("<td>");
 
-                foreach(IColumn column in table.Columns) {
+                foreach(IColumn pkColumn in primaryKey.Columns) {
 
-                    html.Append($"<tr>");
-                    html.Append($"<td style=\"text-align:left;\">").Append(WebUtility.HtmlEncode(column.ColumnName)).Append("</td>");
-
-                    string typeName = column.Type.Name;
-                    string enumValuesHtml = "";
-
-                    if(column.Type.IsEnum) {
-
-                        typeName += " (Enum)";
-
-                        Array values = Enum.GetValues(column.Type);
-
-                        foreach(object value in values) {
-                            enumValuesHtml += $"<li>{WebUtility.HtmlEncode(value.ToString())} = {Convert.ToInt64(value)}</li>";
-                        }
+                    if(counter > 0) {
+                        html.Append(",&nbsp;");
                     }
-                    else {
-
-                        foreach(Type interfaceType in column.Type.GetInterfaces()) {
-
-                            if(interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(QueryLite.IValue<>)) {
-
-                                Type genericType = interfaceType.GetGenericArguments()[0];
-
-                                typeName += $" ({genericType.Name})";
-                            }
-                        }
-                    }
-
-                    html.Append($"<td>").Append(WebUtility.HtmlEncode(typeName));
-
-                    if(column.Length != null && column.Type != typeof(IGeography)) {
-                        html.Append('(').Append(column.Length.Value).Append(')');
-                    }
-                    html.Append("</td>");
-                    html.Append($"<td>").Append(WebUtility.HtmlEncode(column.IsNullable ? "NULL" : "NOT NULL")).Append("</td>");
-                    html.Append($"<td>").Append(WebUtility.HtmlEncode((column.IsAutoGenerated ? column.IsAutoGenerated.ToString() : ""))).Append("</td>");
-                    html.Append($"<td style=\"text-align:left;\">");
-                    html.Append(WebUtility.HtmlEncode(column.ColumnDescription));
-
-                    if(!string.IsNullOrEmpty(enumValuesHtml)) {
-                        html.Append("<p>Enum Values: <br/><ul>").Append(enumValuesHtml).Append("</ul></p>");
-                    }
-                    html.Append("</td>");
-                    html.Append("</tr>");
+                    html.Append(WebUtility.HtmlEncode(pkColumn.ColumnName));
+                    counter++;
                 }
-                html.Append("</table>");
+                html.Append("</td></table>");
             }
 
-            if(table.TableClass.PrimaryKey != null || table.TableClass.ForeignKeys.Length > 0) {
+            html.Append($"<h3>Unique Constraints({table.TableClass.UniqueConstraints.Length})</h3><p>");
+            html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th>");
 
-                int counter = 0;
+            counter = 0;
 
-                PrimaryKey? primaryKey = table.TableClass.PrimaryKey;
+            foreach(UniqueConstraint uniqueConstraint in table.TableClass.UniqueConstraints) {
 
-                if(primaryKey != null) {
+                html.Append("<tr><td>").Append(WebUtility.HtmlEncode(uniqueConstraint.Name)).Append("</td>");
+                html.Append("<td>");
 
-                    html.Append("<h3>Primary Key</h3><p>");
-                    html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th>");
+                foreach(IColumn columnName in uniqueConstraint.Columns) {
 
-                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(primaryKey.Name)).Append("</td>");
-                    html.Append("<td>");
-
-                    foreach(IColumn pkColumn in primaryKey.Columns) {
-
-                        if(counter > 0) {
-                            html.Append(",&nbsp;");
-                        }
-                        html.Append(WebUtility.HtmlEncode(pkColumn.ColumnName));
-                        counter++;
+                    if(counter > 0) {
+                        html.Append(",&nbsp;");
                     }
-                    html.Append("</td></table>");
+                    html.Append(WebUtility.HtmlEncode(columnName.ColumnName));
+                    counter++;
                 }
+                html.Append("</td>");
 
-                html.Append($"<h3>Unique Constraints({table.TableClass.UniqueConstraints.Length})</h3><p>");
-                html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th>");
+            }
+            html.Append("</table>");
+
+            html.Append($"<h3>Check Constraints({table.TableClass.CheckConstraints.Length})</h3><p>");
+            html.Append("<table><tr><th style=\"text-align: center;\">Name</th>");
+
+            foreach(CheckConstraint checkConstraint in table.TableClass.CheckConstraints) {
+
+                html.Append("<tr><td>").Append(WebUtility.HtmlEncode(checkConstraint.Name)).Append("</td>");
+            }
+            html.Append("</table>");
+
+            html.Append($"<h3>Foreign Keys({table.TableClass.ForeignKeys.Length})</h3><p>");
+            html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th><th style=\"text-align: center;\">References</th>");
+            
+            foreach(ForeignKey foreignKey in table.TableClass.ForeignKeys) {
 
                 counter = 0;
 
-                foreach(UniqueConstraint uniqueConstraint in table.TableClass.UniqueConstraints) {
+                html.Append("<tr><td>").Append(WebUtility.HtmlEncode(foreignKey.Name)).Append("</td>");
+                html.Append("<td>");
 
-                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(uniqueConstraint.Name)).Append("</td>");
-                    html.Append("<td>");
+                foreach(ForeignKeyReference reference in foreignKey.ColumnReferences) {
 
-                    foreach(IColumn columnName in uniqueConstraint.Columns) {
-
-                        if(counter > 0) {
-                            html.Append(",&nbsp;");
-                        }
-                        html.Append(WebUtility.HtmlEncode(columnName.ColumnName));
-                        counter++;
+                    if(counter > 0) {
+                        html.Append(",&nbsp;");
                     }
-                    html.Append("</td>");
-
+                    html.Append(WebUtility.HtmlEncode(reference.ForeignKeyColumn.ColumnName));
+                    counter++;
                 }
-                html.Append("</table>");
+                html.Append("</td>");
+                html.Append("<td>");
 
-                html.Append($"<h3>Check Constraints({table.TableClass.CheckConstraints.Length})</h3><p>");
-                html.Append("<table><tr><th style=\"text-align: center;\">Name</th>");
+                counter = 0;
 
-                foreach(CheckConstraint checkConstraint in table.TableClass.CheckConstraints) {
+                foreach(ForeignKeyReference reference in foreignKey.ColumnReferences) {
 
-                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(checkConstraint.Name)).Append("</td>");
+                    if(counter == 0) {
+                        html.Append(WebUtility.HtmlEncode(reference.PrimaryKeyColumn.Table.TableName)).Append('(');
+                    }
+                    if(counter > 0) {
+                        html.Append(",&nbsp;");
+                    }
+                    html.Append(WebUtility.HtmlEncode(reference.PrimaryKeyColumn.ColumnName));
+                    counter++;
                 }
-                html.Append("</table>");
-
-                html.Append($"<h3>Foreign Keys({table.TableClass.ForeignKeys.Length})</h3><p>");
-                html.Append("<table><tr><th style=\"text-align: center;\">Name</th><th style=\"text-align: center;\">Columns</th><th style=\"text-align: center;\">References</th>");
-                
-                foreach(ForeignKey foreignKey in table.TableClass.ForeignKeys) {
-
-                    counter = 0;
-
-                    html.Append("<tr><td>").Append(WebUtility.HtmlEncode(foreignKey.Name)).Append("</td>");
-                    html.Append("<td>");
-
-                    foreach(ForeignKeyReference reference in foreignKey.ColumnReferences) {
-
-                        if(counter > 0) {
-                            html.Append(",&nbsp;");
-                        }
-                        html.Append(WebUtility.HtmlEncode(reference.ForeignKeyColumn.ColumnName));
-                        counter++;
-                    }
-                    html.Append("</td>");
-                    html.Append("<td>");
-
-                    counter = 0;
-
-                    foreach(ForeignKeyReference reference in foreignKey.ColumnReferences) {
-
-                        if(counter == 0) {
-                            html.Append(WebUtility.HtmlEncode(reference.PrimaryKeyColumn.Table.TableName)).Append('(');
-                        }
-                        if(counter > 0) {
-                            html.Append(",&nbsp;");
-                        }
-                        html.Append(WebUtility.HtmlEncode(reference.PrimaryKeyColumn.ColumnName));
-                        counter++;
-                    }
-                    if(foreignKey.ColumnReferences.Count > 0) {
-                        html.Append(')');
-                    }
-                    html.Append("</td>");
+                if(foreignKey.ColumnReferences.Count > 0) {
+                    html.Append(')');
                 }
-                html.Append("</table>");
-                html.Append("</p>");
+                html.Append("</td>");
             }
-            return html.ToString();
+            html.Append("</table>");
+            html.Append("</p>");
         }
+        return html.ToString();
+    }
 
-        private static List<IColumn> LoadTableColumns(ITable table, ValidationItem tableValidation) {
+    private static List<IColumn> LoadTableColumns(ITable table, ValidationItem tableValidation) {
 
-            Type tableType = table.GetType();
+        Type tableType = table.GetType();
 
-            PropertyInfo[] properties = tableType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        PropertyInfo[] properties = tableType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-            List<IColumn> columns = [];
+        List<IColumn> columns = [];
 
-            foreach(PropertyInfo property in properties) {
+        foreach(PropertyInfo property in properties) {
 
-                Type underlyingPropertyType = property.PropertyType.IsGenericType ? property.PropertyType.GetGenericTypeDefinition() : property.PropertyType;
+            Type underlyingPropertyType = property.PropertyType.IsGenericType ? property.PropertyType.GetGenericTypeDefinition() : property.PropertyType;
 
-                if(underlyingPropertyType == typeof(Column<>) || underlyingPropertyType == typeof(Column<,>) || underlyingPropertyType == typeof(NColumn<>) || underlyingPropertyType == typeof(NColumn<,>)) {
+            if(underlyingPropertyType == typeof(Column<>) || underlyingPropertyType == typeof(Column<,>) || underlyingPropertyType == typeof(NColumn<>) || underlyingPropertyType == typeof(NColumn<,>)) {
 
-                    IColumn? column = (IColumn?)property.GetValue(table);
+                IColumn? column = (IColumn?)property.GetValue(table);
 
-                    if(column == null) {
-                        tableValidation.Add($"Table: {table.TableName}, Column property '{property.Name}' is returning null. This property should have an IColumn assigned");
-                    }
-                    else {
-                        columns.Add(column);
-                    }
+                if(column == null) {
+                    tableValidation.Add($"Table: {table.TableName}, Column property '{property.Name}' is returning null. This property should have an IColumn assigned");
+                }
+                else {
+                    columns.Add(column);
                 }
             }
-            return columns;
         }
+        return columns;
+    }
 
-        private sealed class Table {
+    private sealed class Table {
 
-            public ITable TableClass { get; }
-            public List<IColumn> Columns { get; } = [];
+        public ITable TableClass { get; }
+        public List<IColumn> Columns { get; } = [];
 
-            public Table(ITable table) {
-                TableClass = table;
-            }
+        public Table(ITable table) {
+            TableClass = table;
         }
     }
 }

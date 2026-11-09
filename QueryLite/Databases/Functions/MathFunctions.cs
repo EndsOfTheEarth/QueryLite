@@ -21,51 +21,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.Databases.Functions {
+namespace QueryLite.Databases.Functions; 
 
-    public static class SqlMath {
+public static class SqlMath {
 
-        public static Add<VALUE> Add<VALUE>(Column<VALUE> column, VALUE value) where VALUE : notnull {
-            return new Add<VALUE>(column, value);
-        }
-        public static Subtract<VALUE> Subtract<VALUE>(Column<VALUE> column, VALUE value) where VALUE : notnull {
-            return new Subtract<VALUE>(column, value);
-        }
+    public static Add<VALUE> Add<VALUE>(Column<VALUE> column, VALUE value) where VALUE : notnull {
+        return new Add<VALUE>(column, value);
     }
-
-    public sealed class Add<VALUE> : Function<VALUE> where VALUE : notnull {
-
-        private Column<VALUE> Column { get; }
-        private VALUE Value { get; }
-
-        public Add(Column<VALUE> column, VALUE value) : base(name: "ADD") {
-            Column = column;
-            Value = value;
-        }
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-
-            if(useAlias) {
-                return $"({Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)} + {Value})";
-            }
-            return $"({SqlHelper.EncloseColumnName(Column, database.EncloseWith)} + {Value})";
-        }
+    public static Subtract<VALUE> Subtract<VALUE>(Column<VALUE> column, VALUE value) where VALUE : notnull {
+        return new Subtract<VALUE>(column, value);
     }
+}
 
-    public sealed class Subtract<VALUE> : Function<VALUE> where VALUE : notnull {
+public sealed class Add<VALUE> : Function<VALUE> where VALUE : notnull {
 
-        private Column<VALUE> Column { get; }
-        private VALUE Value { get; }
+    private Column<VALUE> Column { get; }
+    private VALUE Value { get; }
 
-        public Subtract(Column<VALUE> column, VALUE value) : base(name: "ADD") {
-            Column = column;
-            Value = value;
+    public Add(Column<VALUE> column, VALUE value) : base(name: "ADD") {
+        Column = column;
+        Value = value;
+    }
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(useAlias) {
+            return $"({Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)} + {Value})";
         }
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        return $"({SqlHelper.EncloseColumnName(Column, database.EncloseWith)} + {Value})";
+    }
+}
 
-            if(useAlias) {
-                return $"({Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)} - {Value})";
-            }
-            return $"({SqlHelper.EncloseColumnName(Column, database.EncloseWith)} - {Value})";
+public sealed class Subtract<VALUE> : Function<VALUE> where VALUE : notnull {
+
+    private Column<VALUE> Column { get; }
+    private VALUE Value { get; }
+
+    public Subtract(Column<VALUE> column, VALUE value) : base(name: "ADD") {
+        Column = column;
+        Value = value;
+    }
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+
+        if(useAlias) {
+            return $"({Column.Table.Alias}.{SqlHelper.EncloseColumnName(Column, database.EncloseWith)} - {Value})";
         }
+        return $"({SqlHelper.EncloseColumnName(Column, database.EncloseWith)} - {Value})";
     }
 }

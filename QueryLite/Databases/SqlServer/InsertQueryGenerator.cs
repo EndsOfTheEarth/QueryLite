@@ -24,74 +24,73 @@
 using QueryLite.Databases.SqlServer.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    internal sealed class SqlServerInsertQueryGenerator : IInsertQueryGenerator {
+internal sealed class SqlServerInsertQueryGenerator : IInsertQueryGenerator {
 
-        string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
+    string IInsertQueryGenerator.GetSql<RESULT>(InsertQueryTemplate template, IDatabase database, Parameters useParameters, out IParametersBuilder? parameters, Func<IResultRow, RESULT>? outputFunc) {
 
-            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
+        StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
-            sql.Append("INSERT INTO ");
+        sql.Append("INSERT INTO ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                sql.Append('.');
-            }
-
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-
-            if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
-
-                StringBuilder paramSql = StringBuilderCache.Acquire();
-
-                SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert, useAlias: false);
-
-                sql.Append('(');
-
-                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
-
-                sql.Append(')');
-
-                parameters = valuesCollector.Parameters;
-
-                GetReturningSyntax(sql, outputFunc);
-
-                sql.Append(" VALUES(").Append(paramSql).Append(')');
-
-                StringBuilderCache.Release(paramSql);
-            }
-            else {
-
-                SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(sql, database, CollectorMode.Insert, useAlias: false);
-
-                sql.Append('(');
-                template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
-                sql.Append(')');
-
-                parameters = null;
-
-                GetReturningSyntax(sql, outputFunc);
-
-                sql.Append(" VALUES(").Append(valuesCollector.ParamsSql).Append(')');
-            }
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+            sql.Append('.');
         }
 
-        private static void GetReturningSyntax<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
 
-            if(outputFunc != null) {
+        if(useParameters == Parameters.On || (useParameters == Parameters.Default && Settings.UseParameters)) {
 
-                SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
+            StringBuilder paramSql = StringBuilderCache.Acquire();
 
-                sql.Append(" OUTPUT ");
+            SqlServerSetValuesParameterCollector valuesCollector = new SqlServerSetValuesParameterCollector(sql, paramSql, database, CollectorMode.Insert, useAlias: false);
 
-                outputFunc(collector);
+            sql.Append('(');
 
-                SqlServerReturningCollectorCache.Release(collector);
-            }
+            template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
+
+            sql.Append(')');
+
+            parameters = valuesCollector.Parameters;
+
+            GetReturningSyntax(sql, outputFunc);
+
+            sql.Append(" VALUES(").Append(paramSql).Append(')');
+
+            StringBuilderCache.Release(paramSql);
+        }
+        else {
+
+            SqlServerSetValuesCollector valuesCollector = new SqlServerSetValuesCollector(sql, database, CollectorMode.Insert, useAlias: false);
+
+            sql.Append('(');
+            template.ValuesCollector!(valuesCollector); //Note: This outputs sql to the sql string builder
+            sql.Append(')');
+
+            parameters = null;
+
+            GetReturningSyntax(sql, outputFunc);
+
+            sql.Append(" VALUES(").Append(valuesCollector.ParamsSql).Append(')');
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
+    }
+
+    private static void GetReturningSyntax<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+
+        if(outputFunc != null) {
+
+            SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: false, sql);
+
+            sql.Append(" OUTPUT ");
+
+            outputFunc(collector);
+
+            SqlServerReturningCollectorCache.Release(collector);
         }
     }
 }

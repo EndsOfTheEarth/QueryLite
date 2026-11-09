@@ -24,96 +24,95 @@
 using QueryLite.Databases.SqlServer.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.SqlServer {
+namespace QueryLite.Databases.SqlServer; 
 
-    internal sealed class PreparedDeleteQueryGenerator : IPreparedDeleteQueryGenerator {
+internal sealed class PreparedDeleteQueryGenerator : IPreparedDeleteQueryGenerator {
 
-        string IPreparedDeleteQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
+    string IPreparedDeleteQueryGenerator.GetSql<PARAMETERS, RESULT>(PreparedDeleteQueryTemplate<PARAMETERS> template, IDatabase database, out PreparedParameterList<PARAMETERS> parameters, Func<IResultRow, RESULT>? outputFunc) {
 
-            parameters = new PreparedParameterList<PARAMETERS>();
+        parameters = new PreparedParameterList<PARAMETERS>();
 
-            StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
+        StringBuilder sql = StringBuilderCache.Acquire(capacity: 256);
 
-            //
-            //  Note: The OUPUT clause changes goes before the 'FROM' clause when using aliasing and after the 'FROM' clause when not
-            //
-            if(template.FromTables != null) {
+        //
+        //  Note: The OUPUT clause changes goes before the 'FROM' clause when using aliasing and after the 'FROM' clause when not
+        //
+        if(template.FromTables != null) {
 
-                sql.Append("DELETE FROM ").Append(template.Table.Alias);
+            sql.Append("DELETE FROM ").Append(template.Table.Alias);
 
-                GenerateOutputClause(sql, outputFunc);
+            GenerateOutputClause(sql, outputFunc);
+        }
+        else {
+
+            sql.Append("DELETE FROM ");
+
+            string schemaName = database.SchemaMap(template.Table.SchemaName);
+
+            if(!string.IsNullOrWhiteSpace(schemaName)) {
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+                sql.Append('.');
             }
-            else {
+            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
 
-                sql.Append("DELETE FROM ");
-
-                string schemaName = database.SchemaMap(template.Table.SchemaName);
-
-                if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                    sql.Append('.');
-                }
-                SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-
-                GenerateOutputClause(sql, outputFunc);
-            }
-
-            bool useAlias = template.FromTables != null;
-
-            if(template.FromTables != null) {
-
-                sql.Append(" FROM ");
-
-                string schemaName = database.SchemaMap(template.Table.SchemaName);
-
-                if(!string.IsNullOrWhiteSpace(schemaName)) {
-                    SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
-                    sql.Append('.');
-                }
-                SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
-
-                sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
-
-                for(int index = 0; index < template.FromTables.Count; index++) {
-
-                    sql.Append(',');
-
-                    ITable usingTable = template.FromTables[index];
-
-                    string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
-
-                    if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
-                        SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName, EncloseWith.SquareBracket);
-                        sql.Append('.');
-                    }
-
-                    SqlHelper.AppendEncloseTableName(sql, usingTable, EncloseWith.SquareBracket);
-
-                    sql.Append(' ');
-
-                    SqlHelper.AppendEncloseAlias(sql, usingTable.Alias, EncloseWith.SquareBracket);
-                }
-            }
-
-            if(template.WhereCondition != null) {
-                sql.Append(" WHERE ");
-                template.WhereCondition.GetSql(sql, database, parameters, useAlias: useAlias);
-            }
-            return StringBuilderCache.ToStringAndRelease(sql);
+            GenerateOutputClause(sql, outputFunc);
         }
 
-        private static void GenerateOutputClause<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+        bool useAlias = template.FromTables != null;
 
-            if(outputFunc != null) {
+        if(template.FromTables != null) {
 
-                SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: true, sql);
+            sql.Append(" FROM ");
 
-                sql.Append(" OUTPUT ");
+            string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-                outputFunc(collector);
-
-                SqlServerReturningCollectorCache.Release(collector);
+            if(!string.IsNullOrWhiteSpace(schemaName)) {
+                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.SquareBracket);
+                sql.Append('.');
             }
+            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.SquareBracket);
+
+            sql.Append(" AS ").Append(template.Table.Alias).Append(' ');
+
+            for(int index = 0; index < template.FromTables.Count; index++) {
+
+                sql.Append(',');
+
+                ITable usingTable = template.FromTables[index];
+
+                string usingTableSchemaName = database.SchemaMap(template.Table.SchemaName);
+
+                if(!string.IsNullOrWhiteSpace(usingTableSchemaName)) {
+                    SqlHelper.AppendEncloseSchemaName(sql, usingTableSchemaName, EncloseWith.SquareBracket);
+                    sql.Append('.');
+                }
+
+                SqlHelper.AppendEncloseTableName(sql, usingTable, EncloseWith.SquareBracket);
+
+                sql.Append(' ');
+
+                SqlHelper.AppendEncloseAlias(sql, usingTable.Alias, EncloseWith.SquareBracket);
+            }
+        }
+
+        if(template.WhereCondition != null) {
+            sql.Append(" WHERE ");
+            template.WhereCondition.GetSql(sql, database, parameters, useAlias: useAlias);
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
+    }
+
+    private static void GenerateOutputClause<RESULT>(StringBuilder sql, Func<IResultRow, RESULT>? outputFunc) {
+
+        if(outputFunc != null) {
+
+            SqlServerReturningFieldCollector collector = SqlServerReturningCollectorCache.Acquire(isDelete: true, sql);
+
+            sql.Append(" OUTPUT ");
+
+            outputFunc(collector);
+
+            SqlServerReturningCollectorCache.Release(collector);
         }
     }
 }

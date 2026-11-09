@@ -21,47 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite.Databases.SqlServer.Functions {
+namespace QueryLite.Databases.SqlServer.Functions; 
 
-    /// <summary>
-    /// Sql GETDATE() function
-    /// </summary>
-    public sealed class GETDATE : Function<DateTime> {
+/// <summary>
+/// Sql GETDATE() function
+/// </summary>
+public sealed class GETDATE : Function<DateTime> {
 
-        public static GETDATE Instance { get; } = new GETDATE();
+    public static GETDATE Instance { get; } = new GETDATE();
 
-        private GETDATE() : base("GETDATE()") { }
+    private GETDATE() : base("GETDATE()") { }
 
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return "GETDATE()";
-        }
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        return "GETDATE()";
     }
+}
 
-    /// <summary>
-    /// Sql NEWID() function
-    /// </summary>
-    public sealed class NEWID : Function<Guid> {
+/// <summary>
+/// Sql NEWID() function
+/// </summary>
+public sealed class NEWID : Function<Guid> {
 
-        public static NEWID Instance { get; } = new NEWID();
+    public static NEWID Instance { get; } = new NEWID();
 
-        private NEWID() : base("NEWID()") { }
+    private NEWID() : base("NEWID()") { }
 
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return "NEWID()";
-        }
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        return "NEWID()";
     }
+}
 
-    /// <summary>
-    /// Sql SYSDATETIMEOFFSET() function
-    /// </summary>
-    public sealed class SYSDATETIMEOFFSET : Function<DateTimeOffset> {
+/// <summary>
+/// Sql SYSDATETIMEOFFSET() function
+/// </summary>
+public sealed class SYSDATETIMEOFFSET : Function<DateTimeOffset> {
 
-        public static SYSDATETIMEOFFSET Instance { get; } = new SYSDATETIMEOFFSET();
+    public static SYSDATETIMEOFFSET Instance { get; } = new SYSDATETIMEOFFSET();
 
-        private SYSDATETIMEOFFSET() : base("SYSDATETIMEOFFSET()") { }
+    private SYSDATETIMEOFFSET() : base("SYSDATETIMEOFFSET()") { }
 
-        public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
-            return "SYSDATETIMEOFFSET()";
-        }
+    public override string GetSql(IDatabase database, bool useAlias, IParametersBuilder? parameters) {
+        return "SYSDATETIMEOFFSET()";
     }
 }

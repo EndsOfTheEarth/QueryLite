@@ -23,88 +23,87 @@
  **/
 using System;
 
-namespace QueryLite.DbSchema.CodeGeneration {
+namespace QueryLite.DbSchema.CodeGeneration; 
 
-    public sealed class Namespaces {
+public sealed class Namespaces {
 
-        public Namespaces(string baseNamespace, string tableNamespace, string classNamespace,
-                          string requestNamespace, string handlerNamespace) {
+    public Namespaces(string baseNamespace, string tableNamespace, string classNamespace,
+                      string requestNamespace, string handlerNamespace) {
 
-            BaseNamespace = FirstLetterUpperCase(baseNamespace);
-            TableNamespace = FirstLetterUpperCase(tableNamespace);
-            ClassNamespace = FirstLetterUpperCase(classNamespace);
-            RequestNamespace = FirstLetterUpperCase(requestNamespace);
-            HandlerNamespace = FirstLetterUpperCase(handlerNamespace);
+        BaseNamespace = FirstLetterUpperCase(baseNamespace);
+        TableNamespace = FirstLetterUpperCase(tableNamespace);
+        ClassNamespace = FirstLetterUpperCase(classNamespace);
+        RequestNamespace = FirstLetterUpperCase(requestNamespace);
+        HandlerNamespace = FirstLetterUpperCase(handlerNamespace);
+    }
+
+    private static string FirstLetterUpperCase(string value) {
+        return !string.IsNullOrEmpty(value) ? $"{char.ToUpper(value[0])}{value[1..]}" : "";
+    }
+    public string BaseNamespace { get; set; }
+    public string TableNamespace { get; set; }
+    private string ClassNamespace { get; set; }
+    private string RequestNamespace { get; set; }
+    private string HandlerNamespace { get; set; }
+
+    public string GetTableNamespace(SchemaName schema) {
+
+        string schemaName = schema.Value;
+
+        schemaName = FirstLetterUpperCase(schemaName);
+
+        if(!IsDefaultSchema(schema) && !string.IsNullOrWhiteSpace(schema.Value)) {
+            return $"{TableNamespace}.{schemaName}.Tables";
         }
-
-        private static string FirstLetterUpperCase(string value) {
-            return !string.IsNullOrEmpty(value) ? $"{char.ToUpper(value[0])}{value[1..]}" : "";
+        else {
+            return $"{TableNamespace}.Tables";
         }
-        public string BaseNamespace { get; set; }
-        public string TableNamespace { get; set; }
-        private string ClassNamespace { get; set; }
-        private string RequestNamespace { get; set; }
-        private string HandlerNamespace { get; set; }
+    }
 
-        public string GetTableNamespace(SchemaName schema) {
+    public string GetClassesNamespace(SchemaName schema) {
 
-            string schemaName = schema.Value;
+        string schemaName = schema.Value;
 
-            schemaName = FirstLetterUpperCase(schemaName);
+        schemaName = FirstLetterUpperCase(schemaName);
 
-            if(!IsDefaultSchema(schema) && !string.IsNullOrWhiteSpace(schema.Value)) {
-                return $"{TableNamespace}.{schemaName}.Tables";
-            }
-            else {
-                return $"{TableNamespace}.Tables";
-            }
+        if(!IsDefaultSchema(schema)) {
+            return $"{ClassNamespace}.{schemaName}.Classes";
         }
-
-        public string GetClassesNamespace(SchemaName schema) {
-
-            string schemaName = schema.Value;
-
-            schemaName = FirstLetterUpperCase(schemaName);
-
-            if(!IsDefaultSchema(schema)) {
-                return $"{ClassNamespace}.{schemaName}.Classes";
-            }
-            else {
-                return TableNamespace;
-            }
+        else {
+            return TableNamespace;
         }
+    }
 
-        public string GetRequestsNamespace(SchemaName schema) {
+    public string GetRequestsNamespace(SchemaName schema) {
 
-            string schemaName = schema.Value;
+        string schemaName = schema.Value;
 
-            schemaName = FirstLetterUpperCase(schemaName);
+        schemaName = FirstLetterUpperCase(schemaName);
 
-            if(!IsDefaultSchema(schema)) {
-                return $"{RequestNamespace}.{schemaName}.Requests";
-            }
-            else {
-                return TableNamespace;
-            }
+        if(!IsDefaultSchema(schema)) {
+            return $"{RequestNamespace}.{schemaName}.Requests";
         }
-
-        public string GetHandlersNamespace(SchemaName schema) {
-
-            string schemaName = schema.Value;
-
-            schemaName = FirstLetterUpperCase(schemaName);
-
-            if(!IsDefaultSchema(schema)) {
-                return $"{HandlerNamespace}.{schemaName}.Handlers";
-            }
-            else {
-                return TableNamespace;
-            }
+        else {
+            return TableNamespace;
         }
+    }
 
-        public static bool IsDefaultSchema(SchemaName schema) {
-            return string.Equals(schema.Value, "dbo", StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(schema.Value, "public", StringComparison.OrdinalIgnoreCase);
+    public string GetHandlersNamespace(SchemaName schema) {
+
+        string schemaName = schema.Value;
+
+        schemaName = FirstLetterUpperCase(schemaName);
+
+        if(!IsDefaultSchema(schema)) {
+            return $"{HandlerNamespace}.{schemaName}.Handlers";
         }
+        else {
+            return TableNamespace;
+        }
+    }
+
+    public static bool IsDefaultSchema(SchemaName schema) {
+        return string.Equals(schema.Value, "dbo", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(schema.Value, "public", StringComparison.OrdinalIgnoreCase);
     }
 }

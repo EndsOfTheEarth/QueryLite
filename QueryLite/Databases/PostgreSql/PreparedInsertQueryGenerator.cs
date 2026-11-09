@@ -24,59 +24,58 @@
 using QueryLite.Databases.PostgreSql.Collectors;
 using System.Text;
 
-namespace QueryLite.Databases.PostgreSql {
+namespace QueryLite.Databases.PostgreSql; 
 
-    internal sealed class PostgreSqlPreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
+internal sealed class PostgreSqlPreparedInsertQueryGenerator : IPreparedInsertQueryGenerator {
 
-        public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template,
-                                                 IDatabase database,
-                                                 out PreparedParameterList<PARAMETERS> parameters,
-                                                 Func<IResultRow, RESULT>? outputFunc) {
+    public string GetSql<PARAMETERS, RESULT>(PreparedInsertTemplate<PARAMETERS> template,
+                                             IDatabase database,
+                                             out PreparedParameterList<PARAMETERS> parameters,
+                                             Func<IResultRow, RESULT>? outputFunc) {
 
-            StringBuilder sql = StringBuilderCache.Acquire();
+        StringBuilder sql = StringBuilderCache.Acquire();
 
-            sql.Append("INSERT INTO ");
+        sql.Append("INSERT INTO ");
 
-            string schemaName = database.SchemaMap(template.Table.SchemaName);
+        string schemaName = database.SchemaMap(template.Table.SchemaName);
 
-            if(!string.IsNullOrWhiteSpace(schemaName)) {
-                SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
-                sql.Append('.');
-            }
-
-            SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
-
-            StringBuilder paramSql = StringBuilderCache.Acquire();
-
-            PostgreSqlPreparedSetValuesCollector<PARAMETERS> valuesCollector = new(
-                sql: sql,
-                paramSql: paramSql,
-                database: database,
-                mode: CollectorMode.Insert
-            );
-            sql.Append('(');
-            template.SetValues!(valuesCollector);
-            sql.Append(") VALUES(");
-
-            parameters = valuesCollector.Parameters;
-
-            sql.Append(paramSql);
-            sql.Append(')');
-
-            StringBuilderCache.Release(paramSql);
-
-
-            if(outputFunc != null) {
-
-                PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: false);
-
-                sql.Append(" RETURNING ");
-
-                outputFunc(collector);
-
-                PostgreSqlReturningCollectorCache.Release(collector);
-            }
-            return StringBuilderCache.ToStringAndRelease(sql);
+        if(!string.IsNullOrWhiteSpace(schemaName)) {
+            SqlHelper.AppendEncloseSchemaName(sql, schemaName, EncloseWith.DoubleQuote);
+            sql.Append('.');
         }
+
+        SqlHelper.AppendEncloseTableName(sql, template.Table, EncloseWith.DoubleQuote);
+
+        StringBuilder paramSql = StringBuilderCache.Acquire();
+
+        PostgreSqlPreparedSetValuesCollector<PARAMETERS> valuesCollector = new(
+            sql: sql,
+            paramSql: paramSql,
+            database: database,
+            mode: CollectorMode.Insert
+        );
+        sql.Append('(');
+        template.SetValues!(valuesCollector);
+        sql.Append(") VALUES(");
+
+        parameters = valuesCollector.Parameters;
+
+        sql.Append(paramSql);
+        sql.Append(')');
+
+        StringBuilderCache.Release(paramSql);
+
+
+        if(outputFunc != null) {
+
+            PostgreSqlReturningFieldCollector collector = PostgreSqlReturningCollectorCache.Acquire(sql, useAlias: false);
+
+            sql.Append(" RETURNING ");
+
+            outputFunc(collector);
+
+            PostgreSqlReturningCollectorCache.Release(collector);
+        }
+        return StringBuilderCache.ToStringAndRelease(sql);
     }
 }

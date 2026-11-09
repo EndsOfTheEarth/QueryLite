@@ -21,188 +21,187 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-namespace QueryLite {
+namespace QueryLite; 
 
-    internal sealed class InsertQueryTemplate : IInsertSet, IInsertExecute {
+internal sealed class InsertQueryTemplate : IInsertSet, IInsertExecute {
 
-        public ITable Table { get; }
-        public Action<ISetValuesCollector>? ValuesCollector;
+    public ITable Table { get; }
+    public Action<ISetValuesCollector>? ValuesCollector;
 
-        public InsertQueryTemplate(ITable table) {
+    public InsertQueryTemplate(ITable table) {
 
-            ArgumentNullException.ThrowIfNull(table);
+        ArgumentNullException.ThrowIfNull(table);
 
-            Table = table;
+        Table = table;
+    }
+
+    public IInsertExecute Values(Action<ISetValuesCollector> set) {
+        ValuesCollector = set;
+        return this;
+    }
+
+    public string GetSql(IDatabase database) {
+
+        ArgumentNullException.ThrowIfNull(database);
+
+        return database.InsertGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            useParameters: Parameters.Off,
+            parameters: out _,
+            outputFunc: null
+        );
+    }
+
+    public NonQueryResult Execute(Transaction transaction,
+                                  QueryTimeout? timeout = null,
+                                  Parameters useParameters = Parameters.Default,
+                                  string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortInsert;
         }
 
-        public IInsertExecute Values(Action<ISetValuesCollector> set) {
-            ValuesCollector = set;
-            return this;
+        IDatabase database = transaction.Database;
+
+        string sql = database.InsertGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            useParameters: useParameters,
+            parameters: out IParametersBuilder? parameters,
+            outputFunc: null
+        );
+
+        NonQueryResult result = QueryExecutor.ExecuteNonQuery(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            sql: sql,
+            queryType: QueryType.Insert,
+            debugName: debugName
+        );
+        return result;
+    }
+
+    public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func,
+                                               Transaction transaction,
+                                               QueryTimeout? timeout = null,
+                                               Parameters useParameters = Parameters.Default,
+                                               string debugName = "") {
+
+        ArgumentNullException.ThrowIfNull(func);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortInsert;
         }
 
-        public string GetSql(IDatabase database) {
+        IDatabase database = transaction.Database;
 
-            ArgumentNullException.ThrowIfNull(database);
+        string sql = database.InsertGenerator.GetSql(
+            template: this,
+            database: database,
+            useParameters: useParameters,
+            parameters: out IParametersBuilder? parameters,
+            outputFunc: func
+        );
 
-            return database.InsertGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                useParameters: Parameters.Off,
-                parameters: out _,
-                outputFunc: null
-            );
-        }
+        QueryResult<RESULT> result = QueryExecutor.Execute(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: func,
+            sql: sql,
+            queryType: QueryType.Insert,
+            debugName: debugName
+        );
+        return result;
+    }
 
-        public NonQueryResult Execute(Transaction transaction,
-                                      QueryTimeout? timeout = null,
-                                      Parameters useParameters = Parameters.Default,
-                                      string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortInsert;
-            }
-
-            IDatabase database = transaction.Database;
-
-            string sql = database.InsertGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                useParameters: useParameters,
-                parameters: out IParametersBuilder? parameters,
-                outputFunc: null
-            );
-
-            NonQueryResult result = QueryExecutor.ExecuteNonQuery(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                sql: sql,
-                queryType: QueryType.Insert,
-                debugName: debugName
-            );
-            return result;
-        }
-
-        public QueryResult<RESULT> Execute<RESULT>(Func<IResultRow, RESULT> func,
-                                                   Transaction transaction,
+    public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
+                                                   CancellationToken? ct = null,
                                                    QueryTimeout? timeout = null,
                                                    Parameters useParameters = Parameters.Default,
                                                    string debugName = "") {
 
-            ArgumentNullException.ThrowIfNull(func);
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortInsert;
-            }
-
-            IDatabase database = transaction.Database;
-
-            string sql = database.InsertGenerator.GetSql(
-                template: this,
-                database: database,
-                useParameters: useParameters,
-                parameters: out IParametersBuilder? parameters,
-                outputFunc: func
-            );
-
-            QueryResult<RESULT> result = QueryExecutor.Execute(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: func,
-                sql: sql,
-                queryType: QueryType.Insert,
-                debugName: debugName
-            );
-            return result;
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortInsert;
         }
 
-        public async Task<NonQueryResult> ExecuteAsync(Transaction transaction,
-                                                       CancellationToken? ct = null,
-                                                       QueryTimeout? timeout = null,
-                                                       Parameters useParameters = Parameters.Default,
-                                                       string debugName = "") {
+        IDatabase database = transaction.Database;
 
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
+        string sql = database.InsertGenerator.GetSql<bool>(
+            template: this,
+            database: database,
+            useParameters: useParameters,
+            parameters: out IParametersBuilder? parameters,
+            outputFunc: null
+        );
 
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortInsert;
-            }
-
-            IDatabase database = transaction.Database;
-
-            string sql = database.InsertGenerator.GetSql<bool>(
-                template: this,
-                database: database,
-                useParameters: useParameters,
-                parameters: out IParametersBuilder? parameters,
-                outputFunc: null
-            );
-
-            NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                sql: sql,
-                queryType: QueryType.Insert,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
-
-        public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func,
-                                                                    Transaction transaction,
-                                                                    CancellationToken? ct = null,
-                                                                    QueryTimeout? timeout = null,
-                                                                    Parameters useParameters = Parameters.Default,
-                                                                    string debugName = "") {
-
-            ArgumentNullException.ThrowIfNull(func);
-            ArgumentNullException.ThrowIfNull(transaction);
-            ArgumentNullException.ThrowIfNull(debugName);
-
-            if(timeout == null) {
-                timeout = TimeoutLevel.ShortInsert;
-            }
-
-            IDatabase database = transaction.Database;
-
-            string sql = database.InsertGenerator.GetSql(
-                template: this,
-                database: database,
-                useParameters: useParameters,
-                parameters: out IParametersBuilder? parameters,
-                outputFunc: func
-            );
-
-            QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
-                database: database,
-                transaction: transaction,
-                timeout: timeout.Value,
-                parameters: parameters,
-                func: func,
-                sql: sql,
-                queryType: QueryType.Insert,
-                debugName: debugName,
-                ct: ct ?? CancellationToken.None
-            );
-            return result;
-        }
+        NonQueryResult result = await QueryExecutor.ExecuteNonQueryAsync(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            sql: sql,
+            queryType: QueryType.Insert,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
     }
 
-    internal sealed class SetValue(IColumn column, object? value) {
+    public async Task<QueryResult<RESULT>> ExecuteAsync<RESULT>(Func<IResultRow, RESULT> func,
+                                                                Transaction transaction,
+                                                                CancellationToken? ct = null,
+                                                                QueryTimeout? timeout = null,
+                                                                Parameters useParameters = Parameters.Default,
+                                                                string debugName = "") {
 
-        public IColumn Column { get; } = column;
-        public object? Value { get; } = value;
+        ArgumentNullException.ThrowIfNull(func);
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(debugName);
+
+        if(timeout == null) {
+            timeout = TimeoutLevel.ShortInsert;
+        }
+
+        IDatabase database = transaction.Database;
+
+        string sql = database.InsertGenerator.GetSql(
+            template: this,
+            database: database,
+            useParameters: useParameters,
+            parameters: out IParametersBuilder? parameters,
+            outputFunc: func
+        );
+
+        QueryResult<RESULT> result = await QueryExecutor.ExecuteAsync(
+            database: database,
+            transaction: transaction,
+            timeout: timeout.Value,
+            parameters: parameters,
+            func: func,
+            sql: sql,
+            queryType: QueryType.Insert,
+            debugName: debugName,
+            ct: ct ?? CancellationToken.None
+        );
+        return result;
     }
+}
+
+internal sealed class SetValue(IColumn column, object? value) {
+
+    public IColumn Column { get; } = column;
+    public object? Value { get; } = value;
 }

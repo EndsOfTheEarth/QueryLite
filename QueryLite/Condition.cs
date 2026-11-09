@@ -23,401 +23,400 @@
  **/
 using System.Text;
 
-namespace QueryLite {
+namespace QueryLite; 
 
-    public interface ICondition {
+public interface ICondition {
 
-        void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters);
+    void GetSql(StringBuilder sql, IDatabase database, bool useAlias, IParametersBuilder? parameters);
 
-        public static ICondition And(ICondition? conditionA, ICondition conditionB) {
+    public static ICondition And(ICondition? conditionA, ICondition conditionB) {
 
-            if(conditionA is null) {
-                return conditionB;
-            }
-            return new AndOrCondition(conditionA, isAnd: true, conditionB);
+        if(conditionA is null) {
+            return conditionB;
         }
-
-        public static ICondition Or(ICondition? conditionA, ICondition conditionB) {
-
-            if(conditionA is null) {
-                return conditionB;
-            }
-            return new AndOrCondition(conditionA, isAnd: false, conditionB);
-        }
-
-        public static ICondition operator &(ICondition? conditionA, ICondition conditionB) {
-
-            if(conditionA == null) {
-                return conditionB;
-            }
-            return new AndOrCondition(conditionA, isAnd: true, conditionB);
-        }
-        public static ICondition operator |(ICondition? conditionA, ICondition conditionB) {
-
-            if(conditionA == null) {
-                return conditionB;
-            }
-            return new AndOrCondition(conditionA, isAnd: false, conditionB);
-        }
+        return new AndOrCondition(conditionA, isAnd: true, conditionB);
     }
 
-    internal sealed class AndOrCondition : ICondition {
+    public static ICondition Or(ICondition? conditionA, ICondition conditionB) {
 
-        public ICondition ConditionA { get; private set; }
-        public bool IsAnd { get; private set; }
-        public ICondition ConditionB { get; private set; }
-
-        public AndOrCondition(ICondition conditionA, bool isAnd, ICondition conditionB) {
-            ConditionA = conditionA;
-            IsAnd = isAnd;
-            ConditionB = conditionB;
+        if(conditionA is null) {
+            return conditionB;
         }
-
-        public void GetSql(StringBuilder sql, IDatabase database,
-                           bool useAlias, IParametersBuilder? parameters) {
-
-            sql.Append('(');
-            ConditionA.GetSql(sql, database, useAlias, parameters);
-            sql.Append(IsAnd ? " AND " : " OR ");
-            ConditionB.GetSql(sql, database, useAlias, parameters);
-            sql.Append(')');
-        }
+        return new AndOrCondition(conditionA, isAnd: false, conditionB);
     }
 
-    /*
-     * These additional condition classes are used to allow conditions between columns to be used
-     * in the prepared query functionality but disallow conditions that have fixed values.
-     */
-    internal sealed class AndOrConditionColumnCondition : ICondition {
+    public static ICondition operator &(ICondition? conditionA, ICondition conditionB) {
 
-        public ICondition ConditionA { get; private set; }
-        public bool IsAnd { get; private set; }
-        public ICondition ConditionB { get; private set; }
-
-        public AndOrConditionColumnCondition(ICondition conditionA,
-                                             bool isAnd,
-                                             ICondition conditionB) {
-            ConditionA = conditionA;
-            IsAnd = isAnd;
-            ConditionB = conditionB;
+        if(conditionA == null) {
+            return conditionB;
         }
+        return new AndOrCondition(conditionA, isAnd: true, conditionB);
+    }
+    public static ICondition operator |(ICondition? conditionA, ICondition conditionB) {
 
-        public void GetSql(StringBuilder sql, IDatabase database,
-                           bool useAlias, IParametersBuilder? parameters) {
-
-            sql.Append('(');
-            ConditionA.GetSql(sql, database, useAlias, parameters);
-            sql.Append(IsAnd ? " AND " : " OR ");
-            ConditionB.GetSql(sql, database, useAlias, parameters);
-            sql.Append(')');
+        if(conditionA == null) {
+            return conditionB;
         }
+        return new AndOrCondition(conditionA, isAnd: false, conditionB);
+    }
+}
+
+internal sealed class AndOrCondition : ICondition {
+
+    public ICondition ConditionA { get; private set; }
+    public bool IsAnd { get; private set; }
+    public ICondition ConditionB { get; private set; }
+
+    public AndOrCondition(ICondition conditionA, bool isAnd, ICondition conditionB) {
+        ConditionA = conditionA;
+        IsAnd = isAnd;
+        ConditionB = conditionB;
     }
 
-    internal sealed class InNotInCondition<TYPE> : ICondition where TYPE : notnull {
+    public void GetSql(StringBuilder sql, IDatabase database,
+                       bool useAlias, IParametersBuilder? parameters) {
 
-        private AColumn<TYPE> Left { get; }
-        private bool IsIn { get; }
-        private IEnumerable<TYPE> List { get; }
+        sql.Append('(');
+        ConditionA.GetSql(sql, database, useAlias, parameters);
+        sql.Append(IsAnd ? " AND " : " OR ");
+        ConditionB.GetSql(sql, database, useAlias, parameters);
+        sql.Append(')');
+    }
+}
 
-        public InNotInCondition(AColumn<TYPE> left, bool isIn, IEnumerable<TYPE> list) {
+/*
+ * These additional condition classes are used to allow conditions between columns to be used
+ * in the prepared query functionality but disallow conditions that have fixed values.
+ */
+internal sealed class AndOrConditionColumnCondition : ICondition {
 
-            bool hasAnItem = false;
+    public ICondition ConditionA { get; private set; }
+    public bool IsAnd { get; private set; }
+    public ICondition ConditionB { get; private set; }
 
-            foreach(TYPE item in list) {
-                hasAnItem = true;
-                break;
-            }
-            if(!hasAnItem) {
-                throw new ArgumentException($"{nameof(list)} must have at least one item");
-            }
-            Left = left;
-            IsIn = isIn;
-            List = list;
+    public AndOrConditionColumnCondition(ICondition conditionA,
+                                         bool isAnd,
+                                         ICondition conditionB) {
+        ConditionA = conditionA;
+        IsAnd = isAnd;
+        ConditionB = conditionB;
+    }
+
+    public void GetSql(StringBuilder sql, IDatabase database,
+                       bool useAlias, IParametersBuilder? parameters) {
+
+        sql.Append('(');
+        ConditionA.GetSql(sql, database, useAlias, parameters);
+        sql.Append(IsAnd ? " AND " : " OR ");
+        ConditionB.GetSql(sql, database, useAlias, parameters);
+        sql.Append(')');
+    }
+}
+
+internal sealed class InNotInCondition<TYPE> : ICondition where TYPE : notnull {
+
+    private AColumn<TYPE> Left { get; }
+    private bool IsIn { get; }
+    private IEnumerable<TYPE> List { get; }
+
+    public InNotInCondition(AColumn<TYPE> left, bool isIn, IEnumerable<TYPE> list) {
+
+        bool hasAnItem = false;
+
+        foreach(TYPE item in list) {
+            hasAnItem = true;
+            break;
         }
+        if(!hasAnItem) {
+            throw new ArgumentException($"{nameof(list)} must have at least one item");
+        }
+        Left = left;
+        IsIn = isIn;
+        List = list;
+    }
 
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
-                           IParametersBuilder? parameters) {
+    public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
+                       IParametersBuilder? parameters) {
+
+        if(useAlias) {
+            sql.Append(Left.Table.Alias).Append('.');
+        }
+        sql.Append(Left.ColumnName).Append(IsIn ? " IN(" : " NOT IN(");
+
+        bool isFirst = true;
+
+        foreach(TYPE item in List) {
+
+            if(!isFirst) {
+                sql.Append(',');
+            }
+            else {
+                isFirst = false;
+            }
+            if(parameters == null) {
+                sql.Append(database.ConvertToSql(item));
+            }
+            else {
+                parameters.Add(database, Left.Type, value: item, out string paramName);
+                sql.Append(paramName);
+            }
+        }
+        sql.Append(')');
+    }
+}
+
+internal sealed class InNotInNestedQueryCondition<TYPE, RESULT> : ICondition where TYPE : notnull {
+
+    private AColumn<TYPE> Left { get; }
+    private bool IsIn { get; }
+    private IExecute<RESULT> NestedQuery { get; }
+
+    public InNotInNestedQueryCondition(AColumn<TYPE> left, bool isIn,
+                                       IExecute<RESULT> nestedQuery) {
+        Left = left;
+        IsIn = isIn;
+        NestedQuery = nestedQuery;
+    }
+
+    public void GetSql(StringBuilder sql, IDatabase database,
+                       bool useAlias, IParametersBuilder? parameters) {
+
+        if(useAlias) {
+            sql.Append(Left.Table.Alias).Append('.');
+        }
+        sql.Append(Left.ColumnName).Append(IsIn ? " IN(" : " NOT IN(");
+        sql.Append(NestedQuery.GetSql(database, forceAlias: true, parameters));
+        sql.Append(')');
+    }
+}
+
+internal sealed class NullNotNullCondition<TYPE> : ICondition where TYPE : notnull {
+
+    private IColumn Left { get; }
+    private bool IsNull { get; }
+
+    public NullNotNullCondition(IColumn left, bool isNull) {
+        Left = left;
+        IsNull = isNull;
+    }
+    public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
+                       IParametersBuilder? parameters) {
+
+        sql.Append((useAlias ? Left.Table.Alias + "." : ""))
+           .Append(Left.ColumnName)
+           .Append(IsNull ? " IS NULL" : " IS NOT NULL");
+    }
+}
+
+internal sealed class NullNotNullFunctionCondition<TYPE> : ICondition where TYPE : notnull {
+
+    private IFunction Left { get; }
+    private bool IsNull { get; }
+
+    public NullNotNullFunctionCondition(IFunction left, bool isNull) {
+        Left = left;
+        IsNull = isNull;
+    }
+    public void GetSql(StringBuilder sql, IDatabase database,
+                       bool useAlias, IParametersBuilder? parameters) {
+
+        sql.Append(Left.GetSql(database, useAlias, parameters))
+           .Append(IsNull ? " IS NULL" : " IS NOT NULL");
+    }
+}
+
+internal sealed class GenericCondition : ICondition {
+
+    public IField Left { get; private set; }
+    public Operator Operator { get; private set; }
+    public object Right { get; private set; }
+
+    public GenericCondition(IField left, Operator @operator, object right) {
+        Left = left;
+        Operator = @operator;
+        Right = right;
+    }
+
+    public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
+                       IParametersBuilder? parameters) {
+
+        ConditionHelper.AppendSqlValue(
+            value: Left,
+            sql: sql,
+            database: database,
+            useAlias: useAlias,
+            parameters: parameters
+        );
+
+        sql.Append(Operator switch {
+            Operator.EQUALS => " = ",
+            Operator.NOT_EQUALS => " != ",
+            Operator.GREATER_THAN => " > ",
+            Operator.GREATER_THAN_OR_EQUAL => " >= ",
+            Operator.LESS_THAN => " < ",
+            Operator.LESS_THAN_OR_EQUAL => " <= ",
+            _ => throw new Exception($"Unknown join operator. {nameof(Operator)} == {Operator}")
+        });
+
+        ConditionHelper.AppendSqlValue(
+            value: Right,
+            sql: sql,
+            database: database,
+            useAlias: useAlias,
+            parameters: parameters
+        );
+    }
+}
+
+internal sealed class LikeCondition<TYPE> : ICondition {
+
+    public IField Left { get; private set; }
+    public ILike<TYPE> Like { get; private set; }
+
+    public LikeCondition(IField left, ILike<TYPE> like) {
+        Left = left;
+        Like = like;
+    }
+
+    public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
+                       IParametersBuilder? parameters) {
+
+        if(Left is IColumn leftColumn) {
 
             if(useAlias) {
-                sql.Append(Left.Table.Alias).Append('.');
+                sql.Append(leftColumn.Table.Alias).Append('.');
             }
-            sql.Append(Left.ColumnName).Append(IsIn ? " IN(" : " NOT IN(");
-
-            bool isFirst = true;
-
-            foreach(TYPE item in List) {
-
-                if(!isFirst) {
-                    sql.Append(',');
-                }
-                else {
-                    isFirst = false;
-                }
-                if(parameters == null) {
-                    sql.Append(database.ConvertToSql(item));
-                }
-                else {
-                    parameters.Add(database, Left.Type, value: item, out string paramName);
-                    sql.Append(paramName);
-                }
-            }
-            sql.Append(')');
+            sql.Append(leftColumn.ColumnName);
         }
+        else if(Left is IFunction leftFunction) {
+            sql.Append(leftFunction.GetSql(database, useAlias: useAlias, parameters));
+        }
+        else {
+            throw new Exception($"Unsupported type: {Left.GetType()}");
+        }
+        sql.Append(database.LikeSqlConditionGenerator.GetSql(Like, database));
+    }
+}
+
+internal sealed class BetweenCondition<TYPE> : ICondition where TYPE : notnull {
+
+    public bool Not { get; }
+    public IField Left { get; private set; }
+    public object ValueA { get; private set; }
+    public object ValueB { get; private set; }
+
+    public BetweenCondition(bool not, IField left, TYPE valueA, TYPE valueB) {
+        Not = not;
+        Left = left;
+        ValueA = valueA;
+        ValueB = valueB;
     }
 
-    internal sealed class InNotInNestedQueryCondition<TYPE, RESULT> : ICondition where TYPE : notnull {
+    public BetweenCondition(bool not, IField left,
+                            ISelectable<TYPE> valueA, TYPE valueB) {
+        Not = not;
+        Left = left;
+        ValueA = valueA;
+        ValueB = valueB;
+    }
 
-        private AColumn<TYPE> Left { get; }
-        private bool IsIn { get; }
-        private IExecute<RESULT> NestedQuery { get; }
+    public BetweenCondition(bool not, IField left,
+                            ISelectable<TYPE> valueA, ISelectable<TYPE> valueB) {
+        Not = not;
+        Left = left;
+        ValueA = valueA;
+        ValueB = valueB;
+    }
 
-        public InNotInNestedQueryCondition(AColumn<TYPE> left, bool isIn,
-                                           IExecute<RESULT> nestedQuery) {
-            Left = left;
-            IsIn = isIn;
-            NestedQuery = nestedQuery;
-        }
+    public BetweenCondition(bool not, IField left,
+                            TYPE valueA, ISelectable<TYPE> valueB) {
+        Not = not;
+        Left = left;
+        ValueA = valueA;
+        ValueB = valueB;
+    }
 
-        public void GetSql(StringBuilder sql, IDatabase database,
-                           bool useAlias, IParametersBuilder? parameters) {
+    public void GetSql(StringBuilder sql, IDatabase database,
+                       bool useAlias, IParametersBuilder? parameters) {
+
+        if(Left is IColumn leftColumn) {
 
             if(useAlias) {
-                sql.Append(Left.Table.Alias).Append('.');
+                sql.Append(leftColumn.Table.Alias).Append('.');
             }
-            sql.Append(Left.ColumnName).Append(IsIn ? " IN(" : " NOT IN(");
-            sql.Append(NestedQuery.GetSql(database, forceAlias: true, parameters));
-            sql.Append(')');
+            sql.Append(leftColumn.ColumnName);
         }
+        else if(Left is IFunction leftFunction) {
+            sql.Append(leftFunction.GetSql(database, useAlias: useAlias, parameters));
+        }
+        else {
+            throw new Exception($"Unsupported type: {Left.GetType()}");
+        }
+        if(Not) {
+            sql.Append(" NOT BETWEEN ");
+        }
+        else {
+            sql.Append(" BETWEEN ");
+        }
+        ConditionHelper.AppendSqlValue(
+            value: ValueA,
+            sql: sql,
+            database: database,
+            useAlias: useAlias,
+            parameters: parameters
+        );
+        
+        sql.Append(" AND ");
+        
+        ConditionHelper.AppendSqlValue(
+            value: ValueB,
+            sql: sql,
+            database: database,
+            useAlias: useAlias,
+            parameters: parameters
+        );
     }
+}
 
-    internal sealed class NullNotNullCondition<TYPE> : ICondition where TYPE : notnull {
+internal static class ConditionHelper {
 
-        private IColumn Left { get; }
-        private bool IsNull { get; }
+    public static void AppendSqlValue(object value, StringBuilder sql, IDatabase database,
+                                      bool useAlias, IParametersBuilder? parameters) {
 
-        public NullNotNullCondition(IColumn left, bool isNull) {
-            Left = left;
-            IsNull = isNull;
-        }
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
-                           IParametersBuilder? parameters) {
+        if(value is IColumn rightColumn) {
 
-            sql.Append((useAlias ? Left.Table.Alias + "." : ""))
-               .Append(Left.ColumnName)
-               .Append(IsNull ? " IS NULL" : " IS NOT NULL");
-        }
-    }
-
-    internal sealed class NullNotNullFunctionCondition<TYPE> : ICondition where TYPE : notnull {
-
-        private IFunction Left { get; }
-        private bool IsNull { get; }
-
-        public NullNotNullFunctionCondition(IFunction left, bool isNull) {
-            Left = left;
-            IsNull = isNull;
-        }
-        public void GetSql(StringBuilder sql, IDatabase database,
-                           bool useAlias, IParametersBuilder? parameters) {
-
-            sql.Append(Left.GetSql(database, useAlias, parameters))
-               .Append(IsNull ? " IS NULL" : " IS NOT NULL");
-        }
-    }
-
-    internal sealed class GenericCondition : ICondition {
-
-        public IField Left { get; private set; }
-        public Operator Operator { get; private set; }
-        public object Right { get; private set; }
-
-        public GenericCondition(IField left, Operator @operator, object right) {
-            Left = left;
-            Operator = @operator;
-            Right = right;
-        }
-
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
-                           IParametersBuilder? parameters) {
-
-            ConditionHelper.AppendSqlValue(
-                value: Left,
-                sql: sql,
-                database: database,
-                useAlias: useAlias,
-                parameters: parameters
-            );
-
-            sql.Append(Operator switch {
-                Operator.EQUALS => " = ",
-                Operator.NOT_EQUALS => " != ",
-                Operator.GREATER_THAN => " > ",
-                Operator.GREATER_THAN_OR_EQUAL => " >= ",
-                Operator.LESS_THAN => " < ",
-                Operator.LESS_THAN_OR_EQUAL => " <= ",
-                _ => throw new Exception($"Unknown join operator. {nameof(Operator)} == {Operator}")
-            });
-
-            ConditionHelper.AppendSqlValue(
-                value: Right,
-                sql: sql,
-                database: database,
-                useAlias: useAlias,
-                parameters: parameters
-            );
-        }
-    }
-
-    internal sealed class LikeCondition<TYPE> : ICondition {
-
-        public IField Left { get; private set; }
-        public ILike<TYPE> Like { get; private set; }
-
-        public LikeCondition(IField left, ILike<TYPE> like) {
-            Left = left;
-            Like = like;
-        }
-
-        public void GetSql(StringBuilder sql, IDatabase database, bool useAlias,
-                           IParametersBuilder? parameters) {
-
-            if(Left is IColumn leftColumn) {
-
-                if(useAlias) {
-                    sql.Append(leftColumn.Table.Alias).Append('.');
-                }
-                sql.Append(leftColumn.ColumnName);
+            if(useAlias) {
+                sql.Append(rightColumn.Table.Alias).Append('.');
             }
-            else if(Left is IFunction leftFunction) {
-                sql.Append(leftFunction.GetSql(database, useAlias: useAlias, parameters));
+            sql.Append(rightColumn.ColumnName);
+        }
+        else if(value is IFunction rightFunction) {
+            sql.Append(rightFunction.GetSql(database, useAlias: useAlias, parameters));
+        }
+        else if(value is SqlText text) {
+            sql.Append(text.AsEscapedText());
+        }
+        else if(value is IGetSelectSql getSql) {
+            sql.Append(getSql.GetSql(database, forceAlias: true, parameters));
+        }
+        else {
+
+            if(parameters == null) {
+                sql.Append(database.ConvertToSql(value));
             }
             else {
-                throw new Exception($"Unsupported type: {Left.GetType()}");
-            }
-            sql.Append(database.LikeSqlConditionGenerator.GetSql(Like, database));
-        }
-    }
-
-    internal sealed class BetweenCondition<TYPE> : ICondition where TYPE : notnull {
-
-        public bool Not { get; }
-        public IField Left { get; private set; }
-        public object ValueA { get; private set; }
-        public object ValueB { get; private set; }
-
-        public BetweenCondition(bool not, IField left, TYPE valueA, TYPE valueB) {
-            Not = not;
-            Left = left;
-            ValueA = valueA;
-            ValueB = valueB;
-        }
-
-        public BetweenCondition(bool not, IField left,
-                                ISelectable<TYPE> valueA, TYPE valueB) {
-            Not = not;
-            Left = left;
-            ValueA = valueA;
-            ValueB = valueB;
-        }
-
-        public BetweenCondition(bool not, IField left,
-                                ISelectable<TYPE> valueA, ISelectable<TYPE> valueB) {
-            Not = not;
-            Left = left;
-            ValueA = valueA;
-            ValueB = valueB;
-        }
-
-        public BetweenCondition(bool not, IField left,
-                                TYPE valueA, ISelectable<TYPE> valueB) {
-            Not = not;
-            Left = left;
-            ValueA = valueA;
-            ValueB = valueB;
-        }
-
-        public void GetSql(StringBuilder sql, IDatabase database,
-                           bool useAlias, IParametersBuilder? parameters) {
-
-            if(Left is IColumn leftColumn) {
-
-                if(useAlias) {
-                    sql.Append(leftColumn.Table.Alias).Append('.');
-                }
-                sql.Append(leftColumn.ColumnName);
-            }
-            else if(Left is IFunction leftFunction) {
-                sql.Append(leftFunction.GetSql(database, useAlias: useAlias, parameters));
-            }
-            else {
-                throw new Exception($"Unsupported type: {Left.GetType()}");
-            }
-            if(Not) {
-                sql.Append(" NOT BETWEEN ");
-            }
-            else {
-                sql.Append(" BETWEEN ");
-            }
-            ConditionHelper.AppendSqlValue(
-                value: ValueA,
-                sql: sql,
-                database: database,
-                useAlias: useAlias,
-                parameters: parameters
-            );
-            
-            sql.Append(" AND ");
-            
-            ConditionHelper.AppendSqlValue(
-                value: ValueB,
-                sql: sql,
-                database: database,
-                useAlias: useAlias,
-                parameters: parameters
-            );
-        }
-    }
-
-    internal static class ConditionHelper {
-
-        public static void AppendSqlValue(object value, StringBuilder sql, IDatabase database,
-                                          bool useAlias, IParametersBuilder? parameters) {
-
-            if(value is IColumn rightColumn) {
-
-                if(useAlias) {
-                    sql.Append(rightColumn.Table.Alias).Append('.');
-                }
-                sql.Append(rightColumn.ColumnName);
-            }
-            else if(value is IFunction rightFunction) {
-                sql.Append(rightFunction.GetSql(database, useAlias: useAlias, parameters));
-            }
-            else if(value is SqlText text) {
-                sql.Append(text.AsEscapedText());
-            }
-            else if(value is IGetSelectSql getSql) {
-                sql.Append(getSql.GetSql(database, forceAlias: true, parameters));
-            }
-            else {
-
-                if(parameters == null) {
-                    sql.Append(database.ConvertToSql(value));
-                }
-                else {
-                    parameters.Add(database, value.GetType(), value: value, out string paramName);
-                    sql.Append(paramName);
-                }
+                parameters.Add(database, value.GetType(), value: value, out string paramName);
+                sql.Append(paramName);
             }
         }
     }
+}
 
-    public enum Operator {
-        EQUALS,
-        NOT_EQUALS,
-        GREATER_THAN,
-        GREATER_THAN_OR_EQUAL,
-        LESS_THAN,
-        LESS_THAN_OR_EQUAL
-    }
+public enum Operator {
+    EQUALS,
+    NOT_EQUALS,
+    GREATER_THAN,
+    GREATER_THAN_OR_EQUAL,
+    LESS_THAN,
+    LESS_THAN_OR_EQUAL
 }
