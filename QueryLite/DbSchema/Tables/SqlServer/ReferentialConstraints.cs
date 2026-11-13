@@ -25,7 +25,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer;
 
 public sealed class ReferentialConstraintsTable : ATable {
 
-    public static readonly ReferentialConstraintsTable Instance = new();
+    public static readonly ReferentialConstraintsTable Instance = new("cr");
 
     public NColumn<string> CONSTRAINT_CATALOG { get; }
     public NColumn<SchemaName, string> CONSTRAINT_SCHEMA { get; }
@@ -37,7 +37,9 @@ public sealed class ReferentialConstraintsTable : ATable {
     public NColumn<string> UPDATE_RULE { get; }
     public NColumn<string> DELETE_RULE { get; }
 
-    public ReferentialConstraintsTable() : base(name: "REFERENTIAL_CONSTRAINTS", schemaName: "information_schema") {
+    public ReferentialConstraintsTable(string alias) : base(name: "REFERENTIAL_CONSTRAINTS",
+                                                            schemaName: "information_schema",
+                                                            alias: alias) {
 
         CONSTRAINT_CATALOG = new NColumn<string>(this, name: "CONSTRAINT_CATALOG", length: new(128));
         CONSTRAINT_SCHEMA = new NColumn<SchemaName, string>(this, name: "CONSTRAINT_SCHEMA", length: new(128));

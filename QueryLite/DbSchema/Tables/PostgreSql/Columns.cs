@@ -25,7 +25,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql;
 
 public sealed class ColumnsTable : ATable {
 
-    public static readonly ColumnsTable Instance = new();
+    public static readonly ColumnsTable Instance = new("c");
 
     public Column<string> TableCatalog { get; }
     public Column<SchemaName, string> TableSchema { get; }
@@ -72,7 +72,8 @@ public sealed class ColumnsTable : ATable {
     public Column<string> GenerationExpression { get; }
     public Column<string> IsUpdatable { get; }
 
-    public ColumnsTable() : base(name: "columns", schemaName: "information_schema") {
+    public ColumnsTable(string alias) : base(name: "columns", schemaName: "information_schema",
+                                             alias: alias) {
 
         TableCatalog = new Column<string>(table: this, name: "table_catalog");
         TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");

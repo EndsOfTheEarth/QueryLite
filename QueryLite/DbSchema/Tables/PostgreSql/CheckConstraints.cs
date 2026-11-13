@@ -25,14 +25,17 @@ namespace QueryLite.DbSchema.Tables.PostgreSql;
 
 public sealed class CheckConstraintsTable : ATable {
 
-    public static readonly CheckConstraintsTable Instance = new();
+    public static readonly CheckConstraintsTable Instance = new("cc");
 
     public Column<string> ConstraintCatalog { get; }
     public Column<SchemaName, string> ConstraintSchema { get; }
     public Column<string> ConstraintName { get; }
     public Column<string> CheckCaluse { get; }
 
-    public CheckConstraintsTable() : base(name: "check_constraints", schemaName: "information_schema") {
+    public CheckConstraintsTable(string alias) : base(name: "check_constraints",
+                                                      schemaName: "information_schema",
+                                                      alias: alias) {
+
         ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
         ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");
         ConstraintName = new Column<string>(table: this, name: "constraint_name");

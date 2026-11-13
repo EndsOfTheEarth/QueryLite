@@ -25,14 +25,15 @@ namespace QueryLite.DbSchema.Tables.SqlServer;
 
 public sealed class TablesTable : ATable {
 
-    public static readonly TablesTable Instance = new();
+    public static readonly TablesTable Instance = new("t");
 
     public Column<string> TABLE_CATALOG { get; }
     public Column<SchemaName, string> TABLE_SCHEMA { get; }
     public Column<TableName, string> TABLE_NAME { get; }
     public Column<string> TABLE_TYPE { get; }
 
-    public TablesTable() : base(name: "tables", schemaName: "information_schema") {
+    public TablesTable(string alias) : base(name: "tables", schemaName: "information_schema",
+                                            alias: alias) {
 
         TABLE_CATALOG = new Column<string>(table: this, name: "table_catalog");
         TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");

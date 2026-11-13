@@ -25,7 +25,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer;
 
 public sealed class ConstraintColumnUsageTable : ATable {
 
-    public static readonly ConstraintColumnUsageTable Instance = new();
+    public static readonly ConstraintColumnUsageTable Instance = new("ccu");
 
     public Column<string> TABLE_CATALOG { get; }
     public Column<SchemaName, string> TABLE_SCHEMA { get; }
@@ -36,7 +36,9 @@ public sealed class ConstraintColumnUsageTable : ATable {
     public Column<string> CONSTRAINT_NAME { get; }
 
 
-    public ConstraintColumnUsageTable() : base(name: "constraint_column_usage", schemaName: "information_schema") {
+    public ConstraintColumnUsageTable(string alias) : base(name: "constraint_column_usage",
+                                                           schemaName: "information_schema",
+                                                           alias: alias) {
 
         TABLE_CATALOG = new Column<string>(table: this, name: "table_catalog");
         TABLE_SCHEMA = new Column<SchemaName, string>(table: this, name: "table_schema");

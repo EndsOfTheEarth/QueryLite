@@ -25,7 +25,7 @@ namespace QueryLite.DbSchema.Tables.PostgreSql;
 
 public sealed class TablesTable : ATable {
 
-    public static readonly TablesTable Instance = new();
+    public static readonly TablesTable Instance = new("t");
 
     public Column<string> TableCatalog { get; }
     public Column<SchemaName, string> TableSchema { get; }
@@ -40,7 +40,8 @@ public sealed class TablesTable : ATable {
     public Column<string> IsTyped { get; }
     public Column<string> CommitAction { get; }
 
-    public TablesTable() : base(name: "tables", schemaName: "information_schema") {
+    public TablesTable(string alias) : base(name: "tables", schemaName: "information_schema",
+                                            alias: alias) {
 
         TableCatalog = new Column<string>(table: this, name: "table_catalog");
         TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");

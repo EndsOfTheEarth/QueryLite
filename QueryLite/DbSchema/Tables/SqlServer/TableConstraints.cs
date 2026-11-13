@@ -25,7 +25,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer;
 
 public sealed class TableConstraintsTable : ATable {
 
-    public static readonly TableConstraintsTable Instance = new();
+    public static readonly TableConstraintsTable Instance = new("tc");
 
     public Column<string> ConstraintCatalog { get; }
     public Column<SchemaName, string> ConstraintSchema { get; }
@@ -37,7 +37,9 @@ public sealed class TableConstraintsTable : ATable {
     public Column<string> IsDeferrable { get; }
     public Column<string> InitiallyDeferred { get; }
 
-    public TableConstraintsTable() : base(name: "table_constraints", schemaName: "information_schema") {
+    public TableConstraintsTable(string alias) : base(name: "table_constraints",
+                                                      schemaName: "information_schema",
+                                                      alias: alias) {
 
         ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
         ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");

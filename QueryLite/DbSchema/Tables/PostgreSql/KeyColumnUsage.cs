@@ -25,8 +25,8 @@ namespace QueryLite.DbSchema.Tables.PostgreSql;
 
 public sealed class KeyColumnUsageTable : ATable {
 
-    public static readonly KeyColumnUsageTable Instance = new();
-    public static readonly KeyColumnUsageTable Instance2 = new();
+    public static readonly KeyColumnUsageTable Instance = new("kcu");
+    public static readonly KeyColumnUsageTable Instance2 = new("kcu2");
 
     public Column<string> ConstraintCatalog { get; }
     public Column<SchemaName, string> ConstraintSchema { get; }
@@ -38,7 +38,8 @@ public sealed class KeyColumnUsageTable : ATable {
     public NColumn<int> OrdinalPosition { get; }
     public NColumn<int> PositionInUniqueConstraint { get; }
 
-    public KeyColumnUsageTable() : base(name: "key_column_usage", schemaName: "information_schema") {
+    public KeyColumnUsageTable(string alias) : base(name: "key_column_usage", schemaName: "information_schema",
+                                                    alias: alias) {
 
         ConstraintCatalog = new Column<string>(table: this, name: "constraint_catalog");
         ConstraintSchema = new Column<SchemaName, string>(table: this, name: "constraint_schema");

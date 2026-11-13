@@ -25,7 +25,7 @@ namespace QueryLite.DbSchema.Tables.SqlServer;
 
 public sealed class ColumnsTable : ATable {
 
-    public static readonly ColumnsTable Instance = new();
+    public static readonly ColumnsTable Instance = new("c");
 
     public Column<SchemaName, string> TableSchema { get; }
     public Column<TableName, string> TableName_ { get; }
@@ -50,7 +50,8 @@ public sealed class ColumnsTable : ATable {
     public Column<string> DomainSchema { get; }
     public Column<string> DomainName { get; }
 
-    public ColumnsTable() : base(name: "columns", schemaName: "information_schema") {
+    public ColumnsTable(string alias) : base(name: "columns", schemaName: "information_schema",
+                                             alias: alias) {
 
         TableSchema = new Column<SchemaName, string>(table: this, name: "table_schema");
         TableName_ = new Column<TableName, string>(table: this, name: "table_name");
